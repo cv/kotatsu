@@ -6,6 +6,7 @@ Seam variants live in params.toml [[top.options]]; params.top.split picks one.
 kinds:
   ari      dovetail tails (ari-tsugi)            - no loose parts
   kama     gooseneck: neck + flared head          - no loose parts
+  hishi    neck + diamond (or kikko hexagon) head  - no loose parts
   puzzle   jigsaw: neck + round head              - no loose parts
   lobes    seigaiha wave of necked round lobes    - no loose parts
   chigiri  straight seam + through bow-tie keys   - loose keys
@@ -13,7 +14,9 @@ kinds:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from types import SimpleNamespace
 
+from shapely.affinity import rotate
 from shapely.geometry import Point, Polygon, box
 from shapely.ops import unary_union
 
@@ -39,8 +42,11 @@ def option(p, name: str | None = None):
     raise KeyError(f"no [[top.options]] named {name!r}")
 
 
-def _ys(width: float, n: int) -> list[float]:
-    return [width * (i + 0.5) / n for i in range(n)]
+def _ys(width: float, o) -> list[float]:
+    fr = getattr(o, "ys", None)  # optional explicit positions, as fractions of the width
+    if fr:
+        return [width * f for f in fr]
+    return [width * (i + 0.5) / o.count for i in range(o.count)]
 
 
 def _xbox(x0: float, x1: float, y: float, w: float) -> Polygon:
@@ -49,9 +55,16 @@ def _xbox(x0: float, x1: float, y: float, w: float) -> Polygon:
 
 
 def _dovetail(x, y, o, s):
-    e = 2.0 * s  # root overlap so unions are clean
-    return Polygon([(x - e, y - o.root / 2), (x + s * o.depth, y - o.tip / 2),
-                    (x + s * o.depth, y + o.tip / 2), (x - e, y + o.root / 2)])
+    e = 40.0  # long root extension: absorbed by the own side, keeps skewed roots clean
+    tail = Polygon([(x - s * e, y - o.root / 2), (x, y - o.root / 2), (x + s * o.depth, y - o.tip / 2),
+                    (x + s * o.depth, y + o.tip / 2), (x, y + o.root / 2), (x - s * e, y + o.root / 2)])
+    cd = getattr(o, "counter_depth", 0.0)
+    if cd:  # nested counter-tail: a small reverse dovetail cut into this tail's tip
+        xt, e2 = x + s * o.depth, 2.0
+        counter = Polygon([(xt + s * e2, y - o.counter_root / 2), (xt - s * cd, y - o.counter_tip / 2),
+                           (xt - s * cd, y + o.counter_tip / 2), (xt + s * e2, y + o.counter_root / 2)])
+        tail = tail.difference(counter)
+    return tail
 
 
 def _kama(x, y, o, s):
@@ -60,6 +73,17 @@ def _kama(x, y, o, s):
     neck = _xbox(x - 2 * s, h0 + s, y, o.neck)
     head = Polygon([(h0, y - o.head_root / 2), (h1, y - o.head_tip / 2),
                     (h1, y + o.head_tip / 2), (h0, y + o.head_root / 2)])
+    return unary_union([neck, head])
+
+
+def _hishi(x, y, o, s):
+    """Neck + diamond head (hishi). With flat > 0 the head becomes a long hexagon (kikko)."""
+    h0 = x + s * o.neck_len
+    hl, hw, f = o.head_len, o.head_w, getattr(o, "flat", 0.0)
+    q = (hl - f) / 2  # length of each pointed end
+    head = Polygon([(h0, y), (h0 + s * q, y - hw / 2), (h0 + s * (q + f), y - hw / 2),
+                    (h0 + s * hl, y), (h0 + s * (q + f), y + hw / 2), (h0 + s * q, y + hw / 2)])
+    neck = _xbox(x - 2 * s, h0 + s * q, y, o.neck)
     return unary_union([neck, head])
 
 
@@ -78,8 +102,20 @@ def _bowtie(x, y, o):
                     (x + L / 2, y + W / 2), (x, y + w / 2), (x - L / 2, y + W / 2)])
 
 
-TAILS = {"ari": _dovetail, "kama": _kama, "puzzle": _puzzle, "lobes": _lobe}
+TAILS = {"ari": _dovetail, "kama": _kama, "hishi": _hishi, "puzzle": _puzzle, "lobes": _lobe}
 KINDS = (*TAILS, "chigiri")
+_SIZED = ("depth", "root", "tip", "counter_depth", "counter_root", "counter_tip", "neck", "neck_len",
+          "head_len", "head_w", "head_root", "head_tip", "flat", "head_r", "r")
+
+
+def _per_tail(o, i: int):
+    """Option values for tail i: optional per-tail lists scale=[..], skew=[deg..], dirs=[+1/-1..]."""
+    sc = getattr(o, "scale", None)
+    k = sc[i % len(sc)] if sc else 1.0
+    v = SimpleNamespace(**{n: getattr(o, n) * (k if n in _SIZED else 1) for n in vars(o)})
+    sk = getattr(o, "skew", None)
+    v.skew_deg = sk[i % len(sk)] if sk else 0.0
+    return v
 
 
 def seam_xs(p) -> list[float]:
@@ -88,14 +124,21 @@ def seam_xs(p) -> list[float]:
 
 
 def _left_region(xs: float, ys, o, flip: bool, Wy: float, pad: float = 60.0) -> Polygon:
-    """Everything left of seam xs, with tails added (pointing +x) or cut (pointing -x)."""
+    """Everything left of seam xs, with tails added (pointing +x) or cut (pointing -x).
+
+    flip mirrors the pattern (used on every other seam), so directions and skews reverse.
+    """
     alternate = getattr(o, "alternate", True)
+    dirs = getattr(o, "dirs", None)
     reg = box(-pad, -pad, xs, Wy + pad)
     for i, y in enumerate(ys):
-        s = -1 if (alternate and i % 2) else 1
+        s = dirs[i % len(dirs)] if dirs else (-1 if (alternate and i % 2) else 1)
+        v = _per_tail(o, i)
         if flip:
-            s = -s
-        tail = TAILS[o.kind](xs, y, o, s)
+            s, v.skew_deg = -s, -v.skew_deg
+        tail = TAILS[o.kind](xs, y, v, s)
+        if v.skew_deg:
+            tail = rotate(tail, v.skew_deg, origin=(xs, y))
         reg = reg.union(tail) if s > 0 else reg.difference(tail)
     return reg
 
@@ -110,7 +153,7 @@ def build(p, name: str | None = None) -> TopParts:
 
     o = option(p, name)
     xs_list = seam_xs(p)
-    ys = _ys(Wy, o.count)
+    ys = _ys(Wy, o)
     joints = [(xs, y) for xs in xs_list for y in ys]
     pad = 60.0
 

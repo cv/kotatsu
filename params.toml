@@ -58,6 +58,76 @@ depth = 110.0
 root = 90.0
 tip = 170.0
 
+# --- ari-2-bold family (owner likes the geometric look) -------------------------------
+[[top.options]]
+name = "bold-tsuzumi"
+kind = "ari"
+label = "Bold, reversed: middle board flares out like a tsuzumi drum"
+count = 2
+dirs = [-1, -1]
+depth = 110.0
+root = 90.0
+tip = 170.0
+
+[[top.options]]
+name = "bold-yabane"
+kind = "ari"
+label = "Bold, skewed tails: arrow-feather (yabane) chevrons"
+count = 2
+alternate = false
+skew = [-14.0, 14.0]   # degrees per tail; mirrored on the other seam
+depth = 110.0
+root = 80.0
+tip = 180.0
+
+[[top.options]]
+name = "bold-nested"
+kind = "ari"
+label = "Bold tails, each with a small reverse tail nested in its tip"
+count = 2
+alternate = false
+depth = 110.0
+root = 90.0
+tip = 170.0
+counter_depth = 45.0
+counter_root = 36.0
+counter_tip = 62.0
+
+[[top.options]]
+name = "bold-rhythm"
+kind = "ari"
+label = "Big-small-big alternating tails"
+count = 3
+ys = [0.2, 0.5, 0.8]
+scale = [1.0, 0.6, 1.0]
+depth = 105.0
+root = 80.0
+tip = 150.0
+
+[[top.options]]
+name = "bold-hishi"
+kind = "hishi"
+label = "Diamond heads (hishi) on short necks"
+count = 2
+alternate = false
+neck = 44.0
+neck_len = 25.0
+head_len = 130.0
+head_w = 150.0
+
+[[top.options]]
+name = "bold-kikko"
+kind = "hishi"
+label = "Long hexagon heads (kikko, tortoise shell)"
+count = 2
+alternate = false
+neck = 44.0
+neck_len = 25.0
+head_len = 140.0
+head_w = 130.0
+flat = 60.0
+
+
 [[top.options]]
 name = "kama-3"
 kind = "kama"
