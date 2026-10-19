@@ -68,7 +68,15 @@ Deliverables:
 - `pytest`: geometric and constraint checks.
 - `tomllib` (stdlib) reads `params.toml`.
 - Optional later: `build123d` for a 3-D assembly/interference check and STEP export.
-- `make` targets: `all`, `dxf`, `preview`, `test`, `clean`.
+- `make` targets: `all`, `dxf`, `test`, `site`, `dev`, `clean`.
+- **Project site** (`make dev` → http://127.0.0.1:8765, rebuilds on change and the page live-reloads):
+  - `kotatsu/site.py` exports `out/site/data.json` (geometry, stats, params, test results, docs). The page
+    in `web/` is hand-written static HTML/JS, with no build step and no npm.
+  - The JS libraries are pinned versions on jsdelivr, loaded via an importmap: `three` (3-D +
+    OrbitControls), `lil-gui` (controls) and `marked` (docs).
+  - 2-D pan/zoom is a small custom viewBox controller in `web/viewer2d.js`. It stays crisp vector at
+    any zoom and reads cursor positions in mm.
+  - Add new visualisations by extending `data.json` in Python. Never compute geometry in JS; JS only draws it.
 
 ## Layout
 ```
