@@ -26,7 +26,7 @@ from .params import ROOT
 
 WEB = ROOT / "web"
 OUT = ROOT / "out" / "site"
-DOCS = ["PLAN.md", "AGENTS.md", "docs/research.md", "docs/heater.md"]
+DOCS = ["PLAN.md", "AGENTS.md", "docs/research.md", "docs/heater.md", "docs/motifs.md"]
 WATCH = ["params.toml", "kotatsu", "web", "docs", "PLAN.md", "AGENTS.md"]
 
 
