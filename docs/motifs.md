@@ -38,3 +38,19 @@ The respectful route, if you want it:
 - **River braid:** long, shallow, staggered chevrons, like yabane but asymmetric.
 - **Cedar bark:** long narrow interlocking strips. Keep these abstract; cedar bark weaving is
   itself an Indigenous practice.
+
+## Arrows (Japanese *ya* motifs; in `params.toml`)
+
+These are plain geometric barbed points. They're deliberately **not** styled after stone points or other
+"Native" imagery. *Yajiri* (arrowhead) and *yabane* (arrow feather) are classic Japanese patterns, which
+suits a kotatsu.
+
+| Option | Notes |
+|---|---|
+| `yajiri-3` | 3 barbed arrowheads, alternating direction. The barbs are the lock. |
+| `yajiri-yabane` | 2 large tilted arrowheads and a smaller one in the centre (the bold-yabane-rhythm layout, with arrowheads). |
+| `ya-arrows` | The middle board becomes 3 arrows: forked fletching on the left seam and heads on the right seam (`kind = "combo"`, one spec per seam). |
+
+Geometry rule: `neck_len - barb` must be at least 15 mm (about 30 is better). Otherwise the pocket behind
+the barbs is sealed off, the other board can't fill it, and the seam doesn't lock. The generator raises
+an error when this happens.

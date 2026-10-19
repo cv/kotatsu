@@ -8,6 +8,8 @@ kinds:
   kama     gooseneck: neck + flared head          - no loose parts
   hishi    neck + diamond (or kikko hexagon) head  - no loose parts
   bract    Douglas-fir cone bract: forked 3-lobed tip - no loose parts
+  yajiri   barbed arrowhead on a stem              - no loose parts
+  combo    a different spec per seam (o.seam list)
   puzzle   jigsaw: neck + round head              - no loose parts
   lobes    seigaiha wave of necked round lobes    - no loose parts
   chigiri  straight seam + through bow-tie keys   - loose keys
@@ -106,6 +108,18 @@ def _bract(x, y, o, s):
     return Polygon([(x + s * u, y + v) for u, v in pts])
 
 
+def _yajiri(x, y, o, s):
+    """Barbed arrowhead (yajiri) on a stem: the swept-back barbs are the lock."""
+    n, nl, hl, hw, bb = o.neck, o.neck_len, o.head_len, o.head_w, o.barb
+    if nl - bb < 15:  # the mating board must reach in behind the barbs, or the notch is a sealed void
+        raise ValueError(f"yajiri: neck_len - barb = {nl - bb:.0f} mm; keep >= 15 (better ~30)")
+    e = 40.0
+    stem = Polygon([(-e, -n / 2), (nl + 2, -n / 2), (nl + 2, n / 2), (-e, n / 2)])
+    head = Polygon([(nl, -n / 2), (nl - bb, -hw / 2), (nl + hl, 0), (nl - bb, hw / 2), (nl, n / 2)])
+    g = unary_union([stem, head])
+    return Polygon([(x + s * u, y + v) for u, v in g.exterior.coords])
+
+
 def _puzzle(x, y, o, s):
     cx = x + s * o.head_r * 0.9
     return unary_union([Point(cx, y).buffer(o.head_r, quad_segs=24), _xbox(x - 2 * s, cx, y, o.neck)])
@@ -121,11 +135,11 @@ def _bowtie(x, y, o):
                     (x + L / 2, y + W / 2), (x, y + w / 2), (x - L / 2, y + W / 2)])
 
 
-TAILS = {"ari": _dovetail, "bract": _bract, "kama": _kama, "hishi": _hishi, "puzzle": _puzzle, "lobes": _lobe}
-KINDS = (*TAILS, "chigiri")
+TAILS = {"ari": _dovetail, "bract": _bract, "yajiri": _yajiri, "kama": _kama, "hishi": _hishi, "puzzle": _puzzle, "lobes": _lobe}
+KINDS = (*TAILS, "chigiri", "combo")
 _SIZED = ("depth", "root", "tip", "counter_depth", "counter_root", "counter_tip", "fork_depth", "fork_width", "neck", "neck_len",
           "head_len", "head_w", "head_root", "head_tip", "flat", "head_r", "r",
-          "side_len", "side_inset", "notch", "mid_w", "mid_len")
+          "side_len", "side_inset", "notch", "mid_w", "mid_len", "barb")
 
 
 def _per_tail(o, i: int):
@@ -184,7 +198,7 @@ def build(p, name: str | None = None) -> TopParts:
 
     o = option(p, name)
     xs_list = seam_xs(p)
-    ys = _ys(Wy, o)
+    ys = _ys(Wy, o) if o.kind != "combo" else []
     joints = [(xs, y) for xs in xs_list for y in ys]
     pad = 60.0
 
@@ -196,12 +210,20 @@ def build(p, name: str | None = None) -> TopParts:
                   for x0, x1 in zip(edges, edges[1:])]
         return TopParts(o.name, o.kind, boards, keys=keys, outline=outline, joints=joints, seams=xs_list)
 
-    if o.kind not in TAILS:
-        raise ValueError(f"unknown seam kind {o.kind!r}")
-    mirror = getattr(o, "mirror", getattr(T, "mirror", True))  # per-option override
-    # male-rounded "left of seam k" regions; board k = left(k) - female(left(k-1))
-    lefts = [male(_left_region(xs, ys, o, mirror and k % 2 == 1, Wy, pad), r, c)
-             for k, xs in enumerate(xs_list)]
+    if o.kind == "combo":  # a different seam spec per seam: o.seam = [{kind=..}, {kind=..}], used as-is
+        subs = list(o.seam)
+        if len(subs) != len(xs_list):
+            raise ValueError(f"{o.name}: {len(subs)} seam specs for {len(xs_list)} seams")
+        joints = [(xs, y) for xs, sub in zip(xs_list, subs) for y in _ys(Wy, sub)]
+        lefts = [male(_left_region(xs, _ys(Wy, sub), sub, False, Wy, pad), r, c)
+                 for xs, sub in zip(xs_list, subs)]
+    else:
+        if o.kind not in TAILS:
+            raise ValueError(f"unknown seam kind {o.kind!r}")
+        mirror = getattr(o, "mirror", getattr(T, "mirror", True))  # per-option override
+        # male-rounded "left of seam k" regions; board k = left(k) - female(left(k-1))
+        lefts = [male(_left_region(xs, ys, o, mirror and k % 2 == 1, Wy, pad), r, c)
+                 for k, xs in enumerate(xs_list)]
     boards, prev = [], None
     for reg in [*lefts, None]:
         b = outline if reg is None else outline.intersection(reg)

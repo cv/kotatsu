@@ -231,6 +231,58 @@ tails = [
 ]
 
 
+# --- arrows: yajiri (arrowhead) + yabane (fletching) -------------------------------------
+[[top.options]]
+name = "yajiri-3"
+kind = "yajiri"
+label = "Yajiri: 3 barbed arrowheads, alternating"
+count = 3
+neck = 34.0          # stem width
+neck_len = 52.0      # must exceed barb by ~30 so the other board reaches in behind the barbs
+head_len = 95.0
+head_w = 112.0       # across the barbs
+barb = 22.0          # how far the barbs sweep back
+
+[[top.options]]
+name = "yajiri-yabane"
+kind = "yajiri"
+label = "Yajiri x yabane: 2 big skewed arrowheads + small centre point"
+count = 3
+ys = [0.2, 0.5, 0.8]
+dirs = [1, -1, 1]
+scale = [1.0, 0.7, 1.0]
+skew = [-14.0, 0.0, 14.0]
+neck = 40.0
+neck_len = 60.0
+head_len = 115.0
+head_w = 140.0
+barb = 26.0
+
+[[top.options]]
+name = "ya-arrows"
+kind = "combo"
+label = "Ya (arrows): the middle board is 3 arrow shafts, fletching on the left, heads on the right"
+mirror = false
+[[top.options.seam]]   # seam 1 (x = 400): forked fletching, owned by the middle board
+kind = "ari"
+ys = [0.2, 0.5, 0.8]
+dirs = [-1]
+depth = 80.0
+root = 40.0
+tip = 112.0
+fork_depth = 36.0
+fork_width = 62.0
+[[top.options.seam]]   # seam 2 (x = 800): arrowheads, owned by the middle board
+kind = "yajiri"
+ys = [0.2, 0.5, 0.8]
+dirs = [1]
+neck = 34.0
+neck_len = 54.0
+head_len = 100.0
+head_w = 118.0
+barb = 24.0
+
+
 [[top.options]]
 name = "kama-3"
 kind = "kama"
