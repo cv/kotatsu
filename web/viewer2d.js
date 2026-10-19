@@ -14,7 +14,7 @@ export const polyD = (p, W) => [p.ext, ...p.holes].map((r) => ringD(r, W)).join(
 
 export function drawOption(g, opt, top) {
   const W = top.width;
-  opt.halves.forEach((h, i) => el("path", { d: polyD(h, W), class: `part half${i}` }, g));
+  opt.boards.forEach((h, i) => el("path", { d: polyD(h, W), class: `part board${i % 2}` }, g));
   opt.keys.forEach((k) => el("path", { d: polyD(k, W), class: "part key" }, g));
   return g;
 }

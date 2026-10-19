@@ -76,9 +76,11 @@ export class Viewer3D {
     const F = d.frame, t = d.top.thickness, opt = d.top.options.find((o) => o.name === this.state.option);
     this.items = [];
     const ztop = F.height + F.futon_gap;
-    opt.halves.forEach((h, i) => {
-      const m = slab(h, t, i ? COL.b : COL.a); m.position.z = ztop;
-      this.items.push({ obj: m, kind: "top", dir: new THREE.Vector3(i ? 1 : -1, 0, 0), base: m.position.clone() });
+    const nb = opt.boards.length;
+    opt.boards.forEach((h, i) => {
+      const m = slab(h, t, i % 2 ? COL.b : COL.a); m.position.z = ztop;
+      const sx = nb > 1 ? (2 * i / (nb - 1) - 1) : 0; // -1 .. +1, left -> right
+      this.items.push({ obj: m, kind: "top", dir: new THREE.Vector3(sx, 0, sx === 0 ? 0.4 : 0), base: m.position.clone() });
     });
     opt.keys.forEach((k) => {
       const m = slab(k, t, COL.key); m.position.z = ztop;

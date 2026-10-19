@@ -42,22 +42,23 @@ def top_data(p) -> dict:
     t_m = p.material.t_nominal / 1000
     kg_m2 = p.material.density_kg_m3 * t_m
     straight = top.build(p, "none")
-    base_cut = _cut_len(straight.halves) + p.top.width  # one straight seam cut
+    base_cut = _cut_len(straight.boards) + p.top.width * len(top.seam_xs(p))  # straight seam cuts
     out = []
     for o in p.top.options:
         tp = top.build(p, o.name)
-        parts = tp.halves + tp.keys
+        parts = tp.boards + tp.keys
         cut = _cut_len(parts)
-        dims = [[round(h.bounds[2] - h.bounds[0]), round(h.bounds[3] - h.bounds[1])] for h in tp.halves]
+        dims = [[round(h.bounds[2] - h.bounds[0]), round(h.bounds[3] - h.bounds[1])] for h in tp.boards]
         out.append({
             "name": o.name, "kind": o.kind, "label": getattr(o, "label", o.name),
             "selected": o.name == p.top.split,
-            "halves": [rings(h) for h in tp.halves],
+            "boards": [rings(h) for h in tp.boards],
             "keys": [rings(k) for k in tp.keys],
             "joints": [[x, y] for x, y in tp.joints],
+            "seams": tp.seams,
             "stats": {
                 "pieces": len(parts), "loose": len(tp.keys),
-                "half_dims": dims,
+                "board_dims": dims,
                 "cut_m": round(cut / 1000, 2),
                 "extra_cut_m": round((cut - base_cut) / 1000, 2),
                 "weight_kg": round(sum(x.area for x in parts) / 1e6 * kg_m2, 1),
@@ -65,7 +66,7 @@ def top_data(p) -> dict:
             },
         })
     return {"length": p.top.length, "width": p.top.width, "thickness": p.material.t_nominal,
-            "overhang": p.frame.overhang, "selected": p.top.split, "options": out}
+            "overhang": p.frame.overhang, "selected": p.top.split, "boards": p.top.boards, "options": out}
 
 
 def draft_frame(p) -> dict:

@@ -48,7 +48,7 @@ aside { width:290px; flex:none; overflow:auto; border-right:1px solid var(--line
 .markdown table { border-collapse:collapse; margin:10px 0; } .markdown td, .markdown th { border:1px solid var(--line); padding:4px 8px; }
 .markdown pre { background:#f4efe7; padding:10px; border-radius:6px; overflow:auto; } .markdown code { font-size:12px; }
 /* svg */
-.half0 { fill:var(--birchA); } .half1 { fill:var(--birchB); } .key { fill:var(--key); }
+.board0 { fill:var(--birchA); } .board1 { fill:var(--birchB); } .key { fill:var(--key); }
 .part { stroke:#3b2f25; stroke-width:1; vector-effect:non-scaling-stroke; fill-rule:evenodd; }
 .footprint { fill:none; stroke:#555; stroke-dasharray:6 4; stroke-width:1; vector-effect:non-scaling-stroke; }
 .grid line { stroke:#00000014; stroke-width:1; vector-effect:non-scaling-stroke; }

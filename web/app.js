@@ -31,7 +31,7 @@ function renderOverview(d) {
 // ---------- seam options ----------
 function statLine(o) {
   const s = o.stats;
-  return `${s.pieces} pcs${s.loose ? ` (${s.loose} loose)` : ""} · halves ${s.half_dims.map((x) => x.join("×")).join(", ")} mm · cut ${s.cut_m} m (+${s.extra_cut_m}) · ${s.weight_kg} kg`;
+  return `${s.pieces} pcs${s.loose ? ` (${s.loose} loose)` : ""} · boards ${s.board_dims.map((x) => x.join("×")).join(", ")} mm · cut ${s.cut_m} m (+${s.extra_cut_m}) · ${s.weight_kg} kg`;
 }
 
 function renderOptionList(d) {
