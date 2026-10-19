@@ -59,6 +59,8 @@ Deliverables:
   they are a release candidate (tagged).
 - Don't hand-edit DXF/SVG outputs. Change the parameters or the generator.
 - Don't guess the heater's mounting geometry. The chosen unit is in docs/heater.md; freeze `[heater]` only after measuring the real unit, and never send plywood for cutting before that.
+- Don't imitate Indigenous designs (Northwest Coast formline, crests, Salish basketry patterns). Use them
+  only if they come from, or are licensed by, an Indigenous artist (see docs/motifs.md). Nature motifs are fine.
 
 ## Tooling
 - **Python ≥ 3.11 via `uv`** (the system python is 3.9; don't use it).

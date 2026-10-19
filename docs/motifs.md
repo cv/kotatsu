@@ -1,0 +1,39 @@
+# BC-inspired motifs for the top seams
+
+## Two kinds of "BC native"
+
+**1. BC's land, plants and animals.** These are free to use. The prototypes on the site are below.
+
+**2. Indigenous art of the Pacific Northwest and the BC Interior.** This includes Northwest Coast
+formline (ovoids, U-forms, split-U, crest figures) and Interior Salish coiled cedar-root basketry
+patterns (imbrication, step and zig-zag designs). These are living cultural traditions, not public
+motifs. Many crests and designs belong to particular nations, clans or families. Copying the
+*look* (an "ovoid-ish" dovetail, a formline-style salmon) is appropriation, even for a personal
+piece of furniture. **We won't generate imitations.**
+
+The respectful route, if you want it:
+- **Commission or license a design from an Indigenous artist**, ideally one from the Nation whose
+  territory you live in (TODO-verify for your exact location).
+- Ask the artist how the design may be used: a one-off piece, credit, whether it's fine for it to
+  be CNC-cut into seams.
+- **Technically this is easy:** the generator can take a seam drawn by the artist as an SVG path
+  (a planned `kind = "path"`). We'd add only what the router needs: inside corners of at least
+  3.2 mm radius, 0.2 mm clearance, and a check that the seam locks.
+
+## Nature motifs (prototyped, in `params.toml`)
+
+| Option | Inspiration | Notes |
+|---|---|---|
+| `bc-salmon` | Salmon running up the Columbia | Forked salmon-tail dovetails. Both seams point the same way (`mirror = false`), so the "fish" all swim upstream. |
+| `bc-sword-fern` | Sword fern (*Polystichum munitum*) | The middle board is the stem. 7 angled leaflets on each side get smaller toward the "tip" of the frond. |
+
+## More nature ideas (not built yet)
+
+- **Selkirk / Monashee skyline:** a seam traced from a real elevation profile (for example the view
+  from a mountain lookout), with 2 hidden dovetails so it still locks. We can pull the profile from
+  open DEM data.
+- **Western larch / Douglas-fir cone:** three-pointed "bract" heads (the mouse-tail bracts of a fir cone).
+- **Snowflake / hoarfrost:** hexagonal heads with small side spurs. The BC interior gets a lot of snow.
+- **Glacier crevasse / river braid:** long, shallow, staggered chevrons, like yabane but asymmetric.
+- **Cedar bark:** long narrow interlocking strips. Keep these abstract; cedar bark weaving is
+  itself an Indigenous practice.
