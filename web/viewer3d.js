@@ -99,6 +99,7 @@ export class Viewer3D {
     heater.position.set(...hz.center);
     this.items.push({ obj: heater, kind: "heater", dir: new THREE.Vector3(0, 0, -0.6), base: heater.position.clone() });
     for (const it of this.items) this.root.add(it.obj);
+    if (!this.framed) { this.framed = true; this.frame(); }
     this.place();
   }
 
@@ -111,6 +112,14 @@ export class Viewer3D {
       it.obj.position.copy(it.base).addScaledVector(it.dir, e * 0.5).add(lift);
     }
     this.render();
+  }
+
+  frame() { // aim the camera at the whole assembly
+    const box = new THREE.Box3().setFromObject(this.root);
+    const c = box.getCenter(new THREE.Vector3()), r = box.getSize(new THREE.Vector3()).length() / 2;
+    const dist = r / Math.sin((this.camera.fov * Math.PI) / 360) * 0.9;
+    this.camera.position.copy(c).add(new THREE.Vector3(0.75, -1, 0.65).normalize().multiplyScalar(dist));
+    this.controls.target.copy(c); this.controls.update(); this.render();
   }
 
   resize() {

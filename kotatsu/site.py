@@ -163,8 +163,15 @@ def _mtime() -> float:
 
 def dev(port: int) -> None:
     build()
-    handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(OUT))
-    handler.log_message = lambda *a, **k: None
+    class Quiet(http.server.SimpleHTTPRequestHandler):
+        def log_message(self, *a):  # no access log spam
+            pass
+
+        def end_headers(self):
+            self.send_header("Cache-Control", "no-store")
+            super().end_headers()
+
+    handler = functools.partial(Quiet, directory=str(OUT))
     srv = http.server.ThreadingHTTPServer(("127.0.0.1", port), handler)
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     print(f"[site] http://127.0.0.1:{port}/  (watching for changes, Ctrl-C to stop)")

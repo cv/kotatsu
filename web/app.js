@@ -2,7 +2,7 @@ import { marked } from "marked";
 import { el, drawOption, drawFootprint, drawGrid, staticSvg, jointBox, PanZoom, niceLength } from "./viewer2d.js";
 
 const $ = (s) => document.querySelector(s);
-const state = { data: null, option: null, tab: "overview", doc: "PLAN.md", compare: false, pz: null, v3d: null, joint: 0 };
+const state = { data: null, option: null, tab: "overview", doc: "PLAN.md", compare: false, pz: null, v3d: null, joint: null };
 
 // ---------- tabs ----------
 function showTab(tab) {
@@ -72,8 +72,8 @@ function renderViewer(d) {
   state.pz.home = home;
   svg.replaceChildren();
   const o = currentOpt();
-  if ($("#chk-grid").checked) drawGrid(svg, T);
   drawOption(el("g", {}, svg), o, T);
+  if ($("#chk-grid").checked) drawGrid(svg, T); // on top of parts, faint
   if ($("#chk-frame").checked) drawFootprint(svg, T);
   for (const j of o.joints) { const b = jointBox(T, j, 60, 45); el("rect", { ...b, width: b.w, height: b.h, class: "jointmark", rx: 6 }, svg); }
   if ($("#chk-bit").checked) el("circle", { r: d.params.cnc.bit_d / 2, cx: -100, cy: -100, class: "bit" }, svg);
@@ -87,13 +87,14 @@ function renderViewer(d) {
 
 function zoomJoint(i) {
   const o = currentOpt(); if (!o.joints[i]) return;
-  state.joint = i; state.pz.fit(jointBox(state.data.top, o.joints[i]));
+  state.joint = i; state.pz.fit(jointBox(state.data.top, o.joints[i])); renderCompare(state.data);
 }
 
 function renderCompare(d) {
   const box = $("#compare");
   box.replaceChildren(...d.top.options.map((o) => {
-    const j = o.joints[Math.min(state.joint, o.joints.length - 1)] || [d.top.length / 2, d.top.width / 2];
+    const cur = currentOpt(), refY = (state.joint != null && cur.joints[state.joint]) ? cur.joints[state.joint][1] : d.top.width / 2;
+    const j = o.joints.reduce((best, q) => (Math.abs(q[1] - refY) < Math.abs(best[1] - refY) ? q : best), o.joints[0] || [d.top.length / 2, refY]);
     const b = jointBox(d.top, j, 150, 100);
     const cell = document.createElement("div"); cell.className = "cell";
     cell.innerHTML = `<div class="name">${o.name}</div>`;
