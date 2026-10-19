@@ -7,6 +7,7 @@ kinds:
   ari      dovetail tails (ari-tsugi)            - no loose parts
   kama     gooseneck: neck + flared head          - no loose parts
   hishi    neck + diamond (or kikko hexagon) head  - no loose parts
+  bract    Douglas-fir cone bract: forked 3-lobed tip - no loose parts
   puzzle   jigsaw: neck + round head              - no loose parts
   lobes    seigaiha wave of necked round lobes    - no loose parts
   chigiri  straight seam + through bow-tie keys   - loose keys
@@ -43,6 +44,9 @@ def option(p, name: str | None = None):
 
 
 def _ys(width: float, o) -> list[float]:
+    tails = getattr(o, "tails", None)
+    if tails:  # fully per-tail spec: each entry has y (fraction) + any overrides
+        return [width * t.y for t in tails]
     fr = getattr(o, "ys", None)  # optional explicit positions, as fractions of the width
     if fr:
         return [width * f for f in fr]
@@ -91,6 +95,17 @@ def _hishi(x, y, o, s):
     return unary_union([neck, head])
 
 
+def _bract(x, y, o, s):
+    """Douglas-fir cone bract: a dovetail whose tip splits into two short side lobes and a long,
+    narrow middle lobe (the 'mouse tail' poking out between the cone scales)."""
+    d, t, r_ = o.depth, o.tip, o.root
+    a, b, c, m, L = o.side_len, o.side_inset, o.notch, o.mid_w, o.mid_len
+    e = 40.0
+    pts = [(-e, -r_ / 2), (0, -r_ / 2), (d, -t / 2), (d + a, -t / 2 + b), (d + c, -m / 2), (d + L, 0),
+           (d + c, m / 2), (d + a, t / 2 - b), (d, t / 2), (0, r_ / 2), (-e, r_ / 2)]
+    return Polygon([(x + s * u, y + v) for u, v in pts])
+
+
 def _puzzle(x, y, o, s):
     cx = x + s * o.head_r * 0.9
     return unary_union([Point(cx, y).buffer(o.head_r, quad_segs=24), _xbox(x - 2 * s, cx, y, o.neck)])
@@ -106,10 +121,11 @@ def _bowtie(x, y, o):
                     (x + L / 2, y + W / 2), (x, y + w / 2), (x - L / 2, y + W / 2)])
 
 
-TAILS = {"ari": _dovetail, "kama": _kama, "hishi": _hishi, "puzzle": _puzzle, "lobes": _lobe}
+TAILS = {"ari": _dovetail, "bract": _bract, "kama": _kama, "hishi": _hishi, "puzzle": _puzzle, "lobes": _lobe}
 KINDS = (*TAILS, "chigiri")
 _SIZED = ("depth", "root", "tip", "counter_depth", "counter_root", "counter_tip", "fork_depth", "fork_width", "neck", "neck_len",
-          "head_len", "head_w", "head_root", "head_tip", "flat", "head_r", "r")
+          "head_len", "head_w", "head_root", "head_tip", "flat", "head_r", "r",
+          "side_len", "side_inset", "notch", "mid_w", "mid_len")
 
 
 def _per_tail(o, i: int):
@@ -119,6 +135,13 @@ def _per_tail(o, i: int):
     v = SimpleNamespace(**{n: getattr(o, n) * (k if n in _SIZED else 1) for n in vars(o)})
     sk = getattr(o, "skew", None)
     v.skew_deg = sk[i % len(sk)] if sk else 0.0
+    tails = getattr(o, "tails", None)
+    if tails:  # per-tail overrides (already in mm; 'scale' still applies on top)
+        for n, val in vars(tails[i]).items():
+            if n == "skew":
+                v.skew_deg = val
+            elif n not in ("y", "dir"):
+                setattr(v, n, val * (k if n in _SIZED else 1))
     return v
 
 
@@ -136,7 +159,11 @@ def _left_region(xs: float, ys, o, flip: bool, Wy: float, pad: float = 60.0) -> 
     dirs = getattr(o, "dirs", None)
     reg = box(-pad, -pad, xs, Wy + pad)
     for i, y in enumerate(ys):
-        s = dirs[i % len(dirs)] if dirs else (-1 if (alternate and i % 2) else 1)
+        tails = getattr(o, "tails", None)
+        if tails and hasattr(tails[i], "dir"):
+            s = tails[i].dir
+        else:
+            s = dirs[i % len(dirs)] if dirs else (-1 if (alternate and i % 2) else 1)
         v = _per_tail(o, i)
         if flip:
             s, v.skew_deg = -s, -v.skew_deg

@@ -31,7 +31,9 @@ def test_no_overlap_and_full_coverage(built):
         for b in parts[i + 1:]:
             assert a.intersection(b).area < 1e-6
     gap = built.outline.area - sum(x.area for x in parts)
-    assert 0 <= gap < P.top.width * 1.0  # only clearance slivers
+    # only clearance slivers: ~2c wide along every seam (seam length from the part perimeters)
+    seam_len = (sum(x.exterior.length + sum(h.length for h in x.interiors) for x in parts) - built.outline.exterior.length) / 2
+    assert 0 <= gap < 2 * P.fit.inplane_c * seam_len * 1.5 + 50
 
 
 def test_boards_fit_standard_parcel(built):

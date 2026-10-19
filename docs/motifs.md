@@ -26,14 +26,15 @@ The respectful route, if you want it:
 |---|---|---|
 | `bc-salmon` | Salmon running up the Columbia | Forked salmon-tail dovetails. Both seams point the same way (`mirror = false`), so the "fish" all swim upstream. |
 | `bc-sword-fern` | Sword fern (*Polystichum munitum*) | The middle board is the stem. 7 angled leaflets on each side get smaller toward the "tip" of the frond. |
+| `bc-fir-cone`, `bc-fir-cone-4` | Douglas-fir cone bracts | Dovetail heads ending in 3 lobes (2 short side lobes and a long "mouse tail"). Either 3 alternating, or 4 pointing into the middle board, small-big-big-small. |
+| `bc-crevasse` | Glacier crevasses (Illecillewaet, Selkirks) | Ten leaning wedge "cracks" in an en-echelon pattern. 2 of them are real dovetails that do the locking. The spike tips are thin, so sand them gently and handle with care. |
 
 ## More nature ideas (not built yet)
 
 - **Selkirk / Monashee skyline:** a seam traced from a real elevation profile (for example the view
   from a mountain lookout), with 2 hidden dovetails so it still locks. We can pull the profile from
   open DEM data.
-- **Western larch / Douglas-fir cone:** three-pointed "bract" heads (the mouse-tail bracts of a fir cone).
 - **Snowflake / hoarfrost:** hexagonal heads with small side spurs. The BC interior gets a lot of snow.
-- **Glacier crevasse / river braid:** long, shallow, staggered chevrons, like yabane but asymmetric.
+- **River braid:** long, shallow, staggered chevrons, like yabane but asymmetric.
 - **Cedar bark:** long narrow interlocking strips. Keep these abstract; cedar bark weaving is
   itself an Indigenous practice.
