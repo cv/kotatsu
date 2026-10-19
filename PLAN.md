@@ -32,24 +32,34 @@ data from the uMake app or from the heater once it's in hand.
    │ ━━━━╋━━━━━━━━━ long side panel ━━━━━━━━━━╋━━━ │
    └──────────────────────┴───────────────────────┘
 ```
-**Side panels (×4).** Each side is one piece that forms the apron and both legs, with a large leg
-opening with filleted corners.
-- The corners are **cross-laps**: long panels slotted from the top, short panels from the bottom,
-  each to half the height. The panels cross ~45 mm from their ends, so every leg is a stiff "+"
-  section with four feet.
+**Side panels (×4)** (`kotatsu/frame.py`). Each side is one slab that forms the apron and both legs.
+- Long sides are 1120 × 375 mm; short sides are 720 × 375 mm.
+- Leg opening: legs 170 mm wide, apron 90 mm deep, 50 mm fillets.
+  - Clear height under the aprons is **285 mm**, for thighs.
+  - The short-side opening is 380 mm wide (one sitter). The long-side opening is 780 mm wide (two sitters).
+- Corners are **cross-laps** 65 mm from the panel ends (the visible "ears"). Long panels are slotted from the top, short panels from the bottom.
+  - Slots are 19.2 mm wide, to take the thickest stock (18.9 mm).
+  - Each slot is H/2 + 0.5 deep, so the slot bottoms never touch and the floor sets the height.
+  - Each leg is a stiff "+" section with four feet. The ear fingers are ≥ 55 mm wide.
+- **Lift the table by the long sides.** The long panels' lower halves carry the short panels up with them. Lifting by a short side pulls it off.
 
-**Deck (×1).** About 500 × 650 plus tenons. It is a horizontal plate between the long aprons, with
-its top 25 mm below the apron top edge.
-- **2 tusk tenons per long side**, locked with **wedges** (×4, plus 2 spares). The deck is a shear
-  diaphragm, so the frame can't rack.
-- The tenon *width* ↔ mortise *length* fit is an in-plane, CNC-precise dimension (±0.4 mm). It does
-  not depend on the ±1 mm sheet-thickness variation.
-- **Heater bay:** a square opening of heater size + 2 mm. Two on-edge **heater cheeks** (~90 mm tall)
-  pass through slots in the deck on either side of the bay. The PaletteLife screws through its side
-  flanges into the cheek faces, the traditional yagura mount (`heater.mount = "side"`).
-  - With `mount = "bracket"` (Zuomeng), the bay becomes a solid pad and its L-brackets screw into
-    the deck underside.
-  - Heater top ≈ deck top. Heater bottom ≈ 300 mm above the floor.
+**Deck (×1)**: 500 × 571 mm between the long aprons. It's a horizontal shear plate with its top at z = 335 (40 mm below the apron tops), resting in the mortises.
+- **2 tusk tenons per long side** (120 wide, 300 apart), through dogboned mortises.
+  - The in-plane fit is tight: +0.2 per side.
+  - The mortise height takes the thickest stock (+0.5).
+  - The tenons stick out 50 mm and are locked by **vertical wedges** (4 + 2 spare, 1:8).
+- Each wedge hole starts 2 mm *inside* the apron face, so the wedge always bears on the apron and pulls the deck shoulders tight.
+- The wedges are 66 mm long. At every stock thickness from 17.0 to 18.9 mm, they tighten with the head below the apron top (no futon bump) and the foot above the apron bottom edge (no knee bump).
+- The deck makes the frame rack-proof. With the long panels locked parallel, the short panels can't rotate in plan.
+
+**Heater cheeks (×2)**: 372 × 64 mm on-edge plates hung under the deck. Their inner faces are exactly heater width + 1 mm apart (293 mm for the PaletteLife).
+- Each cheek has 2 tabs that rise through dogboned deck slots.
+- The tabs are locked by **flat wedges** (4 + 1 spare) that lie on the deck top and are driven sideways. This pulls the cheek up tight under the deck.
+- The heater screws through its side flanges into the cheek faces, the traditional yagura mount.
+- The heater top sits 5 mm under the deck (TODO-verify against the manual), at z 261–312. That leaves **≥ 250 mm** of knee room under it.
+- The deck is solid over the heater: it's the heat shield between the heater and the futon.
+
+**Everything above the deck stays below the futon plane** (z ≤ 370). Tests check this, along with every joint fit, at t = 17.0 / 18.0 / 18.9 mm (`tests/test_frame.py`).
 
 **Top.** 1200 × 800 × 18, split at x = 400 and 800 into **3 boards** (`top.boards`). The cut sizes are 470 / 540 / 470 ×
 800 mm, about 4 kg each. Every board spans both long aprons, so each board carries its own load and the seams only
@@ -75,29 +85,30 @@ look soft and intentional.
 | Square-edged slots / mortises | 1/4" bit | dogbones |
 | Top seam / keys | CNC in-plane | rounded male + `inplane_c` = 0.2 per side |
 
-### Assembly (no tools beyond a mallet and a screwdriver for the heater)
-1. Stand both long panels up and slide the deck tenons through their mortises.
-2. Drop in the 4 wedges loosely.
-3. Lower the short panels from above onto the cross-lap slots.
-4. Tap the wedges home.
-5. Fit the heater cheeks.
-6. Flip the frame, drop the heater into the bay, and drive its 4 screws into the cheeks.
-7. Flip it back, add the futon, and lay the middle board on it. Then drop each outer board straight down into its dovetails.
+### Assembly (mallet + the heater's screwdriver)
+1. Hang the cheeks: push their tabs up through the deck slots, then tap the 4 flat cheek wedges through the tab holes.
+2. Screw the heater between the cheeks (its own screws).
+3. Stand both long panels up and slide the deck tenons through their mortises. Spread the panels a little to get the second side on.
+4. Drop the 4 deck wedges into the tenon holes and press them in by hand.
+5. Lower the 2 short panels from above onto the cross-lap slots.
+6. Tap the deck wedges home.
+7. Lay the futon over the frame. Lay the middle top board on it, then drop each outer board into its seam.
 
 ## 3. Parts list (draft)
 | Part | Qty | Approx size (mm) | Notes |
 |---|---|---|---|
 | Top board | 3 | 470 / 540 / 470 × 800 | ari-3 dovetail seams |
-| Long side | 2 | 1120 × 375 | top-open cross-lap slots, 2 mortises each |
-| Short side | 2 | 720 × 375 | bottom-open cross-lap slots |
-| Deck | 1 | ~500 × ~760 incl. tenons | heater bay + cheek slots |
-| Heater cheek | 2 | ~400 × 90 | screw faces at heater width + 1 mm |
-| Wedge | 6 | ~120 × 25 | 4 + 2 spares, nested in the offcuts |
+| Long side | 2 | 1120 × 375 | top-open cross-laps, 2 deck mortises |
+| Short side | 2 | 720 × 375 | bottom-open cross-laps |
+| Deck | 1 | 500 × 708 incl. tenons | 4 tusk tenons with wedge holes, 4 cheek-tab slots |
+| Heater cheek | 2 | 372 × 112 incl. tabs | 2 tabs with wedge holes |
+| Deck wedge | 6 | 27 × 66 | 4 + 2 spares, 1:8 |
+| Cheek wedge | 5 | 96 × 26 | 4 + 1 spare, 1:8 |
 
 **Nesting.** No part is over 1219 mm, so 48 × 96" sheets work again. The generator will produce
 layouts for 48×96, 60×60 and 60×120 so we can compare quotes.
 
-**Weight and shipping.** Total ≈ 25 kg / 55 lb. The longest part is 1120 mm (44"), so **every box
+**Weight and shipping.** Frame ≈ 13.5 kg + top ≈ 12 kg = 25.5 kg / 56 lb (two boxes). The longest part is 1120 mm (44"), so **every box
 can be a standard parcel**: ≤ 48" and ≤ 50 lb each, with L+girth well under 108". Shipping is free
 on orders ≥ $250. Nothing goes oversize or freight.
 
@@ -121,7 +132,8 @@ The budget is tight at the top end. If the uMake quote comes in high:
 1. ✅ **Tooling skeleton** (uv, ezdxf, shapely, matplotlib, pytest, Makefile).
 1b. ✅ **Project site** (`make dev`): seam gallery, zoomable 2-D viewer with mm readout and router-bit cursor, compare grid, 3-D preview (draft frame), docs, test status.
 2. ◐ **Geometry.** Done: router-aware mating helpers and **7 top-seam variants** (ari-3, ari-5, ari-2-bold, kama-3, puzzle-3, seigaiha-8, chigiri-3) in `[[top.options]]`, with tests for cuttability, overlap and pull-apart locking.
-   To do: side panels, deck, cheeks, wedges, dogbones.
+   Done: frame (side panels with cross-laps, deck with wedged tusk tenons, hung heater cheeks, wedges, dogbones), with joint-fit tests across the stock-thickness range.
+   To do: DXF export per part, sheet nesting, BOM; freeze `[heater]` after measuring.
 3. **Checks (pytest):** mating dimensions agree (slot depths sum to H, tenon ↔ mortise, crossings
    line up, cheek spacing = heater + clearance); min feature ≥ t; parts fit the sheets; box and
    weight limits.
