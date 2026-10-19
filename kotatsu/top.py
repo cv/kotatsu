@@ -1,5 +1,7 @@
-"""Table top (tenban): 1200 x 800, split into two halves so every box stays <= 48".
+"""Table top (tenban): 1200 x 800, split into `top.boards` boards across the length.
 
+Splitting keeps every box <= 48" and gives the top a board-and-seam look. Seams sit at equal
+spacing; with `top.mirror` each seam's pattern is mirrored, so inner boards are symmetric.
 Seam variants live in params.toml [[top.options]]; params.top.split picks one.
 kinds:
   ari      dovetail tails (ari-tsugi)            - no loose parts
@@ -22,10 +24,11 @@ from .geom import female_cut, largest, male, rounded_rect
 class TopParts:
     name: str
     kind: str
-    halves: list[Polygon]
+    boards: list[Polygon]  # left -> right
     keys: list[Polygon] = field(default_factory=list)
     outline: Polygon | None = None
     joints: list[tuple[float, float]] = field(default_factory=list)  # joint centres (zoom targets)
+    seams: list[float] = field(default_factory=list)  # seam x positions
 
 
 def option(p, name: str | None = None):
@@ -79,37 +82,57 @@ TAILS = {"ari": _dovetail, "kama": _kama, "puzzle": _puzzle, "lobes": _lobe}
 KINDS = (*TAILS, "chigiri")
 
 
+def seam_xs(p) -> list[float]:
+    n = int(getattr(p.top, "boards", 2))
+    return [p.top.length * k / n for k in range(1, n)]
+
+
+def _left_region(xs: float, ys, o, flip: bool, Wy: float, pad: float = 60.0) -> Polygon:
+    """Everything left of seam xs, with tails added (pointing +x) or cut (pointing -x)."""
+    alternate = getattr(o, "alternate", True)
+    reg = box(-pad, -pad, xs, Wy + pad)
+    for i, y in enumerate(ys):
+        s = -1 if (alternate and i % 2) else 1
+        if flip:
+            s = -s
+        tail = TAILS[o.kind](xs, y, o, s)
+        reg = reg.union(tail) if s > 0 else reg.difference(tail)
+    return reg
+
+
 def build(p, name: str | None = None) -> TopParts:
     T, r, c = p.top, p.cnc.bit_d / 2, p.fit.inplane_c
     Lx, Wy = T.length, T.width
     outline = rounded_rect(0, 0, Lx, Wy, T.corner_r)
-    xs = Lx / 2
     name = name or T.split
-
     if name == "none":
         return TopParts("none", "none", [outline], outline=outline)
 
     o = option(p, name)
+    xs_list = seam_xs(p)
     ys = _ys(Wy, o.count)
-    joints = [(xs, y) for y in ys]
+    joints = [(xs, y) for xs in xs_list for y in ys]
+    pad = 60.0
 
     if o.kind == "chigiri":
-        keys = [male(_bowtie(xs, y, o), r, c) for y in ys]
+        keys = [male(_bowtie(xs, y, o), r, c) for xs, y in joints]
         holes = unary_union([female_cut(k, c) for k in keys])
-        a = largest(outline.intersection(box(-1, -1, xs, Wy + 1)).difference(holes))
-        b = largest(outline.intersection(box(xs, -1, Lx + 1, Wy + 1)).difference(holes))
-        return TopParts(o.name, o.kind, [a, b], keys=keys, outline=outline, joints=joints)
+        edges = [-pad, *xs_list, Lx + pad]
+        boards = [largest(outline.intersection(box(x0, -pad, x1, Wy + pad)).difference(holes))
+                  for x0, x1 in zip(edges, edges[1:])]
+        return TopParts(o.name, o.kind, boards, keys=keys, outline=outline, joints=joints, seams=xs_list)
 
     if o.kind not in TAILS:
         raise ValueError(f"unknown seam kind {o.kind!r}")
-    alternate = getattr(o, "alternate", True)
-    pad = 60.0
-    a0 = box(-pad, -pad, xs, Wy + pad)
-    for i, y in enumerate(ys):
-        s = -1 if (alternate and i % 2) else 1
-        tail = TAILS[o.kind](xs, y, o, s)
-        a0 = a0.union(tail) if s > 0 else a0.difference(tail)
-    a_m = male(a0, r, c)
-    a = largest(a_m.intersection(outline))
-    b = largest(outline.difference(female_cut(a_m, c)))
-    return TopParts(o.name, o.kind, [a, b], outline=outline, joints=joints)
+    mirror = getattr(T, "mirror", True)
+    # male-rounded "left of seam k" regions; board k = left(k) - female(left(k-1))
+    lefts = [male(_left_region(xs, ys, o, mirror and k % 2 == 1, Wy, pad), r, c)
+             for k, xs in enumerate(xs_list)]
+    boards, prev = [], None
+    for reg in [*lefts, None]:
+        b = outline if reg is None else outline.intersection(reg)
+        if prev is not None:
+            b = b.difference(female_cut(prev, c))
+        boards.append(largest(b))
+        prev = reg
+    return TopParts(o.name, o.kind, boards, outline=outline, joints=joints, seams=xs_list)
