@@ -24,19 +24,70 @@ inplane_c = 0.2           # per-side clearance for in-plane mating shapes (seams
 length = 1200.0
 width = 800.0
 corner_r = 20.0
-split = "ari"         # ari | puzzle | chigiri | none   (owner: bow-ties or something more fun)
-seam_count = 3
+split = "ari-3"       # name of one entry in [[top.options]] (or "none" = single slab)
 
-[top.ari]             # dovetail seam (ari-tsugi), tails alternate direction
+# Seam variants for the split top. Each is rendered on the project site for comparison.
+# kind: ari (dovetail) | kama (gooseneck) | puzzle (jigsaw) | lobes (wave of circles) | chigiri (bow-tie keys)
+[[top.options]]
+name = "ari-3"
+kind = "ari"
+label = "Ari-tsugi, 3 alternating dovetails"
+count = 3
 depth = 70.0
 root = 55.0
 tip = 95.0
 
-[top.puzzle]          # jigsaw tabs, alternate direction
+[[top.options]]
+name = "ari-5"
+kind = "ari"
+label = "Ari-tsugi, 5 small alternating dovetails"
+count = 5
+depth = 50.0
+root = 38.0
+tip = 66.0
+
+[[top.options]]
+name = "ari-2-bold"
+kind = "ari"
+label = "2 bold dovetails, same direction"
+count = 2
+alternate = false
+depth = 110.0
+root = 90.0
+tip = 170.0
+
+[[top.options]]
+name = "kama-3"
+kind = "kama"
+label = "Kama-tsugi (gooseneck), 3 alternating"
+count = 3
+neck = 30.0
+neck_len = 35.0
+head_len = 45.0
+head_root = 60.0
+head_tip = 75.0
+
+[[top.options]]
+name = "puzzle-3"
+kind = "puzzle"
+label = "Jigsaw tabs, 3 alternating"
+count = 3
 head_r = 34.0
 neck = 36.0
 
-[top.chigiri]         # through bow-tie keys across a straight seam
+[[top.options]]
+name = "seigaiha-8"
+kind = "lobes"
+label = "Seigaiha wave: 8 interlocking round lobes"
+count = 8
+r = 40.0
+offset = 0.6          # lobe centre past the seam, x r  (0.6 -> mouth = 1.6 r < 2 r, so it locks)
+
+[[top.options]]
+name = "chigiri-3"
+kind = "chigiri"
+label = "Chigiri: 3 through bow-tie keys, straight seam"
+count = 3
 length = 120.0
 width = 64.0
 waist = 30.0

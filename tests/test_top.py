@@ -1,58 +1,62 @@
-import copy
-
 import pytest
+from shapely.affinity import translate
 
 from kotatsu import geom, params, top
 
-STYLES = ["ari", "puzzle", "chigiri", "none"]
+P = params.load()
+NAMES = [o.name for o in P.top.options]
 INCH = 25.4
 
 
-@pytest.fixture(scope="module")
-def base():
-    return params.load()
+@pytest.fixture(scope="module", params=NAMES + ["none"])
+def built(request):
+    return top.build(P, request.param)
 
 
-def build(base, style):
-    p = copy.deepcopy(base)
-    p.top.split = style
-    return p, top.build(p)
+def test_split_refers_to_an_option():
+    assert P.top.split in NAMES + ["none"]
+    assert len(set(NAMES)) == len(NAMES)
 
 
-@pytest.mark.parametrize("style", STYLES)
-def test_parts_valid_and_cuttable(base, style):
-    p, tp = build(base, style)
-    r = p.cnc.bit_d / 2
-    for part in tp.halves + tp.keys:
+def test_parts_valid_and_cuttable(built):
+    r = P.cnc.bit_d / 2
+    for part in built.halves + built.keys:
         assert part.is_valid and part.geom_type == "Polygon"
-        assert geom.router_cuttable(part, r), "inside corner tighter than bit radius"
+        assert geom.router_cuttable(part, r), f"{built.name}: inside corner tighter than bit radius"
 
 
-@pytest.mark.parametrize("style", STYLES)
-def test_no_overlap_and_full_coverage(base, style):
-    p, tp = build(base, style)
-    parts = tp.halves + tp.keys
+def test_no_overlap_and_full_coverage(built):
+    parts = built.halves + built.keys
     for i, a in enumerate(parts):
         for b in parts[i + 1:]:
             assert a.intersection(b).area < 1e-6
-    covered = sum(x.area for x in parts)
-    gap_area = tp.outline.area - covered
-    # only clearance slivers missing: < 1 mm average over the seam length
-    assert 0 <= gap_area < p.top.width * 1.0
+    gap = built.outline.area - sum(x.area for x in parts)
+    assert 0 <= gap < P.top.width * 1.0  # only clearance slivers
 
 
-@pytest.mark.parametrize("style", ["ari", "puzzle", "chigiri"])
-def test_halves_fit_standard_parcel(base, style):
-    p, tp = build(base, style)
-    for h in tp.halves:
+def test_halves_fit_standard_parcel(built):
+    if built.name == "none":
+        pytest.skip("single slab is an oversize parcel by design")
+    for h in built.halves:
         x0, y0, x1, y1 = h.bounds
-        assert max(x1 - x0, y1 - y0) + 50 <= p.shipping.std_max_side_in * INCH
+        assert max(x1 - x0, y1 - y0) + 50 <= P.shipping.std_max_side_in * INCH
 
 
-@pytest.mark.parametrize("style", ["ari", "puzzle"])
-def test_seam_interlocks(base, style):
-    """Each half must reach across the seam line somewhere (otherwise it would pull apart)."""
-    p, tp = build(base, style)
-    xs = p.top.length / 2
-    a, b = tp.halves
-    assert a.bounds[2] > xs + 10 and b.bounds[0] < xs - 10
+def test_seam_resists_pulling_apart(built):
+    """Sliding half B away from A along x must collide (the seam locks in-plane)."""
+    if built.kind in ("none", "chigiri"):
+        pytest.skip("no interlocking seam")
+    a, b = built.halves
+    for dx in (1.0, 5.0, 20.0):
+        assert translate(b, dx).intersection(a).area > 1.0, f"{built.name} pulls apart at {dx} mm"
+
+
+def test_chigiri_keys_lock_halves():
+    for o in P.top.options:
+        if o.kind != "chigiri":
+            continue
+        t = top.build(P, o.name)
+        a, b = t.halves
+        for k in t.keys:
+            assert k.intersection(a).area < 1e-6 and k.intersection(b).area < 1e-6
+            assert k.bounds[0] < P.top.length / 2 < k.bounds[2]  # straddles the seam
