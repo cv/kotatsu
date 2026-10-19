@@ -117,7 +117,8 @@ The budget is tight at the top end. If the uMake quote comes in high:
 ## 5. Phases
 0. ✅ Repo, AGENTS.md, vendor research.
 1. ✅ **Tooling skeleton** (uv, ezdxf, shapely, matplotlib, pytest, Makefile).
-2. ◐ **Geometry.** Done: router-aware mating helpers and the top split variants (tests pass).
+1b. ✅ **Project site** (`make dev`): seam gallery, zoomable 2-D viewer with mm readout and router-bit cursor, compare grid, 3-D preview (draft frame), docs, test status.
+2. ◐ **Geometry.** Done: router-aware mating helpers and **7 top-seam variants** (ari-3, ari-5, ari-2-bold, kama-3, puzzle-3, seigaiha-8, chigiri-3) in `[[top.options]]`, with tests for cuttability, overlap and pull-apart locking.
    To do: side panels, deck, cheeks, wedges, dogbones.
 3. **Checks (pytest):** mating dimensions agree (slot depths sum to H, tenon ↔ mortise, crossings
    line up, cheek spacing = heater + clearance); min feature ≥ t; parts fit the sheets; box and
@@ -125,13 +126,12 @@ The budget is tight at the top end. If the uMake quote comes in high:
 4. **Previews:** PNG per part, sheet layouts, and a 3-D assembly render.
 5. **Export:** DXF R2010 in mm, layers `CUT`/`POCKET`; one file per part plus nested sheets;
    `out/BOM.md`.
-6. **Buy the heater now** (lead time ~1 week). Measure it and freeze `[heater]`.
+6. ◐ **Heater ordered by owner** (arriving in a few days). Measure it and freeze `[heater]`.
 7. **Quote:** upload to app.umake.ca and read the actual stock thickness and price. Make sure there
    is no "manual quote" flag.
 8. **Optional fit coupons** (a cross-lap pair, a tenon + wedge, a seam sample), then tune the clearances.
 9. **Order, assemble, finish:** sand off the holding tabs, ease the edges, apply oil.
 
 ## 6. Open questions
-1. **Top seam style:** ari (default), puzzle or chigiri? Or something else: a wave, more or bigger
-   tails?
-2. OK to buy the PaletteLife heater now? Its listing shows "only 2 left".
+1. **Top seam style:** pick one on the site (Top seams tab). Variants are cheap to add in `params.toml`.
+2. Heater measurements when it arrives: body W×D×H, side screw-hole positions, screw size/length, cord exit.
