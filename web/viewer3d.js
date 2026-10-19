@@ -1,4 +1,4 @@
-// 3-D assembly preview (three.js). Frame is a draft until phase 2.
+// 3-D assembly preview (three.js): top boards + every frame part at its real placement.
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import GUI from "lil-gui";
@@ -60,7 +60,7 @@ export class Viewer3D {
       this.optCtl = this.gui.add(this.state, "option", names).name("top seam").onChange((v) => { this.build(); onOption && onOption(v); });
       this.gui.add(this.state, "explode", 0, 400, 1).onChange(() => this.place());
       this.gui.add(this.state, "showTop").name("top").onChange(() => this.place());
-      this.gui.add(this.state, "showFrame").name("frame (draft)").onChange(() => this.place());
+      this.gui.add(this.state, "showFrame").name("frame").onChange(() => this.place());
       this.gui.add(this.state, "showHeater").name("heater").onChange(() => this.place());
     } else {
       this.optCtl.options(names).setValue(this.state.option);
@@ -86,16 +86,17 @@ export class Viewer3D {
       const m = slab(k, t, COL.key); m.position.z = ztop;
       this.items.push({ obj: m, kind: "key", dir: new THREE.Vector3(0, 0, 1.6), base: m.position.clone() });
     });
-    const cx = d.top.length / 2, cy = d.top.width / 2;
-    for (const p of F.panels) {
-      const m = slab(p.shape, t, COL.panel);
-      m.applyMatrix4(BASIS[p.axis]); m.position.set(...p.origin);
-      const c = new THREE.Vector3(p.origin[0] - cx, p.origin[1] - cy, 0);
-      const dir = p.axis === "x" ? new THREE.Vector3(0, Math.sign(c.y), 0) : new THREE.Vector3(Math.sign(c.x), 0, 0);
-      this.items.push({ obj: m, kind: "frame", dir, base: m.position.clone() });
+    const byName = Object.fromEntries(F.parts.map((p) => [p.name, p]));
+    const colour = { frame: COL.panel, deck: COL.deck, cheek: COL.deck, wedge: COL.key };
+    for (const pl of F.placed) {
+      const part = byName[pl.part];
+      let shape = part.shape;
+      if (pl.mirror) shape = { ext: shape.ext.map(([u, v]) => [-u, v]).reverse(), holes: shape.holes.map((h) => h.map(([u, v]) => [-u, v]).reverse()) };
+      const m = slab(shape, t, colour[pl.kind] ?? COL.panel);
+      if (pl.axis !== "z") m.applyMatrix4(BASIS[pl.axis]);
+      m.position.set(...pl.origin);
+      this.items.push({ obj: m, kind: pl.kind === "wedge" ? "wedge" : "frame", dir: new THREE.Vector3(...pl.explode), base: m.position.clone() });
     }
-    const deck = slab(F.deck.shape, t, COL.deck); deck.position.set(...F.deck.origin);
-    this.items.push({ obj: deck, kind: "frame", dir: new THREE.Vector3(0, 0, 0.3), base: deck.position.clone() });
     const hz = F.heater;
     const heater = new THREE.Mesh(new THREE.BoxGeometry(...hz.size), new THREE.MeshStandardMaterial({ color: COL.heater, roughness: 0.5 }));
     heater.position.set(...hz.center);
@@ -108,7 +109,7 @@ export class Viewer3D {
   place() {
     const e = this.state.explode, S = this.state;
     for (const it of this.items || []) {
-      const vis = { top: S.showTop, key: S.showTop, frame: S.showFrame, heater: S.showHeater }[it.kind];
+      const vis = { top: S.showTop, key: S.showTop, frame: S.showFrame, wedge: S.showFrame, heater: S.showHeater }[it.kind];
       it.obj.visible = vis;
       const lift = it.kind === "top" ? new THREE.Vector3(0, 0, e * 0.8) : new THREE.Vector3();
       it.obj.position.copy(it.base).addScaledVector(it.dir, e * 0.5).add(lift);

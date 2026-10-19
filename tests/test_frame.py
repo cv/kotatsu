@@ -122,7 +122,9 @@ def test_deck_wedge_engages_below_futon_plane(t):
         v_at = (need - foot) / taper
         head_z = L.z_deck_top - v_at + W.length
         assert head_z <= L.H - 3, f"wedge head at {head_z:.0f} pokes above the apron top"
-        assert L.z_deck_top - v_at >= 60, "wedge foot too close to the floor"
+        foot_z = L.z_deck_top - v_at
+        assert foot_z >= P.frame.height - P.frame.apron_depth + 3, \
+            f"wedge foot at {foot_z:.0f} hangs below the apron into knee space"
 
 
 # ------------------------------------------------------------------ cheeks

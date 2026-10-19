@@ -409,7 +409,8 @@ hole_len = 26.0       # wedge hole length along the tenon
 hole_inset = 2.0      # hole inner edge sits this far inside the (thinnest) apron's outer face
 
 [deck_wedge]          # drives down through the tenon hole, bears on the apron's outer face
-length = 110.0
+length = 66.0         # short enough that the tusk never hangs below the apron into knee space,
+                      # yet tall enough to take up the full stock-thickness range (~12 mm of travel at 1:8)
 head = 27.0           # width at the head; taper fit.wedge_taper
 
 [cheek]               # 2 on-edge plates under the deck; the heater screws into their inner faces

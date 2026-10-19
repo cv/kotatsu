@@ -21,7 +21,7 @@ import tomllib
 
 from shapely.geometry import Polygon, box
 
-from . import geom, params, top
+from . import frame, geom, params, top
 from .params import ROOT
 
 WEB = ROOT / "web"
@@ -70,33 +70,39 @@ def top_data(p) -> dict:
             "overhang": p.frame.overhang, "selected": p.top.split, "boards": p.top.boards, "options": out}
 
 
-def draft_frame(p) -> dict:
-    """Rough frame for 3-D context only (no joinery yet - phase 2)."""
-    F, t = p.frame, p.material.t_nominal
-    L = p.top.length - 2 * F.overhang
-    W = p.top.width - 2 * F.overhang
-    H = F.height
-
-    def side(length):
-        outer = box(0, 0, length, H)
-        hole = geom.rounded_rect(F.leg_width, -50, length - F.leg_width, H - F.apron_depth, F.opening_r)
-        return rings(outer.difference(hole).buffer(0))
-
-    x0, y0 = F.overhang, F.overhang
-    panels = []
-    for y in (y0 + F.ear, y0 + W - F.ear):
-        panels.append({"name": "long side", "axis": "x", "shape": side(L), "origin": [x0, y - t / 2, 0]})
-    for x in (x0 + F.ear, x0 + L - F.ear):
-        panels.append({"name": "short side", "axis": "y", "shape": side(W), "origin": [x - t / 2, y0, 0]})
-    D = p.deck
-    dz = H - D.drop - t
-    deck = {"name": "deck", "shape": rings(box(0, 0, D.length_x, W - 2 * F.ear)),
-            "origin": [p.top.length / 2 - D.length_x / 2, y0 + F.ear, dz]}
-    hz = p.heater
-    heater = {"size": [hz.body_x, hz.body_y, hz.body_h],
-              "center": [p.top.length / 2, p.top.width / 2, H - D.drop - hz.body_h / 2]}
-    return {"thickness": t, "height": H, "futon_gap": 12.0, "panels": panels, "deck": deck,
-            "heater": heater, "draft": True}
+def frame_data(p) -> dict:
+    """Frame parts (flat shapes) + their 3-D placements, for the Frame and 3-D tabs."""
+    L = frame.layout(p)
+    t, kg_m3 = p.material.t_nominal, p.material.density_kg_m3
+    plist, placed = [], []
+    for pt in frame.parts(p):
+        g = pt.shape
+        x0, y0, x1, y1 = g.bounds
+        plist.append({"name": pt.name, "kind": pt.kind, "qty": pt.qty, "spares": pt.spares,
+                      "shape": rings(g), "bounds": [x0, y0, x1, y1],
+                      "size": [round(x1 - x0, 1), round(y1 - y0, 1)],
+                      "kg": round(g.area / 1e6 * t / 1000 * kg_m3, 2),
+                      "cut_m": round((g.exterior.length + sum(h.length for h in g.interiors)) / 1000, 2)})
+        for pl in pt.placements:
+            ox, oy, oz = pl.origin
+            if pl.axis == "x":
+                c = (ox + (x0 + x1) / 2, oy + t / 2, oz + (y0 + y1) / 2)
+            elif pl.axis == "y":
+                c = (ox + t / 2, oy + (x0 + x1) / 2 * (-1 if pl.mirror_u else 1), oz + (y0 + y1) / 2)
+            else:
+                c = ((x0 + x1) / 2, (y0 + y1) / 2, oz)
+            dx, dy = c[0] - L.cx, c[1] - L.cy
+            ex = {"frame": [0.5 * (dx > 0) - 0.5 * (dx < 0) if pl.axis == "y" else 0,
+                            0.5 * (dy > 0) - 0.5 * (dy < 0) if pl.axis == "x" else 0, 0],
+                  "deck": [0, 0, 0.15], "cheek": [0, 0, -0.35],
+                  "wedge": [0, 0, 0.9]}[pt.kind]
+            placed.append({"part": pt.name, "kind": pt.kind, "axis": pl.axis, "origin": [ox, oy, oz],
+                           "mirror": pl.mirror_u, "explode": ex})
+    size, centre = frame.heater_box(p)
+    total_kg = sum(x["kg"] * x["qty"] for x in plist)
+    return {"thickness": t, "height": L.H, "futon_gap": 12.0, "parts": plist, "placed": placed,
+            "heater": {"size": list(size), "center": list(centre)}, "total_kg": round(total_kg, 1),
+            "draft": False}
 
 
 def git_rev() -> str:
@@ -126,7 +132,7 @@ def build(with_tests: bool = True) -> None:
         "project": {
             "title": "Kotatsu — glue-free CNC birch",
             "facts": [
-                ["Top", f"{p.top.length:.0f} × {p.top.width:.0f} × {p.material.t_nominal:.0f} mm, split in 2"],
+                ["Top", f"{p.top.length:.0f} × {p.top.width:.0f} × {p.material.t_nominal:.0f} mm, {p.top.boards} boards"],
                 ["Height", f"{p.frame.height + p.material.t_nominal:.0f} mm + futon ≈ 40–41 cm"],
                 ["Material", p.material.name],
                 ["Heater", f"{p.heater.model} ({p.heater.mount} mount)"],
@@ -137,7 +143,7 @@ def build(with_tests: bool = True) -> None:
         },
         "params": raw,
         "top": top_data(p),
-        "frame": draft_frame(p),
+        "frame": frame_data(p),
         "tests": run_tests() if with_tests else None,
         "docs": {d: (ROOT / d).read_text() for d in DOCS if (ROOT / d).exists()},
     }
