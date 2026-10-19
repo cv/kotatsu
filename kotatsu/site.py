@@ -8,6 +8,7 @@ The page (web/) is hand-written HTML/JS; this module only exports data.json.
 from __future__ import annotations
 
 import argparse
+import sys
 import datetime as dt
 import functools
 import http.server
@@ -182,13 +183,10 @@ def dev(port: int) -> None:
         m = _mtime()
         if m != last:
             last = m
-            try:
-                import importlib
-                for mod in (geom, top, params):
-                    importlib.reload(mod)
-                build()
-            except Exception as e:  # keep serving on errors
-                print(f"[site] build failed: {e}")
+            # fresh interpreter per build, so edits to any module (incl. this one) take effect
+            res = subprocess.run([sys.executable, "-m", "kotatsu.site"], cwd=ROOT)
+            if res.returncode:
+                print(f"[site] build failed (exit {res.returncode}); still serving the last good build")
 
 
 if __name__ == "__main__":
