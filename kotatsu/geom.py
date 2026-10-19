@@ -24,8 +24,14 @@ def opening(g: BaseGeometry, r: float) -> BaseGeometry:
 
 
 def router_cuttable(g: BaseGeometry, r: float, tol: float = 0.5) -> bool:
-    """True if every concave corner already has radius >= r (closing changes ~nothing)."""
-    return closing(g, r).symmetric_difference(g).area < tol
+    """True if every concave corner already has radius >= r (closing adds no real material).
+
+    Checked per corner: a square inside corner with a 1/4" bit leaves (1 - pi/4) r^2 ~ 2.2 mm^2,
+    while arc-segmentation noise is < 0.15 mm^2 per corner, so the per-piece test scales to any
+    number of corners.
+    """
+    d = closing(g, r).symmetric_difference(g)
+    return all(piece.area < tol for piece in getattr(d, "geoms", [d]))
 
 
 def male(shape: BaseGeometry, r: float, c: float) -> BaseGeometry:
