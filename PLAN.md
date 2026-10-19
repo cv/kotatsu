@@ -98,7 +98,7 @@ need 60"-wide stock. Everything fits on **one 60 × 120" sheet** (~2.7 m of 3.0 
 
 ## 4. Phases
 0. ✅ Repo, AGENTS.md, vendor research.
-1. **Tooling skeleton:** uv project (Python 3.12, ezdxf, shapely, matplotlib, pytest), `params.toml`,
+1. ✅ **Tooling skeleton:** uv project (Python 3.12, ezdxf, shapely, matplotlib, pytest), `params.toml`,
    Makefile, a smoke test that exports one rectangle DXF.
 2. **Geometry:** a primitives module (rect, fillet, dogbone, slot, mortise, tenon, wedge) and
    one function per part, all driven by params.
