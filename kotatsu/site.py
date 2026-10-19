@@ -21,7 +21,7 @@ import tomllib
 
 from shapely.geometry import Polygon, box
 
-from . import frame, geom, params, top
+from . import build as cutbuild, cutlist, frame, geom, nest, params, top
 from .params import ROOT
 
 WEB = ROOT / "web"
@@ -105,6 +105,21 @@ def frame_data(p) -> dict:
             "draft": False}
 
 
+def sheets_data(p) -> dict:
+    parts = cutlist.cut_list(p)
+    group = {c.name: c.group for c in parts}
+    out = {}
+    for name, n in cutbuild.cached_nests(p, parts).items():
+        out[name] = {
+            "w": n.sheet_w, "h": n.sheet_h, "margin": n.margin, "gap": round(n.gap, 2),
+            "count": len(n.sheets), "util": round(n.utilisation, 3),
+            "material_m2": round(len(n.sheets) * n.sheet_w * n.sheet_h / 1e6, 2),
+            "sheets": [{"parts": [{"name": pl.name, "group": group[pl.name], "angle": pl.angle,
+                                   "shape": rings(pl.shape)} for pl in sh.placed]} for sh in n.sheets],
+        }
+    return out
+
+
 def git_rev() -> str:
     try:
         r = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True, text=True)
@@ -144,6 +159,7 @@ def build(with_tests: bool = True) -> None:
         "params": raw,
         "top": top_data(p),
         "frame": frame_data(p),
+        "sheets": sheets_data(p),
         "tests": run_tests() if with_tests else None,
         "docs": {d: (ROOT / d).read_text() for d in DOCS if (ROOT / d).exists()},
     }

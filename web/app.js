@@ -2,7 +2,7 @@ import { marked } from "marked";
 import { el, drawOption, drawFootprint, drawGrid, staticSvg, jointBox, PanZoom, niceLength, polyD } from "./viewer2d.js";
 
 const $ = (s) => document.querySelector(s);
-const state = { data: null, option: null, tab: "overview", doc: "PLAN.md", compare: false, pz: null, v3d: null, joint: null, part: null, ppz: null };
+const state = { data: null, option: null, tab: "overview", doc: "PLAN.md", compare: false, pz: null, v3d: null, joint: null, part: null, ppz: null, sheet: null, spz: null };
 
 // ---------- tabs ----------
 function showTab(tab) {
@@ -10,6 +10,7 @@ function showTab(tab) {
   document.querySelectorAll(".tab").forEach((s) => s.classList.toggle("active", s.id === "tab-" + tab));
   document.querySelectorAll("nav a").forEach((a) => a.classList.toggle("active", a.dataset.tab === tab));
   if (tab === "3d") ensure3d();
+  if (tab === "sheets" && state.spz && !state.spzFitted) { state.spzFitted = true; requestAnimationFrame(() => state.spz.fit(state.spz.home)); }
   if (tab === "frame" && state.ppz && !state.ppzFitted) { state.ppzFitted = true; requestAnimationFrame(() => state.ppz.fit(state.ppz.home)); }
   if (tab === "seams" && state.pz && !state.pzFitted) { state.pzFitted = true; requestAnimationFrame(() => state.pz.fit(state.pz.home)); }
 }
@@ -184,6 +185,59 @@ function renderPartViewer(d, refit = false) {
   if (refit) requestAnimationFrame(() => state.ppz.fit(home));
 }
 
+// ---------- cut sheets ----------
+function renderSheets(d, refit = false) {
+  const S = d.sheets, names = Object.keys(S);
+  if (!names.includes(state.sheet)) {
+    // default: least material, then fewest sheets
+    state.sheet = names.slice().sort((a, b) => S[a].material_m2 - S[b].material_m2 || S[a].count - S[b].count)[0];
+  }
+  $("#sheet-btns").replaceChildren(...names.map((n) => {
+    const b = document.createElement("button"); b.textContent = `${n.replace("in", '"').replace("x", "×")} ×${S[n].count}`;
+    b.className = n === state.sheet ? "on" : ""; b.onclick = () => { state.sheet = n; renderSheets(d, true); };
+    return b;
+  }));
+  const N = S[state.sheet];
+  $("#sheet-summary").textContent = `${N.count} sheet${N.count > 1 ? "s" : ""} · ${N.material_m2} m² of plywood · parts use ${Math.round(N.util * 100)}% · gap ${N.gap} mm`;
+  const host = $("#sviewer");
+  let svg = host.querySelector("svg");
+  const step = N.h + 160, totalH = N.count * step;
+  const home = { x: -60, y: -120, w: N.w + 120, h: totalH + 60 };
+  if (!svg) {
+    svg = el("svg", { preserveAspectRatio: "xMidYMid meet" }, host);
+    const bar = document.createElement("div"); bar.className = "scalebar"; host.appendChild(bar);
+    state.spz = new PanZoom(svg, home, (pz) => {
+      const k = pz.scale(), L = niceLength(120 / k);
+      bar.innerHTML = `<div style="width:${L * k}px"></div>${L} mm`;
+    });
+    svg.addEventListener("pointermove", (e) => {
+      const q = state.spz.toSvg(e.clientX, e.clientY), cur = state.data.sheets[state.sheet];
+      const i = Math.floor((q.y + 80) / (cur.h + 160));
+      $("#sreadout").textContent = `sheet ${i + 1}: x ${q.x.toFixed(0)}  y ${(cur.h - (q.y - i * (cur.h + 160))).toFixed(0)} mm`;
+    });
+    refit = true;
+  }
+  state.spz.home = home;
+  svg.replaceChildren();
+  N.sheets.forEach((sh, i) => {
+    const g = el("g", { transform: `translate(0 ${i * step})` }, svg);
+    el("rect", { x: 0, y: 0, width: N.w, height: N.h, class: "sheet" }, g);
+    el("rect", { x: N.margin, y: N.margin, width: N.w - 2 * N.margin, height: N.h - 2 * N.margin, class: "sheet-margin" }, g);
+    const lab = el("text", { x: 0, y: -24, class: "sheet-label" }, g); lab.textContent = `sheet ${i + 1} of ${N.count}`;
+    for (const p of sh.parts) {
+      const path = el("path", { d: polyD(p.shape, N.h), class: `part grp-${p.group}` }, g);
+      const t = el("title", {}, path); t.textContent = `${p.name} (rotated ${p.angle}°)`;
+      const xs = p.shape.ext.map((q) => q[0]), ys = p.shape.ext.map((q) => q[1]);
+      const w = Math.max(...xs) - Math.min(...xs), h = Math.max(...ys) - Math.min(...ys);
+      if (w > 200 && h > 100) {
+        const tx = el("text", { x: Math.min(...xs) + 14, y: N.h - Math.max(...ys) + 30, class: "part-label" }, g);
+        tx.textContent = p.name;
+      }
+    }
+  });
+  if (refit) requestAnimationFrame(() => state.spz.fit(home));
+}
+
 // ---------- 3-D (lazy: only load three.js when the tab is opened) ----------
 async function ensure3d() {
   if (state.v3d || !state.data) return;
@@ -212,7 +266,7 @@ function renderAll(d) {
   if (!names.includes(state.option)) state.option = d.top.selected;
   $("#meta").innerHTML = `<span class="dot"></span>built ${d.generated} · ${d.git}`;
   renderOverview(d); renderOptionList(d); renderViewer(d); renderDocs(d);
-  renderPartList(d); renderPartViewer(d);
+  renderPartList(d); renderPartViewer(d); renderSheets(d);
   state.v3d?.setData(d, (name) => selectOption(name));
 }
 
@@ -236,6 +290,7 @@ $("#btn-compare-whole").onclick = () => toggleCompare("whole");
 for (const id of ["#chk-frame", "#chk-grid", "#chk-bit"]) $(id).onchange = () => renderViewer(state.data);
 for (const id of ["#chk-pgrid", "#chk-pbit"]) $(id).onchange = () => renderPartViewer(state.data);
 $("#btn-pfit").onclick = () => state.ppz.fit(state.ppz.home);
+$("#btn-sfit").onclick = () => state.spz.fit(state.spz.home);
 addEventListener("keydown", (e) => {
   if (state.tab === "frame" && (e.key === "f" || e.key === "F")) state.ppz.fit(state.ppz.home);
   if (state.tab !== "seams" || e.target.tagName === "INPUT") return;

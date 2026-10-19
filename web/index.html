@@ -23,6 +23,7 @@
     <a href="#overview" data-tab="overview">Overview</a>
     <a href="#seams" data-tab="seams">Top seams</a>
     <a href="#frame" data-tab="frame">Frame parts</a>
+    <a href="#sheets" data-tab="sheets">Cut sheets</a>
     <a href="#3d" data-tab="3d">3-D</a>
     <a href="#docs" data-tab="docs">Docs</a>
   </nav>
@@ -71,6 +72,20 @@
       </div>
       <div id="pviewer" class="viewer"></div>
       <div class="hint">part shown in its own plane (u →, v ↑, mm) · wheel = zoom · drag = pan · F = fit</div>
+    </div>
+  </section>
+
+  <section id="tab-sheets" class="tab">
+    <div class="viewer-wrap">
+      <div class="toolbar">
+        <span id="sheet-btns"></span>
+        <button id="btn-sfit">Fit</button>
+        <span id="sheet-summary" class="mono"></span>
+        <span class="spacer"></span>
+        <span id="sreadout" class="mono"></span>
+      </div>
+      <div id="sviewer" class="viewer"></div>
+      <div class="hint">grain runs left → right on every sheet · colours: top boards / frame / wedges · dashed = 20 mm margin · hover a part for its name</div>
     </div>
   </section>
 
