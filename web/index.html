@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kotatsu — project</title>
+<link rel="stylesheet" href="style.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
+    "lil-gui": "https://cdn.jsdelivr.net/npm/lil-gui@0.20.0/dist/lil-gui.esm.min.js",
+    "marked": "https://cdn.jsdelivr.net/npm/marked@12.0.2/lib/marked.esm.js"
+  }
+}
+</script>
+</head>
+<body>
+<header>
+  <div class="brand">炬燵 <span>Kotatsu</span></div>
+  <nav>
+    <a href="#overview" data-tab="overview">Overview</a>
+    <a href="#seams" data-tab="seams">Top seams</a>
+    <a href="#3d" data-tab="3d">3-D</a>
+    <a href="#docs" data-tab="docs">Docs</a>
+  </nav>
+  <div id="meta" class="meta"></div>
+</header>
+
+<main>
+  <section id="tab-overview" class="tab">
+    <div class="cards">
+      <div class="card"><h3>Project</h3><dl id="facts"></dl></div>
+      <div class="card"><h3>Checks</h3><div id="tests"></div></div>
+      <div class="card wide"><h3>Selected top seam <small id="sel-name"></small></h3>
+        <div id="sel-thumb" class="thumb big"></div></div>
+    </div>
+  </section>
+
+  <section id="tab-seams" class="tab">
+    <aside id="option-list"></aside>
+    <div class="viewer-wrap">
+      <div class="toolbar">
+        <button id="btn-fit" title="Fit (double-click / F)">Fit</button>
+        <span id="joint-btns"></span>
+        <label><input type="checkbox" id="chk-frame" checked> frame footprint</label>
+        <label><input type="checkbox" id="chk-grid" checked> 100 mm grid</label>
+        <label><input type="checkbox" id="chk-bit"> router bit cursor</label>
+        <button id="btn-compare">Compare detail</button>
+        <span class="spacer"></span>
+        <span id="readout" class="mono"></span>
+      </div>
+      <div id="viewer2d" class="viewer"></div>
+      <div id="compare" class="compare hidden"></div>
+      <div class="hint">wheel = zoom · drag = pan · ←/→ = previous/next option (keeps the view) · 1–9 = zoom to joint · F = fit</div>
+    </div>
+  </section>
+
+  <section id="tab-3d" class="tab">
+    <div id="viewer3d" class="viewer"></div>
+    <div class="hint">drag = orbit · right-drag = pan · wheel = zoom · frame is a <b>draft</b> (no joinery yet)</div>
+  </section>
+
+  <section id="tab-docs" class="tab">
+    <aside id="doc-list"></aside>
+    <article id="doc" class="markdown"></article>
+  </section>
+</main>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
