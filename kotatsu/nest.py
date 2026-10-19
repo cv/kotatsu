@@ -1,0 +1,186 @@
+"""Sheet nesting: raster first-fit ("bottom-left") on an occupancy grid, verified exactly afterwards.
+
+Each part (and each sheet's used area) is rasterised after growing it by half the part gap plus a
+cell, so two parts whose grown masks don't overlap are at least `gap` apart. A 2-D FFT
+cross-correlation finds every free position for a part at once; we take the one that keeps the
+layout shortest along the sheet (then lowest). Big parts go first; small ones fall into the leg
+openings and other gaps. The result is checked with exact shapely distances in tests.
+"""
+from __future__ import annotations
+
+import math
+from dataclasses import dataclass, field
+
+import numpy as np
+import shapely
+from shapely.affinity import rotate, translate
+from shapely.geometry import Polygon
+
+from .cutlist import CutPart
+
+
+@dataclass
+class Placed:
+    name: str
+    copy: int
+    angle: int
+    shape: Polygon          # in sheet coordinates (mm)
+
+
+@dataclass
+class Sheet:
+    w: float                # along x (grain / long side)
+    h: float
+    placed: list[Placed] = field(default_factory=list)
+    occ: np.ndarray | None = field(default=None, repr=False)
+
+    @property
+    def area_used(self) -> float:
+        return sum(pl.shape.area for pl in self.placed)
+
+
+@dataclass
+class Nest:
+    sheet_w: float
+    sheet_h: float
+    margin: float
+    gap: float
+    sheets: list[Sheet]
+    unplaced: list[str]
+
+    @property
+    def utilisation(self) -> float:
+        return sum(s.area_used for s in self.sheets) / (len(self.sheets) * self.sheet_w * self.sheet_h or 1)
+
+
+def effective_gap(p) -> float:
+    """uMake asks for >= part_gap between parts; the bit must also fit between them."""
+    return max(p.cnc.part_gap, p.cnc.bit_d + 1.0)
+
+
+def _mask(g: Polygon, res: float, grow: float) -> np.ndarray:
+    gg = g.buffer(grow, quad_segs=8)
+    x0, y0, x1, y1 = gg.bounds
+    nx, ny = int(math.ceil((x1 - x0) / res)), int(math.ceil((y1 - y0) / res))
+    xs = x0 + (np.arange(nx) + 0.5) * res
+    ys = y0 + (np.arange(ny) + 0.5) * res
+    X, Y = np.meshgrid(xs, ys)
+    return shapely.contains_xy(gg, X, Y)
+
+
+def _fft_free(occ: np.ndarray, m: np.ndarray) -> np.ndarray:
+    """free[i, j] == True where mask m placed with its corner at cell (i, j) hits no occupied cell."""
+    H, W = occ.shape
+    mh, mw = m.shape
+    if mh > H or mw > W:
+        return np.zeros((0, 0), bool)
+    sh = (H + mh, W + mw)
+    F = np.fft.rfft2(occ.astype(np.float32), sh)
+    M = np.fft.rfft2(m[::-1, ::-1].astype(np.float32), sh)
+    corr = np.fft.irfft2(F * M, sh)[mh - 1:H, mw - 1:W]
+    return corr < 0.5
+
+
+STRATEGIES = [("x", "area"), ("y", "area"), ("x", "long"), ("y", "long"), ("xy", "area"), ("xy", "long")]
+
+
+def nest(p, parts: list[CutPart], sheet: tuple[float, float], res: float = 4.0,
+         strategy: tuple[str, str] = ("x", "area")) -> Nest:
+    W, H = max(sheet), min(sheet)            # x along the sheet's long side = grain direction
+    margin, gap = p.cnc.sheet_margin, effective_gap(p)
+    grow = gap / 2 + 0.75 * res
+    nx, ny = int(W // res), int(H // res)
+
+    def new_sheet() -> Sheet:
+        s = Sheet(W, H)
+        occ = np.ones((ny, nx), bool)
+        # usable cells: the part's grown mask may reach gap/2 beyond the margin line
+        lo = int(math.ceil((margin - gap / 2) / res))
+        occ[lo:ny - lo, lo:nx - lo] = False
+        s.occ = occ
+        return s
+
+    jobs = [(cp, k) for cp in parts for k in range(cp.qty)]
+    if strategy[1] == "area":
+        jobs.sort(key=lambda j: -(j[0].shape.bounds[2] * j[0].shape.bounds[3]))
+    else:  # longest side first
+        jobs.sort(key=lambda j: (-max(j[0].shape.bounds[2:]), -min(j[0].shape.bounds[2:])))
+    sheets: list[Sheet] = []
+    unplaced: list[str] = []
+    cache: dict[tuple[str, int], tuple[np.ndarray, Polygon, float, float]] = {}
+
+    for cp, k in jobs:
+        options = []
+        for ang in cp.rotations:
+            key = (cp.name, ang)
+            if key not in cache:
+                g = rotate(cp.shape, ang, origin=(0, 0))
+                x0, y0, _, _ = g.bounds
+                g = translate(g, -x0, -y0)
+                m = _mask(g, res, grow)
+                cache[key] = (m, g, -grow, -grow)       # mask cell (0,0) corner sits at (-grow, -grow)
+            options.append((ang, *cache[key]))
+        done = False
+        for s in [*sheets, None]:
+            if s is None:
+                s = new_sheet()
+                fresh = True
+            else:
+                fresh = False
+            best = None
+            for ang, m, g, ox, oy in options:
+                free = _fft_free(s.occ, m)
+                if free.size == 0 or not free.any():
+                    continue
+                ii, jj = np.nonzero(free)
+                if strategy[0] == "x":                         # shortest along x, then lowest
+                    score = (jj + m.shape[1]) * 10_000 + ii
+                elif strategy[0] == "y":                       # lowest, then leftmost
+                    score = (ii + m.shape[0]) * 10_000 + jj
+                else:                                          # smallest bounding corner
+                    score = np.maximum((jj + m.shape[1]) * (H / W), ii + m.shape[0]) * 10_000 + jj + ii
+                t = int(np.argmin(score))
+                cand = (score[t], ang, ii[t], jj[t], m, g, ox, oy)
+                if best is None or cand[0] < best[0]:
+                    best = cand
+            if best is None:
+                if fresh:
+                    unplaced.append(cp.name)       # doesn't fit even on an empty sheet
+                    done = True
+                    break
+                continue
+            _, ang, i, j, m, g, ox, oy = best
+            X, Y = j * res - ox, i * res - oy        # translate so the grown mask corner hits cell (i, j)
+            s.occ[i:i + m.shape[0], j:j + m.shape[1]] |= m
+            s.placed.append(Placed(cp.name, k, ang, translate(g, X, Y)))
+            if fresh:
+                sheets.append(s)
+            done = True
+            break
+        if not done:
+            unplaced.append(cp.name)
+    n = Nest(W, H, margin, gap, sheets, unplaced)
+    n.strategy = strategy
+    return n
+
+
+def _last_sheet_fill(n: Nest) -> float:
+    if not n.sheets:
+        return 0.0
+    s = n.sheets[-1]
+    return max(pl.shape.bounds[2] for pl in s.placed) if s.placed else 0.0
+
+
+def best_nest(p, parts: list[CutPart], sheet: tuple[float, float]) -> Nest:
+    """Try every strategy; keep the fewest sheets, then the least-used last sheet."""
+    results = [nest(p, parts, sheet, strategy=st) for st in STRATEGIES]
+    return min(results, key=lambda n: (len(n.unplaced), len(n.sheets), -n.utilisation, _last_sheet_fill(n)))
+
+
+def sheet_name(s) -> str:
+    w, h = max(s), min(s)
+    return f"{round(h / 25.4)}x{round(w / 25.4)}in"
+
+
+def nest_all(p, parts: list[CutPart]) -> dict[str, Nest]:
+    return {sheet_name(s): best_nest(p, parts, (max(s), min(s))) for s in p.cnc.sheets}
