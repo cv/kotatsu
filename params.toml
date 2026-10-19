@@ -155,6 +155,34 @@ head_w = 130.0
 flat = 60.0
 
 
+# --- BC nature motifs (nature, not borrowed Indigenous designs; see docs/motifs.md) -------
+[[top.options]]
+name = "bc-salmon"
+kind = "ari"
+label = "Salmon run: forked salmon-tail dovetails, all swimming one way"
+count = 3
+dirs = [1, 1, 1]
+mirror = false        # both seams point the same way: upstream
+depth = 105.0
+root = 46.0
+tip = 150.0
+fork_depth = 38.0
+fork_width = 72.0
+
+[[top.options]]
+name = "bc-sword-fern"
+kind = "ari"
+label = "Sword fern: middle board is the stem, angled leaflets shrinking toward the tip"
+count = 7
+ys = [0.09, 0.22, 0.35, 0.48, 0.61, 0.74, 0.87]
+dirs = [-1]           # leaflets belong to the middle board (mirrored onto both sides)
+scale = [1.0, 0.96, 0.91, 0.85, 0.78, 0.7, 0.62]
+skew = [-20.0]        # leaflets lean toward the frond tip (+y)
+depth = 52.0
+root = 26.0
+tip = 74.0
+
+
 [[top.options]]
 name = "kama-3"
 kind = "kama"

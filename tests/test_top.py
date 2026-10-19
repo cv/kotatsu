@@ -64,6 +64,8 @@ def test_mirrored_middle_board_is_symmetric():
         pytest.skip("only for 3 mirrored boards")
     from shapely.affinity import scale
     for o in P.top.options:
+        if not getattr(o, "mirror", P.top.mirror):
+            continue  # option opts out of mirroring (e.g. salmon all swimming one way)
         t = top.build(P, o.name)
         mid = t.boards[1]
         flipped = scale(mid, -1, 1, origin=(P.top.length / 2, 0))

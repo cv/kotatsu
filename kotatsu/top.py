@@ -64,6 +64,10 @@ def _dovetail(x, y, o, s):
         counter = Polygon([(xt + s * e2, y - o.counter_root / 2), (xt - s * cd, y - o.counter_tip / 2),
                            (xt - s * cd, y + o.counter_tip / 2), (xt + s * e2, y + o.counter_root / 2)])
         tail = tail.difference(counter)
+    fd = getattr(o, "fork_depth", 0.0)
+    if fd:  # forked tip (salmon tail): a V notch cut back from the tip
+        xt, fw = x + s * o.depth, o.fork_width
+        tail = tail.difference(Polygon([(xt + s * 2, y - fw / 2), (xt - s * fd, y), (xt + s * 2, y + fw / 2)]))
     return tail
 
 
@@ -104,7 +108,7 @@ def _bowtie(x, y, o):
 
 TAILS = {"ari": _dovetail, "kama": _kama, "hishi": _hishi, "puzzle": _puzzle, "lobes": _lobe}
 KINDS = (*TAILS, "chigiri")
-_SIZED = ("depth", "root", "tip", "counter_depth", "counter_root", "counter_tip", "neck", "neck_len",
+_SIZED = ("depth", "root", "tip", "counter_depth", "counter_root", "counter_tip", "fork_depth", "fork_width", "neck", "neck_len",
           "head_len", "head_w", "head_root", "head_tip", "flat", "head_r", "r")
 
 
@@ -167,7 +171,7 @@ def build(p, name: str | None = None) -> TopParts:
 
     if o.kind not in TAILS:
         raise ValueError(f"unknown seam kind {o.kind!r}")
-    mirror = getattr(T, "mirror", True)
+    mirror = getattr(o, "mirror", getattr(T, "mirror", True))  # per-option override
     # male-rounded "left of seam k" regions; board k = left(k) - female(left(k-1))
     lefts = [male(_left_region(xs, ys, o, mirror and k % 2 == 1, Wy, pad), r, c)
              for k, xs in enumerate(xs_list)]
