@@ -95,20 +95,24 @@ function renderCompare(d) {
   box.replaceChildren(...d.top.options.map((o) => {
     const cur = currentOpt(), refY = (state.joint != null && cur.joints[state.joint]) ? cur.joints[state.joint][1] : d.top.width / 2;
     const j = o.joints.reduce((best, q) => (Math.abs(q[1] - refY) < Math.abs(best[1] - refY) ? q : best), o.joints[0] || [d.top.length / 2, refY]);
-    const b = jointBox(d.top, j, 150, 100);
+    const b = state.compare === "whole" ? { x: -20, y: -20, w: d.top.length + 40, h: d.top.width + 40 } : jointBox(d.top, j, 150, 100);
     const cell = document.createElement("div"); cell.className = "cell";
     cell.innerHTML = `<div class="name">${o.name}</div>`;
+    cell.title = o.label || o.name;
     cell.appendChild(staticSvg(o, d.top, `${b.x} ${b.y} ${b.w} ${b.h}`));
-    cell.onclick = () => { selectOption(o.name); toggleCompare(false); };
+    cell.onclick = () => { selectOption(o.name); state.compare = false; toggleCompare(false); };
     return cell;
   }));
 }
 
-function toggleCompare(on = !state.compare) {
-  state.compare = on;
-  $("#compare").classList.toggle("hidden", !on);
-  $("#viewer2d").classList.toggle("hidden", on);
-  $("#btn-compare").classList.toggle("on", on);
+function toggleCompare(mode = "detail") {
+  // mode: "detail" | "whole" | false; clicking the active mode again closes the grid
+  state.compare = mode && state.compare === mode ? false : mode;
+  $("#compare").classList.toggle("hidden", !state.compare);
+  $("#viewer2d").classList.toggle("hidden", !!state.compare);
+  $("#btn-compare").classList.toggle("on", state.compare === "detail");
+  $("#btn-compare-whole").classList.toggle("on", state.compare === "whole");
+  if (state.compare) renderCompare(state.data);
 }
 
 function selectOption(name) {
@@ -164,7 +168,8 @@ async function poll() {
 
 // ---------- wiring ----------
 $("#btn-fit").onclick = () => state.pz.fit(state.pz.home);
-$("#btn-compare").onclick = () => toggleCompare();
+$("#btn-compare").onclick = () => toggleCompare("detail");
+$("#btn-compare-whole").onclick = () => toggleCompare("whole");
 for (const id of ["#chk-frame", "#chk-grid", "#chk-bit"]) $(id).onchange = () => renderViewer(state.data);
 addEventListener("keydown", (e) => {
   if (state.tab !== "seams" || e.target.tagName === "INPUT") return;
