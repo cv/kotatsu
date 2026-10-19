@@ -18,14 +18,31 @@ slot_clearance = 0.3      # added to t_max for cross-lap slots
 tight = 0.2               # in-plane tenon/mortise clearance
 mortise_height_extra = 0.5
 wedge_taper = 0.125       # 1:8
+inplane_c = 0.2           # per-side clearance for in-plane mating shapes (seams, keys)
 
 [top]
 length = 1200.0
 width = 800.0
 corner_r = 20.0
+split = "ari"         # ari | puzzle | chigiri | none   (owner: bow-ties or something more fun)
+seam_count = 3
+
+[top.ari]             # dovetail seam (ari-tsugi), tails alternate direction
+depth = 70.0
+root = 55.0
+tip = 95.0
+
+[top.puzzle]          # jigsaw tabs, alternate direction
+head_r = 34.0
+neck = 36.0
+
+[top.chigiri]         # through bow-tie keys across a straight seam
+length = 120.0
+width = 64.0
+waist = 30.0
 
 [frame]
-height = 370.0
+height = 375.0        # + 18 top + ~10-20 futon = 400-410 total (owner: 39-41 cm)
 overhang = 40.0       # top overhang beyond frame on every side
 ear = 45.0            # panel end -> crossing centreline
 apron_depth = 110.0
@@ -39,11 +56,14 @@ tenons_per_side = 2
 tenon_width = 120.0
 tenon_protrusion = 50.0   # past outer apron face
 
-[heater]               # TODO-verify once a heater is chosen
-plate_x = 300.0
-plate_y = 300.0
-hang = 100.0
-holes = []             # [[x, y], ...] relative to deck centre
+[heater]               # PaletteLife 120V 400W (docs/heater.md). TODO-verify with calipers
+model = "PaletteLife B0CKBS16YY"
+mount = "side"         # side (screws into on-edge cheeks) | bracket (L-brackets under deck)
+body_x = 292.0
+body_y = 292.0
+body_h = 51.0
+cheek_clearance = 1.0  # cheek inner faces = body width + this
+holes = []             # TODO measure: side screw positions
 
 [shipping]
 std_max_side_in = 48
