@@ -133,7 +133,8 @@ The budget is tight at the top end. If the uMake quote comes in high:
 1b. ✅ **Project site** (`make dev`): seam gallery, zoomable 2-D viewer with mm readout and router-bit cursor, compare grid, 3-D preview (draft frame), docs, test status.
 2. ◐ **Geometry.** Done: router-aware mating helpers and **7 top-seam variants** (ari-3, ari-5, ari-2-bold, kama-3, puzzle-3, seigaiha-8, chigiri-3) in `[[top.options]]`, with tests for cuttability, overlap and pull-apart locking.
    Done: frame (side panels with cross-laps, deck with wedged tusk tenons, hung heater cheeks, wedges, dogbones), with joint-fit tests across the stock-thickness range.
-   To do: DXF export per part, sheet nesting, BOM; freeze `[heater]` after measuring.
+   Done: cut list, sheet nesting (60×120" ×1, 60×60" ×2, 48×96" ×2), per-part and per-sheet DXF, `out/BOM.md` (`make dxf`).
+   To do: freeze `[heater]` after measuring; check how uMake prices (per sheet or per part area + cut time); fit coupons in the spare sheet area.
 3. **Checks (pytest):** mating dimensions agree (slot depths sum to H, tenon ↔ mortise, crossings
    line up, cheek spacing = heater + clearance); min feature ≥ t; parts fit the sheets; box and
    weight limits.
