@@ -283,6 +283,74 @@ head_w = 118.0
 barb = 24.0
 
 
+# --- ya-arrows, more Japanese: karimata (wild-goose fork) heads + kamon-style fletching --
+[[top.options]]
+name = "ya-karimata"
+kind = "combo"
+label = "Ya: 3 arrows with karimata (wild-goose fork) heads and kamon-style fletching"
+mirror = false
+[[top.options.seam]]   # seam 1: fletching (yabane), owned by the middle board
+kind = "ari"
+ys = [0.2, 0.5, 0.8]
+dirs = [-1]
+depth = 110.0
+root = 36.0
+tip = 124.0
+fork_depth = 48.0
+fork_width = 74.0
+[[top.options.seam]]   # seam 2: karimata heads
+kind = "karimata"
+ys = [0.2, 0.5, 0.8]
+dirs = [1]
+neck = 36.0
+neck_len = 20.0
+head_len = 96.0
+head_w = 132.0
+crotch = 36.0
+prong_w = 24.0
+
+[[top.options]]
+name = "ya-chigai"
+kind = "combo"
+label = "Ya chigai: a pair of arrows (haya + otoya) flying opposite ways, off-centre"
+mirror = false
+[[top.options.seam]]
+kind = "ari"
+tails = [
+  { y = 0.31, dir = -1, kind = "ari", depth = 126.0, root = 36.0, tip = 143.0, fork_depth = 55.0, fork_width = 85.0 },
+  { y = 0.67, dir = -1, kind = "karimata", neck = 36.0, neck_len = 20.0, head_len = 110.0, head_w = 152.0, crotch = 41.0, prong_w = 24.0 },
+]
+[[top.options.seam]]
+kind = "ari"
+tails = [
+  { y = 0.31, dir = 1, kind = "karimata", neck = 36.0, neck_len = 20.0, head_len = 110.0, head_w = 152.0, crotch = 41.0, prong_w = 24.0 },
+  { y = 0.67, dir = 1, kind = "ari", depth = 126.0, root = 36.0, tip = 143.0, fork_depth = 55.0, fork_width = 85.0 },
+]
+
+[[top.options]]
+name = "ya-togari"
+kind = "combo"
+label = "Ya: 3 arrows with willow-leaf (yanagi-ba) heads and kamon-style fletching"
+mirror = false
+[[top.options.seam]]
+kind = "ari"
+ys = [0.2, 0.5, 0.8]
+dirs = [-1]
+depth = 110.0
+root = 36.0
+tip = 124.0
+fork_depth = 48.0
+fork_width = 74.0
+[[top.options.seam]]
+kind = "hishi"
+ys = [0.2, 0.5, 0.8]
+dirs = [1]
+neck = 32.0
+neck_len = 18.0
+head_len = 140.0
+head_w = 78.0
+
+
 [[top.options]]
 name = "kama-3"
 kind = "kama"

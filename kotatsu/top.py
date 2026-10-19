@@ -9,6 +9,7 @@ kinds:
   hishi    neck + diamond (or kikko hexagon) head  - no loose parts
   bract    Douglas-fir cone bract: forked 3-lobed tip - no loose parts
   yajiri   barbed arrowhead on a stem              - no loose parts
+  karimata forked 'wild goose' arrowhead (crescent) - no loose parts
   combo    a different spec per seam (o.seam list)
   puzzle   jigsaw: neck + round head              - no loose parts
   lobes    seigaiha wave of necked round lobes    - no loose parts
@@ -120,6 +121,26 @@ def _yajiri(x, y, o, s):
     return Polygon([(x + s * u, y + v) for u, v in g.exterior.coords])
 
 
+def _karimata(x, y, o, s):
+    """Karimata (wild-goose fork) arrowhead: a flaring head with a crescent cut between two blunt prongs.
+    The outer edges flare like a dovetail (that is the lock); the crescent is filled by the other board."""
+    n, nl, L, hw, c, pw = o.neck, o.neck_len, o.head_len, o.head_w, o.crotch, o.prong_w
+    e = 40.0
+    outer = Polygon([(-e, -n / 2), (nl, -n / 2), (nl + L, -hw / 2), (nl + L, hw / 2), (nl, n / 2), (-e, n / 2)])
+    d, h = L - c, hw / 2 - pw          # crescent circle through the crotch and the inner prong tips
+    if h <= 0 or d <= 0:
+        raise ValueError("karimata: need head_w/2 > prong_w and head_len > crotch")
+    R = (d * d + h * h) / (2 * d)
+    # clip the circle to the outline shrunk sideways by prong_w, so each prong is >= prong_w wide
+    # everywhere (a bare circle bulges out and pinches the prongs mid-way)
+    k = (hw - n) / 2 / L               # outer-edge slope
+    lim = Polygon([(nl, -n / 2 + pw), (nl + L + 50, -hw / 2 - k * 50 + pw),
+                   (nl + L + 50, hw / 2 + k * 50 - pw), (nl, n / 2 - pw)])
+    crescent = Point(nl + c + R, 0).buffer(R, quad_segs=32).intersection(lim.buffer(0))
+    head = outer.difference(crescent)
+    return Polygon([(x + s * u, y + v) for u, v in largest(head).exterior.coords])
+
+
 def _puzzle(x, y, o, s):
     cx = x + s * o.head_r * 0.9
     return unary_union([Point(cx, y).buffer(o.head_r, quad_segs=24), _xbox(x - 2 * s, cx, y, o.neck)])
@@ -135,11 +156,11 @@ def _bowtie(x, y, o):
                     (x + L / 2, y + W / 2), (x, y + w / 2), (x - L / 2, y + W / 2)])
 
 
-TAILS = {"ari": _dovetail, "bract": _bract, "yajiri": _yajiri, "kama": _kama, "hishi": _hishi, "puzzle": _puzzle, "lobes": _lobe}
+TAILS = {"ari": _dovetail, "bract": _bract, "yajiri": _yajiri, "karimata": _karimata, "kama": _kama, "hishi": _hishi, "puzzle": _puzzle, "lobes": _lobe}
 KINDS = (*TAILS, "chigiri", "combo")
 _SIZED = ("depth", "root", "tip", "counter_depth", "counter_root", "counter_tip", "fork_depth", "fork_width", "neck", "neck_len",
           "head_len", "head_w", "head_root", "head_tip", "flat", "head_r", "r",
-          "side_len", "side_inset", "notch", "mid_w", "mid_len", "barb")
+          "side_len", "side_inset", "notch", "mid_w", "mid_len", "barb", "crotch", "prong_w")
 
 
 def _per_tail(o, i: int):
@@ -181,7 +202,7 @@ def _left_region(xs: float, ys, o, flip: bool, Wy: float, pad: float = 60.0) -> 
         v = _per_tail(o, i)
         if flip:
             s, v.skew_deg = -s, -v.skew_deg
-        tail = TAILS[o.kind](xs, y, v, s)
+        tail = TAILS[getattr(v, "kind", o.kind)](xs, y, v, s)  # per-tail kind allowed (tails=[{kind=..}])
         if v.skew_deg:
             tail = rotate(tail, v.skew_deg, origin=(xs, y))
         reg = reg.union(tail) if s > 0 else reg.difference(tail)

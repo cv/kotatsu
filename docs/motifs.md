@@ -49,8 +49,15 @@ suits a kotatsu.
 |---|---|
 | `yajiri-3` | 3 barbed arrowheads, alternating direction. The barbs are the lock. |
 | `yajiri-yabane` | 2 large tilted arrowheads and a smaller one in the centre (the bold-yabane-rhythm layout, with arrowheads). |
+| `ya-karimata` | 3 arrows with *karimata* (wild-goose fork) heads: a crescent between two prongs. Fletching in the style of a *kamon* (family crest): a wide trapezoid with a deep V cut at the back. |
+| `ya-chigai` | A pair of arrows (*hitote*: *haya* + *otoya*) flying opposite ways, set off-centre (*fukinsei*, asymmetry). |
+| `ya-togari` | 3 arrows with long willow-leaf (*yanagi-ba*) heads. |
 | `ya-arrows` | The middle board becomes 3 arrows: forked fletching on the left seam and heads on the right seam (`kind = "combo"`, one spec per seam). |
 
 Geometry rule: `neck_len - barb` must be at least 15 mm (about 30 is better). Otherwise the pocket behind
 the barbs is sealed off, the other board can't fill it, and the seam doesn't lock. The generator raises
 an error when this happens.
+
+Karimata rule: each prong stays at least `prong_w` wide (24 mm) along its whole length. A bare crescent
+circle bulges out and pinches the prongs below the bit width. Their tips then break off as islands,
+which `test_boards_have_no_holes_or_islands` now catches.

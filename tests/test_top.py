@@ -25,6 +25,12 @@ def test_parts_valid_and_cuttable(built):
         assert geom.router_cuttable(part, r), f"{built.name}: inside corner tighter than bit radius"
 
 
+def test_boards_have_no_holes_or_islands(built):
+    """A hole in a board means some feature broke off (pinched below the bit width) and was dropped."""
+    for b in built.boards:
+        assert len(b.interiors) == 0, f"{built.name}: board has {len(b.interiors)} hole(s)"
+
+
 def test_no_overlap_and_full_coverage(built):
     parts = built.boards + built.keys
     for i, a in enumerate(parts):
