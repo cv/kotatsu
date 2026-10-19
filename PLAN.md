@@ -9,7 +9,7 @@ data from the uMake app or from the heater once it's in hand.
 | Heater | none yet. Pick: **PaletteLife 120 V 400 W** (see docs/heater.md); backup Zuomeng PTC |
 | Height | 39–41 cm total → frame 375 + top 18 + futon ≈ 400–410 |
 | Corners | default visible cross-lap "ears"; no engraving |
-| Top | split into 2 halves (all boxes ≤ 48"). Joinery choice: see `out/preview/top_options.png` |
+| Top | **3 boards, ari-3 dovetail seams, mirrored** (owner's pick; all boxes ≤ 48"). Visible widths 400/400/400 mm |
 | Ship to | rural BC |
 | Budget | **< $1200 CAD all-in** |
 
@@ -21,7 +21,7 @@ data from the uMake app or from the heater once it's in hand.
 
 ## 2. Design concept: "four slab sides + deck"
 ```
-        TOP (2 halves, interlocking seam) ─ sits on futon, which is draped over the frame
+         TOP (3 boards, 2 dovetail seams) ─ sits on futon, which is draped over the frame
    ┌──────────────────────┬───────────────────────┐
    │  ear┃               ⟨seam⟩               ┃ear │   frame footprint ≈ 1120 × 720
    │ ━━━━╋━━━━━━━━━ long side panel ━━━━━━━━━━╋━━━ │   (40 mm top overhang all round)
@@ -51,8 +51,10 @@ its top 25 mm below the apron top edge.
     the deck underside.
   - Heater top ≈ deck top. Heater bottom ≈ 300 mm above the floor.
 
-**Top.** 1200 × 800 × 18, split at x = 600 into two 600 × 800 halves. Each half rests on the frame
-on three sides (both long aprons and one short apron), so the seam only has to lock **in-plane**.
+**Top.** 1200 × 800 × 18, split at x = 400 and 800 into **3 boards** (`top.boards`). The cut sizes are 470 / 540 / 470 ×
+800 mm, about 4 kg each. Every board spans both long aprons, so each board carries its own load and the seams only
+have to lock **in-plane**. With `top.mirror` the second seam mirrors the first, so the middle board is symmetric:
+it takes tails from both sides at the outer joints and sends its own tails out at the centre.
 The options are rendered in `out/preview/top_options.png`:
 - **ari** (dovetail seam, alternating tails): Japanese *ari-tsugi*, no loose parts. Current default.
 - **puzzle** (jigsaw tabs, alternating): playful, no loose parts.
@@ -80,12 +82,12 @@ look soft and intentional.
 4. Tap the wedges home.
 5. Fit the heater cheeks.
 6. Flip the frame, drop the heater into the bay, and drive its 4 screws into the cheeks.
-7. Flip it back, add the futon, then slide the two top halves together on top of it.
+7. Flip it back, add the futon, and lay the middle board on it. Then drop each outer board straight down into its dovetails.
 
 ## 3. Parts list (draft)
 | Part | Qty | Approx size (mm) | Notes |
 |---|---|---|---|
-| Top half | 2 | ~635 × 800 | interlocking seam |
+| Top board | 3 | 470 / 540 / 470 × 800 | ari-3 dovetail seams |
 | Long side | 2 | 1120 × 375 | top-open cross-lap slots, 2 mortises each |
 | Short side | 2 | 720 × 375 | bottom-open cross-lap slots |
 | Deck | 1 | ~500 × ~760 incl. tenons | heater bay + cheek slots |
@@ -133,5 +135,5 @@ The budget is tight at the top end. If the uMake quote comes in high:
 9. **Order, assemble, finish:** sand off the holding tabs, ease the edges, apply oil.
 
 ## 6. Open questions
-1. **Top seam style:** pick one on the site (Top seams tab). Variants are cheap to add in `params.toml`.
+1. ~~Top seam style~~: **ari-3, 3 boards** (decided). Other variants stay on the site for reference.
 2. Heater measurements when it arrives: body W×D×H, side screw-hole positions, screw size/length, cord exit.
