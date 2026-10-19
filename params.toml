@@ -105,6 +105,33 @@ root = 80.0
 tip = 150.0
 
 [[top.options]]
+name = "bold-yabane-rhythm"
+kind = "ari"
+label = "Yabane x rhythm: big skewed tails + small reversed centre tail"
+count = 3
+ys = [0.2, 0.5, 0.8]
+dirs = [1, -1, 1]
+scale = [1.0, 0.6, 1.0]
+skew = [-14.0, 0.0, 14.0]
+depth = 110.0
+root = 80.0
+tip = 170.0
+
+[[top.options]]
+name = "bold-yabane-rhythm-same"
+kind = "ari"
+label = "Yabane x rhythm, all three tails pointing the same way"
+count = 3
+ys = [0.2, 0.5, 0.8]
+dirs = [1, 1, 1]
+scale = [1.0, 0.6, 1.0]
+skew = [-14.0, 0.0, 14.0]
+depth = 110.0
+root = 80.0
+tip = 170.0
+
+
+[[top.options]]
 name = "bold-hishi"
 kind = "hishi"
 label = "Diamond heads (hishi) on short necks"
