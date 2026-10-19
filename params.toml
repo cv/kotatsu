@@ -390,17 +390,40 @@ waist = 30.0
 [frame]
 height = 375.0        # + 18 top + ~10-20 futon = 400-410 total (owner: 39-41 cm)
 overhang = 40.0       # top overhang beyond frame on every side
-ear = 45.0            # panel end -> crossing centreline
-apron_depth = 110.0
-leg_width = 130.0     # measured from panel end
-opening_r = 50.0      # fillet radius of leg opening
+ear = 65.0            # panel end -> crossing centreline (visible "ear"; >= ~60 so the half-height ear fingers are sturdy)
+apron_depth = 90.0    # clear height under the aprons = height - apron_depth (leg room)
+leg_width = 170.0     # measured from panel end
+opening_r = 50.0      # fillet radius of the leg-opening top corners
+ear_r = 12.0          # rounding of the panel top/bottom outer corners
+foot_r = 6.0          # rounding of the inner foot corners
+lap_extra = 0.5       # each cross-lap slot is height/2 + this (so slot bottoms never bottom out; the floor sets height)
 
-[deck]
+[deck]                # horizontal shear plate between the long aprons; heater hangs under it
 length_x = 500.0
-drop = 25.0           # deck top below apron top edge
+drop = 40.0           # deck top below apron top edge (room for the cheek wedges above it)
 tenons_per_side = 2
 tenon_width = 120.0
-tenon_protrusion = 50.0   # past outer apron face
+tenon_spacing = 300.0 # centre-to-centre along x
+tenon_protrusion = 50.0   # past outer apron face (tusk)
+hole_len = 26.0       # wedge hole length along the tenon
+hole_inset = 2.0      # hole inner edge sits this far inside the (thinnest) apron's outer face
+
+[deck_wedge]          # drives down through the tenon hole, bears on the apron's outer face
+length = 110.0
+head = 27.0           # width at the head; taper fit.wedge_taper
+
+[cheek]               # 2 on-edge plates under the deck; the heater screws into their inner faces
+length = 372.0
+height = 64.0
+tab_w = 50.0
+tab_spacing = 300.0
+tab_above_deck = 30.0 # tab top above (nominal) deck top
+hole_h = 22.0         # wedge hole height
+hole_drop = 1.0       # hole bottom below the thinnest deck's top face
+
+[cheek_wedge]         # lies on the deck top, driven sideways through the tab hole: pulls the cheek up
+length = 96.0
+head = 26.0           # height at the thick end; taper fit.wedge_taper
 
 [heater]               # PaletteLife 120V 400W (docs/heater.md). TODO-verify with calipers
 model = "PaletteLife B0CKBS16YY"
@@ -409,6 +432,7 @@ body_x = 292.0
 body_y = 292.0
 body_h = 51.0
 cheek_clearance = 1.0  # cheek inner faces = body width + this
+top_gap = 5.0          # heater top below the deck underside (TODO-verify manual clearances)
 holes = []             # TODO measure: side screw positions
 
 [shipping]
