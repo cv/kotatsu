@@ -21,50 +21,6 @@ function renderOverview(d) {
   const st = $("#story");
   st.innerHTML = d.story ? marked.parse(d.story) : "";
   st.hidden = !d.story;
-  $("#facts").replaceChildren(...d.project.facts.flatMap(([k, v]) => {
-    const dt = document.createElement("dt"); dt.textContent = k;
-    const dd = document.createElement("dd"); dd.textContent = v; return [dt, dd];
-  }));
-  renderCompare(d);
-  const t = d.tests;
-  $("#tests").innerHTML = t ? `<div class="${t.ok ? "ok" : "bad"}">${t.ok ? "✔" : "✘"} ${t.summary}</div>` +
-    (t.failures.length ? "<pre>" + t.failures.join("\n") + "</pre>" : "") : "tests skipped";
-}
-
-const ROWS = [
-  ["Pieces (incl. top)", (s) => s.pieces, "low"], ["…of which wedges", (s) => s.wedges, "low"],
-  ["Frame weight", (s) => s.frame_kg + " kg", "low", (s) => s.frame_kg], ["Total weight", (s) => s.total_kg + " kg", "low", (s) => s.total_kg],
-  ["Cut length", (s) => s.cut_m + " m", "low", (s) => s.cut_m],
-  ["Plywood", (s) => s.sheets.join(" + ") + ` · ${s.plywood_m2} m² (${Math.round(s.util * 100)} % used)`, "low", (s) => s.plywood_m2],
-  ["Clear height at mid-side", (s) => s.side_clear + " mm", "high", (s) => s.side_clear, "side_clear"],
-  ["Knee zone (30″) reach under edge", (s) => Math.round(s.knee_reach) + " mm", "high", (s) => s.knee_reach, "knee_reach"],
-  ["Between legs at knee height", (s) => Math.round(s.shin_w) + " mm", "high", (s) => s.shin_w],
-  ["Clear under heater", (s) => s.heater_clear + " mm", "high", (s) => s.heater_clear],
-  ["Sway under a 100 N sideways push (wedges tight)", (s) => `${s.wobble.x.sway_mm["100"]} mm <span class="stats">(50 N: ${s.wobble.x.sway_mm["50"]} · 200 N: ${s.wobble.x.sway_mm["200"]})</span>`],
-  ["Leg tilt as the wedges are tapped in (if nothing stops it)", (s) => `${s.wobble.x.rest_tilt_mm} mm at the foot`],
-  ["Play in each tenon / per 0.1 mm of loose wedge", (s) => `${s.wobble.tenon_play_mm} mm / ${s.wobble["loose_wedge_mm_per_0.1"]} mm`],
-  ["Peak stress: leg (200 N push) · top (1000 N on edge) · wedge bridge", (s) => `${s.wobble.stress.leg_MPa} · ${s.wobble.stress.top_MPa_at_1000N} · ${s.wobble.stress.wedge_bridge_shear_MPa} MPa <span class="stats">(birch bends at ~${s.wobble.stress.f_m})</span>`],
-  ["Lean on the edge that lifts the loose top's far side (50 mm in)", (s) => `${s.top_lift_n} N <span class="stats">(${s.top_lift_edge_n} N at the very edge)</span>`, "high", (s) => s.top_lift_n],
-  ["Push to tip it (mid-side, 50 mm in; no limit set yet)", (s) => `${s.tip_n} N <span class="stats">(${s.tip_edge_n} N at the very edge)</span>`, "high", (s) => s.tip_n, "tip_n"],
-];
-
-function renderCompare(d) {
-  const T = d.tables;
-  const head = "<tr><th></th>" + T.map((t) => `<th>${t.label}</th>`).join("") + "</tr>";
-  const body = ROWS.map(([k, f, better, num, lim]) => {
-    let best = null;
-    if (better && num && T.length > 1) {
-      const vs = T.map((t) => num(t.summary));
-      const b = better === "low" ? Math.min(...vs) : Math.max(...vs);
-      if (vs.some((v) => v !== b)) best = b;
-    }
-    return "<tr><th>" + k + "</th>" + T.map((t) => {
-      const S = t.summary, low = lim && S.min && num(S) < S.min[lim];
-      const cls = low ? "below" : best !== null && num(S) === best ? "best" : "";
-      return `<td class="${cls}">${f(S)}${low ? ` ⚠ below the ${S.min[lim]} minimum` : ""}</td>`;
-    }).join("") + "</tr>";
-  }).join("");
-  $("#compare").innerHTML = `<table class="cmp">${head}${body}</table><p class="stats">red = misses a requirement · earlier designs: git tags seams-archive, frame-variants-archive</p>`;
 }
 
 // ---------- futon & rug ----------

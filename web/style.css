@@ -22,7 +22,6 @@ main { height: calc(100% - 50px); }
 .story img { display:block; width:100%; max-width:860px; height:auto; margin:18px auto; border-radius:8px; }
 .story li { margin:4px 0; }
 .card h3 { margin:0 0 10px; font-size:14px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
-dl { display:grid; grid-template-columns: 90px 1fr; gap:4px 12px; margin:0; } dt { color:var(--muted); }
 .ok { color:var(--ok); } .bad { color:var(--bad); }
 aside { width:290px; flex:none; overflow:auto; border-right:1px solid var(--line); background:#fff; padding:10px; }
 .opt { border:1px solid var(--line); border-radius:8px; padding:8px; margin-bottom:8px; cursor:pointer; background:#fff; }
@@ -51,9 +50,6 @@ aside { width:290px; flex:none; overflow:auto; border-right:1px solid var(--line
 .scalebar div { height:4px; border:1px solid var(--ink); border-top:none; margin-bottom:2px; }
 .hint { padding:4px 10px; font-size:11px; color:var(--muted); border-top:1px solid var(--line); background:#fff; }
 #tab-3d { flex-direction:column; } #viewer3d canvas { display:block; }
-.compare { flex:1; overflow:auto; display:grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap:10px; padding:10px; }
-.compare .cell { background:#fff; border:1px solid var(--line); border-radius:8px; padding:6px; cursor:pointer; }
-.compare .cell .name { font-size:12px; font-weight:600; }
 .hidden { display:none !important; }
 #doc { flex:1; overflow:auto; padding:20px 40px; max-width:980px; }
 #doc-list a { display:block; padding:6px 8px; border-radius:6px; color:var(--ink); text-decoration:none; }
@@ -89,11 +85,6 @@ aside { width:290px; flex:none; overflow:auto; border-right:1px solid var(--line
 .plan-label { font: 34px system-ui, sans-serif; fill: #2b2118; text-anchor: middle; }
 
 .card.wide { flex: 1 1 100%; }
-table.cmp { border-collapse: collapse; font-size: 14px; }
-table.cmp th, table.cmp td { padding: 5px 12px; border-bottom: 1px solid var(--line); text-align: left; }
-table.cmp tr th:first-child { color: #6b5b4b; font-weight: 500; }
-table.cmp td.best { color: #1f6b3a; font-weight: 600; }
-table.cmp td.below { color: #a3261b; font-weight: 600; }
 
 /* phones / narrow screens */
 @media (max-width: 760px) {
@@ -108,7 +99,6 @@ table.cmp td.below { color: #a3261b; font-weight: 600; }
   .cards { grid-template-columns: 1fr; gap:10px; }
   aside { width:100%; max-height:38vh; border-right:none; border-bottom:1px solid var(--line); }
   .viewer-wrap { min-height:60vh; }
-  .compare { grid-template-columns: 1fr; }
   #doc { padding:12px 14px; }
   table { display:block; overflow-x:auto; }
 }

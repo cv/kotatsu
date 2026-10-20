@@ -1,94 +1,95 @@
-# AGENTS.md — Kotatsu project
+# AGENTS.md: working on this kotatsu
 
-## Goal
-Design a **120 × 80 cm kotatsu** (low Japanese heated table) built only from **flat-cut birch plywood**
-ordered online from **uMake.ca** (or a similar upload-a-file service). The parts must ship to the
-owner's door, and ordering must not involve a phone call or an email.
+## The goal
+A **kotatsu** (a low Japanese heated table) built only from **flat CNC-cut birch plywood**, ordered online
+from **uMake.ca**, shipped to the owner's door, with no phone calls and no back-and-forth emails. The design
+being built is an **86 × 86 cm square top** on a **yagura frame**: four "+" corner legs under an H-shaped
+deck, with the heater hanging under the deck. `PLAN.md` has the details and the README tells the story.
 
-Deliverables:
-1. Parametric source (Python) that generates every part from one parameter file.
-2. Upload-ready cut files (DXF in mm, plus SVG) for the top, legs, deck, heater mount, and
-   any joinery pieces (wedges, keys).
-3. Previews (PNG), a cut list/BOM, an estimated weight and shipping-box check, and assembly instructions.
+What this repo produces:
+1. Parametric Python that builds every part from one parameter file, `params.toml`.
+2. Upload-ready cut files (DXF, millimetres), one per part and one per sheet.
+3. Previews, a bill of materials (`out/BOM.md`), weight and price estimates, and assembly notes.
+4. A static website (`out/site`, published from `main` to GitHub Pages).
 
-## Hard constraints (never violate)
-- **No glue, nails, screws, bolts, dowels, inserts or other hardware.** All joints are plywood-only:
-  cross-laps (half-laps), through-tenons with wedges or keys (tusk tenons), tabs and slots.
-  - *Only exception:* the kotatsu heater unit, plus the screws that come with it, to mount it.
-- **Online-only ordering.** Every part must be quotable in the uMake instant-quote app
-  (app.umake.ca). Do not design anything that needs a manual quote, freight/LTL shipping or a pallet:
-  - each part ≤ 1219 mm (48") where possible (standard parcel); the Ø900 one-piece top ships as an
-    *oversize* parcel (L+girth > 108"), which is still priced automatically at checkout; never > 1500 mm (60");
-  - each box ≤ 50 lb (22.7 kg) if possible, and never > 150 lb;
-  - no secondary operations (bending, finishing, assembly) ordered from the vendor.
-- **Overall size:** one round table, top Ø 900 mm in one piece (owner, 2026-10; the 1200 × 900
-  rectangle with seams was dropped, see git tag `seams-archive`). Frame: yagura with straight "+" corner
-  legs under a wedged deck (owner, 2026-10-19; earlier frame designs at git tag `frame-variants-archive`).
-- **Focus:** keep only the design being built in the code. Archive alternatives with a git tag, then delete them.
-- **Electrical safety:** the heater must be rated for the local mains (Canada: 120 V / 60 Hz, cUL/CSA/ETL).
-  Do not plan around a 100 V Japanese heater with no transformer. Follow the heater maker's
-  clearances and mounting instructions; they override this design.
+## Hard rules
+- **No glue, nails, screws, bolts, dowels, inserts or other hardware.** Joints are plywood only: cross-laps,
+  wedged through-tenons, tabs and slots. The one exception is the heater and the screws that come with it.
+- **Online ordering only.** Every part must quote instantly in app.umake.ca. Nothing that needs a manual
+  quote, freight or a pallet. In practice:
+  - free shipping needs the whole order to pack into **one box of 91 cm or less** and weigh **under about
+    20 kg** (that's what the cart does; see `docs/quote.md`);
+  - bigger boxes ship as oversize parcels, priced automatically at checkout. That's allowed, but costs about $200;
+  - never design a part over 60" (1524 mm) or an order over 150 lb, because that means freight and staff;
+  - don't order extra processes (bending, finishing, assembly) from the shop.
+- **Electrical safety.** The heater must be rated for Canadian mains (120 V, 60 Hz), ideally cUL, cETL or
+  CSA listed. Never plan around a 100 V Japanese heater without a transformer. The heater maker's clearances
+  and instructions override this design.
+- **Focus.** Keep only the design being built in the code. Archive alternatives with a git tag first, then
+  delete them. (So far: `seams-archive` and `frame-variants-archive`.)
+- **Indigenous designs.** Don't imitate them. Use them only if they come from, or are licensed by, an
+  Indigenous artist.
 
-## Process facts (see docs/research.md for sources)
-- uMake's CO₂ laser cuts plywood **≤ 6 mm** only. Structural 18 mm birch must be **CNC-routed**
-  (same app, same ordering flow). The laser is fine for thin parts or engraving.
-- CNC router: inside corners get a radius of half the bit diameter (1/8" or 1/4" bits), so every
-  slot/mortise that takes a square edge **needs dogbones**. Allow ≥ 5 mm between parts and a 20 mm
-  sheet margin. No feature smaller than the material thickness. Use closed outlines only, with no
-  duplicate or overlapping lines.
-- The vendor leaves holding tabs (~4.8 mm wide, half thickness deep); sand them off.
-- Baltic birch thickness varies (18 mm nominal: +0.85 / −1.05 mm). Joints must **tolerate the
-  thickness range**: use wedges, keys, or crush ribs, not exact-thickness press fits.
-- Birch sheets in stock: 48×96", 60×60", 60×120".
+## Shop facts (sources in `docs/research.md`)
+- uMake's laser only cuts plywood up to about 6 mm. The 18 mm birch must be **CNC-routed**, ordered the same way.
+- The router bit can't cut a sharp inside corner: it leaves a radius of half its width (1/8" or 1/4" bits).
+  Every slot or mortise that takes a square edge **needs dogbones**.
+- Leave at least 5 mm between parts and a 20 mm sheet margin. No feature smaller than the sheet's thickness.
+  Closed outlines only, with no duplicate or overlapping lines.
+- The shop leaves small holding tabs (about 4.8 mm wide, half the thickness deep); they get sanded off.
+- **"18 mm" birch can be anywhere from 17.0 to 18.9 mm**, and uMake sells it as "19mm". Every joint must work
+  across that range. Use wedges or crush ribs, never exact press fits.
+- Birch sheets come in 48 × 96", 60 × 60" and 60 × 120".
+- About three-quarters of the price is cutting (`kotatsu/price.py`). Fewer metres of cut beats less wood.
 
-## Dos
-- Keep **one source of truth**: every dimension lives in `params.toml`, and nothing is hard-coded
-  in geometry code.
-- Work in **millimetres**. Set DXF `$INSUNITS = 4` (mm). Put cut lines and engrave/pocket lines on
-  separate layers and colours.
-- Re-generate outputs with one command (`make all`) and check them with tests (`make test`):
-  closed polygons, no self-intersection, part fits the sheet, slot width ≥ max stock thickness
-  + clearance, dogbones present, weight and box limits met.
-- Look at the PNG previews (viewImage) after geometry changes.
-- **Make small, focused git commits** with clear messages (one logical change each).
-- Record decisions and open questions in `PLAN.md`, and vendor facts with source URLs in
-  `docs/research.md`.
-- Mark anything unverified (heater dimensions, live prices, actual stock thickness) as **TODO-verify**.
+## Do
+- Keep **one source of truth**: every dimension lives in `params.toml`. Never hard-code one in geometry code.
+- Work in **millimetres**. DXF files use `$INSUNITS = 4`. Keep cut lines on their own layer.
+- Rebuild with one command (`make all`) and check with `make test`: closed shapes, cuttable corners, parts
+  that fit the sheet, slots wide enough for the thickest sheet, joints that hold at the thinnest, weight
+  and box limits.
+- Look at the previews after changing geometry. (Image viewers can cache by file name, so use a new name.)
+- **Make small, focused git commits**, one logical change each, with clear messages.
+- Record decisions and open questions in `PLAN.md`, and shop facts with their sources in `docs/research.md`.
+- Mark anything unconfirmed (heater sizes, live prices, real sheet thickness, material strengths) **TODO-verify**.
+- Keep personal data (addresses, account or order numbers, local paths) out of the repo. It's public.
 
-## Don'ts
-- Don't add hardware, glue or fasteners to "fix" a joint. Redesign the joint instead.
+## Don't
+- Don't add hardware, glue or fasteners to fix a joint. Redesign the joint.
 - Don't assume the laser can cut 18 mm plywood.
-- Don't design parts > 60" or orders that need freight. That would force contact with staff.
-- Don't commit generated junk such as caches or virtualenvs. Commit `out/` cut files only when
-  they are a release candidate (tagged).
-- Don't hand-edit DXF/SVG outputs. Change the parameters or the generator.
-- Don't guess the heater's mounting geometry. The chosen unit is in docs/heater.md; freeze `[heater]` only after measuring the real unit, and never send plywood for cutting before that.
-- Don't imitate Indigenous designs. Use them only if they come from, or are licensed by, an Indigenous artist.
+- Don't commit generated files, caches or virtual environments. `out/` is rebuilt by CI.
+- Don't hand-edit DXF files. Change the parameters or the generator.
+- Don't guess the heater's mounting geometry. Use the measured values in `[heater]` (`docs/heater.md`).
+- Don't compute geometry in the website's JavaScript. Python computes it, and JS only draws it.
 
-## Tooling
-- **Python ≥ 3.11 via `uv`** (the system python is 3.9; don't use it).
-- `ezdxf`: writes DXF files (R2010, mm).
-- `shapely`: 2-D geometry (booleans, dogbones, overlap/clearance checks, areas for weights).
-- `matplotlib`: PNG/SVG previews of parts, sheet layouts and a simple assembly view.
-- `pytest`: geometric and constraint checks.
-- `tomllib` (stdlib) reads `params.toml`.
-- Optional later: `build123d` for a 3-D assembly/interference check and STEP export.
-- `make` targets: `all`, `dxf`, `test`, `site`, `dev`, `clean`.
-- **Project site** (`make dev` → http://127.0.0.1:8765, rebuilds on change and the page live-reloads):
-  - `kotatsu/site.py` exports `out/site/data.json` (geometry, stats, params, test results, docs). The page
-    in `web/` is hand-written static HTML/JS, with no build step and no npm.
-  - The JS libraries are pinned versions on jsdelivr, loaded via an importmap: `three` (3-D +
-    OrbitControls), `lil-gui` (controls) and `marked` (docs).
-  - 2-D pan/zoom is a small custom viewBox controller in `web/viewer2d.js`. It stays crisp vector at
-    any zoom and reads cursor positions in mm.
-  - Add new visualisations by extending `data.json` in Python. Never compute geometry in JS; JS only draws it.
+## Tools
+- **Python 3.12 or newer via `uv`.** Don't use the system Python.
+- `ezdxf` writes the DXFs. `shapely` does the 2-D geometry (booleans, dogbones, clearances, areas).
+  `matplotlib` draws previews. `numpy` runs the sheet layout and the load models. `pytest` runs the checks.
+- Analysis modules: `comfort.py` (knee room, tipping), `stiffness.py` (wobble), `loads.py` (the top under
+  everyday loads), `price.py` (uMake's price), `optimize.py` (a small search over the deck and leg knobs),
+  `storage.py` (flat packing for summer).
+- `make` targets: `all`, `test`, `dxf`, `site`, `dev`, `clean`.
+- **The website.** `make dev` serves it at http://127.0.0.1:8765, rebuilds on every change, and the page
+  reloads by itself.
+  - `kotatsu/site.py` writes `out/site/data.json`: geometry, stats, parameters, test results, docs, and the
+    README's story (between the `<!-- story -->` markers). The page in `web/` is plain HTML and JavaScript,
+    with no build step and no npm.
+  - The JS libraries are pinned versions on jsdelivr, loaded through an import map: `three` (3-D),
+    `lil-gui` (controls) and `marked` (Markdown).
+  - 2-D pan and zoom is a small custom controller in `web/viewer2d.js`. It stays sharp at any zoom and reads
+    positions in millimetres.
+  - `.github/workflows/pages.yml` builds the DXFs and the site (running the tests) on every push to `main`,
+    and publishes them to GitHub Pages, with the DXFs under `/dxf/`.
 
 ## Layout
 ```
-params.toml          # all dimensions & tolerances
-kotatsu/             # generator package (parts, joints, export, checks)
-tests/               # pytest constraint checks
-out/                 # generated DXF/SVG/PNG (gitignored except tagged releases)
-docs/research.md     # vendor + heater research, with sources
-PLAN.md              # design plan, decisions, open questions, phases
+params.toml          every dimension and tolerance
+kotatsu/             the generator: parts, joints, layout, export, checks, site
+tests/               pytest checks
+web/                 the website's static files
+docs/                shop, heater, futon and quote research; docs/img has the README's pictures
+tools/               one-off scripts (the README's before/after strips)
+out/                 generated DXFs, previews and site (not in git)
+PLAN.md              the design as ordered: decisions, numbers, open questions
 ```

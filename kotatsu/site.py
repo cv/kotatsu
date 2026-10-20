@@ -26,7 +26,7 @@ from .params import ROOT
 
 WEB = ROOT / "web"
 OUT = ROOT / "out" / "site"
-DOCS = ["PLAN.md", "AGENTS.md", "docs/research.md", "docs/heater.md", "docs/futon.md"]
+DOCS = ["PLAN.md", "docs/quote.md", "docs/heater.md", "docs/futon.md", "docs/research.md", "AGENTS.md"]
 WATCH = ["params.toml", "kotatsu", "web", "docs", "PLAN.md", "AGENTS.md", "README.md"]
 
 
@@ -165,18 +165,6 @@ def build(with_tests: bool = True) -> None:
         "generated": dt.datetime.now().isoformat(timespec="seconds"),
         "git": git_rev(),
         "story": story(),
-        "project": {
-            "title": "Kotatsu — glue-free CNC birch",
-            "facts": [
-                *[["Table", t.table_label] for t in params.tables(p)],
-                ["Height", f"{p.frame.height + p.material.t_nominal:.0f} mm + futon ≈ 40–41 cm"],
-                ["Material", p.material.name],
-                ["Heater", f"{p.heater.model} ({p.heater.mount} mount)"],
-                ["Vendor", "uMake.ca (online instant quote)"],
-                ["Shipping", "one 91 × 91 × 16 cm box, ~17 kg: uMake's free tier within Canada"],
-                ["Budget", "< $1200 CAD"],
-            ],
-        },
         "params": raw,
         "thickness": p.material.t_nominal,
         "tables": tables_data(p),

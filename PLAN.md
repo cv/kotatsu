@@ -1,136 +1,114 @@
-# Kotatsu plan
+# Design notes
 
-Status: **designing**. Every number lives in `params.toml`. Items marked **TODO-verify** need
-data from the uMake app, or from the heater once it's in hand.
+This is the reference for the table as ordered. The story of how it got here is in the README.
+Every number below comes from `params.toml`, and anything I haven't confirmed yet is marked
+**TODO-verify**.
 
-## 0. Owner decisions (2026-10)
-| Question | Answer |
+## Decisions
+
+| Topic | Decision |
 |---|---|
-| Table | **One round kotatsu, top Ø 900 cut as one piece.** The 1200 × 900 rectangle and all the decorative seam options were dropped (they're archived at git tag `seams-archive`) |
-| Frame | **Yagura, straight legs** (2026-10-19): 4 straight 130 mm "+" corner legs under a wedged deck, no aprons |
-| Material | **Everything in 18 mm birch plywood, wedges included** (2026-10-19). Hardwood wedges or other uMake materials were considered and dropped; the owner will make new wedges if any wear out |
-| Heater | **PaletteLife 120 V 400 W** ordered (see docs/heater.md); the backup is Zuomeng PTC. **The owner drills the heater's screw holes on assembly**, so no holes are cut |
-| Height | ≈ 41 cm total: frame 385 + top 18 + futon (owner accepted the top of the 39–41 range for leg room) |
-| Corners | the default visible cross-lap "ears"; no engraving |
-| Futon & rug | a **205 cm round** futon on an 8 ft round rug (docs/futon.md, docs/futons.toml, site tab "Futon & rug") |
-| Ship to | rural BC |
-| Budget | **< $1200 CAD all-in** |
+| Table | One **86 × 86 cm square** kotatsu. The top is one piece and sits loose on the frame, with the futon in between |
+| Frame | A **yagura**: four "+"-shaped corner legs (8 plates) under an H-shaped deck. No aprons, so knees get the room |
+| Material | **18 mm Baltic birch for everything**, wedges included. uMake sells it as "19mm". If a wedge wears out, I'll cut a new one |
+| Heater | **PaletteLife 120 V 400 W**, 29 × 29 × 5 cm, screwed in at the sides (`docs/heater.md`). I drill its screw holes during assembly, so the files have none |
+| Height | About 41 cm: 385 mm frame + 18 mm top + the futon |
+| Futon | A 205 × 205 cm square kotatsu futon, or a queen duvet in a cover (`docs/futon.md`) |
+| Budget | Under CAD $1200 all in |
 
-## 1. Process & material
-- **18 mm Baltic birch, CNC-routed** on uMake (app.umake.ca → CNC router → Birch plywood 18 mm / 3/4").
-  The laser only cuts plywood ≤ 6 mm (docs/research.md).
-- **Everything fits on one 60 × 60" sheet** (2.32 m², 62 % used; `out/BOM.md`). Leg plates are laid out with the grain running up the leg.
-- **Shipping:** the Ø 900 top packs to about 37 × 37 × 2.7". Length + girth is about 118", which is over the 108" standard-parcel
-  limit, so it ships **oversize** (priced automatically at checkout, no staff contact). The frame parts are standard parcels.
-  TODO: add a length + girth check to the build.
+## The parts
 
-## 2. Design: yagura frame with straight legs (`kotatsu/yagura.py`, `[[tables]] yagura`)
-- **Legs (4 "+" corner legs = 8 plates, 130 × 385).** They're straight, with plumb edges, and lie in the planes where the slab panels were.
-  - Each corner crosses two plates in a cross-lap 50 mm in from the frame edge, which forms the "ears".
-    "A" plates are slotted from the shoulder down, "B" plates from the floor up. Slots are t_max + 0.3 wide; their depths add up to the leg height + 1, so the floor sets the height.
-  - Each plate's width, measured in from the frame edge: a 40 mm ear arm, the 19 mm slot, a 10 mm shoulder, a 50 mm tenon, then a 10 mm inner shoulder.
-    The tenon is the narrowest that still takes a wedge (≥ 15 mm of wood beside the hole). The inner shoulder puts the wedge between shoulders, so tapping it in doesn't twist the plate (owner chose this after the wobble check, 2026-10-19).
-- **Deck (×1), 660 square** with its corners trimmed ≥ 10 mm inside the round top. Its top is at z = 359 (26 mm below the futon plane).
-  - It has 8 mortises (tenon + 0.2 per side; thickness t_max + 0.5) and the cheek-tab slots.
-  - Each leg plate's top edge is a **shoulder** under the deck. Its tenon rises through the deck to z = 385, so the 8 tenon tops carry the futon and top.
-  - A **60 × 18 wedge** (1:8) lies on the deck and is driven through each tenon. It clamps the deck between the shoulder and the wedge, at every stock thickness from 17.0 to 18.9 mm.
-- **Heater cheeks (×2)**: hung from the deck by tabs and flat 80 × 18 wedges. The heater screws into them through its side flanges (the only hardware).
-  The deck is solid over the heater, so it doubles as the heat shield.
-- **Top**: Ø 900 in one piece. It sits on the futon, which is draped over the frame. Total height ≈ 41 cm.
-- **Parts:** 26 pieces (8 leg plates, deck, 2 cheeks, 9 + 5 wedges incl. spares, top), ≈ 18 kg, 22.9 m of cutting.
-- Tests: `tests/test_yagura.py` (cross-laps, tenon fit, wedge clamp range, wedges don't collide, deck inside the top) and the
-  shared checks in `tests/test_frame.py` (cuttable, fits a sheet and a parcel, cheeks, knee zone, nothing above the futon plane).
-- **Not modelled yet: stiffness.** The legs rely on wedged tenons in an 18 mm deck. A wobble/stress check is the next engineering step.
+- **Leg plates (8, two shapes, 110 × 385 mm).** Each corner crosses an A plate and a B plate in a
+  cross-lap 30 mm in from the frame edge. A plates are slotted from the top down, B plates from the floor
+  up. The two slot depths add up to 1 mm more than needed, so the floor, not the slots, sets the height.
+  - Under the deck, each plate is 110 mm wide: a 20 mm outer finger, the 19.2 mm slot, a 10 mm shoulder,
+    a 50 mm tenon, and a 10 mm inner shoulder. Below a sloped haunch (my sketch), the leg narrows to
+    60 mm: two equal 20 mm fingers either side of the slot.
+  - The tenon rises through the deck. The outer finger rises higher, all the way to the top, so the top
+    rests on the frame's four corners (the "corner posts").
+  - Each slot wall has two small bumps that stand 0.5 mm proud ("crush ribs"). Sand them until the joint
+    slides together.
+  - Plate A has a 1.5 mm arc cut under its foot, so it stands on its two ends and doesn't rock.
+- **Deck (1, 780 × 780 mm, H-shaped).** It sits on the plates' shoulders, its top 26 mm below the
+  tenon tops. It has 8 mortises (tenon + 0.2 mm each side), the cheek-tab slots, and four notches opened
+  to the edge to save weight and cutting. The notch corners away from the legs are rounded (R30).
+- **Wedges (14: 12 plus 2 spares, 60 × 18 mm, 1:8 taper).** One shape does both jobs. They lie on the deck
+  and tap sideways through each tenon and cheek tab, clamping the deck between shoulder and wedge. This
+  works at any sheet thickness from 17.0 to 18.9 mm.
+- **Heater cheeks (2, 372 × 94 mm).** These hang from the deck by two tabs each, held by wedges. The heater
+  screws into their inner faces. They sit 294 mm apart, which gives a 290 mm heater 4 mm of play.
+- **Top (1, 860 × 860 mm).** Solid over the heater, so the deck and top shield the futon from it.
 
-### Assembly (mallet + the heater's screwdriver)
-1. Cross each pair of leg plates into a "+" leg: drop the B plate onto the A plate's slot.
-2. Stand the 4 legs up and lower the deck over the 8 tenons.
-3. Tap a leg wedge through each tenon.
-4. Hang the cheeks (tabs up through the deck, 4 cheek wedges), then screw the heater between them.
-5. Lay on the futon, then the top.
+That's **26 parts, about 16 kg, 25.5 m of cutting**. They all fit on one 48 × 96" sheet (43 % used).
+Leg plates are laid with the grain running up the leg.
 
-## 3. Numbers (site Overview, "Design numbers")
-| | |
+## Assembly (a mallet, plus a screwdriver for the heater)
+1. Sand the holding tabs off. Sand the crush ribs until each cross-lap slides together.
+2. Cross each pair of plates into a "+" leg: drop the B plate onto the A plate's slot.
+3. Stand the four legs up and lower the deck over the 8 tenons.
+4. Tap a wedge through each tenon.
+5. Hang the cheeks (tabs up through the deck, a wedge in each), then screw the heater between them.
+   Drill 2–2.5 mm pilot holes.
+6. Drape the futon over the frame and lay the top on it.
+
+## How it measures up
+
+| Measure | Value |
 |---|---|
-| Pieces / of which wedges | 26 / 14 (incl. 2 spares) |
-| Weight | ≈ 18 kg |
-| Plywood | one 60×60" sheet, 2.32 m², 62 % used |
-| Clear height at mid-side (deck underside) | 341 mm |
-| Owner's 30" × 12.5" knee zone: reach under the top's edge / room between legs at knee height | 120 mm / 400 mm |
-| Clear height under the heater | 285 mm |
-| Push to tip it (mid-side, 50 mm in / at the very edge) | ≈ 1030 N / 610 N |
-| Sway under a 100 N sideways push (wedges tight) | ≈ 0.3 mm |
+| Clear height at the middle of each side (deck underside) | 341 mm |
+| Clear height under the heater | 286 mm |
+| My 76 × 32 cm cross-legged knee zone: how far it reaches under the top's edge | 40 mm |
+| Room between the legs at knee height | 568 mm |
+| Sway under a 100 N sideways push (wedges tight) | about 0.9 mm (0.5 at 50 N, 2.2 at 200 N) |
+| Play in each tenon, and extra wobble per 0.1 mm a wedge works loose | 0.4 mm, about 1 mm |
+| Push 50 mm in from the edge that tips the table / lifts the loose top's far side | about 48 kN / 39 kN, so in practice never (the feet and corner posts sit almost under the edge) |
+| Push right at the edge that tips the table / lifts the loose top's far side | about 1700 N / 770 N |
 
-**Tipping** is computed the way EN 12521 / EN 1730 test it: a vertical push at the middle of a side, 50 mm in from the edge.
-The figures assume no foot slip, and the weight includes a guessed heater (3 kg) and futon (2 kg). **There is no pass/fail limit yet.**
-It needs a real figure: EN 12521:2023's force table, or a bathroom-scale test on the finished table (`comfort.tip_min_n`, 0 = report only).
+- **Tipping** is worked out the way EN 12521 and EN 1730 test it: a vertical push in the middle of a side,
+  50 mm in from the edge. It assumes the feet don't slide, and the weight includes a guessed 3 kg heater and
+  2 kg futon. There's no pass/fail limit, only the report.
+- **Wobble** comes from a spring model of each leg-to-deck joint (`kotatsu/stiffness.py`), not FEA. It
+  includes the shoulders pressing on the deck, a wedge tapped in to about 300 N, the tenon faces bearing in
+  the mortises, and each plate bending. One early discovery: when the tenon ran right to the leg's inner
+  edge, every shoulder sat on one side of the wedge, so tapping the wedge in twisted the leg about 9 mm at
+  the foot. The 10 mm inner shoulder fixed that. Re-tap the wedges after the first heating season.
+- **Strength** is checked two ways. A 200 N sideways push stresses the legs to about 1.7 MPa. For the top, a
+  plate model (`kotatsu/loads.py`) puts it on its corner posts, which can only push up. I checked the model
+  against textbook plate results, and it matches within 3–5 %.
 
-### Wobble and strength (`kotatsu/stiffness.py`, estimates)
-This is a spring model of each leg-to-deck joint, not FEA. It includes:
-- the shoulders pressing on the deck (plywood is soft through its thickness);
-- the wedge pulling the tenon up, tapped in to about 300 N;
-- the tenon faces bearing on the mortise ends, with 0.2 mm clearance per side;
-- each plate bending.
+| Load on the top | Peak load | Peak stress | Share of strength | Sag |
+|---|---|---|---|---|
+| Napping hunched over, a 7 kg cat curled up, a laptop | 39 kg | 2.2–2.4 MPa | 6–7 % | 1.0 mm |
+| Flopping down while the cat jumps up mid-table | 75 kg | 3.7 MPa | 11 % | 2.0 mm |
+| The cat lands on a corner | 28 kg | 0.7 MPa | 2 % | 0.1 mm |
+| Everything piled at one edge | 54 kg | 3.1 MPa | 9 % | 1.2 mm |
+| *Beyond normal:* an 80 kg adult sits hard on an edge | 120 kg | 9.4 MPa | 27 % | 3.9 mm |
 
-Material values are rough (E along the grain 9 GPa, through the thickness 300–800 MPa, bending strength ~35 MPa) and need verifying.
+No corner of the top lifts in any of these cases. The strength figures are rough textbook values
+(TODO-verify), and a typical sheet breaks at about 1.5× them. The legs carry at most about 60 kg per
+corner, and the wedges and deck don't carry any of the weight from above.
 
-| | Straight 120 mm legs (before) | With a 10 mm inner shoulder (130 mm legs, **chosen**) |
-|---|---|---|
-| Sway under a 100 N sideways push, wedges tight | ≈ 0.3 mm (0.24–0.42 across the material/preload range) | ≈ 0.3 mm (0.29–0.42) |
-| Leg tilt as a wedge is tapped in, if nothing stops it | **≈ 9 mm at the foot** | ≈ 0.3 mm |
-| Room between legs at knee height | 420 mm | 400 mm |
+## Budget (CAD)
 
-- **Frame stiffness is fine either way.** About 0.3 mm of sway per 100 N, plus up to 0.4 mm of play from the tenon clearance.
-  A wedge that works 0.1 mm loose adds about 0.4 mm at that leg, so re-tap the wedges after the first heating season.
-- **The current leg joint is one-sided.** The tenon runs to the leg's inner edge, so every shoulder sits outboard of the wedge.
-  Tapping the wedge in twists the plate until its tenon jams diagonally in the mortise, about 1.5° (≈ 9 mm at the foot).
-  The joint is stiff once jammed, but the legs end up out of plumb or fighting each other, by however much the real mortise clearance allows (uMake's in-plane tolerance is ±0.3–0.45 mm).
-  A 10 mm shoulder on the inner side of each tenon (legs 130 mm wide) puts the wedge between shoulders and removes the twist.
-- **Stresses are low.** Legs ≈ 1.3 MPa at a 200 N push. Top ≈ 4.7 MPa with 1000 N pressed 50 mm in from the edge.
-  Wood above the wedge hole ≈ 1.4 MPa in shear. That's at least about 8× below the rough bending strength.
-
-### History
-- 1200 × 900 rectangle with 3 boards and decorative seams (ari, yajiri, maple, …): dropped for the round one-piece top. Git tag `seams-archive`.
-- Slab-side frame (apron + legs in one piece, tapered legs, bell feet; leg-room options A–F) and a splayed-leg yagura: built for comparison, then dropped in favour of the straight yagura. Git tag `frame-variants-archive`.
-
-## 4. Budget (CAD, estimates; TODO-verify)
-| Item | Estimate |
+| Item | Cost |
 |---|---|
 | Heater (PaletteLife, amazon.ca, delivered) | $258 |
-| uMake CNC order: **$353.33** for all 26 parts in Baltic birch "19mm" (notched deck, one wedge part ×14), shipping **free** (91×91×16 cm, 16.6 kg), tax $42.40 → **$395.73** (docs/quote.md) | **$396** |
-| Round futon 205 cm (Amazon.co.jp delivered, before duty/tax) | $160–280 |
-| Finish oil + sandpaper | $30–50 |
-| **Total** | **~$850–1080** |
+| uMake order: 26 parts $353.33 + tax $42.40, free shipping (`docs/quote.md`) | $396 |
+| Futon: 205 cm square from Etsy, or a queen duvet + cover from Douglas | $185–230 |
+| Sandpaper and finishing oil | $30–50 |
+| **Total** | **about $870–930** |
 
-## 5. Phases
-0. ✅ Repo, AGENTS.md, vendor research, tooling (uv, ezdxf, shapely, matplotlib, pytest, Makefile).
-1. ✅ Project site (`make dev`, http://127.0.0.1:8765): futon & rug plan, frame parts, cut sheets, 3-D, docs, test status.
-2. ✅ Frame geometry and joint tests; cut list, nesting, DXF per part and per sheet, `out/BOM.md`.
-3. ✅ **Leg room** and ✅ **frame style**: yagura with straight legs (sections 2–3).
-3b. ✅ **Wobble/strength estimate** (above): frame stiff, stresses low; one-sided leg joint found and fixed (130 mm legs). Still open: a real tipping limit; a test coupon to measure the tenon/mortise fit.
-4. ◐ **Heater**: when it arrives, measure the body width/depth/height, its mounting flanges, the cord exit and the manual's clearances, then freeze `[heater]`. This **gates the order**, because the cheek spacing comes from the body width. Screw holes aren't cut: the owner drills them on assembly.
-5. ✅ **Quote**: $395.73 incl. tax, free shipping, instant, no manual-quote flag (saved project; docs/quote.md). Still open: the real thickness of uMake's "19mm" (design takes 17.0–18.9).
-6. Optional fit coupon (a cross-lap pair, a tenon + wedge). Decide after the quote: skip it if the wait or the cost isn't worth it.
-7. Order, assemble, finish (sand off the holding tabs, ease the edges, oil).
+## Still open
+1. **Sheet thickness.** uMake's "19mm" could measure 19.0 mm or more, which would make the 19.2 mm slots
+   tight. The crush ribs and wedges give some room, and a little sanding gives the rest.
+2. **Heater details.** Measure the exact width across the screw tabs and the screw length (the tips must
+   stay inside the 18 mm cheek). Also check the manual's clearances and the rating label for a
+   cUL, cETL or CSA mark.
+3. **A tipping limit.** If I want one: EN 12521's force table, or a bathroom-scale test on the finished table.
+4. **Fit-up.** The first assembly will show how the tenons and wedges really fit. Then finish it: ease the
+   edges and oil it.
 
-## 6. Open questions
-1. Tipping limit: EN 12521:2023's force table, or a bathroom-scale test.
-2. Heater measurements (body, flanges, cord exit), and the clearances required by its manual.
-3. Futon choice. The traditional shijira cotton (Wataman) is sold out; Amazon.co.jp has 205 cm options in stock.
-
-## Everyday loads on the top (kotatsu/loads.py, 2026-10-20)
-The loose 860 mm top is modelled as a plate on the corner pads, which only push (a grillage checked against plate
-theory to within ~3–5 %). Loads: napping hunched over = 30 kg on forearms + head near the edge, ×1.5 for
-flopping down; 7 kg cat (×4 landing from a jump); 2 kg laptop; the top's own weight.
-
-| Case | Load | Peak stress | Use of strength | Sag |
-|---|---|---|---|---|
-| nap + cat curled + laptop | 39 kg | 2.2–2.4 MPa | 6–7 % | 1.0 mm |
-| flop down + cat jumps up mid-table | 75 kg | 3.7 MPa | 11 % | 2.0 mm |
-| cat lands on a corner | 28 kg peak | 0.7 MPa | 2 % | 0.1 mm |
-| slump + cat at the very edge | 54 kg | 3.1 MPa | 9 % | 1.2 mm |
-| *beyond normal:* 80 kg adult sits on an edge, ×1.5 | 120 kg | 9.4 MPa | 27 % | 3.9 mm |
-
-No corner lifts in any case: every load lies inside the corner pads. Strength values are rough characteristic
-figures (TODO-verify), and a typical sheet breaks at about 1.5× those. Legs carry ≤ 0.6 kN per corner
-(< 0.3 MPa); the wedges and the deck aren't in the vertical load path.
+## Earlier designs
+- The 120 × 80 top in three boards with decorative seams (dovetails, arrowheads, maple leaves and more),
+  and the 120 × 90 and Ø 90 tables: git tag `seams-archive`.
+- The solid-sided frame (tapered legs, flared feet) and a splayed-leg yagura: git tag `frame-variants-archive`.

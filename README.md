@@ -119,7 +119,7 @@ The website has the drawings, a 3-D view, the cut sheets and all the numbers:
 **https://lixo.org/kotatsu/**. The cut files (DXF, in millimetres) are at
 **https://lixo.org/kotatsu/dxf/**.
 
-| | |
+| Part | Detail |
 |---|---|
 | Top | 860 × 860 × 18 mm, one piece, sits loose on the frame with the futon in between |
 | Frame | four "+" legs (8 plates, 2 shapes) under an H-shaped deck; 2 cheeks hold the heater |
