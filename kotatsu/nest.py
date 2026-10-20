@@ -14,7 +14,8 @@ from dataclasses import dataclass, field
 import numpy as np
 import shapely
 from shapely.affinity import rotate, translate
-from shapely.geometry import Polygon
+from shapely.geometry import MultiPolygon, Polygon
+from shapely.ops import unary_union
 
 from .cutlist import CutPart
 
@@ -84,10 +85,109 @@ def _fft_free(occ: np.ndarray, m: np.ndarray) -> np.ndarray:
 STRATEGIES = [("x", "area"), ("y", "area"), ("x", "long"), ("y", "long"), ("xy", "area"), ("xy", "long")]
 
 
+# ----------------------------------------------------------------------------- interlocked pairs
+@dataclass
+class _Job:
+    """A thing to place: one part, or an interlocked pair of parts placed as one rigid shape."""
+    name: str
+    shape: object                    # Polygon or MultiPolygon, bounds at (0, 0)
+    rotations: tuple[int, ...]
+    members: list[tuple[str, Polygon, int]]   # (part name, shape in job coords, extra rotation)
+
+
+def _interlock(a: Polygon, b: Polygon, gap: float, step: float = 4.0):
+    """Turn b upside down (180°) and slide it up into a's leg opening as far as the gap allows.
+    Returns (dx, dy, bbox area) for the tightest bounding box, b's corner relative to a's corner."""
+    from shapely.prepared import prep  # noqa: F401  (distance needs the real geometry)
+    bx0, by0, bx1, by1 = b.bounds
+    b180 = rotate(b, 180, origin=((bx0 + bx1) / 2, (by0 + by1) / 2))
+    ax1, ay1 = a.bounds[2], a.bounds[3]
+    bw, bh = bx1 - bx0, by1 - by0
+
+    def lowest_ok(dx):
+        lo, hi = -ay1 - bh, ay1 + 1.0          # dy: b's bottom relative to a's bottom; hi = clear above
+        if translate(b180, dx, hi).distance(a) < gap:
+            return None
+        for _ in range(28):                     # smallest dy (b furthest down... i.e. most overlap from above)
+            m = (lo + hi) / 2
+            lo, hi = (lo, m) if translate(b180, dx, m).distance(a) >= gap else (m, hi)
+        return hi
+
+    def lowest_from_below(dx):                  # b placed under a, pushed up into a's opening
+        lo, hi = -bh - 1.0, ay1
+        if translate(b180, dx, lo).distance(a) < gap:
+            return None
+        for _ in range(28):
+            m = (lo + hi) / 2
+            lo, hi = (m, hi) if translate(b180, dx, m).distance(a) >= gap else (lo, m)
+        return lo
+
+    best = None
+    for dx in np.arange(-bw, ax1 + step, step):
+        for dy in (lowest_ok(dx), lowest_from_below(dx)):
+            if dy is None:
+                continue
+            u = unary_union([a, translate(b180, dx, dy)])
+            x0, y0, x1, y1 = u.bounds
+            area = (x1 - x0) * (y1 - y0)
+            if best is None or area < best[2] - 1e-6:
+                best = (float(dx), float(dy), area)
+    return best, b180
+
+
+_PAIR_CACHE: dict = {}
+
+
+def _pair_job(a: CutPart, b: CutPart, gap: float) -> _Job:
+    key = (a.shape.wkb, b.shape.wkb, round(gap, 3))
+    if key not in _PAIR_CACHE:
+        (dx, dy, _), b180 = _interlock(a.shape, b.shape, gap)
+        bm = translate(b180, dx, dy)
+        u = unary_union([a.shape, bm])
+        x0, y0, _, _ = u.bounds
+        am, bm = translate(a.shape, -x0, -y0), translate(bm, -x0, -y0)
+        _PAIR_CACHE[key] = (am, bm)
+    am, bm = _PAIR_CACHE[key]
+    rots = tuple(r for r in a.rotations if r in b.rotations)
+    return _Job(f"{a.name} + {b.name}", MultiPolygon([am, bm]), rots, [(a.name, am, 0), (b.name, bm, 180)])
+
+
+def _jobs(p, parts: list[CutPart], interlock: bool) -> list[tuple[_Job, int]]:
+    """Expand quantities into placement jobs. With interlock, each "<x>long side" is paired with a
+    "<x>short side" (one flipped, legs in the other's opening) wherever both are available."""
+    qty = {c.name: c.qty for c in parts}
+    jobs: list[tuple[_Job, int]] = []
+    if interlock:
+        gap = effective_gap(p) + 0.5
+        for a in parts:
+            if not a.name.endswith("long side"):
+                continue
+            b = next((c for c in parts if c.name == a.name[:-len("long side")] + "short side"), None)
+            if b is None:
+                continue
+            n = min(qty[a.name], qty[b.name])
+            if n == 0:
+                continue
+            j = _pair_job(a, b, gap)
+            jobs += [(j, k) for k in range(n)]
+            qty[a.name] -= n
+            qty[b.name] -= n
+    for c in parts:
+        done = c.qty - qty[c.name]
+        jobs += [(_Job(c.name, c.shape, c.rotations, [(c.name, c.shape, 0)]), done + k) for k in range(qty[c.name])]
+    return jobs
+
+
+def _interlock_modes(p) -> tuple[bool, ...]:
+    return (False, True) if getattr(getattr(p, "layout", None), "interlock", True) else (False,)
+
+
 def nest(p, parts: list[CutPart], sheet, res: float = 4.0,
-         strategy: tuple[str, str] = ("x", "area"), limit: bool = False) -> Nest:
+         strategy: tuple[str, str] = ("x", "area"), limit: bool = False, interlock: bool = False) -> Nest:
     """sheet: one (w, h) size (open as many as needed), or a list of sizes opened in that order.
-    With limit=True no sheets beyond the list are opened (parts that don't fit are unplaced)."""
+    With limit=True no sheets beyond the list are opened (parts that don't fit are unplaced).
+    interlock=True places each long/short side pair as one shape, one panel upside down with its
+    leg inside the other's leg opening (much less sheet per pair)."""
     sizes = [sheet] if isinstance(sheet[0], (int, float)) else list(sheet)
     sizes = [(max(a), min(a)) for a in sizes]
     W, H = sizes[0]
@@ -108,7 +208,7 @@ def nest(p, parts: list[CutPart], sheet, res: float = 4.0,
         s.occ = occ
         return s
 
-    jobs = [(cp, k) for cp in parts for k in range(cp.qty)]
+    jobs = _jobs(p, parts, interlock)
     if strategy[1] == "area":
         jobs.sort(key=lambda j: -(j[0].shape.bounds[2] * j[0].shape.bounds[3]))
     elif strategy[1].startswith("rand"):   # random order of the big parts, small ones last
@@ -136,6 +236,10 @@ def nest(p, parts: list[CutPart], sheet, res: float = 4.0,
                 m = _mask(g, res, grow)
                 cache[key] = (m, g, -grow, -grow)       # mask cell (0,0) corner sits at (-grow, -grow)
             options.append((ang, *cache[key]))
+        rot_off = {}
+        for ang in cp.rotations:                            # where the rotated job's corner moved to
+            x0, y0, _, _ = rotate(cp.shape, ang, origin=(0, 0)).bounds
+            rot_off[ang] = (x0, y0)
         done = False
         for s in [*sheets, None]:
             if s is None:
@@ -163,14 +267,17 @@ def nest(p, parts: list[CutPart], sheet, res: float = 4.0,
                     best = cand
             if best is None:
                 if fresh:
-                    unplaced.append(cp.name)       # doesn't fit even on an empty sheet
+                    unplaced += [mname for mname, _, _ in cp.members]       # doesn't fit even on an empty sheet
                     done = True
                     break
                 continue
             _, ang, i, j, m, g, ox, oy = best
             X, Y = j * res - ox, i * res - oy        # translate so the grown mask corner hits cell (i, j)
             s.occ[i:i + m.shape[0], j:j + m.shape[1]] |= m
-            s.placed.append(Placed(cp.name, k, ang, translate(g, X, Y)))
+            rx, ry = rot_off[ang]
+            for mi, (mname, mshape, mrot) in enumerate(cp.members):
+                mg = translate(rotate(mshape, ang, origin=(0, 0)), X - rx, Y - ry)
+                s.placed.append(Placed(mname, k, (ang + mrot) % 360, mg))
             if fresh:
                 sheets.append(s)
             done = True
@@ -179,6 +286,7 @@ def nest(p, parts: list[CutPart], sheet, res: float = 4.0,
             unplaced.append(cp.name)
     n = Nest(W, H, margin, gap, sheets, unplaced)
     n.strategy = strategy
+    n.interlock = interlock and any(len(j.members) > 1 for j, _ in jobs)
     return n
 
 
@@ -210,7 +318,8 @@ def plan(p, parts: list[CutPart], max_sheets: int = 4) -> Nest | None:
                 continue
             mixes.append((sum(w * h for w, h in mix), k, list(mix)))
     for _, _, mix in sorted(mixes):
-        tries = [nest(p, parts, mix, strategy=st, limit=True) for st in STRATEGIES]
+        tries = [nest(p, parts, mix, strategy=st, limit=True, interlock=il)
+                 for il in _interlock_modes(p) for st in STRATEGIES]
         ok = [n for n in tries if not n.unplaced]
         if ok:
             best = max(ok, key=utilisation)
@@ -228,7 +337,7 @@ def _last_sheet_fill(n: Nest) -> float:
 
 def best_nest(p, parts: list[CutPart], sheet: tuple[float, float]) -> Nest:
     """Try every strategy; keep the fewest sheets, then the least-used last sheet."""
-    results = [nest(p, parts, sheet, strategy=st) for st in STRATEGIES]
+    results = [nest(p, parts, sheet, strategy=st, interlock=il) for il in _interlock_modes(p) for st in STRATEGIES]
     return min(results, key=lambda n: (len(n.unplaced), len(n.sheets), -n.utilisation, _last_sheet_fill(n)))
 
 

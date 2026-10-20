@@ -97,7 +97,8 @@ Top: one piece ({p.top.shape}, {p.top.length:.0f} mm).
 
 Gap between parts: {nest.effective_gap(p):.2f} mm (uMake asks for >= {p.cnc.part_gap:.0f} mm, and the {p.cnc.bit_d} mm bit
 must fit between parts). Sheet margin: {p.cnc.sheet_margin:.0f} mm. Grain runs along each sheet's long side.
-The side panels keep their length along it. 
+The side panels keep their length along it (0° or 180°). Where it helps, a long side and a short side
+are nested as an interlocked pair: one upside down, with a leg inside the other's leg opening.
 Frame grain: **{p.layout.frame_grain}**.
 
 | Sets | Layout | Sheets | Plywood (m²) | Per set (m²) | Parts / plywood |

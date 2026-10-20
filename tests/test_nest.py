@@ -100,3 +100,17 @@ def test_sheet_dxf_roundtrip(n, tmp_path):
             assert e.closed and e.dxf.layer == "CUT"
             xs, ys = zip(*[(x, y) for x, y, *_ in e.get_points()])
             assert min(xs) >= 0 and max(xs) <= s.w and min(ys) >= 0 and max(ys) <= s.h
+
+
+def test_interlocked_pair_saves_sheet_area():
+    """A long side + a short side, one upside down with a leg in the other's opening, need much less
+    rectangle than the two side by side, and stay a full bit-gap apart."""
+    parts = {c.name: c for c in cutlist.cut_list(params.tables(P)[0])}
+    a, b = parts["long side"], parts["short side"]
+    j = nest._pair_job(a, b, nest.effective_gap(P) + 0.5)
+    x0, y0, x1, y1 = j.shape.bounds
+    sep = (a.shape.bounds[2] * a.shape.bounds[3]) + (b.shape.bounds[2] * b.shape.bounds[3])
+    assert (x1 - x0) * (y1 - y0) < 0.8 * sep
+    (_, am, _), (_, bm, rot) = j.members
+    assert am.distance(bm) >= nest.effective_gap(P) and rot == 180
+    assert am.area == pytest.approx(a.shape.area) and bm.area == pytest.approx(b.shape.area)
