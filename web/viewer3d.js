@@ -46,7 +46,7 @@ export class Viewer3D {
     const grid = new THREE.GridHelper(3000, 30, 0xcfc6b8, 0xe7e0d6); grid.rotation.x = Math.PI / 2;
     grid.position.set(600, 400, 0); this.scene.add(grid);
     this.root = new THREE.Group(); this.scene.add(this.root);
-    this.state = { option: null, explode: 0, showTop: true, showFrame: true, showHeater: true };
+    this.state = { option: null, table: "both", explode: 0, showTop: true, showFrame: true, showHeater: true };
     new ResizeObserver(() => this.resize()).observe(container);
   }
 
@@ -57,6 +57,8 @@ export class Viewer3D {
     if (!this.gui) {
       this.gui = new GUI({ container: this.c, title: "View" });
       this.gui.domElement.style.position = "absolute"; this.gui.domElement.style.right = "8px"; this.gui.domElement.style.top = "8px";
+      const tnames = [...data.tables.map((t) => t.name), "both"];
+      this.gui.add(this.state, "table", tnames).name("table").onChange(() => { this.framed = false; this.build(); });
       this.optCtl = this.gui.add(this.state, "option", names).name("top seam").onChange((v) => { this.build(); onOption && onOption(v); });
       this.gui.add(this.state, "explode", 0, 400, 1).onChange(() => this.place());
       this.gui.add(this.state, "showTop").name("top").onChange(() => this.place());
@@ -73,37 +75,46 @@ export class Viewer3D {
   build() {
     const d = this.data; if (!d) return;
     this.root.clear();
-    const F = d.frame, t = d.top.thickness, opt = d.top.options.find((o) => o.name === this.state.option);
     this.items = [];
+    const t = d.top.thickness;
+    const which = this.state.table === "both" ? d.tables : d.tables.filter((x) => x.name === this.state.table);
+    let dx = 0;
+    for (const T of which) {
+      this.addTable(T, dx, t);
+      dx += T.top.length + 400;
+    }
+    for (const it of this.items) this.root.add(it.obj);
+    if (!this.framed) { this.framed = true; this.frame(); }
+    this.place();
+  }
+
+  addTable(T, dx, t) {
+    const d = this.data, F = T.frame;
+    const off = new THREE.Vector3(dx, 0, 0);
+    const opt = T.shape === "round" ? { boards: T.top.boards, keys: [] } : d.top.options.find((o) => o.name === this.state.option);
     const ztop = F.height + F.futon_gap;
     const nb = opt.boards.length;
+    const push = (obj, kind, dir) => { obj.position.add(off); this.items.push({ obj, kind, dir, base: obj.position.clone() }); };
     opt.boards.forEach((h, i) => {
       const m = slab(h, t, i % 2 ? COL.b : COL.a); m.position.z = ztop;
       const sx = nb > 1 ? (2 * i / (nb - 1) - 1) : 0; // -1 .. +1, left -> right
-      this.items.push({ obj: m, kind: "top", dir: new THREE.Vector3(sx, 0, sx === 0 ? 0.4 : 0), base: m.position.clone() });
+      push(m, "top", new THREE.Vector3(sx, 0, sx === 0 ? 0.4 : 0));
     });
-    opt.keys.forEach((k) => {
-      const m = slab(k, t, COL.key); m.position.z = ztop;
-      this.items.push({ obj: m, kind: "key", dir: new THREE.Vector3(0, 0, 1.6), base: m.position.clone() });
-    });
+    opt.keys.forEach((k) => { const m = slab(k, t, COL.key); m.position.z = ztop; push(m, "key", new THREE.Vector3(0, 0, 1.6)); });
     const byName = Object.fromEntries(F.parts.map((p) => [p.name, p]));
     const colour = { frame: COL.panel, deck: COL.deck, cheek: COL.deck, wedge: COL.key };
     for (const pl of F.placed) {
-      const part = byName[pl.part];
-      let shape = part.shape;
+      let shape = byName[pl.part].shape;
       if (pl.mirror) shape = { ext: shape.ext.map(([u, v]) => [-u, v]).reverse(), holes: shape.holes.map((h) => h.map(([u, v]) => [-u, v]).reverse()) };
       const m = slab(shape, t, colour[pl.kind] ?? COL.panel);
       if (pl.axis !== "z") m.applyMatrix4(BASIS[pl.axis]);
       m.position.set(...pl.origin);
-      this.items.push({ obj: m, kind: pl.kind === "wedge" ? "wedge" : "frame", dir: new THREE.Vector3(...pl.explode), base: m.position.clone() });
+      push(m, pl.kind === "wedge" ? "wedge" : "frame", new THREE.Vector3(...pl.explode));
     }
     const hz = F.heater;
     const heater = new THREE.Mesh(new THREE.BoxGeometry(...hz.size), new THREE.MeshStandardMaterial({ color: COL.heater, roughness: 0.5 }));
     heater.position.set(...hz.center);
-    this.items.push({ obj: heater, kind: "heater", dir: new THREE.Vector3(0, 0, -0.6), base: heater.position.clone() });
-    for (const it of this.items) this.root.add(it.obj);
-    if (!this.framed) { this.framed = true; this.frame(); }
-    this.place();
+    push(heater, "heater", new THREE.Vector3(0, 0, -0.6));
   }
 
   place() {

@@ -2,7 +2,7 @@ import { marked } from "marked";
 import { el, drawOption, drawFootprint, drawGrid, staticSvg, jointBox, PanZoom, niceLength, polyD } from "./viewer2d.js";
 
 const $ = (s) => document.querySelector(s);
-const state = { data: null, option: null, tab: "overview", doc: "PLAN.md", compare: false, pz: null, v3d: null, joint: null, part: null, ppz: null, sheet: null, spz: null, tables: null };
+const state = { data: null, option: null, tab: "overview", doc: "PLAN.md", compare: false, pz: null, v3d: null, joint: null, part: null, ppz: null, sheet: null, spz: null, tables: null, ptable: null };
 
 // ---------- tabs ----------
 function showTab(tab) {
@@ -133,10 +133,16 @@ function partSvg(p, pad = 8) {
   return svg;
 }
 
+function curTable(d) {
+  if (!d.tables.some((t) => t.name === state.ptable)) state.ptable = d.tables[0].name;
+  return d.tables.find((t) => t.name === state.ptable);
+}
+
 function renderPartList(d) {
-  const F = d.frame;
+  const T = curTable(d), F = T.frame;
   if (!F.parts.some((p) => p.name === state.part)) state.part = F.parts[0].name;
   const list = $("#part-list"); list.replaceChildren();
+  list.appendChild(btnGroup(d.tables.map((t) => [t.name, t.label]), state.ptable, (n) => { state.ptable = n; state.part = null; renderPartList(d); renderPartViewer(d, true); }));
   const head = document.createElement("div"); head.className = "stats";
   head.textContent = `${F.parts.reduce((n, p) => n + p.qty, 0)} pieces · frame ≈ ${F.total_kg} kg`;
   list.appendChild(head);
@@ -154,7 +160,7 @@ function renderPartList(d) {
 }
 
 function renderPartViewer(d, refit = false) {
-  const p = d.frame.parts.find((x) => x.name === state.part);
+  const p = curTable(d).frame.parts.find((x) => x.name === state.part);
   const host = $("#pviewer");
   let svg = host.querySelector("svg");
   const [x0, y0, x1, y1] = p.bounds, top = partFlip(p);
@@ -167,7 +173,7 @@ function renderPartViewer(d, refit = false) {
       bar.innerHTML = `<div style="width:${L * k}px"></div>${L} mm`;
     });
     svg.addEventListener("pointermove", (e) => {
-      const q = state.ppz.toSvg(e.clientX, e.clientY), cur = d.frame.parts.find((x) => x.name === state.part);
+      const q = state.ppz.toSvg(e.clientX, e.clientY), cur = curTable(state.data).frame.parts.find((x) => x.name === state.part);
       $("#preadout").textContent = `u ${q.x.toFixed(1)}  v ${(partFlip(cur) - q.y).toFixed(1)} mm`;
       const b = svg.querySelector(".bit"); if (b) { b.setAttribute("cx", q.x); b.setAttribute("cy", q.y); }
     });
@@ -202,10 +208,10 @@ function renderSheets(d, refit = false) {
   const opts = S[state.tables], names = Object.keys(opts);   // sorted by plywood, least first
   if (!names.includes(state.sheet)) state.sheet = names[0];
   $("#sheet-btns").replaceChildren(
-    btnGroup(tablesKeys.map((k) => [k, k === "1" ? "1 table" : `${k} tables`]), state.tables, (k) => { state.tables = k; state.sheet = null; renderSheets(d, true); }),
+    btnGroup(tablesKeys.map((k) => [k, k === "1" ? "1 set" : `${k} sets`]), state.tables, (k) => { state.tables = k; state.sheet = null; renderSheets(d, true); }),
     btnGroup(names.map((n) => [n, `${n} · ${opts[n].material_m2} m²`]), state.sheet, (n) => { state.sheet = n; renderSheets(d, true); }));
   const N = opts[state.sheet], k = +state.tables;
-  $("#sheet-summary").textContent = `${N.sizes.join(" + ")} · ${N.material_m2} m² (${(N.material_m2 / k).toFixed(2)} m² per table) · parts use ${Math.round(N.util * 100)}% · gap ${N.gap} mm`;
+  $("#sheet-summary").textContent = `${N.sizes.join(" + ")} · ${N.material_m2} m²${k > 1 ? ` (${(N.material_m2 / k).toFixed(2)} m² per set)` : ""} · parts use ${Math.round(N.util * 100)}% · gap ${N.gap} mm`;
   const host = $("#sviewer");
   let svg = host.querySelector("svg");
   const offs = []; let y = 0;

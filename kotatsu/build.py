@@ -18,7 +18,8 @@ from .params import ROOT
 
 OUT = ROOT / "out"
 CACHE = OUT / ".cache"
-SRC = ["params.toml", "kotatsu/cutlist.py", "kotatsu/nest.py", "kotatsu/frame.py", "kotatsu/top.py", "kotatsu/geom.py"]
+SRC = ["params.toml", "kotatsu/params.py", "kotatsu/build.py", "kotatsu/cutlist.py", "kotatsu/nest.py",
+       "kotatsu/frame.py", "kotatsu/top.py", "kotatsu/geom.py"]   # anything that can change a layout
 
 
 def top(p):
@@ -32,10 +33,10 @@ def slug(s: str) -> str:
 
 
 def layouts(p) -> dict[int, dict[str, nest.Nest]]:
-    """{tables: {"best mix" | "<size> only": Nest}} for every table count in [layout].tables."""
+    """{sets: {"best mix" | "<size> only": Nest}} for every count in [layout].sets (copies of all [[tables]])."""
     out = {}
-    for k in getattr(p.layout, "tables", [1]):
-        parts = cutlist.cut_list(p, copies=k)
+    for k in getattr(p.layout, "sets", [1]):
+        parts = cutlist.cut_list_all(p, copies=k)
         opts = {}
         best = nest.plan(p, parts)
         if best is not None:
@@ -84,7 +85,8 @@ def bom_markdown(p, parts, lays) -> str:
     return f"""# Bill of materials (generated — do not edit)
 
 Material: {p.material.name}, {t:.0f} mm nominal ({p.material.t_min}–{p.material.t_max} mm accepted by every joint).
-Seam: `{p.top.split}`, {p.top.boards} top boards.
+Tables: {", ".join(t.table_label for t in params.tables(p))}.
+Seam on the rectangular top: `{p.top.split}` (placeholder until chosen).
 
 | Part | Qty | Size (mm) | kg each | Cut length each (m) | Note |
 |---|---|---|---|---|---|
@@ -94,42 +96,44 @@ Seam: `{p.top.split}`, {p.top.boards} top boards.
 ## Sheet layouts
 
 Gap between parts: {nest.effective_gap(p):.2f} mm (uMake asks for >= {p.cnc.part_gap:.0f} mm, and the {p.cnc.bit_d} mm bit
-must fit between parts). Sheet margin: {p.cnc.sheet_margin:.0f} mm. Grain runs along each sheet's long side:
-the side panels keep their length along the grain, and the top boards keep their 800 mm length along it.
+must fit between parts). Sheet margin: {p.cnc.sheet_margin:.0f} mm. Grain runs along each sheet's long side.
+The side panels keep their length along it. The rectangular top's boards are placed so the grain runs
+{"along the table's length, continuous across all 3 boards" if p.layout.top_grain == "along" else "along each board's length (across the table)"}.
 
 Top grain: **{p.layout.top_grain}**; frame grain: **{p.layout.frame_grain}**.
 
-| Tables | Layout | Sheets | Plywood (m²) | Per table (m²) | Parts / plywood |
+| Sets | Layout | Sheets | Plywood (m²) | Per set (m²) | Parts / plywood |
 |---|---|---|---|---|---|
 {chr(10).join(sheet_rows)}
 
-The "best mix" row for each table count is the least plywood found. TODO-verify how uMake prices
+"Set" = one of each table. The "best mix" row is the least plywood found. TODO-verify how uMake prices
 (per sheet, or per part area + cut time) before choosing.
 
-Files: `out/dxf/sheets/<N>-table/<layout>/sheet-K-<size>.dxf` (upload) and `out/dxf/parts/*.dxf` (one per part,
-quantities above are for one table).
+Files: `out/dxf/sheets/<N>-set/<layout>/sheet-K-<size>.dxf` (upload) and `out/dxf/parts/<table>-*.dxf`
+(one per part; quantities above are for one set).
 """
 
 
 def main() -> None:
     p = params.load()
-    parts = cutlist.cut_list(p)
+    parts = cutlist.cut_list_all(p)
+    import shutil
+    shutil.rmtree(OUT / "dxf" / "parts", ignore_errors=True)
     for c in parts:
         export.write_dxf(OUT / "dxf" / "parts" / f"{slug(c.name)}.dxf", [("CUT", c.shape)])
     lays = cached_layouts(p)
     n_files = 0
-    import shutil
     shutil.rmtree(OUT / "dxf" / "sheets", ignore_errors=True)
     shutil.rmtree(OUT / "preview" / "sheets", ignore_errors=True)
     for k, opts in lays.items():
         for name, n in opts.items():
-            d = OUT / "dxf" / "sheets" / f"{k}-table" / slug(name)
+            d = OUT / "dxf" / "sheets" / f"{k}-set" / slug(name)
             for i, s in enumerate(n.sheets, 1):
                 size = nest.sheet_name((s.w, s.h))
                 geo = [("CUT", pl.shape) for pl in s.placed]
                 export.write_dxf(d / f"sheet-{i}-{size}.dxf", geo)
-                export.write_png(OUT / "preview" / "sheets" / f"{k}-table-{slug(name)}-{i}.png",
-                                 [("ENGRAVE", box(0, 0, s.w, s.h))] + geo, title=f"{k} table(s), {name}: sheet {i} ({size})")
+                export.write_png(OUT / "preview" / "sheets" / f"{k}-set-{slug(name)}-{i}.png",
+                                 [("ENGRAVE", box(0, 0, s.w, s.h))] + geo, title=f"{k} set(s), {name}: sheet {i} ({size})")
                 n_files += 1
     (OUT / "BOM.md").write_text(bom_markdown(p, parts, lays))
     print(f"wrote {len(parts)} part DXFs, {n_files} sheet DXFs, BOM.md to {OUT}")

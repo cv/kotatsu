@@ -105,8 +105,18 @@ def frame_data(p) -> dict:
             "draft": False}
 
 
+def tables_data(p) -> list[dict]:
+    out = []
+    for tp in params.tables(p):
+        tb = top.build(tp)
+        out.append({"name": tp.table_name, "label": tp.table_label, "shape": getattr(tp.top, "shape", "rect"),
+                    "top": {"length": tp.top.length, "width": tp.top.width, "boards": [rings(b) for b in tb.boards]},
+                    "frame": frame_data(tp)})
+    return out
+
+
 def sheets_data(p) -> dict:
-    group = {c.name: c.group for c in cutlist.cut_list(p)}
+    group = {c.name: c.group for c in cutlist.cut_list_all(p)}
     out = {}
     for k, opts in cutbuild.cached_layouts(p).items():
         out[str(k)] = {}
@@ -149,8 +159,8 @@ def build(with_tests: bool = True) -> None:
         "project": {
             "title": "Kotatsu — glue-free CNC birch",
             "facts": [
-                ["Top", f"{p.top.length:.0f} × {p.top.width:.0f} × {p.material.t_nominal:.0f} mm, {p.top.boards} boards"],
-                ["Height", f"{p.frame.height + p.material.t_nominal:.0f} mm + futon ≈ 40–41 cm"],
+                *[["Table", t.table_label] for t in params.tables(p)],
+                ["Height", f"{p.frame.height + p.material.t_nominal:.0f} mm + futon ≈ 40–41 cm (both)"],
                 ["Material", p.material.name],
                 ["Heater", f"{p.heater.model} ({p.heater.mount} mount)"],
                 ["Vendor", "uMake.ca (online instant quote)"],
@@ -160,7 +170,7 @@ def build(with_tests: bool = True) -> None:
         },
         "params": raw,
         "top": top_data(p),
-        "frame": frame_data(p),
+        "tables": tables_data(p),
         "sheets": sheets_data(p),
         "tests": run_tests() if with_tests else None,
         "docs": {d: (ROOT / d).read_text() for d in DOCS if (ROOT / d).exists()},
