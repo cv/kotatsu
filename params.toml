@@ -105,6 +105,18 @@ wedge_preload = 300.0 # clamp force a tapped-in leg wedge gives (N): rough guess
 bearing_len = 20.0    # length over which in-plane bearing (tenon face on mortise end) spreads, mm: rough
 report_loads = [50.0, 100.0, 200.0]   # sideways pushes at table height to report (N)
 
+[loads]               # kotatsu/loads.py: the loose top under everyday loads (owner 2026-10-20). Rough values, TODO-verify
+E_cross = 6500.0      # top's bending stiffness across the face grain, MPa (birch ply ~0.7 x along)
+G_plate = 620.0       # in-plane shear modulus (sets the twisting stiffness), MPa
+f_m_cross = 30.0      # bending strength across the face grain, MPa (characteristic, rough)
+f_v_plate = 9.0       # twisting (in-plane) shear strength at the face, MPa (rough)
+nap_kg = 30.0         # head + forearms + some chest resting on the table while napping hunched over
+slump = 1.5           # flopping down onto it
+cat_kg = 7.0
+cat_impact = 4.0      # a cat landing from a jump: peak ~3-4 x body weight on the front paws
+laptop_kg = 2.0
+sitter_kg = 80.0      # 'beyond normal' check: someone sits on the table
+
 [comfort]
 knee_w = 762.0        # owner, cross-legged: knees need 30" wide ...
 knee_h = 317.5        # ... x 12.5" high

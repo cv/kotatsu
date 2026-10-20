@@ -117,3 +117,20 @@ Material values are rough (E along the grain 9 GPa, through the thickness 300–
 1. Tipping limit: EN 12521:2023's force table, or a bathroom-scale test.
 2. Heater measurements (body, flanges, cord exit), and the clearances required by its manual.
 3. Futon choice. The traditional shijira cotton (Wataman) is sold out; Amazon.co.jp has 205 cm options in stock.
+
+## Everyday loads on the top (kotatsu/loads.py, 2026-10-20)
+The loose 860 mm top is modelled as a plate on the corner pads, which only push (a grillage checked against plate
+theory to within ~3–5 %). Loads: napping hunched over = 30 kg on forearms + head near the edge, ×1.5 for
+flopping down; 7 kg cat (×4 landing from a jump); 2 kg laptop; the top's own weight.
+
+| Case | Load | Peak stress | Use of strength | Sag |
+|---|---|---|---|---|
+| nap + cat curled + laptop | 39 kg | 2.2–2.4 MPa | 6–7 % | 1.0 mm |
+| flop down + cat jumps up mid-table | 75 kg | 3.7 MPa | 11 % | 2.0 mm |
+| cat lands on a corner | 28 kg peak | 0.7 MPa | 2 % | 0.1 mm |
+| slump + cat at the very edge | 54 kg | 3.1 MPa | 9 % | 1.2 mm |
+| *beyond normal:* 80 kg adult sits on an edge, ×1.5 | 120 kg | 9.4 MPa | 27 % | 3.9 mm |
+
+No corner lifts in any case: every load lies inside the corner pads. Strength values are rough characteristic
+figures (TODO-verify), and a typical sheet breaks at about 1.5× those. Legs carry ≤ 0.6 kN per corner
+(< 0.3 MPa); the wedges and the deck aren't in the vertical load path.
