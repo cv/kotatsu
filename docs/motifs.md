@@ -61,3 +61,13 @@ an error when this happens.
 Karimata rule: each prong stays at least `prong_w` wide (24 mm) along its whole length. A bare crescent
 circle bulges out and pinches the prongs below the bit width. Their tips then break off as islands,
 which `test_boards_have_no_holes_or_islands` now catches.
+
+## Maple leaves (`maple-3`, `maple-5`)
+
+The outline is the official Flag of Canada leaf, extracted from the public-domain SVG on Wikimedia
+Commons by `kotatsu/maple_extract.py` into `kotatsu/data/maple_leaf.json`. Each leaf is split along its
+axis, and that axis lies exactly on the seam line. The visible joint is half a leaf, sticking out
+alternately to one side and then the other, with the tip always pointing the same way.
+
+There's no hidden dovetail. The lock comes from the leaf itself: its up-swept points overhang the notches
+between the lobes, so the boards can't be pulled apart (checked by `test_seam_resists_pulling_apart`).

@@ -78,7 +78,7 @@ def test_mirrored_middle_board_is_symmetric():
         mid = t.boards[1]
         flipped = scale(mid, -1, 1, origin=(P.top.length / 2, 0))
         # equal up to the seam clearance (each seam's gap is taken from its right-hand board)
-        assert mid.hausdorff_distance(flipped) < 2 * P.fit.inplane_c + 0.5, o.name
+        assert mid.hausdorff_distance(flipped) < 2 * P.fit.inplane_c + 0.75, o.name  # + male/female rounding
 
 
 def test_chigiri_keys_lock_boards():

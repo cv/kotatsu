@@ -232,6 +232,21 @@ tails = [
 ]
 
 
+# --- maple leaves (Flag of Canada leaf, public domain; kotatsu/data/maple_leaf.json) -------------
+[[top.options]]
+name = "maple-3"
+kind = "maple"
+label = "Half maple leaves, alternating, centred on the seam"
+count = 3
+size = 230.0          # full leaf height (stem foot to tip); each half sticks out ~106 mm
+
+[[top.options]]
+name = "maple-5"
+kind = "maple"
+label = "5 smaller half maple leaves, alternating"
+count = 5
+size = 150.0
+
 # --- arrows: yajiri (arrowhead) + yabane (fletching) -------------------------------------
 [[top.options]]
 name = "yajiri-3"

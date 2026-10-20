@@ -10,6 +10,7 @@ kinds:
   bract    Douglas-fir cone bract: forked 3-lobed tip - no loose parts
   yajiri   barbed arrowhead on a stem              - no loose parts
   karimata forked 'wild goose' arrowhead (crescent) - no loose parts
+  maple    half Canada-flag maple leaf on the seam    - no loose parts
   combo    a different spec per seam (o.seam list)
   puzzle   jigsaw: neck + round head              - no loose parts
   lobes    seigaiha wave of necked round lobes    - no loose parts
@@ -141,6 +142,32 @@ def _karimata(x, y, o, s):
     return Polygon([(x + s * u, y + v) for u, v in largest(head).exterior.coords])
 
 
+_LEAF = None
+
+
+def _leaf() -> Polygon:
+    """Flag-of-Canada maple leaf, unit height, stem foot at (0, 0), axis x = 0 (kotatsu/data)."""
+    global _LEAF
+    if _LEAF is None:
+        import json
+        from pathlib import Path
+        d = json.loads((Path(__file__).parent / "data" / "maple_leaf.json").read_text())
+        _LEAF = Polygon(d["points"]).buffer(0)
+    return _LEAF
+
+
+def _maple(x, y, o, s):
+    """Half maple leaf, split along its axis, the axis lying on the seam line ("centrally aligned").
+    s = +1: right half sticks out into +x; s = -1: left half into -x. Tip points +y (`flip` = down).
+    The lobes' up-swept points overhang the notches, which is what locks the seam."""
+    H = o.size
+    leaf = _leaf()
+    half = leaf.intersection(box(0, -1, 2, 2))
+    g = Polygon([(x + s * u * H, y + ((1 - v) if getattr(o, "flip", False) else v) * H - H / 2)
+                 for u, v in half.exterior.coords])
+    return g.buffer(0)
+
+
 def _puzzle(x, y, o, s):
     cx = x + s * o.head_r * 0.9
     return unary_union([Point(cx, y).buffer(o.head_r, quad_segs=24), _xbox(x - 2 * s, cx, y, o.neck)])
@@ -156,11 +183,11 @@ def _bowtie(x, y, o):
                     (x + L / 2, y + W / 2), (x, y + w / 2), (x - L / 2, y + W / 2)])
 
 
-TAILS = {"ari": _dovetail, "bract": _bract, "yajiri": _yajiri, "karimata": _karimata, "kama": _kama, "hishi": _hishi, "puzzle": _puzzle, "lobes": _lobe}
+TAILS = {"ari": _dovetail, "bract": _bract, "yajiri": _yajiri, "karimata": _karimata, "maple": _maple, "kama": _kama, "hishi": _hishi, "puzzle": _puzzle, "lobes": _lobe}
 KINDS = (*TAILS, "chigiri", "combo")
 _SIZED = ("depth", "root", "tip", "counter_depth", "counter_root", "counter_tip", "fork_depth", "fork_width", "neck", "neck_len",
           "head_len", "head_w", "head_root", "head_tip", "flat", "head_r", "r",
-          "side_len", "side_inset", "notch", "mid_w", "mid_len", "barb", "crotch", "prong_w")
+          "side_len", "side_inset", "notch", "mid_w", "mid_len", "barb", "crotch", "prong_w", "size")
 
 
 def _per_tail(o, i: int):
