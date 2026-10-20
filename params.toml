@@ -113,6 +113,18 @@ leg_width = 120.0     # straight, thin legs: 40 mm ear arm | slot | 10 mm should
 leg_taper = 0.0       # straight (plumb both edges)
 foot_flare = 0.0      # no bell feet
 
+[[tables]]            # comparison variant: same yagura, legs splayed (leaning out) instead of plumb
+name = "round-yagura-splay"
+label = "Yagura variant, splayed legs"
+compare = true
+[tables.frame]
+style = "yagura"
+leg_width = 120.0
+leg_taper = 0.0
+foot_flare = 0.0
+[tables.yagura]
+leg_splay = 20.0      # feet 20 mm further out than the top of the leg (3.4°): tipping 604 -> ~760 N
+
 [yagura]              # only used by frame.style = "yagura"
 tenon_w = 56.0        # each leg plate's tenon through the deck
 tenon_gap = 10.0      # tenon starts this far past the cross-lap slot (the shoulder on that side)
@@ -122,3 +134,4 @@ hole_drop = 1.0
 deck_inset = 10.0     # deck corners stay this far inside the round top
 wedge_len = 60.0      # leg wedges: shorter than the cheek wedges so the two at each corner don't meet
 wedge_head = 18.0     # (1:8 taper -> 10.5 mm foot)
+leg_splay = 0.0       # plumb legs by default

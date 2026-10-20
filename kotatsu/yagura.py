@@ -47,7 +47,8 @@ def leg_plate(p, slotted_from_top: bool) -> Polygon:
     zs, H = L.z_deck_bot, L.H
     wt = F.leg_width
     wb = wt - getattr(F, "leg_taper", 0.0)
-    g = Polygon([(0, 0), (wb, 0), (wt, zs), (0, zs)])
+    sp = getattr(p.yagura, "leg_splay", 0.0)           # whole leg leans out: feet sp further out than the top
+    g = Polygon([(-sp, 0), (wb - sp, 0), (wt, zs), (0, zs)])
     g = fr._round_outer(g, F.foot_r)
     fl = _flare_near(p)
     if fl is not None:
