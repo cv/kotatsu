@@ -28,6 +28,11 @@ three rules:
 
 ## How the limits shaped it
 
+Most of my good ideas got replaced by better ones. These are the four biggest turns, each with what came
+before and what replaced it.
+
+### The top
+
 My first idea was a big 120 × 80 cm table. A top that big doesn't fit in a normal parcel, so I split it
 into three boards and went down a lovely rabbit hole of decorative seams to hold them together: dovetails,
 Japanese arrowheads, salmon tails, fir-cone scales and half maple leaves. I even drafted a request to
@@ -35,16 +40,42 @@ commission a local Secwépemc artist, rather than borrow Indigenous designs.
 
 ![Some of the seam ideas: half maple leaves, tips up on one seam, tips down on the other](docs/img/seams.png)
 
-Then I measured my room again. For a while there were two tables, then one round one. Round kotatsu
-futons turned out to be rare and expensive to ship here, so the table became square.
+Then I measured my room again. For a while there were two tables, then one round one. The round top cost
+**$200 extra** to ship, and round futons were hard to find at a fair price. A square top that fits in a
+91 cm box ships free. So the top became **86 × 86 cm, in one piece**, and the seams went into a git tag
+for another day.
 
-The shipping box decided the size. A 90 cm top cost **$200 extra** to ship. One that fits in a 91 cm box
-ships free. So the top is **86 × 86 cm, in one piece**, and the seams went into a git tag for another
-day.
+![The top: 120 × 80 in three boards, then 90 cm round, then 86 cm square, drawn to scale against the 91 cm box](docs/img/evolution-top.png)
 
-The frame changed too. It started with solid side panels. Those hit my knees, so it became a *yagura*:
-four "+"-shaped corner legs holding up a flat deck, with the heater hanging under the deck. I sketched
-slimmer legs twice, and each sketch came out lighter and cheaper than what I had.
+### The frame
+
+The first frame had solid side panels that slot together at the corners. It was strong and simple, but
+the strip of wood along each side (the apron) sat right where my knees go. Tapering the legs and flaring
+the feet helped a bit. Dropping the aprons altogether helped much more. That's a *yagura*: four
+"+"-shaped corner legs hold up a flat deck, and the heater hangs under the deck.
+
+![The frame: solid side panels, then tapered and flared legs, then the yagura with no aprons](docs/img/evolution-frame.png)
+
+### The legs
+
+The first yagura legs were plain strips. The wobble model then caught a sneaky problem: with wood on only
+one side of the joint, tapping the wedge in would twist the leg about 9 mm at the foot. A small shoulder
+on the other side fixed it. Later, a wider table pushed the weight past uMake's free-shipping limit
+(about 20 kg), so I cut windows in the legs. Then I sketched a better shape, twice, and each sketch came
+out lighter and cheaper than what I had.
+
+![The legs: plates with windows, then my first sketch, then my second, slimmer sketch](docs/img/evolution-legs.png)
+
+### The deck
+
+The deck had windows to save weight too. Then I ran a little price experiment: I uploaded test shapes to
+uMake to see how it charges. About three-quarters of the price is cutting time, not wood. A window is
+all cutting, so I opened the windows out to the edge. That's the same wood out, a metre less cutting and
+about $20 off. Rounding the new corners came last.
+
+![The deck: windows, then notches open to the edge, then rounded notches](docs/img/evolution-deck.png)
+
+Here's the frame all together, without its top:
 
 ![The frame without its top: crossed leg plates, the H-shaped deck and its wedges](docs/img/frame.png)
 
@@ -60,9 +91,8 @@ set of tests checks each version:
 - **Will it wobble, tip or break?** A little model of each joint gives the sway: under a millimetre for a
   firm push. A plate model of the top says napping on it with a 7 kg cat and a laptop uses about 7 % of
   the wood's strength.
-- **What will it cost?** I uploaded test shapes to work out how uMake prices. About three-quarters of
-  the cost is cutting time, not wood. So I traded the deck's cut-out windows for notches from the edge
-  (the H shape above), which saved about $20.
+- **What will it cost?** A price model fitted to my test uploads predicts uMake's quote to within
+  15 cents, so I can price a change before uploading it.
 
 The parts even pack flat into the top's footprint for summer.
 
