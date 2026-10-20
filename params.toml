@@ -49,6 +49,7 @@ drop = 26.0           # deck top below the futon plane (room for the leg + cheek
 windows = "auto"
 window_style = "notch"  # owner 2026-10-20: open the windows through the edge (an H-shaped deck): ~$20 cheaper
 neck = 70.0           # wood joining each corner pad to the middle
+mouth_r = 30.0        # owner 2026-10-20: round the notch-mouth corners (the ones away from the legs)
 window_margin = 20.0  # clear of the heater, cheeks, cheek wedges, mortises, leg wedges
 window_bar = 30.0     # wood left at the deck edge and between windows
 window_r = 20.0

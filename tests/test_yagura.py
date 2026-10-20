@@ -259,3 +259,26 @@ def test_storage_layout_fits(Y):
     """Off-season: every part packs into three flat layers inside the top's footprint, nothing touching."""
     from kotatsu import storage
     assert storage.check(Y[0]) == []
+
+
+def test_deck_notch_mouths_rounded_but_leg_side_square():
+    """Owner 2026-10-20: the 8 notch-mouth corners are rounded; enough wood stays beside the mortises,
+    and the corner pads around the legs keep their shape (wedge bearing unchanged)."""
+    from shapely.geometry import Point, box
+    P = params.tables(params.load())[0]
+    rr = P.deck.mouth_r
+    assert rr > 0
+    deck = [pt for pt in frame.parts(P) if pt.name == "deck"][0].shape
+    pts = yagura.mouth_corners(P)
+    assert len(pts) == 8
+    for x, y, dx, dy in pts:
+        assert not deck.contains(Point(x + dx * 0.2 * rr, y + dy * 0.2 * rr))      # corner wood removed
+        assert deck.contains(Point(x + dx * 0.4 * rr, y + dy * 0.4 * rr))          # just inside the arc: wood
+    holes = [box(*m) for m in yagura.mortises(P)]
+    assert min(c.distance(h) for c in yagura.mouth_cutters(P) for h in holes) >= 15.0
+    P0 = params.tables(params.load())[0]
+    P0.deck.mouth_r = 0.0
+    sq = [pt for pt in frame.parts(P0) if pt.name == "deck"][0].shape
+    lost = sq.difference(deck)
+    for m in yagura.mortises(P):                                                  # nothing lost near the legs
+        assert lost.distance(box(*m)) >= 15.0

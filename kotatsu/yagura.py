@@ -160,10 +160,50 @@ def deck(p) -> Polygon:
         g = g.difference(fr.hole(x0, y0, x1, y1, r))
     for w in windows(p):                                # weight-saving windows away from the heater
         g = g.difference(w)
+    g = _round_mouths(p, g)
     for xi, sgn in zip(fr.cheek_xs(p), (-1, 1)):        # cheek tab slots, as in the slab deck
         xa, xb = sorted((xi, xi + sgn * fr.thick_slot(p)))
         for ya, yb in fr.tab_ys(p):
             g = g.difference(fr.hole(xa, ya - p.fit.tight, xb, yb + p.fit.tight, r))
+    return g
+
+
+def mouth_corners(p) -> list[tuple[float, float, int, int]]:
+    """The notched deck's convex corners where the notches meet the edge (away from the legs), as world
+    (x, y, dx, dy) with (dx, dy) pointing into the wood."""
+    D, L = p.deck, fr.layout(p)
+    if getattr(D, "window_style", "hole") != "notch":
+        return []
+    h, out = L.Lf / 2, []
+    for x0, y0, x1, y1 in window_rects(p):
+        if x1 > h:                                      # side notch, open at x = +h
+            out += [(h, y0, -1, -1), (h, y1, -1, 1)]
+        elif x0 < -h:
+            out += [(-h, y0, 1, -1), (-h, y1, 1, 1)]
+        elif y1 > h:                                    # end notch, open at y = +h
+            out += [(x0, h, -1, -1), (x1, h, 1, -1)]
+        elif y0 < -h:
+            out += [(x0, -h, -1, 1), (x1, -h, 1, 1)]
+    return [(L.cx + x, L.cy + y, dx, dy) for x, y, dx, dy in out]
+
+
+def mouth_cutters(p) -> list[Polygon]:
+    """Fillet cutters for the notch mouths: the r x r corner square minus its quarter circle."""
+    rr = getattr(p.deck, "mouth_r", 0.0)
+    out = []
+    if rr <= 0:
+        return out
+    for x, y, dx, dy in mouth_corners(p):
+        cx, cy = x + dx * rr, y + dy * rr
+        sq = box(min(x, cx), min(y, cy), max(x, cx), max(y, cy))
+        out.append(sq.difference(Point(cx, cy).buffer(rr, quad_segs=32)))
+    return out
+
+
+def _round_mouths(p, g):
+    """Round the notch-mouth corners (owner 2026-10-20) with radius deck.mouth_r; leg-side corners stay square."""
+    for c in mouth_cutters(p):
+        g = g.difference(c)
     return g
 
 

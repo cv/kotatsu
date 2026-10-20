@@ -47,15 +47,27 @@ def layouts(p) -> dict[int, dict[str, nest.Nest]]:
     return out
 
 
-def cached_layouts(p) -> dict:
-    """All layouts take ~1-2 min; cache them on the hash of everything that can change the result."""
+def _src_hash() -> str:
     h = hashlib.sha256()
     for f in SRC:
         h.update((ROOT / f).read_bytes())
-    path = CACHE / f"layouts-{h.hexdigest()[:16]}.pkl"
+    return h.hexdigest()[:16]
+
+
+_CODE_AT_IMPORT = _src_hash()   # the code this process actually runs
+
+
+def cached_layouts(p) -> dict:
+    """All layouts take ~1-2 min; cache them on the hash of everything that can change the result.
+    If the sources changed since this process imported them (an edit during a dev-server rebuild),
+    the result is not cached: it was computed by the old code and would be stored under the new hash."""
+    key = _src_hash()
+    path = CACHE / f"layouts-{key}.pkl"
     if path.exists():
         return pickle.loads(path.read_bytes())
     res = layouts(p)
+    if key != _CODE_AT_IMPORT or _src_hash() != key:
+        return res
     for opts in res.values():
         for n in opts.values():
             for s in n.sheets:
