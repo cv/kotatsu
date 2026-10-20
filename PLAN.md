@@ -106,7 +106,14 @@ corner, and the wedges and deck don't carry any of the weight from above.
    cUL, cETL or CSA mark.
 3. **A tipping limit.** If I want one: EN 12521's force table, or a bathroom-scale test on the finished table.
 4. **Fit-up.** The first assembly will show how the tenons and wedges really fit. Then finish it: ease the
-   edges and oil it.
+   edges and oil it. Two hand-finishing tricks make it look lighter for free:
+   - Bevel the underside of the top's edge (about 10 mm at 45°, with a block plane or sanding block). The
+     edge then reads as a thin line from a seated eye height.
+   - Oil the frame a shade darker than the top, so the top seems to float over the legs.
+5. **Lighter-look cuts (mocked up, off for now).** Bigger top corners (R70), a curved haunch on the legs,
+   and feet tapering 10 mm on plate A. Together they make the order about $1.50 cheaper, take 0.1 kg off
+   and lower the leg stress, and cost a little tipping margin (1698 → 1476 N at the edge). Adopting them
+   means re-uploading the top and leg plates before uMake confirms the order.
 
 ## Earlier designs
 - The 120 × 80 top in three boards with decorative seams (dovetails, arrowheads, maple leaves and more),
