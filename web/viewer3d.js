@@ -134,6 +134,7 @@ export class Viewer3D {
     }
     geo.setIndex(idx); geo.computeVertexNormals();
     const futon = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: COL.futon, roughness: 0.95, side: THREE.DoubleSide }));
+    futon.renderOrder = 2; // drawn after the opaque parts, so it can fade over them
     push(futon, "futon", still);
     const seatMat = new THREE.MeshStandardMaterial({ color: COL.seat, roughness: 0.9 });
     for (const st of R.seats) {
@@ -150,6 +151,12 @@ export class Viewer3D {
       const vis = { top: S.showTop, key: S.showTop, frame: S.showFrame, wedge: S.showFrame, heater: S.showHeater,
         futon: S.showFuton, rug: S.showRug, seat: S.showSeats }[it.kind];
       it.obj.visible = vis;
+      if (it.kind === "futon") { // fades out as the parts explode, so you can see them through it
+        const m = it.obj.material, o = 1 - 0.9 * Math.min(1, e / 400);
+        const fade = o < 0.999;
+        if (m.transparent !== fade) { m.transparent = fade; m.depthWrite = !fade; m.needsUpdate = true; }
+        m.opacity = o;
+      }
       const lift = it.kind === "top" ? new THREE.Vector3(0, 0, e * 0.8) : new THREE.Vector3();
       it.obj.position.copy(it.base).addScaledVector(it.dir, e * 0.5).add(lift);
     }

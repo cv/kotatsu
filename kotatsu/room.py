@@ -36,12 +36,28 @@ def futons(p) -> dict:
     return {"checked": d["checked"], "jpy_cad": rates["JPY"], "usd_cad": rates["USD"], "items": out}
 
 
+def seat_offset(p) -> float:
+    """Distance from the table's centre to each floor pillow's centre (one pillow per side).
+
+    Each pillow tucks at least zabuton_tuck under the futon's floor edge, and further in if needed so that
+    all of it, corners included, stays rug_margin inside the round rug."""
+    R = p.room
+    w, d = R.zabuton
+    rho_out = footprint_d(p, R.futon_d) / 2
+    c = rho_out - getattr(R, "zabuton_tuck", 50.0) + d / 2
+    lim = (R.rug_d / 2 - getattr(R, "rug_margin", 0.0)) ** 2 - (w / 2) ** 2
+    if lim > 0:
+        c = min(c, math.sqrt(lim) - d / 2)
+    return c
+
+
 def room_data(p) -> dict:
     return {"rug_d": p.room.rug_d, "futon_d": p.room.futon_d, "top_d": p.top.length,
             "top_shape": getattr(p.top, "shape", "rect"), "corner_r": getattr(p.top, "corner_r", 0.0),
             "futon_shape": getattr(p.room, "futon_shape", "round"),
             "frame": p.top.length - 2 * p.frame.overhang, "ear": p.frame.ear,
             "height": p.frame.height + p.material.t_nominal, "zabuton": list(p.room.zabuton),
+            "seat_c": round(seat_offset(p), 1),
             "footprint_d": round(footprint_d(p, p.room.futon_d)), "futons": futons(p),
             "knees": comfort.summary(p)}
 
@@ -87,9 +103,17 @@ def drape_profile(p, futon_d: float):
     return at, r0 + dw, rho_out
 
 
-def room3d(p, n: int = 49) -> dict:
+def _smooth(t: float) -> float:
+    t = min(1.0, max(0.0, t))
+    return t * t * (3 - 2 * t)
+
+
+def room3d(p, n: int = 81) -> dict:
     """World-space geometry for the 3-D view's room layers: the rug, the futon draped over the table
-    (a grid of n x n points, square or round), and one floor pillow per side."""
+    (a grid of n x n points, square or round), and one floor pillow per side.
+
+    Where the futon's floor edge meets a pillow it rides up over it, easing onto the pillow's top over
+    zabuton_ramp mm (a picture, not a cloth simulation: the drape itself is drape_profile's)."""
     from . import frame
     L = frame.layout(p)
     cx, cy = L.cx, L.cy
@@ -97,6 +121,22 @@ def room3d(p, n: int = 49) -> dict:
     fd, shape = R.futon_d, getattr(R, "futon_shape", "square")
     at, rho_floor, rho_out = drape_profile(p, fd)
     half = fd / 2
+    w, d = R.zabuton
+    h = getattr(R, "zabuton_h", 90.0)
+    c = seat_offset(p)                                         # pillow centre distance from the table centre
+    seats = [{"center": [cx + ux * c, cy + uy * c, h / 2], "size": [w if uy else d, d if uy else w, h]}
+             for ux, uy in ((1, 0), (-1, 0), (0, 1), (0, -1))]
+    ramp = getattr(R, "zabuton_ramp", 80.0)
+
+    def over_seats(x: float, y: float) -> float:
+        """Height the cloth must clear at (x, y): each pillow's top, easing down to the floor around it."""
+        top = 0.0
+        for st in seats:
+            (sx, sy, _), (sw, sd, sh) = st["center"], st["size"]
+            dx, dy = max(0.0, abs(x - sx) - sw / 2), max(0.0, abs(y - sy) - sd / 2)
+            top = max(top, sh * _smooth(1 - math.hypot(dx, dy) / ramp))
+        return top
+
     pts = []
     for j in range(n):
         for i in range(n):
@@ -106,13 +146,9 @@ def room3d(p, n: int = 49) -> dict:
                 a, b, r = a * half / r, b * half / r, half
             rho, z = at(r)
             k = rho / r if r > 1e-9 else 1.0
-            z = max(z, 4.0)                                    # lies on the rug, not in it
-            pts += [round(cx + a * k, 1), round(cy + b * k, 1), round(z, 1)]
-    w, d = R.zabuton
-    h = getattr(R, "zabuton_h", 90.0)
-    c = rho_out - getattr(R, "zabuton_tuck", 50.0) + d / 2       # pillow centre distance from the table centre
-    seats = [{"center": [cx + ux * c, cy + uy * c, h / 2], "size": [w if uy else d, d if uy else w, h]}
-             for ux, uy in ((1, 0), (-1, 0), (0, 1), (0, -1))]
+            x, y = cx + a * k, cy + b * k
+            z = max(z, over_seats(x, y) + 4.0)                 # lies on the rug (and the pillows), not in them
+            pts += [round(x, 1), round(y, 1), round(z, 1)]
     return {"rug": {"center": [cx, cy], "d": R.rug_d, "t": getattr(R, "rug_t", 10.0)},
             "futon": {"n": n, "pts": pts, "shape": shape, "size": fd},
             "seats": seats}

@@ -33,3 +33,18 @@ def test_room3d_layers():
         assert abs(z - h / 2) < 1e-6
         assert max(abs(x - L.cx) - w / 2, abs(y - L.cy) - dd / 2) > L.Lf / 2
         assert (w, dd) == tuple(p.room.zabuton)
+
+
+def test_pillows_fit_inside_the_rug_and_tuck_under_the_futon():
+    p = P()
+    d = room.room3d(p)
+    L = frame.layout(p)
+    rim = p.room.rug_d / 2 - p.room.rug_margin
+    rho_out = room.footprint_d(p, p.room.futon_d) / 2
+    for s in d["seats"]:
+        (x, y, _), (w, dd, _) = s["center"], s["size"]
+        for sx in (-1, 1):
+            for sy in (-1, 1):
+                assert math.hypot(x + sx * w / 2 - L.cx, y + sy * dd / 2 - L.cy) <= rim + 1e-6
+        inner = max(abs(x - L.cx) - w / 2, abs(y - L.cy) - dd / 2)
+        assert rho_out - inner >= p.room.zabuton_tuck - 1e-6     # at least the minimum tuck under the futon

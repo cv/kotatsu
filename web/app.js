@@ -78,7 +78,7 @@ function renderFutonPlan(d, refit = false) {
   shapeEl(svg, fs, fp, "futon-floor", 60);
   shapeEl(svg, fs, fd, "futon-flat", 60);
   if ($("#chk-fzab").checked) {
-    const [zw, zd] = R.zabuton, rc = R.top_d / 2 + 30 + zd / 2;   // cushion's front edge just past the top
+    const [zw, zd] = R.zabuton, rc = R.seat_c;   // pillow centre distance from the table centre (room.seat_offset)
     for (const ang of [0, 90, 180, 270]) {
       const g = el("g", { transform: `rotate(${ang}) translate(0 ${rc})` }, svg);
       el("rect", { x: -zw / 2, y: -zd / 2, width: zw, height: zd, rx: 40, class: "zabuton" }, g);
