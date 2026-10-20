@@ -69,3 +69,8 @@ auto-sized deck windows and a slot window in each leg plate. Cart: **91×91×18 
 
 The windows cost routing time. The 660 frame order was $399.46. The leg windows add about $25 and save
 about 0.4 kg; without them the order is about 18.9 kg, the same weight that shipped free before (thin margin).
+
+### Haunched legs (2026-10-20, latest)
+The owner's sketch: leg plates 80 mm wide below a sloped haunch, full 130 mm under the deck; no leg windows.
+Cart: **91×91×18 cm, 17.7 kg, FREE**. Leg plates $61.64 + $61.68 (×4 each, down from about $76 each with windows),
+deck $123.40, top $91.83, cheeks $23.22, wedges $10.98 + $7.70. **Subtotal $380.45 + tax $45.65 = $426.10.**
