@@ -51,7 +51,7 @@ wedge_head = 18.0     # (1:8 taper -> 10.5 mm foot)
 
 [cheek]               # 2 on-edge plates under the deck; the heater screws into their inner faces
 length = 372.0
-height = 56.0         # = heater top gap + body height: cheeks end level with the heater bottom
+height = 55.0         # = heater body_h + top_gap: the cheek covers the heater's full side, not lower
 tab_w = 50.0
 tab_spacing = 300.0
 tab_above_deck = 21.0 # tab top above (nominal) deck top
@@ -62,13 +62,13 @@ hole_drop = 1.0       # hole bottom below the thinnest deck's top face
 length = 80.0
 head = 18.0           # height at the thick end; taper fit.wedge_taper (foot 8)
 
-[heater]               # PaletteLife 120V 400W (docs/heater.md). TODO-verify with calipers
+[heater]               # PaletteLife 120V 400W (docs/heater.md). Owner measured 29 x 29 x 5 cm (2026-10-19, to the cm)
 model = "PaletteLife B0CKBS16YY"
 mount = "side"         # side (screws into on-edge cheeks) | bracket (L-brackets under deck)
-body_x = 292.0
-body_y = 292.0
-body_h = 51.0
-cheek_clearance = 1.0  # cheek inner faces = body width + this
+body_x = 290.0
+body_y = 290.0
+body_h = 50.0
+cheek_clearance = 4.0  # cheek inner faces = body width + this; 4 mm covers a 290-293 mm body (measured to the cm)
 top_gap = 5.0          # heater top below the deck underside (TODO-verify manual clearances)
 holes = []             # not cut: the owner drills the heater's screw holes on assembly
 
