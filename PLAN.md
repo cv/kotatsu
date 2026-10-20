@@ -8,7 +8,8 @@ data from the uMake app, or from the heater once it's in hand.
 |---|---|
 | Table | **One round kotatsu, top Ø 900 cut as one piece.** The 1200 × 900 rectangle and all the decorative seam options were dropped (they're archived at git tag `seams-archive`) |
 | Frame | **Yagura, straight legs** (2026-10-19): 4 straight 130 mm "+" corner legs under a wedged deck, no aprons |
-| Heater | **PaletteLife 120 V 400 W** ordered (see docs/heater.md); the backup is Zuomeng PTC |
+| Material | **Everything in 18 mm birch plywood, wedges included** (2026-10-19). Hardwood wedges or other uMake materials were considered and dropped; the owner will make new wedges if any wear out |
+| Heater | **PaletteLife 120 V 400 W** ordered (see docs/heater.md); the backup is Zuomeng PTC. **The owner drills the heater's screw holes on assembly**, so no holes are cut |
 | Height | ≈ 41 cm total: frame 385 + top 18 + futon (owner accepted the top of the 39–41 range for leg room) |
 | Corners | the default visible cross-lap "ears"; no engraving |
 | Futon & rug | a **205 cm round** futon on an 8 ft round rug (docs/futon.md, docs/futons.toml, site tab "Futon & rug") |
@@ -107,12 +108,12 @@ Material values are rough (E along the grain 9 GPa, through the thickness 300–
 2. ✅ Frame geometry and joint tests; cut list, nesting, DXF per part and per sheet, `out/BOM.md`.
 3. ✅ **Leg room** and ✅ **frame style**: yagura with straight legs (sections 2–3).
 3b. ✅ **Wobble/strength estimate** (above): frame stiff, stresses low; one-sided leg joint found and fixed (130 mm legs). Still open: a real tipping limit; a test coupon to measure the tenon/mortise fit.
-4. ◐ **Heater**: measure it when it arrives and freeze `[heater]` (body, screw-hole positions, screw size, cord exit).
+4. ◐ **Heater**: when it arrives, measure the body width/depth/height, its mounting flanges, the cord exit and the manual's clearances, then freeze `[heater]`. This **gates the order**, because the cheek spacing comes from the body width. Screw holes aren't cut: the owner drills them on assembly.
 5. **Quote** on app.umake.ca: read the actual stock thickness and price; make sure there's no "manual quote" flag.
-6. Optional fit coupons (a cross-lap pair, a tenon + wedge).
+6. Optional fit coupon (a cross-lap pair, a tenon + wedge). Decide after the quote: skip it if the wait or the cost isn't worth it.
 7. Order, assemble, finish (sand off the holding tabs, ease the edges, oil).
 
 ## 6. Open questions
 1. Tipping limit: EN 12521:2023's force table, or a bathroom-scale test.
-2. Heater measurements, and the clearances required by its manual.
+2. Heater measurements (body, flanges, cord exit), and the clearances required by its manual.
 3. Futon choice. The traditional shijira cotton (Wataman) is sold out; Amazon.co.jp has 205 cm options in stock.

@@ -70,7 +70,7 @@ body_y = 292.0
 body_h = 51.0
 cheek_clearance = 1.0  # cheek inner faces = body width + this
 top_gap = 5.0          # heater top below the deck underside (TODO-verify manual clearances)
-holes = []             # TODO measure: side screw positions
+holes = []             # not cut: the owner drills the heater's screw holes on assembly
 
 [stiffness]           # wobble check (kotatsu/stiffness.py): estimates, TODO-verify the material values
 E_perp = 500.0        # plywood stiffness through its thickness (shoulder/wedge bearing on the deck), MPa: rough, 300-800
