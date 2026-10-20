@@ -50,7 +50,7 @@ class Nest:
 
     @property
     def utilisation(self) -> float:
-        return sum(s.area_used for s in self.sheets) / (len(self.sheets) * self.sheet_w * self.sheet_h or 1)
+        return sum(s.area_used for s in self.sheets) / (sum(s.w * s.h for s in self.sheets) or 1)
 
 
 def effective_gap(p) -> float:
@@ -84,15 +84,23 @@ def _fft_free(occ: np.ndarray, m: np.ndarray) -> np.ndarray:
 STRATEGIES = [("x", "area"), ("y", "area"), ("x", "long"), ("y", "long"), ("xy", "area"), ("xy", "long")]
 
 
-def nest(p, parts: list[CutPart], sheet: tuple[float, float], res: float = 4.0,
-         strategy: tuple[str, str] = ("x", "area")) -> Nest:
-    W, H = max(sheet), min(sheet)            # x along the sheet's long side = grain direction
+def nest(p, parts: list[CutPart], sheet, res: float = 4.0,
+         strategy: tuple[str, str] = ("x", "area"), limit: bool = False) -> Nest:
+    """sheet: one (w, h) size (open as many as needed), or a list of sizes opened in that order.
+    With limit=True no sheets beyond the list are opened (parts that don't fit are unplaced)."""
+    sizes = [sheet] if isinstance(sheet[0], (int, float)) else list(sheet)
+    sizes = [(max(a), min(a)) for a in sizes]
+    W, H = sizes[0]
     margin, gap = p.cnc.sheet_margin, effective_gap(p)
     grow = gap / 2 + 0.75 * res
-    nx, ny = int(W // res), int(H // res)
 
-    def new_sheet() -> Sheet:
-        s = Sheet(W, H)
+    def new_sheet() -> Sheet | None:
+        k = len(sheets)
+        if k >= len(sizes) and limit:
+            return None
+        Wk, Hk = sizes[min(k, len(sizes) - 1)]
+        nx, ny = int(Wk // res), int(Hk // res)
+        s = Sheet(Wk, Hk)
         occ = np.ones((ny, nx), bool)
         # usable cells: the part's grown mask may reach gap/2 beyond the margin line
         lo = int(math.ceil((margin - gap / 2) / res))
@@ -103,6 +111,14 @@ def nest(p, parts: list[CutPart], sheet: tuple[float, float], res: float = 4.0,
     jobs = [(cp, k) for cp in parts for k in range(cp.qty)]
     if strategy[1] == "area":
         jobs.sort(key=lambda j: -(j[0].shape.bounds[2] * j[0].shape.bounds[3]))
+    elif strategy[1].startswith("rand"):   # random order of the big parts, small ones last
+        import random
+        rnd = random.Random(int(strategy[1][4:] or 0))
+        big = [j for j in jobs if j[0].shape.area > 0.05e6]
+        small = [j for j in jobs if j[0].shape.area <= 0.05e6]
+        rnd.shuffle(big)
+        small.sort(key=lambda j: -j[0].shape.area)
+        jobs = big + small
     else:  # longest side first
         jobs.sort(key=lambda j: (-max(j[0].shape.bounds[2:]), -min(j[0].shape.bounds[2:])))
     sheets: list[Sheet] = []
@@ -124,6 +140,8 @@ def nest(p, parts: list[CutPart], sheet: tuple[float, float], res: float = 4.0,
         for s in [*sheets, None]:
             if s is None:
                 s = new_sheet()
+                if s is None:
+                    break
                 fresh = True
             else:
                 fresh = False
@@ -138,7 +156,7 @@ def nest(p, parts: list[CutPart], sheet: tuple[float, float], res: float = 4.0,
                 elif strategy[0] == "y":                       # lowest, then leftmost
                     score = (ii + m.shape[0]) * 10_000 + jj
                 else:                                          # smallest bounding corner
-                    score = np.maximum((jj + m.shape[1]) * (H / W), ii + m.shape[0]) * 10_000 + jj + ii
+                    score = np.maximum((jj + m.shape[1]) * (s.h / s.w), ii + m.shape[0]) * 10_000 + jj + ii
                 t = int(np.argmin(score))
                 cand = (score[t], ang, ii[t], jj[t], m, g, ox, oy)
                 if best is None or cand[0] < best[0]:
@@ -162,6 +180,43 @@ def nest(p, parts: list[CutPart], sheet: tuple[float, float], res: float = 4.0,
     n = Nest(W, H, margin, gap, sheets, unplaced)
     n.strategy = strategy
     return n
+
+
+def material_m2(n: Nest) -> float:
+    return sum(s.w * s.h for s in n.sheets) / 1e6
+
+
+def utilisation(n: Nest) -> float:
+    return sum(s.area_used for s in n.sheets) / (material_m2(n) * 1e6 or 1)
+
+
+def plan(p, parts: list[CutPart], max_sheets: int = 4) -> Nest | None:
+    """Least-plywood mix of the available sheet sizes that holds every part.
+
+    Candidate mixes are tried in order of total sheet area (smaller first); a mix is skipped
+    without nesting if its usable area can't hold the parts' area. Within a mix, bigger sheets
+    are opened first. The first mix any strategy can fill completely wins."""
+    from itertools import combinations_with_replacement
+
+    sizes = sorted({(max(s), min(s)) for s in p.cnc.sheets}, key=lambda s: -s[0] * s[1])
+    m = p.cnc.sheet_margin
+    need = sum(c.shape.area * c.qty for c in parts)
+    biggest = max(max(c.shape.bounds[2:]) for c in parts)
+    mixes = []
+    for k in range(1, max_sheets + 1):
+        for mix in combinations_with_replacement(sizes, k):
+            usable = sum((w - 2 * m) * (h - 2 * m) for w, h in mix)
+            if usable < need * 1.15 or max(w for w, _ in mix) - 2 * m < biggest:
+                continue
+            mixes.append((sum(w * h for w, h in mix), k, list(mix)))
+    for _, _, mix in sorted(mixes):
+        tries = [nest(p, parts, mix, strategy=st, limit=True) for st in STRATEGIES]
+        ok = [n for n in tries if not n.unplaced]
+        if ok:
+            best = max(ok, key=utilisation)
+            best.mix = [sheet_name(s) for s in mix]
+            return best
+    return None
 
 
 def _last_sheet_fill(n: Nest) -> float:

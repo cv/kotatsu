@@ -4,21 +4,30 @@ import ezdxf
 import pytest
 from shapely.strtree import STRtree
 
-from kotatsu import cutlist, export, nest, params
+from kotatsu import build, cutlist, export, nest, params
 
 P = params.load()
-PARTS = cutlist.cut_list(P)
-NESTS = nest.nest_all(P, PARTS)
+LAYOUTS = build.cached_layouts(P)          # same cache the build uses (keyed on source hash)
+CASES = [(k, name) for k, opts in LAYOUTS.items() for name in opts]
+PARTS = {k: cutlist.cut_list(P, copies=k) for k in LAYOUTS}
+PARTS1 = PARTS[min(PARTS)]
 
 
-@pytest.fixture(params=list(NESTS), scope="module")
-def n(request):
-    return NESTS[request.param]
+@pytest.fixture(params=CASES, ids=[f"{k}t-{nm}" for k, nm in CASES], scope="module")
+def case(request):
+    k, name = request.param
+    return k, LAYOUTS[k][name]
 
 
-def test_everything_placed(n):
+@pytest.fixture
+def n(case):
+    return case[1]
+
+
+def test_everything_placed(case):
+    k, n = case
     assert not n.unplaced
-    want = {c.name: c.qty for c in PARTS}
+    want = {c.name: c.qty for c in PARTS[k]}
     got = {}
     for s in n.sheets:
         for pl in s.placed:
@@ -49,7 +58,7 @@ def test_gap_fits_the_bit():
 
 
 def test_rotations_respect_grain(n):
-    allowed = {c.name: c.rotations for c in PARTS}
+    allowed = {c.name: c.rotations for c in PARTS1}
     for s in n.sheets:
         for pl in s.placed:
             assert pl.angle in allowed[pl.name]
@@ -57,19 +66,27 @@ def test_rotations_respect_grain(n):
 
 def test_placed_shapes_are_the_parts(n):
     """Placement is a pure rotation + translation of the cut-list shape (same area, same holes)."""
-    src = {c.name: c.shape for c in PARTS}
+    src = {c.name: c.shape for c in PARTS1}
     for s in n.sheets:
         for pl in s.placed:
             assert pl.shape.area == pytest.approx(src[pl.name].area, rel=1e-9)
             assert len(pl.shape.interiors) == len(src[pl.name].interiors)
 
 
-def test_best_layouts():
+def test_best_mix_is_least_material():
+    for k, opts in LAYOUTS.items():
+        assert "best mix" in opts
+        best = nest.material_m2(opts["best mix"])
+        assert all(best <= nest.material_m2(n) + 1e-6 for n in opts.values())
+
+
+def test_two_tables_save_plywood():
     """Regression guard for the current design (update when the design changes on purpose)."""
-    counts = {k: len(v.sheets) for k, v in NESTS.items()}
-    assert counts["60x120in"] == 1
-    assert counts["48x96in"] <= 2
-    assert counts["60x60in"] <= 2
+    one = nest.material_m2(LAYOUTS[1]["best mix"])
+    assert one <= 4.66
+    if 2 in LAYOUTS:
+        two = nest.material_m2(LAYOUTS[2]["best mix"])
+        assert two <= 7.63 and two / 2 < one * 0.85
 
 
 def test_sheet_dxf_roundtrip(n, tmp_path):
