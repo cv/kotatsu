@@ -4,7 +4,7 @@
 // page load looks the same.
 import * as THREE from "three";
 
-function rng(seed) { // mulberry32
+export function rng(seed) { // mulberry32
   return () => {
     seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
     let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
@@ -13,12 +13,12 @@ function rng(seed) { // mulberry32
   };
 }
 
-function canvas(w, h) {
+export function canvas(w, h) {
   const c = document.createElement("canvas"); c.width = w; c.height = h;
   return [c, c.getContext("2d")];
 }
 
-function texture(c, repeat = [1, 1]) {
+export function texture(c, repeat = [1, 1]) {
   const t = new THREE.CanvasTexture(c);
   t.wrapS = t.wrapT = THREE.RepeatWrapping;
   t.colorSpace = THREE.SRGBColorSpace;
@@ -28,7 +28,7 @@ function texture(c, repeat = [1, 1]) {
 }
 
 // draw fn(dx, dy) at the 9 tile offsets so anything crossing an edge wraps around
-function wrapped(W, H, fn) { for (const dx of [-W, 0, W]) for (const dy of [-H, 0, H]) fn(dx, dy); }
+export function wrapped(W, H, fn) { for (const dx of [-W, 0, W]) for (const dy of [-H, 0, H]) fn(dx, dy); }
 
 /** Birch face veneer, grain along the canvas x axis. One tile = `tileMm` mm. */
 export function birchFace(seed = 1, tileMm = 700) {

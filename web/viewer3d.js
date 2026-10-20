@@ -4,7 +4,17 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import GUI from "lil-gui";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { birchFace, plyEdge, cotton, braidedRug } from "./textures.js";
+import { ambiance } from "./ambiance.js";
+
+// Lighting moods. Key = a window light from the front-left (casts the shadows); env = soft image-based
+// fill from a generic room (gives the glaze and aluminium something to reflect); lamp = a warm pendant
+// over the table; glow = the heater's orange light under the futon.
+const LIGHT = {
+  day:     { bg: 0xf4efe7, key: 3.0, keyCol: 0xffecd6, env: 0.55, hemi: 0.3, lamp: 0, glow: 0.8, exposure: 1.0 },
+  evening: { bg: 0x17130f, key: 0.35, keyCol: 0x9fb2ff, env: 0.1, hemi: 0.06, lamp: 2.6, glow: 3.2, exposure: 1.15 },
+};
 
 const COL = { heater: 0x2b2b2b, futon: 0x56637f, seat: 0xb4643f, rugSide: 0xb9a888 };
 // all parts are the same pale birch; a faint tint per kind keeps them apart in the exploded view
@@ -54,6 +64,7 @@ export class Viewer3D {
     this.renderer.setPixelRatio(devicePixelRatio);
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     container.appendChild(this.renderer.domElement);
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xfdfbf8);
@@ -63,20 +74,26 @@ export class Viewer3D {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.target.set(600, 400, 220);
     this.controls.addEventListener("change", () => this.render());
-    this.scene.add(new THREE.HemisphereLight(0xffffff, 0x8a7a66, 1.9));
-    const sun = new THREE.DirectionalLight(0xfff6ea, 2.1);
+    const pmrem = new THREE.PMREMGenerator(this.renderer);
+    this.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    this.hemi = new THREE.HemisphereLight(0xfff4e6, 0x6b5440, 0.3); this.scene.add(this.hemi);
+    const lamp = new THREE.PointLight(0xffc27a, 0, 4200, 0);  // decay 0 + range: soft falloff in mm units
+    lamp.castShadow = true; lamp.shadow.mapSize.set(1024, 1024); lamp.shadow.bias = -0.002; lamp.shadow.radius = 6;
+    this.scene.add(lamp); this.lamp = lamp;
+    this.glows = [];
+    const sun = new THREE.DirectionalLight(0xffecd6, 3.0);
     sun.castShadow = true;
     sun.shadow.mapSize.set(2048, 2048);
     Object.assign(sun.shadow.camera, { left: -1700, right: 1700, top: 1700, bottom: -1700, near: 100, far: 6000 });
-    sun.shadow.bias = -0.0004; sun.shadow.normalBias = 1.5; sun.shadow.radius = 4;
+    sun.shadow.bias = -0.0004; sun.shadow.normalBias = 1.5; sun.shadow.radius = 6;
     this.scene.add(sun, sun.target);
     this.sun = sun;
     const grid = new THREE.GridHelper(3000, 30, 0xcfc6b8, 0xe7e0d6); grid.rotation.x = Math.PI / 2;
     grid.position.set(600, 400, -12); this.scene.add(grid); // just under the rug
     this.grid = grid;
     this.root = new THREE.Group(); this.scene.add(this.root);
-    this.state = { table: null, linked: false, explode: 0, showTop: true, showFrame: true, showHeater: true,
-      showFuton: true, showRug: true, showSeats: true };
+    this.state = { table: null, explode: 0, showTop: true, showFrame: true, showHeater: true,
+      showFuton: true, showRug: true, showSeats: true, showAmbiance: true, light: "day" };
     new ResizeObserver(() => this.resize()).observe(container);
   }
 
@@ -88,7 +105,6 @@ export class Viewer3D {
       this.gui = new GUI({ container: this.c, title: "View" });
       this.gui.domElement.style.position = "absolute"; this.gui.domElement.style.right = "8px"; this.gui.domElement.style.top = "8px";
       if (tnames.length > 1) this.gui.add(this.state, "table", tnames).name("table").onChange(() => { this.framed = false; this.build(); });
-      if (data.tables.some((t) => t.link)) this.gui.add(this.state, "linked").name("linked pair").onChange(() => { this.framed = false; this.build(); });
       this.gui.add(this.state, "explode", 0, 400, 1).onChange(() => this.place());
       this.gui.add(this.state, "showTop").name("top").onChange(() => this.place());
       this.gui.add(this.state, "showFrame").name("frame").onChange(() => this.place());
@@ -96,6 +112,8 @@ export class Viewer3D {
       this.gui.add(this.state, "showFuton").name("futon").onChange(() => this.place());
       this.gui.add(this.state, "showSeats").name("seats").onChange(() => this.place());
       this.gui.add(this.state, "showRug").name("rug").onChange(() => this.place());
+      this.gui.add(this.state, "showAmbiance").name("ambiance").onChange(() => this.place());
+      this.gui.add(this.state, "light", Object.keys(LIGHT)).name("light").onChange(() => this.applyLight());
     }
     this.build();
   }
@@ -103,40 +121,25 @@ export class Viewer3D {
   build() {
     const d = this.data; if (!d) return;
     this.root.clear();
-    this.items = [];
+    this.items = []; this.glows = [];
     const t = d.thickness;
     const which = this.state.table === "all" ? d.tables : d.tables.filter((x) => x.name === this.state.table);
     let dx = 0;
     for (const T of which) {
-      if (this.state.linked && T.link) { // two modules side by side, tops touching, one key between them
-        this.addTable(T, dx, t, false);
-        this.addTable(T, dx + T.link.pitch, t, false);
-        this.addKey(T, dx, t);
-        dx += T.link.pitch + T.top.length + 400;
-        continue;
-      }
       this.addTable(T, dx, t);
       dx += T.top.length + 400;
     }
     for (const it of this.items) this.root.add(it.obj);
     const c = new THREE.Box3().setFromObject(this.root).getCenter(new THREE.Vector3()); // aim the sun at the table
     this.sun.target.position.set(c.x, c.y, 0);
-    this.sun.position.set(c.x + 800, c.y - 1200, 2600);
+    this.sun.position.set(c.x - 1500, c.y - 1100, 1700);    // a low window light from the front-left
+    this.lamp.position.set(c.x + 60, c.y + 40, 1650);       // pendant over the table
+    this.applyLight();
     if (!this.framed) { this.framed = true; this.frame(); }
     this.place();
   }
 
-  addKey(T, dx, t) {
-    const part = T.frame.parts.find((p) => p.name === T.link.key);
-    for (const pl of T.link.placed) {
-      const m = slab(part.shape, t, "wedge", "u");
-      m.applyMatrix4(BASIS[pl.axis]);
-      m.position.set(pl.origin[0] + dx, pl.origin[1], pl.origin[2]);
-      this.items.push({ obj: m, kind: "wedge", dir: new THREE.Vector3(0, 0, 1.2), base: m.position.clone() });
-    }
-  }
-
-  addTable(T, dx, t, room = true) {
+  addTable(T, dx, t) {
     const F = T.frame;
     const off = new THREE.Vector3(dx, 0, 0);
     const opt = { boards: T.top.boards, keys: [] };
@@ -162,9 +165,27 @@ export class Viewer3D {
     const hz = F.heater;
     const heater = new THREE.Mesh(new THREE.BoxGeometry(...hz.size), new THREE.MeshStandardMaterial({ color: COL.heater, roughness: 0.5 }));
     heater.castShadow = true;
+    const glow = new THREE.PointLight(0xff5a1f, 1, 750, 0); // the heater's orange glow, moves with it
+    glow.position.set(0, 0, -hz.size[2] / 2 - 15); heater.add(glow); this.glows.push(glow);
     heater.position.set(...hz.center);
     push(heater, "heater", new THREE.Vector3(0, 0, -0.6));
-    if (T.room3d && room) this.addRoom(T.room3d, push);
+    if (T.room3d) this.addRoom(T.room3d, push);
+    const amb = ambiance({ cx: hz.center[0], cy: hz.center[1], topZ: ztop + t, half: T.top.length / 2,
+      floorZ: T.room3d ? -T.room3d.rug.t - 0.5 : -1 });   // table-local; push() adds the table offset
+    push(amb.floor, "ambFloor", new THREE.Vector3());
+    for (const o of amb.onTop) push(o, "ambTop", new THREE.Vector3());
+    for (const o of amb.under) push(o, "amb", new THREE.Vector3());
+  }
+
+  applyLight() {
+    const L = LIGHT[this.state.light] || LIGHT.day;
+    this.scene.background = new THREE.Color(L.bg);
+    this.sun.intensity = L.key; this.sun.color.setHex(L.keyCol);
+    this.scene.environmentIntensity = L.env; this.hemi.intensity = L.hemi;
+    this.lamp.intensity = L.lamp; this.lamp.visible = L.lamp > 0;
+    for (const g of this.glows) g.intensity = L.glow;
+    this.renderer.toneMappingExposure = L.exposure;
+    this.render();
   }
 
   addRoom(R, push) { // rug, draped futon and floor pillows; geometry comes from Python (room.room3d)
@@ -205,9 +226,11 @@ export class Viewer3D {
 
   place() {
     const e = this.state.explode, S = this.state;
+    if (this.grid) this.grid.visible = !S.showAmbiance;
     for (const it of this.items || []) {
       const vis = { top: S.showTop, key: S.showTop, frame: S.showFrame, wedge: S.showFrame, heater: S.showHeater,
-        futon: S.showFuton, rug: S.showRug, seat: S.showSeats }[it.kind];
+        futon: S.showFuton, rug: S.showRug, seat: S.showSeats,
+        ambTop: S.showAmbiance && S.showTop, amb: S.showAmbiance, ambFloor: S.showAmbiance }[it.kind];
       it.obj.visible = vis;
       if (it.kind === "futon") { // fades out as the parts explode, so you can see them through it
         const m = it.obj.material, o = 1 - 0.9 * Math.min(1, e / 400);
@@ -216,7 +239,7 @@ export class Viewer3D {
         m.opacity = o;
         it.obj.castShadow = o > 0.6; // a see-through futon shouldn't darken the frame inside it
       }
-      const lift = it.kind === "top" ? new THREE.Vector3(0, 0, e * 0.8) : new THREE.Vector3();
+      const lift = it.kind === "top" || it.kind === "ambTop" ? new THREE.Vector3(0, 0, e * 0.8) : new THREE.Vector3();
       it.obj.position.copy(it.base).addScaledVector(it.dir, e * 0.5).add(lift);
     }
     this.render();
