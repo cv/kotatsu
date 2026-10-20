@@ -132,6 +132,10 @@ corner, and the wedges and deck don't carry any of the weight from above.
    and strength checks don't change. In-plane, diagonal arms brace the corners better than the H's
    necks (the wobble model treats the deck as rigid either way). The flat-pack plan would need redoing:
    the plates no longer nest in the H's notches. `deck.window_style = "x"`, `deck.x_hub = "shield"`.
+   The catch is the futon. The deck is what holds it up across the middle, 26 mm under the top, and it
+   dips into every opening. The widest openings are 18 cm across in the H, 22 cm in X + shield and 26 cm
+   in the plain X. Each one opens at the middle of a side, right where your knees go. So the X sags a
+   bit more for $4 saved: not worth it on its own.
 6. **Lighter-look cuts: mocked up, not used.** Bigger top corners (R70), a curved haunch on the legs,
    and feet tapering 10 mm on plate A. Together: about $1.50 cheaper, 0.1 kg lighter, lower leg stress,
    a little less tipping margin (1698 → 1476 N at the edge). The order had already gone in, and the
