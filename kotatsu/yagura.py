@@ -137,7 +137,9 @@ def window_rects(p) -> list[tuple[float, float, float, float]]:
     """Deck lightening windows as centre-relative (x0, y0, x1, y1), sized from the features around them:
     two "side" windows beside the cheeks (x) and two "end" windows past the cheek ends (y), each
     window_margin clear of the heater, cheeks, cheek wedges, mortises and leg wedges, window_bar from the
-    deck edge and from each other. [deck] windows = "auto" | [] | explicit list."""
+    deck edge and from each other. [deck] windows = "auto" | [] | explicit list.
+    window_style = "notch" opens them through the deck edge (same wood out, ~1 m less cutting); then
+    `neck` is the width of wood joining each corner pad (mortises, posts) to the middle."""
     D, L = p.deck, fr.layout(p)
     w = getattr(D, "windows", [])
     if w != "auto":
@@ -148,9 +150,12 @@ def window_rects(p) -> list[tuple[float, float, float, float]]:
     m_in = h - tb - p.fit.tight                                  # mortises' inner ends (from the centre)
     ci = abs(fr.cheek_xs(p)[0] - L.cx)                           # cheek inner face
     cw_x = ci + t / 2 + p.cheek_wedge.length / 2                 # cheek wedges' outer ends
-    sx0, sx1, sy = cw_x + m, h - bar, m_in - m                   # side windows
+    notch = getattr(D, "window_style", "hole") == "notch"        # notches run out through the deck edge
+    edge = h + 20 if notch else h - bar
+    sx0, sx1, sy = cw_x + m, edge, m_in - m                      # side windows
     ey0 = p.cheek.length / 2 + m                                 # end windows: past the cheek ends ...
-    ey1, ex = h - bar, min(sx0 - bar, m_in - m)                  # ... and clear of the side windows / mortises
+    gap = getattr(D, "neck", bar) if notch else bar              # wood joining each corner pad to the middle
+    ey1, ex = edge, min(sx0 - gap, m_in - m)                     # ... and clear of the side windows / mortises
     out = []
     if sx1 - sx0 > 40 and sy > 40:
         out += [(sx0, -sy, sx1, sy), (-sx1, -sy, -sx0, sy)]
@@ -245,5 +250,11 @@ def parts(p) -> list[Part]:
         for ya, yb in fr.tab_ys(p):
             yc = (ya + yb) / 2
             cw_pl.append(Placement("x", (xmid - CW.length / 2, yc - t / 2, L.z_deck_top)))
-    out.append(Part("cheek wedge", w, cw_pl, spares=1, kind="wedge"))
+    if getattr(p.yagura, "one_wedge", False):          # owner: one wedge part for legs and cheeks
+        if wedge_dims(p, "cheek") != wedge_dims(p, "leg"):
+            raise ValueError("one_wedge needs [cheek_wedge] length/head = [yagura] wedge_len/wedge_head")
+        lw_part = out.pop()
+        out.append(Part("wedge", lw_part.shape, lw_part.placements + cw_pl, spares=2, kind="wedge"))
+    else:
+        out.append(Part("cheek wedge", w, cw_pl, spares=1, kind="wedge"))
     return out

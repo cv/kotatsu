@@ -83,7 +83,7 @@ def test_wedges_do_not_collide(Y):
     P, L, parts = Y
     t = P.material.t_max
     rects = []
-    for name in ("leg wedge", "cheek wedge"):
+    for name in [n for n in ("leg wedge", "cheek wedge", "wedge") if n in parts]:
         pt = parts[name]
         x0, y0, x1, y1 = pt.shape.bounds
         for pl in pt.placements:
@@ -107,7 +107,10 @@ def test_quantities(Y):
     P, L, parts = Y
     q = {n: pt.qty for n, pt in parts.items()}
     assert q["leg plate A"] == 4 and q["leg plate B"] == 4 and q["deck"] == 1 and q["heater cheek"] == 2
-    assert q["leg wedge"] >= 8 and q["cheek wedge"] >= 4
+    if "wedge" in q:
+        assert q["wedge"] >= 12
+    else:
+        assert q["leg wedge"] >= 8 and q["cheek wedge"] >= 4
 
 
 def test_legs_are_straight(Y):
@@ -182,13 +185,15 @@ def test_deck_windows_clear_everything(Y):
             keep.append(box(ox, oy, ox + w1 - w0, oy + t) if pl.axis == "x" else box(ox, oy, ox + t, oy + w1 - w0))
     keep = unary_union(keep)
     outer = Polygon(d.exterior)
+    notch = getattr(P.deck, "window_style", "hole") == "notch"
     for w in wins:
         assert w.distance(keep) >= P.deck.window_margin - 1e-6
-        assert outer.exterior.distance(w) >= P.deck.window_bar - 1e-6
+        if not notch:
+            assert outer.exterior.distance(w) >= P.deck.window_bar - 1e-6
     for a in wins:
         for b in wins:
             if a is not b:
-                assert a.distance(b) >= P.deck.window_bar - 1e-6
+                assert a.distance(b) >= (P.deck.neck if notch else P.deck.window_bar) - 1e-6
         assert d.intersection(w).area < 1e-6
 
 

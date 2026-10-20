@@ -44,6 +44,8 @@ drop = 26.0           # deck top below the futon plane (room for the leg + cheek
 # Lightening windows: uMake ships free up to a 91 cm box AND ~20 kg (18.9 kg free, 20.4 kg not).
 # "auto" sizes 4 windows from the features around them (kotatsu/yagura.py window_rects).
 windows = "auto"
+window_style = "notch"  # owner 2026-10-20: open the windows through the edge (an H-shaped deck): ~$20 cheaper
+neck = 70.0           # wood joining each corner pad to the middle
 window_margin = 20.0  # clear of the heater, cheeks, cheek wedges, mortises, leg wedges
 window_bar = 30.0     # wood left at the deck edge and between windows
 window_r = 20.0
@@ -64,6 +66,7 @@ leg_haunch_r = 15.0   # inside-corner fillet where the haunch meets the narrow l
 leg_windows = false   # slot window in each leg plate's inner arm (replaced by the haunched legs)
 leg_window_bar = 20.0 # wood each side of it (>= stock thickness, uMake's minimum feature)
 leg_window_end = 50.0 # wood below it (floor) and above it (shoulder)
+one_wedge = true      # owner 2026-10-20: leg and cheek wedges are the same part (one file, 12 + 2 spares)
 wedge_len = 60.0      # leg wedges: shorter than the cheek wedges so the two at each corner don't meet
 wedge_head = 18.0     # (1:8 taper -> 10.5 mm foot)
 
@@ -77,8 +80,8 @@ hole_h = 14.0         # wedge hole height
 hole_drop = 1.0       # hole bottom below the thinnest deck's top face
 
 [cheek_wedge]         # lies on the deck top, driven sideways through the tab hole: pulls the cheek up
-length = 80.0
-head = 18.0           # height at the thick end; taper fit.wedge_taper (foot 8)
+length = 60.0         # = the leg wedge (yagura.one_wedge): one wedge part for everything
+head = 18.0           # height at the thick end; taper fit.wedge_taper (foot 10.5)
 
 [heater]               # PaletteLife 120V 400W (docs/heater.md). Owner measured 29 x 29 x 5 cm (2026-10-19, to the cm)
 model = "PaletteLife B0CKBS16YY"

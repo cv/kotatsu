@@ -79,3 +79,19 @@ deck $123.40, top $91.83, cheeks $23.22, wedges $10.98 + $7.70. **Subtotal $380.
 The owner's second sketch: the outer finger is as wide as the inner one (20.4 mm). Ear 30, plates 110 mm under the deck and
 60 mm below the haunch. Cart: **91×91×18 cm, 16.8 kg, FREE**. Leg plates 110 × 385: $57.84 + $57.88 (×4 each),
 deck $124.88, top $92.20, cheeks $23.26, wedges $10.98 + $7.70. **Subtotal $374.74 + tax $44.97 = $419.71.**
+
+## How uMake prices (probe, 2026-10-20) → kotatsu/price.py
+Test shapes went into a separate, unsaved quote (Baltic birch 19mm, CNC). On its own, one 300 × 300 square
+costs $83.18: there's a large fixed share per order. Shapes added one after another (totals $119 → $232),
+fitted at a fixed order size:
+
+    part raw $ ≈ 101 $/m² × area + 15.25 $/m × cut length + ~0.2 $/hole      (residuals < $1)
+    order total ≈ 11.25 × (Σ raw)^0.551
+
+This reproduces the real order ($374.78 predicted vs $374.74 quoted).
+- **Cutting is ~77 % of the raw cost** (29 m of cut). Marginal at our order size: about **$5.4 per metre of cut** and
+  **$36 per m² of wood**. A window costs more in cutting than it saves in wood. Opening it through the edge (a notch)
+  saves money.
+- **No per-file fee**, so merging identical parts (one wedge file) is tidier but saves about $0.
+- **Pockets aren't offered.** A shape on a POCKET layer was cut through as a hole. "Additional processes" are only
+  custom instructions, bending, brushed finish and paint. So summer pockets would need a manual quote (not done).
