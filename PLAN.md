@@ -13,7 +13,7 @@ Every number below comes from `params.toml`, and anything I haven't confirmed ye
 | Material | **18 mm Baltic birch for everything**, wedges included. uMake sells it as "19mm". If a wedge wears out, I'll cut a new one |
 | Heater | **PaletteLife 120 V 400 W**, 29 × 29 × 5 cm, screwed in at the sides (`docs/heater.md`). I drill its screw holes during assembly, so the files have none |
 | Height | About 41 cm: 385 mm frame + 18 mm top + the futon |
-| Futon | A 205 × 205 cm square kotatsu futon, or a queen duvet in a cover (`docs/futon.md`) |
+| Futon & seats | An 80 × 80 in (203 cm) square futon, four 25 × 25 in square floor pillows, on an 8 ft round rug (`docs/futon.md`). The 3-D view shows all three |
 | Budget | Under CAD $1200 all in |
 
 ## The parts

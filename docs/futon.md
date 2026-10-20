@@ -7,7 +7,9 @@ Canada at a fair price turned out to be hard to find, so the top became an **86 
 ## What size?
 Sellers go by **futon = top + 110–130 cm** (BarklotJapan, Etsy). For an 86 cm top that's 196–216 cm, so
 **205 × 205** is right. The 190 × 190 size is sold for 70–80 cm tops, and on this one it barely reaches the
-floor.
+floor. I'm planning on an **80 × 80 in (203 cm)** futon with four **25 × 25 in square floor pillows**, all on
+the 8 ft round rug. That's what the site's 3-D view shows: draped over the frame, the futon covers about
+147 cm of floor, which leaves a ring of rug about 49 cm wide.
 
 I found no **225 × 225 or larger** square kotatsu futon that ships to Canada at a fair price:
 - amazon.ca only stocks 185–190 cm squares;

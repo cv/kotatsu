@@ -128,10 +128,13 @@ futon_kg = 2.0
 
 [room]                # for the Futon & rug page (docs/futons.toml has the candidates)
 rug_d = 2440.0        # 8 ft round rug
-futon_d = 2050.0      # planned futon: 205 x 205 square (sellers' rule: top + 110-130 cm -> 196-216 for 86)
+futon_d = 2032.0      # owner 2026-10-20: an 80 x 80 in square futon (sellers' rule: top + 110-130 cm -> 196-216 for 86)
 futon_shape = "square"
 drape_k = 0.7         # footprint radius ~ futon radius - drape_k * (frame height + top): rough, futons slope out
-zabuton = [550.0, 590.0]  # floor cushion w x d (standard meidosu size)
+zabuton = [635.0, 635.0]  # owner 2026-10-20: square floor pillows, 25 x 25 in
+zabuton_h = 90.0      # pillow thickness (3-D view)
+zabuton_tuck = 50.0   # each pillow's inner edge sits this far under the futon's edge on the floor
+rug_t = 10.0          # rug thickness (3-D view)
 
 [layout]              # sheet nesting choices (kotatsu/cutlist.py, kotatsu/nest.py)
 frame_grain = "horizontal"  # frame parts keep their grain where it looks right (legs: up the leg); "free" = any rotation

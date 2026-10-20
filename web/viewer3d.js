@@ -1,9 +1,12 @@
-// 3-D assembly preview (three.js): top boards + every frame part at its real placement.
+// 3-D assembly preview (three.js): top boards + every frame part at its real placement, plus the room
+// layers (rug, draped futon, floor pillows).
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import GUI from "lil-gui";
 
-const COL = { a: 0xead3a8, b: 0xd9b47c, key: 0x9c6232, panel: 0xe2c595, deck: 0xd6b88a, heater: 0x2b2b2b };
+const COL = { a: 0xead3a8, b: 0xd9b47c, key: 0x9c6232, panel: 0xe2c595, deck: 0xd6b88a, heater: 0x2b2b2b,
+  rug: 0xcdbfa8, futon: 0x56637f, seat: 0xb4643f };
 
 function shapeFrom(p) {
   const s = new THREE.Shape(p.ext.map(([x, y]) => new THREE.Vector2(x, y)));
@@ -44,9 +47,11 @@ export class Viewer3D {
     this.scene.add(new THREE.HemisphereLight(0xffffff, 0x8a7a66, 2.2));
     const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(800, -1200, 2000); this.scene.add(sun);
     const grid = new THREE.GridHelper(3000, 30, 0xcfc6b8, 0xe7e0d6); grid.rotation.x = Math.PI / 2;
-    grid.position.set(600, 400, 0); this.scene.add(grid);
+    grid.position.set(600, 400, -12); this.scene.add(grid); // just under the rug
+    this.grid = grid;
     this.root = new THREE.Group(); this.scene.add(this.root);
-    this.state = { table: null, explode: 0, showTop: true, showFrame: true, showHeater: true };
+    this.state = { table: null, explode: 0, showTop: true, showFrame: true, showHeater: true,
+      showFuton: true, showRug: true, showSeats: true };
     new ResizeObserver(() => this.resize()).observe(container);
   }
 
@@ -62,6 +67,9 @@ export class Viewer3D {
       this.gui.add(this.state, "showTop").name("top").onChange(() => this.place());
       this.gui.add(this.state, "showFrame").name("frame").onChange(() => this.place());
       this.gui.add(this.state, "showHeater").name("heater").onChange(() => this.place());
+      this.gui.add(this.state, "showFuton").name("futon").onChange(() => this.place());
+      this.gui.add(this.state, "showSeats").name("seats").onChange(() => this.place());
+      this.gui.add(this.state, "showRug").name("rug").onChange(() => this.place());
     }
     this.build();
   }
@@ -109,12 +117,38 @@ export class Viewer3D {
     const heater = new THREE.Mesh(new THREE.BoxGeometry(...hz.size), new THREE.MeshStandardMaterial({ color: COL.heater, roughness: 0.5 }));
     heater.position.set(...hz.center);
     push(heater, "heater", new THREE.Vector3(0, 0, -0.6));
+    if (T.room3d) this.addRoom(T.room3d, push);
+  }
+
+  addRoom(R, push) { // rug, draped futon and floor pillows; geometry comes from Python (room.room3d)
+    const still = new THREE.Vector3();
+    const rug = new THREE.Mesh(new THREE.CylinderGeometry(R.rug.d / 2, R.rug.d / 2, R.rug.t, 96),
+      new THREE.MeshStandardMaterial({ color: COL.rug, roughness: 1 }));
+    rug.rotation.x = Math.PI / 2; rug.position.set(R.rug.center[0], R.rug.center[1], -R.rug.t / 2);
+    push(rug, "rug", still);
+    const n = R.futon.n, geo = new THREE.BufferGeometry(), idx = [];
+    geo.setAttribute("position", new THREE.Float32BufferAttribute(R.futon.pts, 3));
+    for (let j = 0; j < n - 1; j++) for (let i = 0; i < n - 1; i++) {
+      const a = j * n + i, b = a + 1, c = a + n, d = c + 1;
+      idx.push(a, b, d, a, d, c);
+    }
+    geo.setIndex(idx); geo.computeVertexNormals();
+    const futon = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: COL.futon, roughness: 0.95, side: THREE.DoubleSide }));
+    push(futon, "futon", still);
+    const seatMat = new THREE.MeshStandardMaterial({ color: COL.seat, roughness: 0.9 });
+    for (const st of R.seats) {
+      const [w, d, h] = st.size;
+      const m = new THREE.Mesh(new RoundedBoxGeometry(w, d, h, 4, Math.min(35, h / 2.2)), seatMat);
+      m.position.set(...st.center);
+      push(m, "seat", still);
+    }
   }
 
   place() {
     const e = this.state.explode, S = this.state;
     for (const it of this.items || []) {
-      const vis = { top: S.showTop, key: S.showTop, frame: S.showFrame, wedge: S.showFrame, heater: S.showHeater }[it.kind];
+      const vis = { top: S.showTop, key: S.showTop, frame: S.showFrame, wedge: S.showFrame, heater: S.showHeater,
+        futon: S.showFuton, rug: S.showRug, seat: S.showSeats }[it.kind];
       it.obj.visible = vis;
       const lift = it.kind === "top" ? new THREE.Vector3(0, 0, e * 0.8) : new THREE.Vector3();
       it.obj.position.copy(it.base).addScaledVector(it.dir, e * 0.5).add(lift);

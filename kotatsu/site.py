@@ -110,7 +110,7 @@ def tables_data(p) -> list[dict]:
         fd = frame_data(tp)
         out.append({"name": tp.table_name, "label": tp.table_label, "shape": getattr(tp.top, "shape", "rect"),
                     "top": {"length": tp.top.length, "width": tp.top.width, "boards": [rings(b) for b in tb.boards]},
-                    "frame": fd, "summary": table_summary(tp, fd, best)})
+                    "frame": fd, "summary": table_summary(tp, fd, best), "room3d": room.room3d(tp)})
     return out
 
 
