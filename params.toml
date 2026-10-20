@@ -71,6 +71,9 @@ holes = []             # TODO measure: side screw positions
 [comfort]
 sitters = [1, 1]      # people per side (long, short) - square frame: 4 people
 leg_gap = 370.0       # min opening width per sitter between the legs
+knee_w = 762.0        # owner, cross-legged: knees need 30" wide ...
+knee_h = 317.5        # ... x 12.5" high
+knee_reach_min = 100.0  # how far that knee zone must reach in under the top's edge (TODO-verify with owner)
 
 [room]                # for the Futon & rug page (docs/futons.toml has the candidates)
 rug_d = 2440.0        # 8 ft round rug

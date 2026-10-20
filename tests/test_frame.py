@@ -249,3 +249,13 @@ def test_tapered_feet_are_sturdy(C):
     sp = C.PARTS["short side"].shape
     u = frame.leg_inner_u(P, 1.0)
     assert sp.intersection(box(u + 0.5, 0, u + 30, 2)).area < 1, "opening must be wider at the floor"
+
+
+def test_cross_legged_clearance(C):
+    """Owner's cross-legged knees (30" x 12.5"): the aprons clear them, and the knee zone can come
+    knee_reach_min in under the top's edge at every side without touching a leg or the heater."""
+    from kotatsu import comfort
+    P = C.P
+    K = P.comfort
+    assert P.frame.height - P.frame.apron_depth >= K.knee_h + 5
+    assert comfort.knee_reach(P) >= K.knee_reach_min

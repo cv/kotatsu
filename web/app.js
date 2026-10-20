@@ -88,6 +88,15 @@ function renderFutonPlan(d, refit = false) {
     el("line", { x1: q, y1: -h, x2: q, y2: h, class: "frame-ghost" }, svg);
   }
   el("circle", { r: R.top_d / 2, class: "top-disc" }, svg);
+  if (R.knees) {                              // owner's cross-legged knee zone at each side
+    const K = R.knees, y0 = R.top_d / 2 - K.reach;
+    for (const ang of [0, 90, 180, 270]) {
+      const g = el("g", { transform: `rotate(${ang})` }, svg);
+      el("rect", { x: -K.knee_w / 2, y: y0, width: K.knee_w, height: K.reach + 260, class: "knee-zone" }, g);
+    }
+    const t = el("text", { x: 0, y: y0 + 60, class: "plan-label knee-label" }, svg);
+    t.textContent = `knees 30″ × 12.5″: up to ${Math.round(K.reach)} mm under the edge`;
+  }
   const lab = (txt, y) => { const t = el("text", { x: 0, y, class: "plan-label" }, svg); t.textContent = txt; };
   lab(`rug Ø ${R.rug_d / 10} cm`, -R.rug_d / 2 + 40);
   lab(`futon on the floor ≈ Ø ${Math.round(fp / 10)} cm`, -fp / 2 + 45);

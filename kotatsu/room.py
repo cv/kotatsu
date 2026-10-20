@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import tomllib
 
+from . import comfort
 from .params import ROOT
 
 FUTONS = ROOT / "docs" / "futons.toml"
@@ -37,4 +38,5 @@ def room_data(p) -> dict:
     return {"rug_d": p.room.rug_d, "futon_d": p.room.futon_d, "top_d": p.top.length,
             "frame": p.top.length - 2 * p.frame.overhang, "ear": p.frame.ear,
             "height": p.frame.height + p.material.t_nominal, "zabuton": list(p.room.zabuton),
-            "footprint_d": round(footprint_d(p, p.room.futon_d)), "futons": futons(p)}
+            "footprint_d": round(footprint_d(p, p.room.futon_d)), "futons": futons(p),
+            "knees": comfort.summary(p)}
