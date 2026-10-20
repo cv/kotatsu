@@ -1,6 +1,6 @@
 """Frame (yagura): 4 slab side panels + deck + 2 heater cheeks + wedges. Plywood-only joinery.
 
-World coordinates (mm): x along the 1200 length, y along the 800 width, z up, floor z = 0.
+World coordinates (mm): x and y across the top (origin at the top's bounding-box corner), z up, floor z = 0.
 Every part is a flat 2-D shape in its own (u, v) plane, plus a placement:
   axis "x": plate in the x-z plane (u -> x, v -> z, thickness along y)
   axis "y": plate in the y-z plane (u -> y, v -> z, thickness along x)
@@ -9,7 +9,8 @@ origin = world position of local (0, 0, 0); the plate occupies [0, t] along its 
 
 Joints:
   * cross-laps at the 4 corners: long panels slotted from the top, short panels from the bottom
-  * deck: 2 tusk tenons per long side through mortises, locked by vertical wedges (deck_wedge)
+  * deck: 2 plain through-tenons per long side, one in each leg zone (outside the leg openings, so the
+    aprons can stay shallow); no wedges - the cross-laps fix the panel spacing
   * cheeks: 2 tabs each, up through deck slots, locked by flat wedges lying on the deck (cheek_wedge)
 Every square-cornered opening (and every male root corner) gets a dogbone for the round bit.
 """
@@ -111,11 +112,21 @@ def thick_slot(p) -> float:
     return p.material.t_max + p.fit.mortise_height_extra
 
 
+def leg_zone(p) -> tuple[float, float]:
+    """Panel-local u-range of solid leg between the cross-lap slot and the leg opening (near end)."""
+    F = p.frame
+    return F.ear + slot_w(p) / 2, F.leg_width
+
+
 def tenon_xs(p) -> list[tuple[float, float]]:
+    """World x-ranges of the deck tenons: centred in the long panels' two leg zones."""
     D, L = p.deck, layout(p)
-    n = D.tenons_per_side
-    cs = [L.cx + (i - (n - 1) / 2) * D.tenon_spacing for i in range(n)]
-    return [(c - D.tenon_width / 2, c + D.tenon_width / 2) for c in cs]
+    if D.tenons_per_side != 2:
+        raise ValueError("deck tenons sit one per leg zone: tenons_per_side must be 2")
+    a, b = leg_zone(p)
+    c0 = L.O + (a + b) / 2
+    c1 = L.O + L.Lf - (a + b) / 2
+    return [(c - D.tenon_width / 2, c + D.tenon_width / 2) for c in (c0, c1)]
 
 
 def cheek_xs(p) -> list[float]:
@@ -128,16 +139,6 @@ def cheek_xs(p) -> list[float]:
 def tab_ys(p) -> list[tuple[float, float]]:
     C, L = p.cheek, layout(p)
     return [(L.cy + s * C.tab_spacing / 2 - C.tab_w / 2, L.cy + s * C.tab_spacing / 2 + C.tab_w / 2) for s in (-1, 1)]
-
-
-def deck_wedge_hole(p, side: int) -> tuple[float, float]:
-    """y-range of the wedge hole in a deck tenon. side -1 = near long panel (small y), +1 = far."""
-    L, D = layout(p), p.deck
-    yc = L.yL[0] if side < 0 else L.yL[1]
-    outer_face_thin = yc + side * L.t_min / 2           # thinnest apron's outer face
-    inner = outer_face_thin - side * D.hole_inset       # 2 mm back inside the apron
-    outer = inner + side * D.hole_len
-    return tuple(sorted((inner, outer)))
 
 
 def cheek_hole_z(p) -> tuple[float, float]:
@@ -177,25 +178,27 @@ def short_panel(p) -> Polygon:
 
 
 def deck(p) -> Polygon:
-    """Deck in world x-y (axis z). Body between the long aprons' inner faces + tusk tenons."""
+    """Deck in world x-y (axis z). Body between the long aprons' inner faces + through-tenons at its
+    four corners (the body spans exactly from the first tenon's outer edge to the last one's)."""
     L, D, r = layout(p), p.deck, _rd(p)
-    x0, x1 = L.cx - D.length_x / 2, L.cx + D.length_x / 2
+    txs = tenon_xs(p)
+    x0, x1 = txs[0][0], txs[-1][1]
     s0 = L.yL[0] + L.t_max / 2 + p.fit.tight           # shoulders clear the thickest apron
     s1 = L.yL[1] - L.t_max / 2 - p.fit.tight
     g = box(x0, s0, x1, s1)
-    ends = (L.yL[0] - L.t / 2 - D.tenon_protrusion, L.yL[1] + L.t / 2 + D.tenon_protrusion)
-    for tx0, tx1 in tenon_xs(p):
+    ends = (L.yL[0] - L.t / 2 - D.tenon_proud, L.yL[1] + L.t / 2 + D.tenon_proud)
+    for tx0, tx1 in txs:
         g = g.union(box(tx0, ends[0], tx1, s0 + 1)).union(box(tx0, s1 - 1, tx1, ends[1]))
-    g = _round_outer(g, 4.0)                           # soften tenon ends / deck corners
-    for tx0, tx1 in tenon_xs(p):                       # root reliefs so the shoulders seat on the apron
+    g = _round_outer(g, 1.0)                           # just break the tenon-end corners (they show)
+    for tx0, tx1 in txs:                               # root reliefs so the shoulders seat on the apron
         # dogbone centred in the empty quadrant beside the root, like a hole's corner bone, so the
         # bit can actually get in (its mouth is the open quadrant)
         for (sy, ty) in ((s0, -1), (s1, 1)):          # ty: direction the tenon sticks out
-            g = g.difference(dogbone((tx0, sy), (-1, ty), r)).difference(dogbone((tx1, sy), (1, ty), r))
-        xc = (tx0 + tx1) / 2
-        for side in (-1, 1):                           # wedge holes
-            ya, yb = deck_wedge_hole(p, side)
-            g = g.difference(hole(xc - thick_slot(p) / 2, ya, xc + thick_slot(p) / 2, yb, r))
+            # inner root only: the outer root is the deck's own corner (tenon flush with the body end)
+            if tx0 > x0 + 0.01:
+                g = g.difference(dogbone((tx0, sy), (-1, ty), r))
+            if tx1 < x1 - 0.01:
+                g = g.difference(dogbone((tx1, sy), (1, ty), r))
     for xi, sgn in zip(cheek_xs(p), (-1, 1)):          # cheek tab slots; inner edge = heater face
         xa, xb = sorted((xi, xi + sgn * thick_slot(p)))
         for ya, yb in tab_ys(p):
@@ -242,24 +245,7 @@ def parts(p) -> list[Part]:
                                    for xi, s in zip(cheek_xs(p), (-1, 1))], kind="cheek")
     out += [lp, sp, dk, ck]
 
-    # deck wedges: plate in y-z; straight edge on the apron's outer face, head up
-    W = p.deck_wedge
     taper = p.fit.wedge_taper
-    dw_pl = []
-    for side in (-1, 1):
-        yc = L.yL[0] if side < 0 else L.yL[1]
-        face = yc + side * t / 2                          # nominal outer face
-        ya, yb = deck_wedge_hole(p, side)
-        far = ya if side < 0 else yb                      # hole's outer wall
-        need = abs(face - far)                            # wedge width that just fills
-        v_at = (need - (W.head - W.length * taper)) / taper   # height along wedge where width == need
-        z0 = L.z_deck_top - v_at                          # contact roughly at the deck top face
-        for tx0, tx1 in tenon_xs(p):
-            xc = (tx0 + tx1) / 2
-            dw_pl.append((side, Placement("y", (xc - t / 2, face, z0), mirror_u=side < 0)))
-    shape = taper_wedge(W.length, W.head, taper)
-    out.append(Part("deck wedge", shape, [pl for _, pl in dw_pl], spares=2, kind="wedge"))
-
     # cheek wedges: plate in x-z, lying on the deck top, passing through the tab holes in x
     CW = p.cheek_wedge
     cw = Polygon([(0, 0), (CW.length, 0), (CW.length, CW.head), (0, CW.head - CW.length * taper)])

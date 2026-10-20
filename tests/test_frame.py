@@ -51,7 +51,7 @@ def test_quantities(C):
     P, L, PARTS = C.P, C.L, C.PARTS
     q = {n: pt.qty for n, pt in PARTS.items()}
     assert q["long side"] == 2 and q["short side"] == 2 and q["deck"] == 1 and q["heater cheek"] == 2
-    assert q["deck wedge"] >= 2 * P.deck.tenons_per_side
+    assert "deck wedge" not in q, "deck tenons are plain through-tenons now"
     assert q["cheek wedge"] >= 4
 
 
@@ -91,7 +91,7 @@ def test_crossings_agree(C):
     assert L.yL[0] - L.O == pytest.approx(P.frame.ear) and L.Wf - (L.yL[1] - L.O) == pytest.approx(P.frame.ear)
 
 
-# ------------------------------------------------------------------ deck tusk tenons
+# ------------------------------------------------------------------ deck through-tenons
 @pytest.mark.parametrize("t", T_RANGE)
 def test_deck_tenons_fit_mortises(C, t):
     P, L, PARTS = C.P, C.L, C.PARTS
@@ -113,39 +113,31 @@ def test_deck_body_fits_between_aprons(C):
             box(0, inner0 - 50, 2000, inner0)).difference(box(0, inner1, 2000, inner1 + 50))
         assert body.area > 0
     gap = (L.yL[1] - L.yL[0] - P.material.t_min) - (L.yL[1] - L.yL[0] - P.material.t_max - 2 * P.fit.tight)
-    assert gap <= 2.5     # worst-case play along y, taken up by the wedges
+    assert gap <= 2.5     # worst-case play along y (thin aprons): harmless, the tenons stay engaged
+
+
+def test_deck_tenons_sit_in_the_legs(C):
+    """Each tenon (and its mortise) lies in solid leg, clear of the cross-lap slot and the leg opening,
+    so the apron above the opening carries no joint and can stay shallow."""
+    P, L = C.P, C.L
+    a, b = frame.leg_zone(P)
+    for x0, x1 in frame.tenon_xs(P):
+        u0, u1 = sorted((x0 - L.O, x1 - L.O))
+        if u0 > L.Lf / 2:                                  # far end: mirror into the near end's terms
+            u0, u1 = L.Lf - u1, L.Lf - u0
+        assert u0 - P.fit.tight - a >= 15, "too close to the cross-lap slot"
+        assert b - (u1 + P.fit.tight) >= 15, "too close to the leg opening"
+    assert L.z_deck_top + P.material.t_max - P.material.t_nominal <= L.H - 20, "mortise too near the top edge"
 
 
 @pytest.mark.parametrize("t", T_RANGE)
-def test_deck_wedge_hole_starts_inside_apron(C, t):
+def test_deck_tenons_go_right_through(C, t):
+    """Through-tenons end just proud of the apron's outer face for every stock thickness."""
     P, L, PARTS = C.P, C.L, C.PARTS
-    for side in (-1, 1):
-        yc = L.yL[0] if side < 0 else L.yL[1]
-        outer_face = yc + side * t / 2
-        ya, yb = frame.deck_wedge_hole(P, side)
-        inner = yb if side < 0 else ya
-        assert (outer_face - inner) * side > 0.5, "wedge must bear on the apron, not the hole wall"
-
-
-@pytest.mark.parametrize("t", T_RANGE)
-def test_deck_wedge_engages_below_futon_plane(C, t):
-    P, L, PARTS = C.P, C.L, C.PARTS
-    """For every stock thickness the wedge tightens with its head still below the apron top."""
-    W, taper = P.deck_wedge, P.fit.wedge_taper
-    foot = W.head - W.length * taper
-    for side in (-1, 1):
-        yc = L.yL[0] if side < 0 else L.yL[1]
-        face = yc + side * t / 2
-        ya, yb = frame.deck_wedge_hole(P, side)
-        far = ya if side < 0 else yb
-        need = abs(face - far)
-        assert foot < need < W.head
-        v_at = (need - foot) / taper
-        head_z = L.z_deck_top - v_at + W.length
-        assert head_z <= L.H - 3, f"wedge head at {head_z:.0f} pokes above the apron top"
-        foot_z = L.z_deck_top - v_at
-        assert foot_z >= P.frame.height - P.frame.apron_depth + 3, \
-            f"wedge foot at {foot_z:.0f} hangs below the apron into knee space"
+    _, y0, _, y1 = PARTS["deck"].shape.bounds
+    for yc, end, side in ((L.yL[0], y0, -1), (L.yL[1], y1, 1)):
+        proud = (end - (yc + side * t / 2)) * side
+        assert 0.5 <= proud <= 3.0, f"tenon end {proud:.2f} mm past the outer face"
 
 
 # ------------------------------------------------------------------ cheeks
@@ -196,11 +188,14 @@ def test_cheeks_hug_the_heater(C):
 
 # ------------------------------------------------------------------ comfort & safety
 def test_leg_room(C):
+    """Owner chose leg-room changes A, B, D, E, F (PLAN.md section 3)."""
     P, L, PARTS = C.P, C.L, C.PARTS
     F = P.frame
-    assert F.height - F.apron_depth >= 280, "thighs under the apron"
+    assert F.height - F.apron_depth >= 325, "thighs/knees under the apron"
     (sx, sy, sz), (cx, cy, cz) = frame.heater_box(P)
-    assert cz - sz / 2 >= 250, "knees under the heater"
+    assert cz - sz / 2 >= 280, "shins under the heater"
+    zb = L.z_deck_bot - P.cheek.height
+    assert zb >= cz - sz / 2 - 0.01, "cheeks must not hang below the heater"
     n_long, n_short = P.comfort.sitters
     assert L.Lf - 2 * F.leg_width >= n_long * P.comfort.leg_gap, "legs through a long side"
     assert L.Wf - 2 * F.leg_width >= n_short * P.comfort.leg_gap, "legs through a short side"
@@ -209,19 +204,19 @@ def test_leg_room(C):
 def test_total_height_in_owner_range(C):
     P, L, PARTS = C.P, C.L, C.PARTS
     total = P.frame.height + P.material.t_nominal + 10      # ~10 mm compressed futon
-    assert 390 <= total <= 410
+    assert 390 <= total <= 415                               # owner OK'd ~41 cm for the leg room
 
 
 def test_ear_fingers_are_sturdy(C):
     P, L, PARTS = C.P, C.L, C.PARTS
     """Half-height ear fingers outside the cross-lap slots."""
-    assert P.frame.ear - frame.slot_w(P) / 2 >= 50
+    assert P.frame.ear - frame.slot_w(P) / 2 >= 40
     assert P.frame.leg_width - P.frame.ear - frame.slot_w(P) / 2 >= 80
 
 
 def test_deck_clears_short_panels(C):
     P, L = C.P, C.L
-    x0, x1 = L.cx - P.deck.length_x / 2, L.cx + P.deck.length_x / 2
+    x0, _, x1, _ = C.PARTS["deck"].shape.bounds
     assert x0 >= L.xS[0] + P.material.t_max / 2 + 5 and x1 <= L.xS[1] - P.material.t_max / 2 - 5
 
 

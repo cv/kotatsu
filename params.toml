@@ -27,43 +27,34 @@ width = 900.0
 corner_r = 20.0       # rect only
 
 [frame]
-height = 375.0        # + 18 top + ~10-20 futon = 400-410 total (owner: 39-41 cm)
-overhang = 120.0      # square frame 660 × 660 under the Ø900 top; its ear tips stay ~18 mm inside the circle
-ear = 60.0            # panel end -> crossing centreline (visible "ear"; >= ~60 so the half-height ear fingers are sturdy)
-apron_depth = 90.0    # clear height under the aprons = height - apron_depth (leg room)
-leg_width = 150.0     # measured from panel end; openings 360 = one sitter per side
+height = 385.0        # + 18 top + ~10 futon ≈ 41 cm total (owner OK'd the top of the 39-41 range for leg room)
+overhang = 120.0      # square frame 660 × 660 under the Ø900 top; its ear tips stay ≥ 10 mm inside the circle
+ear = 50.0            # panel end -> crossing centreline (visible "ear"); half-height ear fingers 40 wide
+apron_depth = 55.0    # clear height under the aprons = height - apron_depth (thighs/knees come in here)
+leg_width = 140.0     # from panel end: ear + half slot + an 80 mm leg zone that carries the deck tenon
 opening_r = 50.0      # fillet radius of the leg-opening top corners
 ear_r = 12.0          # rounding of the panel top/bottom outer corners
 foot_r = 6.0          # rounding of the inner foot corners
 lap_extra = 0.5       # each cross-lap slot is height/2 + this (so slot bottoms never bottom out; the floor sets height)
 
-[deck]                # horizontal shear plate between the long aprons; heater hangs under it
-length_x = 480.0      # must clear the short panels (frame is square)
-drop = 40.0           # deck top below apron top edge (room for the cheek wedges above it)
-tenons_per_side = 2
-tenon_width = 120.0
-tenon_spacing = 300.0 # centre-to-centre along x
-tenon_protrusion = 50.0   # past outer apron face (tusk)
-hole_len = 26.0       # wedge hole length along the tenon
-hole_inset = 2.0      # hole inner edge sits this far inside the (thinnest) apron's outer face
-
-[deck_wedge]          # drives down through the tenon hole, bears on the apron's outer face
-length = 66.0         # short enough that the tusk never hangs below the apron into knee space,
-                      # yet tall enough to take up the full stock-thickness range (~12 mm of travel at 1:8)
-head = 27.0           # width at the head; taper fit.wedge_taper
+[deck]                # horizontal shear plate between two opposite panels; the heater hangs under it
+drop = 26.0           # deck top below the apron top edge (room for the cheek tabs + wedges above it)
+tenons_per_side = 2   # one through-tenon in each leg zone (outside the leg openings), no wedges:
+tenon_width = 40.0    # the cross-laps fix the panel spacing, so the tenons can't pull out
+tenon_proud = 2.0     # tenon end stands this far past the nominal outer face (sand flush or leave as a detail)
 
 [cheek]               # 2 on-edge plates under the deck; the heater screws into their inner faces
 length = 372.0
-height = 64.0
+height = 56.0         # = heater top gap + body height: cheeks end level with the heater bottom
 tab_w = 50.0
 tab_spacing = 300.0
-tab_above_deck = 30.0 # tab top above (nominal) deck top
-hole_h = 22.0         # wedge hole height
+tab_above_deck = 21.0 # tab top above (nominal) deck top
+hole_h = 14.0         # wedge hole height
 hole_drop = 1.0       # hole bottom below the thinnest deck's top face
 
 [cheek_wedge]         # lies on the deck top, driven sideways through the tab hole: pulls the cheek up
-length = 96.0
-head = 26.0           # height at the thick end; taper fit.wedge_taper
+length = 80.0
+head = 18.0           # height at the thick end; taper fit.wedge_taper (foot 8)
 
 [heater]               # PaletteLife 120V 400W (docs/heater.md). TODO-verify with calipers
 model = "PaletteLife B0CKBS16YY"
@@ -77,7 +68,7 @@ holes = []             # TODO measure: side screw positions
 
 [comfort]
 sitters = [1, 1]      # people per side (long, short) - square frame: 4 people
-leg_gap = 360.0       # min opening width per sitter between the legs
+leg_gap = 370.0       # min opening width per sitter between the legs
 
 [room]                # for the Futon & rug page (docs/futons.toml has the candidates)
 rug_d = 2440.0        # 8 ft round rug

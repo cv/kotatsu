@@ -8,7 +8,7 @@ data from the uMake app, or from the heater once it's in hand.
 |---|---|
 | Table | **One round kotatsu, top Ø 900 cut as one piece**, on a 660 × 660 square slab frame. The 1200 × 900 rectangle and all the decorative seam options were dropped (they're archived at git tag `seams-archive`) |
 | Heater | **PaletteLife 120 V 400 W** ordered (see docs/heater.md); the backup is Zuomeng PTC |
-| Height | 39–41 cm total: frame 375 + top 18 + futon ≈ 400–410 |
+| Height | ≈ 41 cm total: frame 385 + top 18 + futon (owner accepted the top of the 39–41 range for leg room) |
 | Corners | the default visible cross-lap "ears"; no engraving |
 | Futon & rug | a **205 cm round** futon on an 8 ft round rug (docs/futon.md, docs/futons.toml, site tab "Futon & rug") |
 | Ship to | rural BC |
@@ -23,44 +23,50 @@ data from the uMake app, or from the heater once it's in hand.
   TODO: add a length + girth check to the build.
 
 ## 2. Design: "four slab sides + deck" (`kotatsu/frame.py`)
-- **Side panels (×4), 660 × 375.** Each panel is one slab that forms the apron and both legs. The corners are cross-laps 60 mm in
-  from the panel ends (the "ears"). Long panels are slotted from the top and short panels from the bottom. Slot width = t_max + 0.3, and slot depth =
-  H/2 + 0.5, so the floor sets the height. The legs are 150 wide, which leaves a **360 mm** opening on every side (4 sitters). The apron is 90 deep,
-  which leaves **285 mm** of clear height under it.
-- **Deck (×1)**: a horizontal shear plate with its top at z = 335. It has 2 tusk tenons per side, through dogboned mortises in two opposite
-  panels, locked by 1:8 vertical wedges. It makes the frame rack-proof.
-- **Heater cheeks (×2)**: plates hung under the deck by tabs. The tabs come up through deck slots and are locked by flat wedges lying on the
-  deck. The heater screws into the cheeks through its side flanges (the only hardware). The deck is solid over the heater, so it doubles as the
-  heat shield between the heater and the futon.
+- **Side panels (×4), 660 × 385.** Each panel is one slab that forms the apron and both legs.
+  - Corners: cross-laps 50 mm in from the panel ends (the "ears"). Long panels are slotted from the top, short panels from the bottom.
+  - Slots: width = t_max + 0.3; depth = H/2 + 0.5, so the floor sets the height.
+  - Legs: 140 wide, which leaves a **380 mm** opening on every side.
+  - Aprons: only **55 deep**, leaving **330 mm** of clear height under them. No joint is cut into the apron.
+- **Deck (×1), 500 × 582.** A horizontal shear plate, top at z = 359.
+  - It has 4 plain through-tenons (40 wide, standing 2 mm proud), one in each **leg zone**: the 80 mm of solid leg between the cross-lap slot and the opening.
+  - No wedges: the cross-laps fix the panel spacing, so the tenons can't pull out.
+  - It makes the frame rack-proof.
+- **Heater cheeks (×2).** Plates hung under the deck by tabs. The tabs come up through deck slots and are locked by small flat wedges
+  (80 × 18, 1:8) lying on the deck.
+  - The cheeks end level with the heater bottom, at z = 285.
+  - The heater screws into the cheeks through its side flanges (the only hardware).
+  - The deck is solid over the heater, so it doubles as the heat shield.
 - **Top**: Ø 900 in one piece. It sits on the futon, which is draped over the frame.
-- Tests (`tests/test_frame.py`) check every joint fit at t = 17.0 / 18.0 / 18.9 mm. They also check that nothing pokes above the futon
-  plane, and that the frame corners stay ≥ 10 mm inside the round top.
+- Total height ≈ 385 + 18 + futon ≈ **41 cm**.
+- Tests (`tests/test_frame.py`) check every joint fit at t = 17.0 / 18.0 / 18.9 mm, plus:
+  - nothing pokes above the futon plane;
+  - the frame corners stay ≥ 10 mm inside the round top (currently 11 mm);
+  - leg-room minimums.
+- **Parts:** 13 pieces, about 18 kg, on one 48×96" sheet (49 % used).
 
 ### Assembly (mallet + the heater's screwdriver)
-1. Hang the cheeks: push the tabs up through the deck and tap in the 4 cheek wedges. 2. Screw the heater between the cheeks.
-3. Stand two opposite panels up and slide the deck tenons through them. 4. Fit the deck wedges.
-5. Lower the other 2 panels onto the cross-laps from above. 6. Tap the wedges home. 7. Lay on the futon, then the top.
+1. Hang the cheeks: push the tabs up through the deck and tap in the 4 cheek wedges.
+2. Screw the heater between the cheeks.
+3. Stand two opposite panels up and slide the deck's corner tenons through them.
+4. Lower the other 2 panels onto the cross-laps from above.
+5. Lay on the futon, then the top.
 
-## 3. Leg room: proposal (2026-10-19, waiting for the owner's choice)
-On a Ø 90 table, 4 sitters' knees end up ~20–25 cm from the centre, just outside the heater. Their thighs pass under the
-aprons. So the clear height **under the aprons** matters most, then the opening width, then the clearance under the heater
-(only shins and feet go there).
-
-What limits it today:
-- the apron has to be 90 deep only because the deck mortises sit in it (the tenons are at x = 240–360, inside the 270–630 opening);
-- the tusk tenons and their wedges stick out into the openings, right where thighs come in;
-- the deck sits 40 mm down to make room for the cheek wedges, and the cheeks hang 8 mm below the heater.
-
-| Change | Effect | Cost / risk |
+## 3. Leg room (decided 2026-10-19: owner chose A, B, D, E, F)
+| | Before | Now |
 |---|---|---|
-| A. Move the deck tenons into the legs (40 wide at x 210–250, between the opening edge and the cross-lap slot, ~20 mm of wood each side) | apron 90 → **55**: clear height **285 → 320** | narrow tenons |
-| B. Drop the deck wedges: plain through-tenons (the cross-laps already fix the panel spacing) | nothing sticks out into the openings; −6 parts | loses the visible tusk detail (or keep small wedges on A's tenons) |
-| C. Arch the apron (55 at the legs, ~40 at mid-span) | **335** at the centre of each opening | looks different; still stiff (span 360) |
-| D. Smaller cheek wedges, deck drop 40 → ~28; cheeks no lower than the heater | under the heater **261 → ~273** | TODO-verify the wedge geometry |
-| E. Ear 60 → 50 (panels move out; the ear tips stay 10 mm inside the top) | openings **360 → ~380**, interior 522 → 542 | ear fingers 40 wide instead of 50 |
-| F. Frame height 375 → 385 | everything +10 | total ≈ 41 cm with futon (top of the 39–41 range) |
+| Clear height under the aprons (thighs/knees) | 285 | **330** |
+| Opening width, each of the 4 sides | 360 | **380** |
+| Interior between the panels | 522 | **542** |
+| Clear height under the heater/cheeks (shins) | 261 / 253 | **285** |
+| Parts sticking into the openings | 4 tusk tenons + wedges | none |
 
-Recommended: **A + B + D**; C and E are a matter of taste; F only if 41 cm is fine.
+- A: the deck tenons moved into the legs.
+- B: no deck wedges.
+- D: deck drop 40 → 26, using smaller cheek wedges; the cheeks now end level with the heater.
+- E: ear 60 → 50.
+- F: frame height 375 → 385.
+- Not chosen: C (arched apron, which would give ~345 mid-span).
 
 ## 4. Budget (CAD, estimates; TODO-verify)
 | Item | Estimate |
@@ -75,13 +81,12 @@ Recommended: **A + B + D**; C and E are a matter of taste; F only if 41 cm is fi
 0. ✅ Repo, AGENTS.md, vendor research, tooling (uv, ezdxf, shapely, matplotlib, pytest, Makefile).
 1. ✅ Project site (`make dev`, http://127.0.0.1:8765): futon & rug plan, frame parts, cut sheets, 3-D, docs, test status.
 2. ✅ Frame geometry and joint tests; cut list, nesting, DXF per part and per sheet, `out/BOM.md`.
-3. ◐ **Leg room** (section 3): waiting for the owner's choice.
+3. ✅ **Leg room** (section 3): A, B, D, E, F applied.
 4. ◐ **Heater**: measure it when it arrives and freeze `[heater]` (body, screw-hole positions, screw size, cord exit).
 5. **Quote** on app.umake.ca: read the actual stock thickness and price; make sure there's no "manual quote" flag.
 6. Optional fit coupons (a cross-lap pair, a tenon + wedge).
 7. Order, assemble, finish (sand off the holding tabs, ease the edges, oil).
 
 ## 6. Open questions
-1. Leg-room changes A–F (section 3).
-2. Heater measurements, and the clearances required by its manual.
-3. Futon choice. The traditional shijira cotton (Wataman) is sold out; Amazon.co.jp has 205 cm options in stock.
+1. Heater measurements, and the clearances required by its manual.
+2. Futon choice. The traditional shijira cotton (Wataman) is sold out; Amazon.co.jp has 205 cm options in stock.
