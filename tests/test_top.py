@@ -100,3 +100,16 @@ def test_round_top_is_one_piece_and_ships():
     d = R.top.length
     assert abs(b.area - 3.14159265 * (d / 2) ** 2) / b.area < 0.002
     assert d + 50 <= P.shipping.std_max_side_in * INCH
+
+
+@pytest.mark.parametrize("name", ["maple-3-updown", "maple-5-updown"])
+def test_maple_updown_is_rotationally_symmetric(name):
+    """One row tips up, the other tips down: the middle board reads the same turned 180°,
+    and the two outer boards are the same shape (only the fit clearance differs)."""
+    from shapely.affinity import rotate
+    p = params.table(params.load(), "rect")
+    b = top.build(p, name).boards
+    c = (p.top.length / 2, p.top.width / 2)
+    per = b[1].length
+    assert rotate(b[1], 180, origin=c).symmetric_difference(b[1]).area < 0.5 * per
+    assert rotate(b[0], 180, origin=c).symmetric_difference(b[2]).area < 0.5 * b[0].length

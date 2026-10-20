@@ -247,6 +247,39 @@ label = "5 smaller half maple leaves, alternating"
 count = 5
 size = 150.0
 
+[[top.options]]
+name = "maple-3-updown"
+kind = "combo"
+label = "Half maple leaves: tips up on the left seam, tips down on the right"
+mirror = false
+[[top.options.seam]]   # seam 1: tips up
+kind = "maple"
+count = 3
+size = 230.0
+[[top.options.seam]]   # seam 2: tips down, sides reversed -> middle board is 180° symmetric
+kind = "maple"
+count = 3
+size = 230.0
+flip = true
+dirs = [-1, 1]
+
+[[top.options]]
+name = "maple-5-updown"
+kind = "combo"
+label = "5 smaller half maple leaves: tips up on the left seam, tips down on the right"
+mirror = false
+[[top.options.seam]]   # seam 1: tips up
+kind = "maple"
+count = 5
+size = 150.0
+[[top.options.seam]]   # seam 2: tips down, sides reversed -> middle board is 180° symmetric
+kind = "maple"
+count = 5
+size = 150.0
+flip = true
+dirs = [-1, 1]
+
+
 # --- arrows: yajiri (arrowhead) + yabane (fletching) -------------------------------------
 [[top.options]]
 name = "yajiri-3"
