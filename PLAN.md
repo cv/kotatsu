@@ -74,6 +74,28 @@ data from the uMake app, or from the heater once it's in hand.
 - F: frame height 375 → 385.
 - Not chosen: C (arched apron, which would give ~345 mid-span).
 
+## 3b. Frame-style comparison: yagura variant (compare only, not cut)
+`[[tables]] round-yagura` (`frame.style = "yagura"`, `kotatsu/yagura.py`, `tests/test_yagura.py`) has no aprons.
+- **Legs:** 4 "+" corner legs, each two crossed plates, in the same planes and corners as the slab panels.
+  The legs are 160 wide at the top, tapering to 100 at the floor, with bell feet.
+- **Deck:** a 660 square with its corners trimmed inside the top's circle.
+- **Joints:** each plate stops in a shoulder under the deck and has one 56 mm tenon that rises through the deck to the futon plane.
+  A small wedge through each tenon, lying on the deck, clamps the deck between the shoulder and the wedge.
+- **Heater mount:** the same as the slab frame.
+
+Side by side (site Overview, "Frame styles compared"):
+
+| | Slab (building) | Yagura |
+|---|---|---|
+| Pieces / wedges | 13 / 5 | 26 / 14 |
+| Weight | 17.6 kg | 18.4 kg |
+| Plywood | one 48×96" (2.97 m², 47 %) | one **60×60" (2.32 m², 63 %)** |
+| Clear height at mid-side | 330 | **341** |
+| Knee reach / between legs at knee height | 102 / 357 | 101 / 348 |
+| Tipping push | 729 N | 788 N (heavier deck) |
+
+Not modelled yet: joint stiffness. The yagura's legs rely on wedged tenons in an 18 mm deck, while the slab's legs and aprons are one piece. The planned 2-D stress check should settle it.
+
 ## 4. Budget (CAD, estimates; TODO-verify)
 | Item | Estimate |
 |---|---|

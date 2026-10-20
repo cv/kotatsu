@@ -102,3 +102,19 @@ max_box_lb = 50
 [[tables]]
 name = "round"
 label = "3 ft round (Ø 900, one piece)"
+
+[[tables]]            # comparison variant (not cut): no aprons, "+" corner legs under the deck
+name = "round-yagura"
+label = "Yagura variant (no aprons)"
+compare = true
+[tables.frame]
+style = "yagura"
+leg_width = 160.0     # legs can be wider at the top now that there's no apron: room for a shouldered tenon
+leg_taper = 60.0      # ... same 100 mm at the floor
+
+[yagura]              # only used by frame.style = "yagura"
+tenon_w = 56.0        # each leg plate's tenon through the deck
+tenon_gap = 20.0      # tenon starts this far past the cross-lap slot
+hole_h = 14.0         # wedge hole above the deck (same small wedges as the cheeks)
+hole_drop = 1.0
+deck_inset = 10.0     # deck corners stay this far inside the round top

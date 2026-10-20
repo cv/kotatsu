@@ -19,7 +19,7 @@ from .params import ROOT
 OUT = ROOT / "out"
 CACHE = OUT / ".cache"
 SRC = ["params.toml", "kotatsu/params.py", "kotatsu/build.py", "kotatsu/cutlist.py", "kotatsu/nest.py",
-       "kotatsu/frame.py", "kotatsu/top.py", "kotatsu/geom.py"]   # anything that can change a layout
+       "kotatsu/frame.py", "kotatsu/yagura.py", "kotatsu/top.py", "kotatsu/geom.py"]   # anything that can change a layout
 
 
 def top(p):
@@ -62,6 +62,29 @@ def cached_layouts(p) -> dict:
                 s.occ = None                  # don't pickle the raster
     CACHE.mkdir(parents=True, exist_ok=True)
     for old in [*CACHE.glob("nest-*.pkl"), *CACHE.glob("layouts-*.pkl")]:
+        old.unlink()
+    path.write_bytes(pickle.dumps(res))
+    return res
+
+
+def cached_table_plans(p) -> dict:
+    """{table name: least-plywood Nest} for every [[tables]] entry on its own, compare variants included
+    (for the site's side-by-side comparison). Cached like the layouts."""
+    h = hashlib.sha256(b"table-plans")
+    for f in SRC:
+        h.update((ROOT / f).read_bytes())
+    path = CACHE / f"plans-{h.hexdigest()[:16]}.pkl"
+    if path.exists():
+        return pickle.loads(path.read_bytes())
+    res = {}
+    for tp in params.tables(p):
+        n = nest.plan(tp, cutlist.cut_list(tp))
+        if n is not None:
+            for sh in n.sheets:
+                sh.occ = None
+        res[tp.table_name] = n
+    CACHE.mkdir(parents=True, exist_ok=True)
+    for old in CACHE.glob("plans-*.pkl"):
         old.unlink()
     path.write_bytes(pickle.dumps(res))
     return res

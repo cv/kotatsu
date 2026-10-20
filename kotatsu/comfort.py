@@ -20,17 +20,18 @@ def low_footprint(p, z: float):
     for pt in frame.parts(p):
         if pt.kind != "frame":
             continue
-        low = pt.shape.intersection(box(-10, -10, 1e4, z))
+        low = pt.shape.intersection(box(-1e3, -10, 1e4, z))
         for g in getattr(low, "geoms", [low]):
             if g.is_empty:
                 continue
             u0, _, u1, _ = g.bounds
             for pl in pt.placements:
                 ox, oy, _ = pl.origin
+                a, b = (-u1, -u0) if pl.mirror_u else (u0, u1)
                 if pl.axis == "x":
-                    out.append(box(ox + u0 - c, oy - c, ox + u1 - c, oy + t - c))
-                else:
-                    out.append(box(ox - c, oy + u0 - c, ox + t - c, oy + u1 - c))
+                    out.append(box(ox + a - c, oy - c, ox + b - c, oy + t - c))
+                elif pl.axis == "y":
+                    out.append(box(ox - c, oy + a - c, ox + t - c, oy + b - c))
     return unary_union(out)
 
 
@@ -68,10 +69,8 @@ def weight_n(p) -> float:
 def tip_load(p) -> float:
     """Downward push (N) on the top's edge, at mid-side (the worst direction), that tips the table:
     it pivots on the feet at the panel ends, Lf/2 + foot_flare out from the centre."""
-    L = frame.layout(p)
-    lp = frame.long_panel(p)
-    foot = lp.intersection(box(-1e3, -1, 1e4, 1.0))     # what actually touches the floor
-    xf = L.Lf / 2 - foot.bounds[0]
+    x0, y0, x1, y1 = low_footprint(p, 1.0).bounds         # what actually touches the floor
+    xf = min(-x0, -y0, x1, y1)                            # nearest tipping edge (frame is square)
     R = p.top.length / 2
     return weight_n(p) * xf / (R - xf)
 
@@ -81,12 +80,20 @@ def summary(p) -> dict:
     return {"knee_w": C.knee_w, "knee_h": C.knee_h, "reach": round(knee_reach(p), 1),
             "tip_n": round(tip_load(p)), "tip_min_n": C.tip_min_n,
             "reach_min": C.knee_reach_min,
-            "apron_clear": p.frame.height - p.frame.apron_depth,
+            "apron_clear": side_clear(p),
             "shin_w": round(p.top.length - 2 * p.frame.overhang - 2 * low_footprint_leg_u(p, C.knee_h), 1)}
+
+
+def side_clear(p) -> float:
+    """Clear height at the middle of each side: under the apron (slab) or under the deck (yagura)."""
+    if getattr(p.frame, "style", "slab") == "yagura":
+        return frame.layout(p).z_deck_bot
+    return p.frame.height - p.frame.apron_depth
 
 
 def low_footprint_leg_u(p, z: float) -> float:
     """Leg width (from the panel end) at height z, including the opening's top fillet."""
-    sp = frame.short_panel(p)
-    low = sp.intersection(box(-10, z - 0.5, 1e4, z))
-    return min(g.bounds[2] for g in getattr(low, "geoms", [low]))
+    sp = next(pt.shape for pt in frame.parts(p) if pt.kind == "frame")
+    low = sp.intersection(box(-1e3, z - 0.5, 1e4, z))
+    half = frame.layout(p).Lf / 2                       # pieces at the near end: ear finger, inner leg
+    return max(g.bounds[2] for g in getattr(low, "geoms", [low]) if g.bounds[2] < half)

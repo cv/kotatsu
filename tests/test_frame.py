@@ -20,6 +20,11 @@ def C(request):
     return SimpleNamespace(P=P, L=frame.layout(P), PARTS={pt.name: pt for pt in frame.parts(P)})
 
 
+def _slab(C):
+    if getattr(C.P.frame, "style", "slab") != "slab":
+        pytest.skip("slab-frame specific (yagura variant: tests/test_yagura.py)")
+
+
 def clear(part_shape, rect, tol=0.01):
     """rect (cross-section of a mating part) lies entirely in empty space of part_shape."""
     return part_shape.intersection(rect).area <= tol
@@ -48,6 +53,7 @@ def _fits(P, shape):
 
 
 def test_quantities(C):
+    _slab(C)
     P, L, PARTS = C.P, C.L, C.PARTS
     q = {n: pt.qty for n, pt in PARTS.items()}
     assert q["long side"] == 2 and q["short side"] == 2 and q["deck"] == 1 and q["heater cheek"] == 2
@@ -57,6 +63,7 @@ def test_quantities(C):
 
 # ------------------------------------------------------------------ cross-laps
 def test_cross_lap_depths_and_widths(C):
+    _slab(C)
     P, L, PARTS = C.P, C.L, C.PARTS
     d = frame.lap_depth(P)
     assert 2 * d >= L.H and 2 * d - L.H <= 2.0          # never bottoms out, never sloppy in height
@@ -65,6 +72,7 @@ def test_cross_lap_depths_and_widths(C):
 
 @pytest.mark.parametrize("t", T_RANGE)
 def test_short_panel_passes_through_long_slot(C, t):
+    _slab(C)
     P, L, PARTS = C.P, C.L, C.PARTS
     """In the long panel's plane, the short panel's cross-section at the crossing must be empty space."""
     lp = PARTS["long side"].shape
@@ -76,6 +84,7 @@ def test_short_panel_passes_through_long_slot(C, t):
 
 @pytest.mark.parametrize("t", T_RANGE)
 def test_long_panel_passes_through_short_slot(C, t):
+    _slab(C)
     P, L, PARTS = C.P, C.L, C.PARTS
     sp = PARTS["short side"].shape
     d = frame.lap_depth(P)
@@ -94,6 +103,7 @@ def test_crossings_agree(C):
 # ------------------------------------------------------------------ deck through-tenons
 @pytest.mark.parametrize("t", T_RANGE)
 def test_deck_tenons_fit_mortises(C, t):
+    _slab(C)
     P, L, PARTS = C.P, C.L, C.PARTS
     lp = PARTS["long side"].shape
     for x0, x1 in frame.tenon_xs(P):
@@ -104,6 +114,7 @@ def test_deck_tenons_fit_mortises(C, t):
 
 
 def test_deck_body_fits_between_aprons(C):
+    _slab(C)
     P, L, PARTS = C.P, C.L, C.PARTS
     dk = PARTS["deck"].shape
     for t in T_RANGE:
@@ -119,6 +130,7 @@ def test_deck_body_fits_between_aprons(C):
 def test_deck_tenons_sit_in_the_legs(C):
     """Each tenon (and its mortise) lies in solid leg, clear of the cross-lap slot and the leg opening,
     so the apron above the opening carries no joint and can stay shallow."""
+    _slab(C)
     P, L = C.P, C.L
     a, b = frame.leg_zone(P)
     for x0, x1 in frame.tenon_xs(P):
@@ -133,6 +145,7 @@ def test_deck_tenons_sit_in_the_legs(C):
 @pytest.mark.parametrize("t", T_RANGE)
 def test_deck_tenons_go_right_through(C, t):
     """Through-tenons end just proud of the apron's outer face for every stock thickness."""
+    _slab(C)
     P, L, PARTS = C.P, C.L, C.PARTS
     _, y0, _, y1 = PARTS["deck"].shape.bounds
     for yc, end, side in ((L.yL[0], y0, -1), (L.yL[1], y1, 1)):
@@ -189,6 +202,7 @@ def test_cheeks_hug_the_heater(C):
 # ------------------------------------------------------------------ comfort & safety
 def test_leg_room(C):
     """Owner chose leg-room changes A, B, D, E, F (PLAN.md section 3)."""
+    _slab(C)
     P, L, PARTS = C.P, C.L, C.PARTS
     F = P.frame
     assert F.height - F.apron_depth >= 325, "thighs/knees under the apron"
@@ -215,6 +229,7 @@ def test_ear_fingers_are_sturdy(C):
 
 
 def test_deck_clears_short_panels(C):
+    _slab(C)
     P, L = C.P, C.L
     x0, _, x1, _ = C.PARTS["deck"].shape.bounds
     assert x0 >= L.xS[0] + P.material.t_max / 2 + 5 and x1 <= L.xS[1] - P.material.t_max / 2 - 5
@@ -241,6 +256,7 @@ def test_frame_hidden_under_round_top(C):
 def test_tapered_feet_are_sturdy(C):
     """Tapered legs: at the floor, the foot beside the short panel's bottom-open slot is still >= 40 wide,
     and the taper never reaches up into the deck-tenon leg zone (it stops at the apron underside)."""
+    _slab(C)
     P = C.P
     F = P.frame
     foot = frame.leg_inner_u(P, 0) - F.ear - frame.slot_w(P) / 2
@@ -257,7 +273,7 @@ def test_cross_legged_clearance(C):
     from kotatsu import comfort
     P = C.P
     K = P.comfort
-    assert P.frame.height - P.frame.apron_depth >= K.knee_h + 5
+    assert comfort.summary(P)["apron_clear"] >= K.knee_h + 5
     assert comfort.knee_reach(P) >= K.knee_reach_min
 
 

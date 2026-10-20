@@ -51,3 +51,13 @@ def table(p: SimpleNamespace, name: str) -> SimpleNamespace:
 
 def tables(p: SimpleNamespace) -> list[SimpleNamespace]:
     return [table(p, t.name) for t in getattr(p, "tables", [])]
+
+
+def build_tables(p: SimpleNamespace) -> list[SimpleNamespace]:
+    """The tables actually being made: [[tables]] entries without compare = true (those are design
+    variants shown on the site for comparison, not cut)."""
+    return [t for t in tables(p) if not getattr(_entry(p, t.table_name), "compare", False)]
+
+
+def _entry(p, name):
+    return next(t for t in p.tables if t.name == name)

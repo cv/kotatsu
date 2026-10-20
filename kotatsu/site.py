@@ -21,7 +21,7 @@ import tomllib
 
 from shapely.geometry import Polygon
 
-from . import build as cutbuild, cutlist, frame, nest, params, room, top
+from . import build as cutbuild, comfort, cutlist, frame, nest, params, room, top
 from .params import ROOT
 
 WEB = ROOT / "web"
@@ -54,10 +54,11 @@ def frame_data(p) -> dict:
                       "cut_m": round((g.exterior.length + sum(h.length for h in g.interiors)) / 1000, 2)})
         for pl in pt.placements:
             ox, oy, oz = pl.origin
+            sm = -1 if pl.mirror_u else 1
             if pl.axis == "x":
-                c = (ox + (x0 + x1) / 2, oy + t / 2, oz + (y0 + y1) / 2)
+                c = (ox + sm * (x0 + x1) / 2, oy + t / 2, oz + (y0 + y1) / 2)
             elif pl.axis == "y":
-                c = (ox + t / 2, oy + (x0 + x1) / 2 * (-1 if pl.mirror_u else 1), oz + (y0 + y1) / 2)
+                c = (ox + t / 2, oy + sm * (x0 + x1) / 2, oz + (y0 + y1) / 2)
             else:
                 c = ((x0 + x1) / 2, (y0 + y1) / 2, oz)
             dx, dy = c[0] - L.cx, c[1] - L.cy
@@ -74,13 +75,40 @@ def frame_data(p) -> dict:
             "draft": False}
 
 
+def table_summary(tp, fd: dict, plan) -> dict:
+    """Side-by-side numbers for the Overview comparison."""
+    t, rho = tp.material.t_nominal, tp.material.density_kg_m3
+    tb = top.build(tp)
+    top_kg = tb.outline.area / 1e6 * t / 1000 * rho
+    parts = frame.parts(tp)
+    cut = _cut_len([tb.outline]) + sum(_cut_len([pt.shape]) * pt.qty for pt in parts)
+    (sx, sy, sz), (_, _, hz) = frame.heater_box(tp)
+    k = comfort.summary(tp)
+    return {
+        "style": getattr(tp.frame, "style", "slab"),
+        "pieces": 1 + sum(pt.qty for pt in parts),
+        "wedges": sum(pt.qty for pt in parts if pt.kind == "wedge"),
+        "frame_kg": fd["total_kg"], "total_kg": round(fd["total_kg"] + top_kg, 1),
+        "cut_m": round(cut / 1000, 1),
+        "side_clear": k["apron_clear"], "knee_reach": k["reach"], "shin_w": k["shin_w"],
+        "heater_clear": round(hz - sz / 2), "tip_n": k["tip_n"],
+        "sheets": [nest.sheet_name((s.w, s.h)) for s in plan.sheets] if plan else [],
+        "plywood_m2": round(nest.material_m2(plan), 2) if plan else None,
+        "util": round(nest.utilisation(plan), 3) if plan else None,
+    }
+
+
 def tables_data(p) -> list[dict]:
     out = []
+    plans = cutbuild.cached_table_plans(p)
+    building = {t.table_name for t in params.build_tables(p)}
     for tp in params.tables(p):
         tb = top.build(tp)
+        fd = frame_data(tp)
         out.append({"name": tp.table_name, "label": tp.table_label, "shape": getattr(tp.top, "shape", "rect"),
+                    "compare": tp.table_name not in building,
                     "top": {"length": tp.top.length, "width": tp.top.width, "boards": [rings(b) for b in tb.boards]},
-                    "frame": frame_data(tp)})
+                    "frame": fd, "summary": table_summary(tp, fd, plans.get(tp.table_name))})
     return out
 
 
@@ -128,7 +156,7 @@ def build(with_tests: bool = True) -> None:
         "project": {
             "title": "Kotatsu — glue-free CNC birch",
             "facts": [
-                *[["Table", t.table_label] for t in params.tables(p)],
+                *[["Table", t.table_label] for t in params.build_tables(p)],
                 ["Height", f"{p.frame.height + p.material.t_nominal:.0f} mm + futon ≈ 40–41 cm"],
                 ["Material", p.material.name],
                 ["Heater", f"{p.heater.model} ({p.heater.mount} mount)"],

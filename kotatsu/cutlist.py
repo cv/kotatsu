@@ -50,7 +50,7 @@ def cut_list(p, copies: int = 1, frame_grain: str | None = None) -> list[CutPart
 def cut_list_all(p, copies: int = 1, **kw) -> list[CutPart]:
     """Every part of every [[tables]] entry, names prefixed "<table>: ", for one shared nest."""
     out = []
-    tabs = params.tables(p) or [p]
+    tabs = params.build_tables(p) or [p]
     for tp in tabs:
         prefix = f"{getattr(tp, 'table_name', 'table')}: " if len(tabs) > 1 else ""
         for c in cut_list(tp, copies=copies, **kw):

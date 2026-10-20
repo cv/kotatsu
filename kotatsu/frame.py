@@ -269,6 +269,9 @@ def taper_wedge(length: float, head: float, taper: float, r: float = 3.0) -> Pol
 
 # ----------------------------------------------------------------------------- assembly
 def parts(p) -> list[Part]:
+    if getattr(p.frame, "style", "slab") == "yagura":
+        from . import yagura
+        return yagura.parts(p)
     L = layout(p)
     t = L.t
     out: list[Part] = []

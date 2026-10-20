@@ -82,3 +82,9 @@ aside { width:290px; flex:none; overflow:auto; border-right:1px solid var(--line
 .frame-ghost { fill: none; stroke: #d8c7a6; stroke-width: 5; stroke-dasharray: 12 10; }
 .top-disc { fill: #ecd9b4; stroke: #2b2118; stroke-width: 3; }
 .plan-label { font: 34px system-ui, sans-serif; fill: #2b2118; text-anchor: middle; }
+
+.card.wide { flex: 1 1 100%; }
+table.cmp { border-collapse: collapse; font-size: 14px; }
+table.cmp th, table.cmp td { padding: 5px 12px; border-bottom: 1px solid var(--line); text-align: left; }
+table.cmp tr th:first-child { color: #6b5b4b; font-weight: 500; }
+table.cmp td.best { color: #1f6b3a; font-weight: 600; }
