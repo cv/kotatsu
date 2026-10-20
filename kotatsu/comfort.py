@@ -69,15 +69,36 @@ def weight_n(p) -> float:
     return kg * 9.81
 
 
+def _top_centred(p):
+    from shapely.affinity import translate
+    from . import top
+    return translate(top.build(p).outline, -p.top.length / 2, -p.top.width / 2)
+
+
+def _lever_min(W: float, support, top_outline, inset: float, steps: int = 144) -> tuple[float, float]:
+    """Smallest push W * h / (r - h) over all directions: h = support hull's reach, r = how far out the
+    push point can be (the top's edge, `inset` in). Returns (N, direction in degrees)."""
+    pts = list(support.convex_hull.exterior.coords)
+    edge = top_outline.buffer(-inset) if inset > 0 else top_outline
+    tpts = list(edge.exterior.coords)
+    best = (float("inf"), 0.0)
+    for i in range(steps):
+        a = 2 * math.pi * i / steps
+        dx, dy = math.cos(a), math.sin(a)
+        h = max(x * dx + y * dy for x, y in pts)
+        rr = max(x * dx + y * dy for x, y in tpts)
+        F = W * h / (rr - h) if rr > h else float("inf")
+        best = min(best, (F, math.degrees(a)))
+    return best
+
+
 def tip_load(p, inset: float | None = None) -> float:
-    """Downward push (N) at mid-side (the worst direction) that tips the table, applied `inset` in from
-    the top's edge (default comfort.tip_inset = 50 mm, the EN 12521 / EN 1730 loading point). It pivots
-    on the outermost feet. Assumes the feet don't slide; the weight includes a guessed heater + futon."""
-    x0, y0, x1, y1 = low_footprint(p, 1.0).bounds         # what actually touches the floor
-    xf = min(-x0, -y0, x1, y1)                            # nearest tipping edge (frame is square)
+    """Smallest downward push (N) on the top that tips the whole table, applied `inset` in from the
+    top's edge (default comfort.tip_inset = 50 mm, the EN 12521 / EN 1730 loading point), in the worst
+    direction. It pivots on the outermost feet. Assumes the feet don't slide; the weight includes a
+    guessed heater + futon."""
     inset = getattr(p.comfort, "tip_inset", 0.0) if inset is None else inset
-    R = p.top.length / 2 - inset
-    return weight_n(p) * xf / (R - xf)
+    return _lever_min(weight_n(p), low_footprint(p, 1.0), _top_centred(p), inset)[0]
 
 
 def top_supports(p):
@@ -86,22 +107,13 @@ def top_supports(p):
     return low_footprint(p, H + 1, H - 0.6)
 
 
-def top_lift(p, inset: float | None = None, steps: int = 72) -> tuple[float, float]:
+def top_lift(p, inset: float | None = None) -> tuple[float, float]:
     """Smallest downward push (N), `inset` in from the top's edge, that lifts the loose top's far side off
     its supports, and the direction (deg) it happens in. The top pivots on the outermost support line."""
-    from . import top
     inset = getattr(p.comfort, "tip_inset", 0.0) if inset is None else inset
-    pts = list(top_supports(p).convex_hull.exterior.coords)
-    W = top.build(p).outline.area / 1e6 * p.material.t_nominal / 1000 * p.material.density_kg_m3 * 9.81
-    R = p.top.length / 2 - inset
-    best = (float("inf"), 0.0)
-    for i in range(steps):
-        a = math.pi * 2 * i / steps
-        dx, dy = math.cos(a), math.sin(a)
-        h = max(x * dx + y * dy for x, y in pts)          # pivot line's distance from the centre
-        F = W * h / (R - h) if R > h else float("inf")
-        best = min(best, (F, math.degrees(a)))
-    return best
+    top_o = _top_centred(p)
+    W = top_o.area / 1e6 * p.material.t_nominal / 1000 * p.material.density_kg_m3 * 9.81
+    return _lever_min(W, top_supports(p), top_o, inset)
 
 
 def summary(p) -> dict:

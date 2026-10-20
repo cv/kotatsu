@@ -22,15 +22,16 @@ mortise_height_extra = 0.5
 wedge_taper = 0.125       # 1:8
 inplane_c = 0.2           # per-side clearance for in-plane mating shapes (seams, keys)
 
-[top]                 # owner, 2026-10: one round table, top cut as ONE piece (no seams)
-shape = "round"       # round: length = width = diameter | rect (one piece, rounded corners)
-length = 900.0        # = diameter
-width = 900.0
+[top]                 # owner, 2026-10-20: square 860 x 860, ONE piece (was Ø 900 round: +$199 shipping, and round
+                      # futons are hard to get). 860 packs in uMake's 91 cm box = free shipping (docs/quote.md).
+shape = "rect"        # rect (one piece, rounded corners) | round: length = width = diameter
+length = 860.0
+width = 860.0
 corner_r = 20.0       # rect only
 
 [frame]               # yagura: 4 straight "+" corner legs (2 crossed plates each) under a deck; no aprons
 height = 385.0        # floor to the tenon tops (futon plane); + 18 top + ~10 futon ≈ 41 cm total
-overhang = 120.0      # square frame 660 × 660 under the Ø900 top; its corners stay ≥ 10 mm inside the circle
+overhang = 100.0      # square frame 660 × 660 under the 860 top (knee zone reach 100 >= 95 mm)
 ear = 50.0            # frame edge -> corner cross-lap centreline (visible "ear"); 40 mm ear arm outside the slot
 leg_width = 130.0     # straight leg plates: 40 mm ear arm | slot | 10 mm shoulder | 50 mm tenon | 10 mm inner shoulder
                       # (shoulders both sides of the tenon, so tapping the wedge doesn't twist the plate)
@@ -109,4 +110,4 @@ max_box_lb = 50
 # seams at tag seams-archive; the slab-side frame and a splayed-leg yagura at tag frame-variants-archive.)
 [[tables]]
 name = "yagura"
-label = "Ø 900 round, yagura frame with straight legs"
+label = "860 × 860 square, yagura frame with straight legs"

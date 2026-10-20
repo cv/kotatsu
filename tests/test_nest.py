@@ -82,10 +82,11 @@ def test_best_mix_is_least_material():
 
 def test_current_layout():
     """Regression guard for the current design (update when the design changes on purpose):
-    everything on one 60 x 60 sheet."""
+    everything on one sheet. The 860 square top + 660 deck no longer fit a 60 x 60 together, so it's a
+    48 x 96 (uMake prices per part and nests itself, so this only matters for our own estimate)."""
     one = LAYOUTS[1]["best mix"]
-    assert len(one.sheets) == 1 and nest.material_m2(one) <= 2.33
-    assert nest.utilisation(one) >= 0.55
+    assert len(one.sheets) == 1 and nest.material_m2(one) <= 2.98
+    assert nest.utilisation(one) >= 0.45
 
 
 def test_sheet_dxf_roundtrip(n, tmp_path):
