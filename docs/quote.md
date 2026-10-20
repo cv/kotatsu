@@ -110,3 +110,7 @@ Notched H deck, one wedge part (x14 = 12 + 2 spares), crush ribs, foot relief. A
 
 Subtotal **$353.91** (price model predicted $354.03), shipping **FREE** (91 × 91 × 16 cm, 16.6 kg), tax $42.47,
 **total $396.38**. That's $23.33 less than the slim-leg quote ($419.71).
+
+### Deck notch mouths rounded R30 (2026-10-20)
+Deck re-uploaded: $101.68 (was $102.38). Subtotal **$353.33** (model $353.38), free shipping (91 × 91 × 16 cm,
+16.6 kg), tax $42.40, **total $395.73**. Project saved.

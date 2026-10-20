@@ -97,7 +97,7 @@ Material values are rough (E along the grain 9 GPa, through the thickness 300–
 | Item | Estimate |
 |---|---|
 | Heater (PaletteLife, amazon.ca, delivered) | $258 |
-| uMake CNC order: **$353.91** for all 28 parts in Baltic birch "19mm" (notched deck, one wedge part ×14), shipping **free** (91×91×16 cm, 16.6 kg), tax $42.47 → **$396.38** (docs/quote.md) | **$396** |
+| uMake CNC order: **$353.33** for all 28 parts in Baltic birch "19mm" (notched deck, one wedge part ×14), shipping **free** (91×91×16 cm, 16.6 kg), tax $42.40 → **$395.73** (docs/quote.md) | **$396** |
 | Round futon 205 cm (Amazon.co.jp delivered, before duty/tax) | $160–280 |
 | Finish oil + sandpaper | $30–50 |
 | **Total** | **~$850–1080** |
@@ -109,7 +109,7 @@ Material values are rough (E along the grain 9 GPa, through the thickness 300–
 3. ✅ **Leg room** and ✅ **frame style**: yagura with straight legs (sections 2–3).
 3b. ✅ **Wobble/strength estimate** (above): frame stiff, stresses low; one-sided leg joint found and fixed (130 mm legs). Still open: a real tipping limit; a test coupon to measure the tenon/mortise fit.
 4. ◐ **Heater**: when it arrives, measure the body width/depth/height, its mounting flanges, the cord exit and the manual's clearances, then freeze `[heater]`. This **gates the order**, because the cheek spacing comes from the body width. Screw holes aren't cut: the owner drills them on assembly.
-5. ✅ **Quote**: $396.38 incl. tax, free shipping, instant, no manual-quote flag (saved project; docs/quote.md). Still open: the real thickness of uMake's "19mm" (design takes 17.0–18.9).
+5. ✅ **Quote**: $395.73 incl. tax, free shipping, instant, no manual-quote flag (saved project; docs/quote.md). Still open: the real thickness of uMake's "19mm" (design takes 17.0–18.9).
 6. Optional fit coupon (a cross-lap pair, a tenon + wedge). Decide after the quote: skip it if the wait or the cost isn't worth it.
 7. Order, assemble, finish (sand off the holding tabs, ease the edges, oil).
 
