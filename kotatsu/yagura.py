@@ -171,9 +171,6 @@ def deck(p) -> Polygon:
     for w in ([] if xstyle else windows(p)):            # weight-saving windows away from the heater
         g = g.difference(w)
     g = _round_mouths(p, g)
-    g = _add_link_tongues(p, g)
-    for x0, y0, x1, y1 in link_slots(p):                # key slots, cut after the tongues exist
-        g = g.difference(fr.hole(x0, y0, x1, y1, r))
     for xi, sgn in zip(fr.cheek_xs(p), (-1, 1)):        # cheek tab slots, as in the slab deck
         xa, xb = sorted((xi, xi + sgn * fr.thick_slot(p)))
         for ya, yb in fr.tab_ys(p):
@@ -203,117 +200,6 @@ def x_outline(p) -> Polygon:
     g = unary_union(parts).intersection(box(cx - h, cy - h, cx + h, cy + h))
     f = D.x_fillet
     return g.buffer(f, join_style=1).buffer(-f, join_style=1)   # round the inside corners
-
-
-# ----------------------------------------------------------------------------- linking (owner 2026-10-20)
-# Modules sit side by side with their tops touching, so neighbouring frames are 2 x overhang apart.
-# Each notch in the deck gets a tongue at its middle, reaching the edge, with a slot near its end.
-# A link key (an on-edge strip, like a short cheek) lies on the two facing tongues with a tab down
-# through each slot. It stops the modules drifting apart or sliding past each other. Gravity and the
-# futon keep it in. One key per module covers a row (n-1 seams) and a 2 x 2 square (4 seams).
-def linking(p) -> bool:
-    return bool(getattr(getattr(p, "link", None), "enabled", False))
-
-
-def _tongue_sides(p):
-    """(side, centre-relative notch rect) for every notch that opens through a deck edge."""
-    h = fr.layout(p).Lf / 2
-    out = []
-    for x0, y0, x1, y1 in window_rects(p):
-        side = "+x" if x1 > h else "-x" if x0 < -h else "+y" if y1 > h else "-y" if y0 < -h else None
-        if side:
-            out.append((side, (x0, y0, x1, y1)))
-    return out
-
-
-def link_tongues(p) -> list[Polygon]:
-    """World-space tongues, one per edge notch, from the notch bottom to the deck edge."""
-    if not linking(p):
-        return []
-    K, L = p.link, fr.layout(p)
-    h, cx, cy, w = L.Lf / 2, L.cx, L.cy, K.tongue_w / 2
-    out = []
-    for side, (x0, y0, x1, y1) in _tongue_sides(p):
-        if side == "+x":
-            out.append(box(cx + x0 - 1, cy - w, cx + h, cy + w))
-        elif side == "-x":
-            out.append(box(cx - h, cy - w, cx + x1 + 1, cy + w))
-        elif side == "+y":
-            out.append(box(cx - w, cy + y0 - 1, cx + w, cy + h))
-        else:
-            out.append(box(cx - w, cy - h, cx + w, cy + y1 + 1))
-    return out
-
-
-def link_slots(p) -> list[tuple[float, float, float, float]]:
-    """World (x0, y0, x1, y1) of the key slots: tab_len long, `edge` mm of wood between slot and deck edge."""
-    if not linking(p):
-        return []
-    K, L, c = p.link, fr.layout(p), p.fit.tight
-    h, cx, cy, ts = L.Lf / 2, L.cx, L.cy, fr.thick_slot(p) / 2
-    a, b = h - K.edge - K.tab_len, h - K.edge
-    out = []
-    for side, _ in _tongue_sides(p):
-        if side == "+x":
-            out.append((cx + a - c, cy - ts, cx + b + c, cy + ts))
-        elif side == "-x":
-            out.append((cx - b - c, cy - ts, cx - a + c, cy + ts))
-        elif side == "+y":
-            out.append((cx - ts, cy + a - c, cx + ts, cy + b + c))
-        else:
-            out.append((cx - ts, cy - b - c, cx + ts, cy - a + c))
-    return out
-
-
-def _add_link_tongues(p, g):
-    if not linking(p):
-        return g
-    K, L = p.link, fr.layout(p)
-    h, cx, cy, w, R, rt = L.Lf / 2, L.cx, L.cy, p.link.tongue_w / 2, K.root_r, K.tip_r
-    for tg, (side, (x0, y0, x1, y1)) in zip(link_tongues(p), _tongue_sides(p)):
-        g = g.union(tg)
-        # (root corner, direction along the tongue away from the root, direction away from the tongue)
-        if side in ("+x", "-x"):
-            sx = 1 if side == "+x" else -1
-            xr = cx + (x0 if sx > 0 else x1)
-            roots = [((xr, cy + sy * w), (sx, 0), (0, sy)) for sy in (-1, 1)]
-            tips = [((cx + sx * h, cy + sy * w), (-sx, 0), (0, -sy)) for sy in (-1, 1)]
-        else:
-            sy = 1 if side == "+y" else -1
-            yr = cy + (y0 if sy > 0 else y1)
-            roots = [((cx + sx * w, yr), (0, sy), (sx, 0)) for sx in (-1, 1)]
-            tips = [((cx + sx * w, cy + sy * h), (0, -sy), (-sx, 0)) for sx in (-1, 1)]
-        for (px, py), (ax, ay), (bx, by) in roots:      # fillet where the tongue meets the notch bottom
-            qx, qy = px + R * (ax + bx), py + R * (ay + by)
-            sq = box(min(px, qx), min(py, qy), max(px, qx), max(py, qy))
-            g = g.union(sq.difference(Point(qx, qy).buffer(R, quad_segs=24)))
-        for (px, py), (ax, ay), (bx, by) in tips:       # round the tongue's two corners at the edge
-            qx, qy = px + rt * (ax + bx), py + rt * (ay + by)
-            sq = box(min(px, qx), min(py, qy), max(px, qx), max(py, qy))
-            g = g.difference(sq.difference(Point(qx, qy).buffer(rt, quad_segs=16)))
-    return g
-
-
-def link_key(p) -> Polygon:
-    """The key in its own plane (u along the link, v up from the tab bottoms): a strip lying on the two
-    tongues, with a tab at each end dropping through the slots. Root reliefs let it sit flat."""
-    K, L, r = p.link, fr.layout(p), fr._rd(p)
-    tl, e, t = K.tab_len, K.edge, L.t
-    n = key_length(p)
-    g = unary_union([box(0, t, n, t + K.above), box(0, 0, tl, t + 1), box(n - tl, 0, n, t + 1)])
-    g = fr._round_outer(g, 4.0)
-    g = g.difference(fr.dogbone((tl, t), (1, -1), r)).difference(fr.dogbone((n - tl, t), (-1, -1), r))
-    return g
-
-
-def key_length(p) -> float:
-    K = p.link
-    return 2 * p.frame.overhang + K.top_gap + 2 * (K.edge + K.tab_len)
-
-
-def link_pitch(p) -> float:
-    """Centre-to-centre spacing of linked modules (tops touching, plus top_gap)."""
-    return p.top.length + p.link.top_gap
 
 
 def mouth_corners(p) -> list[tuple[float, float, int, int]]:
@@ -472,8 +358,6 @@ def parts(p) -> list[Part]:
     out.append(Part("leg plate A", leg_plate(p, True), xp, grain="v"))   # slotted from the shoulder down
     out.append(Part("leg plate B", leg_plate(p, False), yp, grain="v"))  # slotted from the floor up; grain up the leg
     out.append(Part("deck", deck(p), [Placement("z", (0, 0, L.z_deck_bot))], kind="deck"))
-    if linking(p):  # not placed in a single module; one per module, used between neighbours
-        out.append(Part("link key", link_key(p), [], spares=p.link.keys_per_module, kind="link"))
     cs, y0 = fr.cheek(p)
     zb = L.z_deck_bot - p.cheek.height
     out.append(Part("heater cheek", cs, [Placement("y", (xi - (t if s < 0 else 0), y0, zb))

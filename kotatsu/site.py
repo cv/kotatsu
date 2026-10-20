@@ -112,20 +112,8 @@ def tables_data(p) -> list[dict]:
         fd = frame_data(tp)
         out.append({"name": tp.table_name, "label": tp.table_label, "shape": getattr(tp.top, "shape", "rect"),
                     "top": {"length": tp.top.length, "width": tp.top.width, "boards": [rings(b) for b in tb.boards]},
-                    "frame": fd, "summary": table_summary(tp, fd, best), "room3d": room.room3d(tp),
-                    "link": link_data(tp)})
+                    "frame": fd, "summary": table_summary(tp, fd, best), "room3d": room.room3d(tp)})
     return out
-
-
-def link_data(p) -> dict | None:
-    """For the 3-D view: how a second module sits beside this one, and where the key goes."""
-    if not yagura.linking(p):
-        return None
-    L, t = frame.layout(p), p.material.t_nominal
-    a = max(yagura.link_slots(p), key=lambda s: s[2])                 # this module's +x slot
-    x0 = a[0] + p.fit.tight
-    return {"pitch": yagura.link_pitch(p), "key": "link key",
-            "placed": [{"axis": "x", "origin": [x0, L.cy - t / 2, L.z_deck_top - L.t], "mirror": False}]}
 
 
 def sheets_data(p) -> dict:

@@ -98,21 +98,8 @@ corner, and the wedges and deck don't carry any of the weight from above.
 | Sandpaper and finishing oil | $30–50 |
 | **Total** | **about $870–930** |
 
-## Linking modules (owner 2026-10-20)
-*Tongue version below: built, then turned off (`link.enabled = false`); the owner didn't like the tongues.*
-Two or more tables push together into one bigger kotatsu: a row (172 × 86 cm for two), an L, or a
-2 × 2 square. Each module stays a complete table with its own legs and heater.
-- Each deck notch gets a 90 mm tongue at its middle, out to the edge, with a 50 mm slot 25 mm from the
-  edge. With the tops touching, neighbouring frames are 80 mm apart (twice the overhang). A **link
-  key** (an on-edge strip, 230 × 38 mm, cut like a wedge) lies across two facing tongues and drops a
-  tab into each slot. Nothing to tap in: gravity and the futon hold it, and it stops the tables
-  drifting apart or sliding past each other. One key comes with each module: a row of n needs n − 1,
-  a 2 × 2 square needs 4.
-- Per module: +$17 (≈ $370 instead of $353), +0.85 kg. The tongues also hold the futon up a little
-  more, though the widest openings stay 18 cm (the notches are still 18 cm deep).
-- Flat storage now packs by itself (kotatsu/storage.py): everything still fits in three layers.
-- For a pair: a long rectangular kotatsu futon (sold for about 180 × 90 cm tables; check the size),
-  and two heaters on two cords.
+## Off-season storage
+Everything packs flat inside the top's footprint, in three layers (kotatsu/storage.py packs it by itself).
 
 ## Still open
 1. **Sheet thickness.** uMake's "19mm" could measure 19.0 mm or more, which would make the 19.2 mm slots
