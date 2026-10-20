@@ -65,7 +65,6 @@ aside { width:290px; flex:none; overflow:auto; border-right:1px solid var(--line
 .part { stroke:#3b2f25; stroke-width:1; vector-effect:non-scaling-stroke; fill-rule:evenodd; }
 .footprint { fill:none; stroke:#555; stroke-dasharray:6 4; stroke-width:1; vector-effect:non-scaling-stroke; }
 .grid line { stroke:#00000014; stroke-width:1; vector-effect:non-scaling-stroke; }
-.bit { fill:#2a6fdb22; stroke:#2a6fdb; stroke-width:1; vector-effect:non-scaling-stroke; pointer-events:none; }
 .jointmark { fill:none; stroke:var(--accent); stroke-width:1; vector-effect:non-scaling-stroke; opacity:.6; }
 .btn-group { display:inline-flex; gap:0; margin-right:10px; }
 .btn-group button { border-radius:0; margin-left:-1px; }

@@ -201,7 +201,6 @@ function renderPartViewer(d, refit = false) {
     svg.addEventListener("pointermove", (e) => {
       const q = state.ppz.toSvg(e.clientX, e.clientY), cur = curTable(state.data).frame.parts.find((x) => x.name === state.part);
       $("#preadout").textContent = `u ${q.x.toFixed(1)}  v ${(partFlip(cur) - q.y).toFixed(1)} mm`;
-      const b = svg.querySelector(".bit"); if (b) { b.setAttribute("cx", q.x); b.setAttribute("cy", q.y); }
     });
     refit = true;
   }
@@ -213,7 +212,6 @@ function renderPartViewer(d, refit = false) {
     for (let v = Math.floor(y0 / 50) * 50; v <= y1; v += 50) el("line", { x1: x0 - 10, y1: top - v, x2: x1 + 10, y2: top - v }, g);
   }
   el("path", { d: polyD(p.shape, top), class: "part board0" }, svg);
-  if ($("#chk-pbit").checked) el("circle", { r: d.params.cnc.bit_d / 2, cx: -100, cy: -100, class: "bit" }, svg);
   if (refit) requestAnimationFrame(() => state.ppz.fit(home));
 }
 
@@ -321,7 +319,7 @@ async function poll() {
 }
 
 // ---------- wiring ----------
-for (const id of ["#chk-pgrid", "#chk-pbit"]) $(id).onchange = () => renderPartViewer(state.data);
+$("#chk-pgrid").onchange = () => renderPartViewer(state.data);
 $("#btn-pfit").onclick = () => state.ppz.fit(state.ppz.home);
 $("#btn-ffit").onclick = () => state.fpz.fit(state.fpz.home);
 $("#chk-fzab").onchange = () => renderFutonPlan(state.data);
