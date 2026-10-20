@@ -4,4 +4,5 @@ __pycache__/
 .pytest_cache/
 out/
 .DS_Store
-pi-session-*.html   # agent session exports (contain personal data)
+# agent session exports (contain personal data)
+pi-session-*.html
