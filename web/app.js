@@ -38,7 +38,7 @@ const ROWS = [
   ["Knee zone (30″) reach under edge", (s) => Math.round(s.knee_reach) + " mm", "high", (s) => s.knee_reach, "knee_reach"],
   ["Between legs at knee height", (s) => Math.round(s.shin_w) + " mm", "high", (s) => s.shin_w],
   ["Clear under heater", (s) => s.heater_clear + " mm", "high", (s) => s.heater_clear],
-  ["Push on edge to tip", (s) => s.tip_n + " N", "high", (s) => s.tip_n, "tip_n"],
+  ["Push to tip it (mid-side, 50 mm in; no limit set yet)", (s) => `${s.tip_n} N <span class="stats">(${s.tip_edge_n} N at the very edge)</span>`, "high", (s) => s.tip_n, "tip_n"],
 ];
 
 function renderCompare(d) {

@@ -105,7 +105,8 @@ def test_sheet_dxf_roundtrip(n, tmp_path):
 def test_interlocked_pair_saves_sheet_area():
     """A long side + a short side, one upside down with a leg in the other's opening, need much less
     rectangle than the two side by side, and stay a full bit-gap apart."""
-    parts = {c.name: c for c in cutlist.cut_list(params.tables(P)[0])}
+    slab = next(t for t in params.tables(P) if getattr(t.frame, "style", "slab") == "slab")
+    parts = {c.name: c for c in cutlist.cut_list(slab)}
     a, b = parts["long side"], parts["short side"]
     j = nest._pair_job(a, b, nest.effective_gap(P) + 0.5)
     x0, y0, x1, y1 = j.shape.bounds

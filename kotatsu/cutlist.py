@@ -25,6 +25,7 @@ def _norm(g: Polygon) -> Polygon:
 
 
 GRAIN_ALONG_U = (0, 180)        # keep the part's u axis along the sheet's long (grain) axis
+GRAIN_ALONG_V = (90, 270)       # ... or its v axis (legs: grain running up the leg)
 ANY = (0, 90, 180, 270)
 
 
@@ -38,7 +39,10 @@ def cut_list(p, copies: int = 1, frame_grain: str | None = None) -> list[CutPart
     out: list[CutPart] = [CutPart("top", _norm(tp.outline), 1, ANY if tp.name == "round" else GRAIN_ALONG_U,
                                   "top", "one piece")]
     for pt in frame.parts(p):
-        rot = GRAIN_ALONG_U if (pt.kind == "frame" and frame_grain == "horizontal") else ANY
+        if pt.kind == "frame" and frame_grain == "horizontal":
+            rot = GRAIN_ALONG_V if getattr(pt, "grain", "u") == "v" else GRAIN_ALONG_U
+        else:
+            rot = ANY
         grp = "wedge" if pt.kind == "wedge" else "frame"
         out.append(CutPart(pt.name, _norm(pt.shape), pt.qty, rot, grp,
                            f"{pt.spares} spare" if pt.spares else ""))

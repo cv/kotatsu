@@ -6,8 +6,8 @@ from kotatsu import build, export, params
 def test_params_load():
     p = params.load()
     assert p.top.shape == "round" and p.top.length == p.top.width == 900
-    assert [t.table_name for t in params.build_tables(p)] == ["round"]          # what gets cut
-    assert "round-yagura" in [t.table_name for t in params.tables(p)]            # compare-only variant
+    assert [t.table_name for t in params.build_tables(p)] == ["yagura"]         # what gets cut
+    assert {"slab", "yagura-splay"} <= {t.table_name for t in params.tables(p)}  # compare-only variants
     assert p.material.t_min < p.material.t_nominal < p.material.t_max
 
 

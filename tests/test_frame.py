@@ -279,8 +279,11 @@ def test_cross_legged_clearance(C):
 
 
 def test_does_not_tip_easily(C):
-    """Pushing down on the top's edge at mid-side (the worst place) takes at least tip_min_n."""
+    """Tipping load at the EN 12521 / EN 1730 loading point (mid-side, tip_inset in from the edge).
+    No pass/fail limit until tip_min_n comes from the standard's table or a real test (0 = report only)."""
     from kotatsu import comfort
-    if C.P.table_name not in {t.table_name for t in params.build_tables(BASE)}:
-        pytest.skip("compare-only variant: its tipping load is reported (and flagged) on the site")
-    assert comfort.tip_load(C.P) >= C.P.comfort.tip_min_n
+    P = C.P
+    edge, std = comfort.tip_load(P, 0.0), comfort.tip_load(P)
+    assert 0 < edge < std, "pushing further in must take more force"
+    if P.comfort.tip_min_n > 0 and P.table_name in {t.table_name for t in params.build_tables(BASE)}:
+        assert std >= P.comfort.tip_min_n

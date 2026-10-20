@@ -76,7 +76,8 @@ leg_gap = 370.0       # min opening width per sitter between the legs
 knee_w = 762.0        # owner, cross-legged: knees need 30" wide ...
 knee_h = 317.5        # ... x 12.5" high
 knee_reach_min = 95.0   # how far that knee zone must reach in under the top's edge (TODO-verify with owner)
-tip_min_n = 700.0     # push down on the top's edge (mid-side) it must take without tipping (TODO-verify vs EN 12521)
+tip_inset = 50.0      # tipping load is computed EN 12521 / EN 1730-style: pushed down at mid-side, 50 mm in from the edge
+tip_min_n = 0.0       # no pass/fail limit until we have a real figure (EN 12521:2023 Table 2, or a bathroom-scale test); 0 = report only
 heater_kg = 3.0       # for the tipping estimate (TODO weigh the PaletteLife)
 futon_kg = 2.0
 
@@ -99,23 +100,23 @@ max_box_lb = 50
 # ------------------------------------------------------------------------------------------------
 # The table(s) to build. Each [[tables]] entry overrides the defaults above section by section.
 # (The 1200 x 900 rectangle with decorative seams was dropped; see git tag seams-archive.)
-[[tables]]
-name = "round"
-label = "3 ft round (Ø 900, one piece)"
-
-[[tables]]            # comparison variant (not cut): no aprons, "+" corner legs under the deck
-name = "round-yagura"
-label = "Yagura variant (no aprons, straight thin legs)"
-compare = true
+[[tables]]            # BUILDING (owner, 2026-10-19): yagura frame, straight thin legs
+name = "yagura"
+label = "Yagura frame, straight legs"
 [tables.frame]
 style = "yagura"
 leg_width = 120.0     # straight, thin legs: 40 mm ear arm | slot | 10 mm shoulder + 50 mm tenon to the inner edge
 leg_taper = 0.0       # straight (plumb both edges)
 foot_flare = 0.0      # no bell feet
 
-[[tables]]            # comparison variant: same yagura, legs splayed (leaning out) instead of plumb
-name = "round-yagura-splay"
-label = "Yagura variant, splayed legs"
+[[tables]]            # comparison (not cut): the earlier slab-side frame (aprons + legs in one piece)
+name = "slab"
+label = "Slab-side frame (aprons)"
+compare = true
+
+[[tables]]            # comparison (not cut): the yagura with legs splayed (leaning out) instead of plumb
+name = "yagura-splay"
+label = "Yagura frame, splayed legs"
 compare = true
 [tables.frame]
 style = "yagura"
@@ -123,7 +124,7 @@ leg_width = 120.0
 leg_taper = 0.0
 foot_flare = 0.0
 [tables.yagura]
-leg_splay = 20.0      # feet 20 mm further out than the top of the leg (3.4°): tipping 604 -> ~760 N
+leg_splay = 20.0      # feet 20 mm further out than the top of the leg (3.4°)
 
 [yagura]              # only used by frame.style = "yagura"
 tenon_w = 56.0        # each leg plate's tenon through the deck

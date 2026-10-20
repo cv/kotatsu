@@ -66,19 +66,22 @@ def weight_n(p) -> float:
     return kg * 9.81
 
 
-def tip_load(p) -> float:
-    """Downward push (N) on the top's edge, at mid-side (the worst direction), that tips the table:
-    it pivots on the feet at the panel ends, Lf/2 + foot_flare out from the centre."""
+def tip_load(p, inset: float | None = None) -> float:
+    """Downward push (N) at mid-side (the worst direction) that tips the table, applied `inset` in from
+    the top's edge (default comfort.tip_inset = 50 mm, the EN 12521 / EN 1730 loading point). It pivots
+    on the outermost feet. Assumes the feet don't slide; the weight includes a guessed heater + futon."""
     x0, y0, x1, y1 = low_footprint(p, 1.0).bounds         # what actually touches the floor
     xf = min(-x0, -y0, x1, y1)                            # nearest tipping edge (frame is square)
-    R = p.top.length / 2
+    inset = getattr(p.comfort, "tip_inset", 0.0) if inset is None else inset
+    R = p.top.length / 2 - inset
     return weight_n(p) * xf / (R - xf)
 
 
 def summary(p) -> dict:
     C = p.comfort
     return {"knee_w": C.knee_w, "knee_h": C.knee_h, "reach": round(knee_reach(p), 1),
-            "tip_n": round(tip_load(p)), "tip_min_n": C.tip_min_n,
+            "tip_n": round(tip_load(p)), "tip_edge_n": round(tip_load(p, 0.0)),
+            "tip_inset": getattr(C, "tip_inset", 0.0), "tip_min_n": C.tip_min_n,
             "reach_min": C.knee_reach_min,
             "apron_clear": side_clear(p),
             "shin_w": round(p.top.length - 2 * p.frame.overhang - 2 * low_footprint_leg_u(p, C.knee_h), 1)}

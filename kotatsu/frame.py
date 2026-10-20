@@ -39,6 +39,7 @@ class Part:
     placements: list[Placement] = field(default_factory=list)
     spares: int = 0                 # extra copies to cut (not placed)
     kind: str = "frame"             # frame | deck | cheek | wedge
+    grain: str = "u"                # face grain along the part's u (slab panels: horizontal) or v (legs: vertical)
 
     @property
     def qty(self) -> int:

@@ -129,8 +129,8 @@ def parts(p) -> list[Part]:
          [Placement("x", (L.O + L.Lf, y - t / 2, 0), mirror_u=True) for y in L.yL]
     yp = [Placement("y", (x - t / 2, L.O, 0)) for x in L.xS] + \
          [Placement("y", (x - t / 2, L.O + L.Wf, 0), mirror_u=True) for x in L.xS]
-    out.append(Part("leg plate A", leg_plate(p, True), xp))     # slotted from the shoulder down
-    out.append(Part("leg plate B", leg_plate(p, False), yp))    # slotted from the floor up
+    out.append(Part("leg plate A", leg_plate(p, True), xp, grain="v"))   # slotted from the shoulder down
+    out.append(Part("leg plate B", leg_plate(p, False), yp, grain="v"))  # slotted from the floor up; grain up the leg
     out.append(Part("deck", deck(p), [Placement("z", (0, 0, L.z_deck_bot))], kind="deck"))
     cs, y0 = fr.cheek(p)
     zb = L.z_deck_bot - p.cheek.height
