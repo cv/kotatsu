@@ -46,38 +46,32 @@ export class Viewer3D {
     const grid = new THREE.GridHelper(3000, 30, 0xcfc6b8, 0xe7e0d6); grid.rotation.x = Math.PI / 2;
     grid.position.set(600, 400, 0); this.scene.add(grid);
     this.root = new THREE.Group(); this.scene.add(this.root);
-    this.state = { option: null, table: "both", explode: 0, showTop: true, showFrame: true, showHeater: true };
+    this.state = { table: null, explode: 0, showTop: true, showFrame: true, showHeater: true };
     new ResizeObserver(() => this.resize()).observe(container);
   }
 
-  setData(data, onOption) {
+  setData(data) {
     this.data = data;
-    const names = data.top.options.map((o) => o.name);
-    if (!names.includes(this.state.option)) this.state.option = data.top.selected;
+    const tnames = data.tables.length > 1 ? [...data.tables.map((t) => t.name), "all"] : data.tables.map((t) => t.name);
+    if (!tnames.includes(this.state.table)) this.state.table = tnames[0];
     if (!this.gui) {
       this.gui = new GUI({ container: this.c, title: "View" });
       this.gui.domElement.style.position = "absolute"; this.gui.domElement.style.right = "8px"; this.gui.domElement.style.top = "8px";
-      const tnames = [...data.tables.map((t) => t.name), "both"];
-      this.gui.add(this.state, "table", tnames).name("table").onChange(() => { this.framed = false; this.build(); });
-      this.optCtl = this.gui.add(this.state, "option", names).name("top seam").onChange((v) => { this.build(); onOption && onOption(v); });
+      if (tnames.length > 1) this.gui.add(this.state, "table", tnames).name("table").onChange(() => { this.framed = false; this.build(); });
       this.gui.add(this.state, "explode", 0, 400, 1).onChange(() => this.place());
       this.gui.add(this.state, "showTop").name("top").onChange(() => this.place());
       this.gui.add(this.state, "showFrame").name("frame").onChange(() => this.place());
       this.gui.add(this.state, "showHeater").name("heater").onChange(() => this.place());
-    } else {
-      this.optCtl.options(names).setValue(this.state.option);
     }
     this.build();
   }
-
-  setOption(name) { if (this.state.option !== name) { this.state.option = name; this.optCtl?.setValue(name); } }
 
   build() {
     const d = this.data; if (!d) return;
     this.root.clear();
     this.items = [];
-    const t = d.top.thickness;
-    const which = this.state.table === "both" ? d.tables : d.tables.filter((x) => x.name === this.state.table);
+    const t = d.thickness;
+    const which = this.state.table === "all" ? d.tables : d.tables.filter((x) => x.name === this.state.table);
     let dx = 0;
     for (const T of which) {
       this.addTable(T, dx, t);
@@ -89,9 +83,9 @@ export class Viewer3D {
   }
 
   addTable(T, dx, t) {
-    const d = this.data, F = T.frame;
+    const F = T.frame;
     const off = new THREE.Vector3(dx, 0, 0);
-    const opt = T.shape === "round" ? { boards: T.top.boards, keys: [] } : d.top.options.find((o) => o.name === this.state.option);
+    const opt = { boards: T.top.boards, keys: [] };
     const ztop = F.height + F.futon_gap;
     const nb = opt.boards.length;
     const push = (obj, kind, dir) => { obj.position.add(off); this.items.push({ obj, kind, dir, base: obj.position.clone() }); };

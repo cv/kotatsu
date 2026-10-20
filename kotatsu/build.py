@@ -86,7 +86,7 @@ def bom_markdown(p, parts, lays) -> str:
 
 Material: {p.material.name}, {t:.0f} mm nominal ({p.material.t_min}–{p.material.t_max} mm accepted by every joint).
 Tables: {", ".join(t.table_label for t in params.tables(p))}.
-Seam on the rectangular top: `{p.top.split}` (placeholder until chosen).
+Top: one piece ({p.top.shape}, {p.top.length:.0f} mm).
 
 | Part | Qty | Size (mm) | kg each | Cut length each (m) | Note |
 |---|---|---|---|---|---|
@@ -97,10 +97,8 @@ Seam on the rectangular top: `{p.top.split}` (placeholder until chosen).
 
 Gap between parts: {nest.effective_gap(p):.2f} mm (uMake asks for >= {p.cnc.part_gap:.0f} mm, and the {p.cnc.bit_d} mm bit
 must fit between parts). Sheet margin: {p.cnc.sheet_margin:.0f} mm. Grain runs along each sheet's long side.
-The side panels keep their length along it. The rectangular top's boards are placed so the grain runs
-{"along the table's length, continuous across all 3 boards" if p.layout.top_grain == "along" else "along each board's length (across the table)"}.
-
-Top grain: **{p.layout.top_grain}**; frame grain: **{p.layout.frame_grain}**.
+The side panels keep their length along it. 
+Frame grain: **{p.layout.frame_grain}**.
 
 | Sets | Layout | Sheets | Plywood (m²) | Per set (m²) | Parts / plywood |
 |---|---|---|---|---|---|

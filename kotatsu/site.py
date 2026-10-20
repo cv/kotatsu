@@ -19,14 +19,14 @@ import threading
 import time
 import tomllib
 
-from shapely.geometry import Polygon, box
+from shapely.geometry import Polygon
 
-from . import build as cutbuild, cutlist, frame, geom, nest, params, top
+from . import build as cutbuild, cutlist, frame, nest, params, top
 from .params import ROOT
 
 WEB = ROOT / "web"
 OUT = ROOT / "out" / "site"
-DOCS = ["PLAN.md", "AGENTS.md", "docs/research.md", "docs/heater.md", "docs/motifs.md", "docs/artist/request.md"]
+DOCS = ["PLAN.md", "AGENTS.md", "docs/research.md", "docs/heater.md", "docs/futon.md"]
 WATCH = ["params.toml", "kotatsu", "web", "docs", "PLAN.md", "AGENTS.md"]
 
 
@@ -37,37 +37,6 @@ def rings(poly: Polygon, nd: int = 2) -> dict:
 
 def _cut_len(polys) -> float:
     return sum(p.exterior.length + sum(h.length for h in p.interiors) for p in polys)
-
-
-def top_data(p) -> dict:
-    t_m = p.material.t_nominal / 1000
-    kg_m2 = p.material.density_kg_m3 * t_m
-    straight = top.build(p, "none")
-    base_cut = _cut_len(straight.boards) + p.top.width * len(top.seam_xs(p))  # straight seam cuts
-    out = []
-    for o in p.top.options:
-        tp = top.build(p, o.name)
-        parts = tp.boards + tp.keys
-        cut = _cut_len(parts)
-        dims = [[round(h.bounds[2] - h.bounds[0]), round(h.bounds[3] - h.bounds[1])] for h in tp.boards]
-        out.append({
-            "name": o.name, "kind": o.kind, "label": getattr(o, "label", o.name),
-            "selected": o.name == p.top.split,
-            "boards": [rings(h) for h in tp.boards],
-            "keys": [rings(k) for k in tp.keys],
-            "joints": [[x, y] for x, y in tp.joints],
-            "seams": tp.seams,
-            "stats": {
-                "pieces": len(parts), "loose": len(tp.keys),
-                "board_dims": dims,
-                "cut_m": round(cut / 1000, 2),
-                "extra_cut_m": round((cut - base_cut) / 1000, 2),
-                "weight_kg": round(sum(x.area for x in parts) / 1e6 * kg_m2, 1),
-                "cuttable": all(geom.router_cuttable(x, p.cnc.bit_d / 2) for x in parts),
-            },
-        })
-    return {"length": p.top.length, "width": p.top.width, "thickness": p.material.t_nominal,
-            "overhang": p.frame.overhang, "selected": p.top.split, "boards": p.top.boards, "options": out}
 
 
 def frame_data(p) -> dict:
@@ -160,16 +129,16 @@ def build(with_tests: bool = True) -> None:
             "title": "Kotatsu — glue-free CNC birch",
             "facts": [
                 *[["Table", t.table_label] for t in params.tables(p)],
-                ["Height", f"{p.frame.height + p.material.t_nominal:.0f} mm + futon ≈ 40–41 cm (both)"],
+                ["Height", f"{p.frame.height + p.material.t_nominal:.0f} mm + futon ≈ 40–41 cm"],
                 ["Material", p.material.name],
                 ["Heater", f"{p.heater.model} ({p.heater.mount} mount)"],
                 ["Vendor", "uMake.ca (online instant quote)"],
-                ["Ship to", "rural BC — standard parcels ≤ 48\""],
+                ["Ship to", "rural BC — top ships as an oversize parcel (priced at checkout)"],
                 ["Budget", "< $1200 CAD"],
             ],
         },
         "params": raw,
-        "top": top_data(p),
+        "thickness": p.material.t_nominal,
         "tables": tables_data(p),
         "sheets": sheets_data(p),
         "tests": run_tests() if with_tests else None,

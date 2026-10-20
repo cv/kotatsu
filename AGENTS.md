@@ -17,10 +17,12 @@ Deliverables:
   - *Only exception:* the kotatsu heater unit, plus the screws that come with it, to mount it.
 - **Online-only ordering.** Every part must be quotable in the uMake instant-quote app
   (app.umake.ca). Do not design anything that needs a manual quote, freight/LTL shipping or a pallet:
-  - **each part ≤ 1219 mm (48")** on its longest side, so every box is a standard parcel (the top is split into 3 boards); never > 1500 mm (60");
+  - each part ≤ 1219 mm (48") where possible (standard parcel); the Ø900 one-piece top ships as an
+    *oversize* parcel (L+girth > 108"), which is still priced automatically at checkout; never > 1500 mm (60");
   - each box ≤ 50 lb (22.7 kg) if possible, and never > 150 lb;
   - no secondary operations (bending, finishing, assembly) ordered from the vendor.
-- **Overall size:** top is 1200 × 800 mm.
+- **Overall size:** one round table, top Ø 900 mm in one piece (owner, 2026-10; the 1200 × 900
+  rectangle with seams was dropped, see git tag `seams-archive`).
 - **Electrical safety:** the heater must be rated for the local mains (Canada: 120 V / 60 Hz, cUL/CSA/ETL).
   Do not plan around a 100 V Japanese heater with no transformer. Follow the heater maker's
   clearances and mounting instructions; they override this design.
@@ -59,8 +61,7 @@ Deliverables:
   they are a release candidate (tagged).
 - Don't hand-edit DXF/SVG outputs. Change the parameters or the generator.
 - Don't guess the heater's mounting geometry. The chosen unit is in docs/heater.md; freeze `[heater]` only after measuring the real unit, and never send plywood for cutting before that.
-- Don't imitate Indigenous designs (Northwest Coast formline, crests, Salish basketry patterns). Use them
-  only if they come from, or are licensed by, an Indigenous artist (see docs/motifs.md). Nature motifs are fine.
+- Don't imitate Indigenous designs. Use them only if they come from, or are licensed by, an Indigenous artist.
 
 ## Tooling
 - **Python ≥ 3.11 via `uv`** (the system python is 3.9; don't use it).

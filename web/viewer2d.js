@@ -12,32 +12,12 @@ export function el(tag, attrs = {}, parent) {
 export const ringD = (ring, W) => "M" + ring.map(([x, y]) => `${x},${(W - y).toFixed(2)}`).join("L") + "Z";
 export const polyD = (p, W) => [p.ext, ...p.holes].map((r) => ringD(r, W)).join("");
 
-export function drawOption(g, opt, top) {
-  const W = top.width;
-  opt.boards.forEach((h, i) => el("path", { d: polyD(h, W), class: `part board${i % 2}` }, g));
-  opt.keys.forEach((k) => el("path", { d: polyD(k, W), class: "part key" }, g));
-  return g;
-}
-
-export function drawFootprint(g, top) {
-  const o = top.overhang;
-  el("rect", { x: o, y: o, width: top.length - 2 * o, height: top.width - 2 * o, class: "footprint" }, g);
-}
-
 export function drawGrid(g, top, step = 100) {
   const grid = el("g", { class: "grid" }, g);
   for (let x = 0; x <= top.length; x += step) el("line", { x1: x, y1: -20, x2: x, y2: top.width + 20 }, grid);
   for (let y = 0; y <= top.width; y += step) el("line", { x1: -20, y1: y, x2: top.length + 20, y2: y }, grid);
   return grid;
 }
-
-export function staticSvg(opt, top, viewBox) {
-  const svg = el("svg", { viewBox: viewBox || `-10 -10 ${top.length + 20} ${top.width + 20}` });
-  drawOption(el("g", {}, svg), opt, top);
-  return svg;
-}
-
-export const jointBox = (top, [x, y], hw = 140, hh = 90) => ({ x: x - hw, y: top.width - y - hh, w: 2 * hw, h: 2 * hh });
 
 export class PanZoom {
   constructor(svg, home, onChange) {
