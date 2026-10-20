@@ -99,6 +99,7 @@ corner, and the wedges and deck don't carry any of the weight from above.
 | **Total** | **about $870–930** |
 
 ## Linking modules (owner 2026-10-20)
+*Tongue version below: built, then turned off (`link.enabled = false`); the owner didn't like the tongues.*
 Two or more tables push together into one bigger kotatsu: a row (172 × 86 cm for two), an L, or a
 2 × 2 square. Each module stays a complete table with its own legs and heater.
 - Each deck notch gets a 90 mm tongue at its middle, out to the edge, with a 50 mm slot 25 mm from the

@@ -61,7 +61,7 @@ x_hub_margin = 25.0
 x_fillet = 30.0
 
 [link]                # owner 2026-10-20: modules link side by side into a row, an L or a 2 x 2 square
-enabled = true
+enabled = false       # tongue + key version: owner didn't like it (kept as an option)
 tongue_w = 90.0       # a tongue in the middle of each deck notch, out to the edge
 edge = 25.0           # wood between the key slot and the deck edge
 tab_len = 50.0        # key tab (and slot) length along the link
