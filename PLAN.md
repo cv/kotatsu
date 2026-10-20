@@ -106,14 +106,22 @@ corner, and the wedges and deck don't carry any of the weight from above.
    cUL, cETL or CSA mark.
 3. **A tipping limit.** If I want one: EN 12521's force table, or a bathroom-scale test on the finished table.
 4. **Fit-up.** The first assembly will show how the tenons and wedges really fit. Then finish it: ease the
-   edges and oil it. Two hand-finishing tricks make it look lighter for free:
-   - Bevel the underside of the top's edge (about 10 mm at 45°, with a block plane or sanding block). The
-     edge then reads as a thin line from a seated eye height.
+   edges and oil it. I'll make it look lighter by hand instead of in the cut files:
+   - **Top corners: re-round to R50.** Bigger looks nicer, but R70 brings the edge within 29 mm of where
+     the top rests on the legs, and that leaves no room for the bevel.
+   - **Top edge: 15° underside bevel, 35 mm wide, leaving a 9 mm rim.** The top rests on the leg plates
+     41 mm in from its edge, so the bevel has to stop short of that. The plies show as stripes about
+     5 mm wide, like contour lines.
+   - **Legs: round over every exposed vertical edge**, up to a full half-round (R9). Keep flat: the top
+     edges that carry the top and deck, the tenons and shoulders, the slot walls and the plate faces
+     inside the cross-laps, and the wedge holes. Only ease the floor edge (about 2 mm). The leg stress is
+     1.7 MPa against roughly 35 MPa strength, so losing about 10% of the section costs nothing that
+     matters.
    - Oil the frame a shade darker than the top, so the top seems to float over the legs.
-5. **Lighter-look cuts (mocked up, off for now).** Bigger top corners (R70), a curved haunch on the legs,
-   and feet tapering 10 mm on plate A. Together they make the order about $1.50 cheaper, take 0.1 kg off
-   and lower the leg stress, and cost a little tipping margin (1698 → 1476 N at the edge). Adopting them
-   means re-uploading the top and leg plates before uMake confirms the order.
+5. **Lighter-look cuts: mocked up, not used.** Bigger top corners (R70), a curved haunch on the legs,
+   and feet tapering 10 mm on plate A. Together: about $1.50 cheaper, 0.1 kg lighter, lower leg stress,
+   a little less tipping margin (1698 → 1476 N at the edge). The order had already gone in, and the
+   difference was hard to see, so they stay as options in the code (off).
 
 ## Earlier designs
 - The 120 × 80 top in three boards with decorative seams (dovetails, arrowheads, maple leaves and more),
