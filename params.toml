@@ -32,7 +32,8 @@ corner_r = 20.0       # rect only
 height = 385.0        # floor to the tenon tops (futon plane); + 18 top + ~10 futon ≈ 41 cm total
 overhang = 120.0      # square frame 660 × 660 under the Ø900 top; its corners stay ≥ 10 mm inside the circle
 ear = 50.0            # frame edge -> corner cross-lap centreline (visible "ear"); 40 mm ear arm outside the slot
-leg_width = 120.0     # straight leg plates: 40 mm ear arm | slot | 10 mm shoulder + 50 mm tenon to the inner edge
+leg_width = 130.0     # straight leg plates: 40 mm ear arm | slot | 10 mm shoulder | 50 mm tenon | 10 mm inner shoulder
+                      # (shoulders both sides of the tenon, so tapping the wedge doesn't twist the plate)
 foot_r = 6.0          # rounding of the plates' outer corners
 lap_extra = 0.5       # each cross-lap slot is (leg height)/2 + this, so slot bottoms never bottom out; the floor sets height
 
