@@ -164,6 +164,29 @@ def solve_joint(J: Joint, N: float, H: float, Lleg: float, guess=None):
     return None, None
 
 
+def section(shape, z: float, t: float) -> tuple[float, float]:
+    """In-plane bending (I mm^4, W mm^3) of a plate's horizontal cross-section at height z: the solid
+    u-intervals there (slots and windows leave gaps), t thick."""
+    cut = shape.intersection(box(-1e4, z - 0.25, 1e4, z + 0.25))
+    segs = [(g.bounds[0], g.bounds[2]) for g in getattr(cut, "geoms", [cut]) if not g.is_empty]
+    if not segs:
+        return 0.0, 0.0
+    A = sum(b - a for a, b in segs)
+    uc = sum((b - a) * (a + b) / 2 for a, b in segs) / A
+    I = sum(t * ((b - a) ** 3 / 12 + (b - a) * ((a + b) / 2 - uc) ** 2) for a, b in segs)
+    c = max(max(abs(a - uc), abs(b - uc)) for a, b in segs)
+    return I, I / c
+
+
+def bend_compliance(p, shape, n: int = 60) -> float:
+    """Floor deflection per newton of a plate fixed at the deck, pushed sideways at the floor:
+    integral of z^2 / (E I(z)) dz, from the plate's real cross-sections."""
+    L, M = fr.layout(p), p.material
+    zs = np.linspace(2.0, L.z_deck_bot - 2.0, n)
+    vals = [z * z / (M.E_par * max(section(shape, z, M.t_nominal)[0], 1.0)) for z in zs]
+    return float(np.trapezoid(vals, zs))
+
+
 @dataclass
 class PlateCurve:
     H: np.ndarray        # lateral force on this plate at the floor (N), negative..positive
@@ -175,7 +198,7 @@ class PlateCurve:
 def plate_curve(p, shape, N: float, Hmax: float = 300.0, n: int = 121) -> PlateCurve:
     L, M = fr.layout(p), p.material
     Lleg = L.z_deck_bot
-    I = M.t_nominal * p.frame.leg_width ** 3 / 12               # in-plane bending, full plate width
+    flex = bend_compliance(p, shape)                            # in-plane bending, real sections (slot, windows)
     J = joint(p, shape)
     x0, _ = solve_joint(J, N, 0.0, Lleg)                        # resting state, wedge tapped in
     if x0 is None:
@@ -200,7 +223,7 @@ def plate_curve(p, shape, N: float, Hmax: float = 300.0, n: int = 121) -> PlateC
                 ds.append((H, np.nan))
                 guess = x0 if guess is None else guess
                 continue
-            ds.append((H, foot(x) - foot(x0) + H * Lleg ** 3 / (3 * M.E_par * I)))
+            ds.append((H, foot(x) - foot(x0) + H * flex))
     ds.sort()
     H_, D_ = np.array([h for h, _ in ds]), np.array([v for _, v in ds])
     ok = np.isfinite(D_)
@@ -281,10 +304,13 @@ def stresses(p, H_total: float = 200.0, F_edge: float = 1000.0) -> dict:
     t = M.t_nominal
     r = frame_sway(p, H_total, "x")
     Hmax = max(abs(h) for h in r.get("per_plate_N", [H_total / 4])) if np.isfinite(r["sway_mm"]) else H_total
-    ear = p.frame.ear - fr.slot_w(p) / 2
-    inner = p.frame.leg_width - (p.frame.ear + fr.slot_w(p) / 2)
-    W_fingers = t * (ear ** 2 + inner ** 2) / 6                 # beside the cross-lap slot the plate is 2 fingers
-    leg = Hmax * L.z_deck_bot / W_fingers
+    leg = 0.0                                                   # moment H z at height z over the real section there
+    for name in ("leg plate A", "leg plate B"):
+        g = {pt.name: pt for pt in fr.parts(p)}[name].shape
+        for z in np.linspace(5.0, L.z_deck_bot - 2.0, 80):
+            W = section(g, z, t)[1]
+            if W > 0:
+                leg = max(leg, Hmax * z / W)
     R = p.top.length / 2
     ta, tb = yagura._tenon_u(p)
     support_y = L.yL[1] - L.cy                                  # the A-plate tenons along this side carry the top

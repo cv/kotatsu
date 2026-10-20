@@ -143,8 +143,8 @@ def test_posts_carry_the_top_further_out(Y):
 
 
 def test_deck_windows_clear_everything(Y):
-    """Lightening windows: >= 25 mm from every hole, slot, wedge, cheek and the heater; >= 30 mm from
-    the deck's outer edge; the deck stays one piece."""
+    """Lightening windows: window_margin from every hole, slot, wedge, cheek and the heater; window_bar
+    from the deck's outer edge; the deck stays one piece."""
     P, L, parts = Y
     wins = yagura.windows(P)
     if not wins:
@@ -168,6 +168,26 @@ def test_deck_windows_clear_everything(Y):
     keep = unary_union(keep)
     outer = Polygon(d.exterior)
     for w in wins:
-        assert w.distance(keep) >= 25 - 1e-6
-        assert outer.exterior.distance(w) >= 30 - 1e-6
+        assert w.distance(keep) >= P.deck.window_margin - 1e-6
+        assert outer.exterior.distance(w) >= P.deck.window_bar - 1e-6
+    for a in wins:
+        for b in wins:
+            if a is not b:
+                assert a.distance(b) >= P.deck.window_bar - 1e-6
         assert d.intersection(w).area < 1e-6
+
+
+def test_leg_windows_leave_enough_wood(Y):
+    """Leg windows keep >= stock thickness of wood around them and never touch the slot, tenon or hole."""
+    P, L, parts = Y
+    lw = yagura.leg_window(P)
+    if lw is None:
+        pytest.skip("no leg windows")
+    t = P.material.t_max
+    for name in ("leg plate A", "leg plate B"):
+        g = parts[name].shape
+        assert g.geom_type == "Polygon" and len(g.interiors) == 2          # wedge hole + window
+        x0, z0, x1, z1 = lw.bounds
+        assert x0 - (P.frame.ear + frame.slot_w(P) / 2) >= t - 0.5          # wood beside the cross-lap slot
+        assert P.frame.leg_width - x1 >= t - 0.5                            # wood at the inner edge
+        assert z0 >= 40 and L.z_deck_bot - z1 >= 40

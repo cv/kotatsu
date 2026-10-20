@@ -31,7 +31,8 @@ corner_r = 20.0       # rect only
 
 [frame]               # yagura: 4 straight "+" corner legs (2 crossed plates each) under a deck; no aprons
 height = 385.0        # floor to the tenon tops (futon plane); + 18 top + ~10 futon ≈ 41 cm total
-overhang = 100.0      # square frame 660 × 660 under the 860 top (knee zone reach 100 >= 95 mm)
+overhang = 40.0       # owner 2026-10-20: legs as far apart as reasonable -> frame 780 x 780 under the 860 top
+                      # (more room between the legs, much steadier; knees reach 40 mm under the edge)
 ear = 50.0            # frame edge -> corner cross-lap centreline (visible "ear"); 40 mm ear arm outside the slot
 leg_width = 130.0     # straight leg plates: 40 mm ear arm | slot | 10 mm shoulder | 50 mm tenon | 10 mm inner shoulder
                       # (shoulders both sides of the tenon, so tapping the wedge doesn't twist the plate)
@@ -40,11 +41,11 @@ lap_extra = 0.5       # each cross-lap slot is (leg height)/2 + this, so slot bo
 
 [deck]                # horizontal plate on the legs' shoulders; the heater hangs under it
 drop = 26.0           # deck top below the futon plane (room for the leg + cheek wedges above it)
-# Lightening windows (centre-relative mm): uMake ships free up to a 91 cm box AND ~20 kg (18.3 kg free,
-# 20.4 kg not). These take ~1.5 kg out. They stay >= 25 mm from the heater, cheeks, slots, mortises and
-# wedges (tests/test_yagura.py), and >= 30 mm from the deck edge.
-windows = [[191.0, -115.0, 300.0, 115.0], [-300.0, -115.0, -191.0, 115.0],
-           [-184.0, 211.0, 184.0, 300.0], [-184.0, -300.0, 184.0, -211.0]]
+# Lightening windows: uMake ships free up to a 91 cm box AND ~20 kg (18.9 kg free, 20.4 kg not).
+# "auto" sizes 4 windows from the features around them (kotatsu/yagura.py window_rects).
+windows = "auto"
+window_margin = 20.0  # clear of the heater, cheeks, cheek wedges, mortises, leg wedges
+window_bar = 30.0     # wood left at the deck edge and between windows
 window_r = 20.0
 
 [yagura]              # leg <-> deck joints
@@ -55,6 +56,9 @@ hole_drop = 1.0       # hole bottom below the thinnest deck's top face, so the w
 deck_inset = 10.0     # deck corners stay this far inside the round top
 corner_posts = true   # each plate's ear arm rises past the deck to the top: the top rests at the frame corners
                       # (deck corners cut away around them); loose top lifts at ~363 N vs ~205 N without
+leg_windows = true    # slot window in each leg plate's inner arm (weight)
+leg_window_bar = 20.0 # wood each side of it (>= stock thickness, uMake's minimum feature)
+leg_window_end = 50.0 # wood below it (floor) and above it (shoulder)
 wedge_len = 60.0      # leg wedges: shorter than the cheek wedges so the two at each corner don't meet
 wedge_head = 18.0     # (1:8 taper -> 10.5 mm foot)
 
@@ -90,7 +94,7 @@ report_loads = [50.0, 100.0, 200.0]   # sideways pushes at table height to repor
 [comfort]
 knee_w = 762.0        # owner, cross-legged: knees need 30" wide ...
 knee_h = 317.5        # ... x 12.5" high
-knee_reach_min = 95.0   # how far that knee zone must reach in under the top's edge (TODO-verify with owner)
+knee_reach_min = 35.0   # how far that knee zone must reach in under the top's edge (owner chose the 780 frame: 40)
 tip_inset = 50.0      # tipping load is computed EN 12521 / EN 1730-style: pushed down at mid-side, 50 mm in from the edge
 tip_min_n = 0.0       # no pass/fail limit until we have a real figure (EN 12521:2023 Table 2, or a bathroom-scale test); 0 = report only
 heater_kg = 3.0       # for the tipping estimate (TODO weigh the PaletteLife)

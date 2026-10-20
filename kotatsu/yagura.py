@@ -48,6 +48,9 @@ def leg_plate(p, slotted_from_top: bool) -> Polygon:
     g = g.difference(fr.dogbone((ta, zs), (-1, 1), r))   # root reliefs: the shoulders seat flat on the deck
     if tb < wt - 0.01:
         g = g.difference(fr.dogbone((tb, zs), (1, 1), r))
+    lw = leg_window(p)
+    if lw is not None:
+        g = g.difference(lw)
     hz0, hz1 = leg_hole_z(p)
     uc, ts = (ta + tb) / 2, fr.thick_slot(p)
     g = g.difference(fr.hole(uc - ts / 2, hz0, uc + ts / 2, hz1, r))
@@ -126,14 +129,53 @@ def deck(p) -> Polygon:
     return g
 
 
-def windows(p) -> list[Polygon]:
-    """Lightening windows in the deck (world coords): [deck] windows = [[x0, y0, x1, y1], ...] relative to
-    the table centre, rounded by window_r. They keep the order under uMake's free-shipping weight."""
+def window_rects(p) -> list[tuple[float, float, float, float]]:
+    """Deck lightening windows as centre-relative (x0, y0, x1, y1), sized from the features around them:
+    two "side" windows beside the cheeks (x) and two "end" windows past the cheek ends (y), each
+    window_margin clear of the heater, cheeks, cheek wedges, mortises and leg wedges, window_bar from the
+    deck edge and from each other. [deck] windows = "auto" | [] | explicit list."""
     D, L = p.deck, fr.layout(p)
+    w = getattr(D, "windows", [])
+    if w != "auto":
+        return [tuple(v) for v in (w or [])]
+    m, bar, t = D.window_margin, D.window_bar, p.material.t_max
+    h = L.Lf / 2
+    ta, tb = _tenon_u(p)
+    m_in = h - tb - p.fit.tight                                  # mortises' inner ends (from the centre)
+    ci = abs(fr.cheek_xs(p)[0] - L.cx)                           # cheek inner face
+    cw_x = ci + t / 2 + p.cheek_wedge.length / 2                 # cheek wedges' outer ends
+    sx0, sx1, sy = cw_x + m, h - bar, m_in - m                   # side windows
+    ey0 = p.cheek.length / 2 + m                                 # end windows: past the cheek ends ...
+    ey1, ex = h - bar, min(sx0 - bar, m_in - m)                  # ... and clear of the side windows / mortises
     out = []
-    for x0, y0, x1, y1 in getattr(D, "windows", []) or []:
-        out.append(fr._round_outer(box(L.cx + x0, L.cy + y0, L.cx + x1, L.cy + y1), D.window_r))
+    if sx1 - sx0 > 40 and sy > 40:
+        out += [(sx0, -sy, sx1, sy), (-sx1, -sy, -sx0, sy)]
+    if ey1 - ey0 > 40 and ex > 40:
+        out += [(-ex, ey0, ex, ey1), (-ex, -ey1, ex, -ey0)]
     return out
+
+
+def windows(p) -> list[Polygon]:
+    """Lightening windows in the deck (world coords), rounded by window_r. They keep the order under
+    uMake's free-shipping weight (box <= 91 cm and under ~20 kg)."""
+    D, L = p.deck, fr.layout(p)
+    return [fr._round_outer(box(L.cx + x0, L.cy + y0, L.cx + x1, L.cy + y1), D.window_r)
+            for x0, y0, x1, y1 in window_rects(p)]
+
+
+def leg_window(p) -> Polygon | None:
+    """Slot-shaped window in each leg plate's inner arm (plate coords), leg_window_bar of wood each side
+    and leg_window_end above the floor / below the shoulders. None if disabled or too narrow."""
+    Y, F, L = p.yagura, p.frame, fr.layout(p)
+    if not getattr(Y, "leg_windows", False):
+        return None
+    b = Y.leg_window_bar
+    u0, u1 = F.ear + fr.slot_w(p) / 2 + b, F.leg_width - b
+    z0, z1 = Y.leg_window_end, L.z_deck_bot - Y.leg_window_end
+    if u1 - u0 < 12 or z1 - z0 < 60:
+        return None
+    rr = (u1 - u0) / 2 - 0.01
+    return fr._round_outer(box(u0, z0, u1, z1), rr)
 
 
 def wedge_dims(p, which: str = "cheek") -> tuple[float, float]:
