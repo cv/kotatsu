@@ -114,3 +114,10 @@ Subtotal **$353.91** (price model predicted $354.03), shipping **FREE** (91 × 9
 ### Deck notch mouths rounded R30 (2026-10-20)
 Deck re-uploaded: $101.68 (was $102.38). Subtotal **$353.33** (model $353.38), free shipping (91 × 91 × 16 cm,
 16.6 kg), tax $42.40, **total $395.73**. Project saved.
+
+## Checkout flow (2026-10-20, stopped before submitting)
+Cart → **Confirm Order** → tolerance-guide acknowledgement (**Proceed**) → a dialog shown to *every* customer
+order (it's unconditional in the app code, not caused by our files): "Please note that this is not the final
+price. One of our representatives will reach out to you to confirm and finalize your order." → **Ok** posts
+`api/my/create-order`. There's no card payment at that step, so payment comes after their confirmation.
+So an order can be *placed* online, but uMake confirms it by contacting the customer. Owner to decide.
