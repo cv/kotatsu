@@ -79,6 +79,12 @@ holes = []             # TODO measure: side screw positions
 sitters = [1, 1]      # people per side (long, short) - square frame: 4 people
 leg_gap = 360.0       # min opening width per sitter between the legs
 
+[room]                # for the Futon & rug page (docs/futons.toml has the candidates)
+rug_d = 2440.0        # 8 ft round rug
+futon_d = 2050.0      # planned futon (205 cm round = sellers' size for Ø90 round tables)
+drape_k = 0.7         # footprint radius ~ futon radius - drape_k * (frame height + top): rough, futons slope out
+zabuton = [550.0, 590.0]  # floor cushion w x d (standard meidosu size)
+
 [layout]              # sheet nesting choices (kotatsu/cutlist.py, kotatsu/nest.py)
 frame_grain = "horizontal"  # side panels keep their length along the grain (looks right); "free" = any rotation
 sets = [1]                  # cut layouts for this many copies of the whole set of [[tables]]

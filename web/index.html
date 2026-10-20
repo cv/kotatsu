@@ -21,6 +21,7 @@
   <div class="brand">炬燵 <span>Kotatsu</span></div>
   <nav>
     <a href="#overview" data-tab="overview">Overview</a>
+    <a href="#futon" data-tab="futon">Futon &amp; rug</a>
     <a href="#frame" data-tab="frame">Frame parts</a>
     <a href="#sheets" data-tab="sheets">Cut sheets</a>
     <a href="#3d" data-tab="3d">3-D</a>
@@ -34,6 +35,21 @@
     <div class="cards">
       <div class="card"><h3>Project</h3><dl id="facts"></dl></div>
       <div class="card"><h3>Checks</h3><div id="tests"></div></div>
+    </div>
+  </section>
+
+  <section id="tab-futon" class="tab">
+    <aside id="futon-list"></aside>
+    <div class="viewer-wrap">
+      <div class="toolbar">
+        <span id="futon-btns"></span>
+        <button id="btn-ffit">Fit</button>
+        <label><input type="checkbox" id="chk-fzab" checked> cushions</label>
+        <span class="spacer"></span>
+        <span id="futon-summary" class="mono"></span>
+      </div>
+      <div id="fviewer" class="viewer"></div>
+      <div class="hint">plan view, to scale · rug Ø 2440 · dashed = futon laid flat · solid = where it lands on the floor (estimate) · click a futon on the left to try it</div>
     </div>
   </section>
 

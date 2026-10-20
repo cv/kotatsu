@@ -25,16 +25,18 @@ the rug and half on the futon edge. Choose 225 if you want a heavier, more gener
 
 The square frame (660) is no problem under a round futon. Its corners are at r = 467, well inside.
 
-## Where to buy online (no phone/email)
-- Amazon.ca: e.g. Francfranc ruffle round φ1900. A few sellers; stock changes.
-  <https://www.amazon.ca/Francfranc-Online-Exclusive-Ruffle-Kotatsu/dp/B0CJCDHY81>
-- Futon Tokyo (Japan; prices in USD; lists Canada as a destination): "Yukari" shijira-weave round
-  205 cm, ~US$230–240. <https://futontokyo.com>
-- eBay.ca: 205 cm round, made in Japan (sakura print, faux fur, …), shipped from Japan.
-- Rakuten / Yahoo! Shopping / Amazon.co.jp: by far the most choice (205/225/245 丸). They ship
-  internationally only through some sellers or a forwarding service, and bulky shipping costs a lot.
-- TODO-verify: price and shipping to rural BC at checkout. Washability matters (it gets crumbs).
-  A matching round under-mat (敷き布団) is optional, since the rug does that job.
+## Where to buy online (checked 2026-10-19; full list: docs/futons.toml, site tab "Futon & rug")
+- **Amazon.co.jp ships these to Canada**, with the delivery fee shown at checkout (¥11k–26k ≈ CAD 100–240).
+  Several 205 cm round futons are in stock. Two sellers state "fits round kotatsu Ø 90 cm":
+  JEMA (thick) and Peto-Raifu (thin). The cheapest delivered is VK Living 205, ≈ CAD 157 before duty and tax.
+- **Amazon.ca / Amazon.com**: no round kotatsu futon in stock. The Francfranc φ190 and the "Yukari" shijira 205
+  are both "currently unavailable".
+- **Shopify stores**:
+  - Wataman (shop.wataman.co.jp) prices in CAD and has the traditional shijira-cotton 205/225 丸, made in
+    Japan (CAD 196), plus a set with a matching under-mat. Everything is **sold out** for now (seasonal), so watch for a restock.
+  - somibeya: faux-fur 185/197 丸, mostly sold out, and international shipping is unverified.
+  - Futon Tokyo now lists square futons only (a 205×205 square works on a round table, it just looks square).
+- Import duty, GST and PST are not included anywhere above (TODO-verify at checkout).
 
 ## Safety
 Only the heater's guard should be anywhere near the futon. The heater hangs under the solid deck, and

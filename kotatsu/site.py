@@ -21,7 +21,7 @@ import tomllib
 
 from shapely.geometry import Polygon
 
-from . import build as cutbuild, cutlist, frame, nest, params, top
+from . import build as cutbuild, cutlist, frame, nest, params, room, top
 from .params import ROOT
 
 WEB = ROOT / "web"
@@ -140,6 +140,7 @@ def build(with_tests: bool = True) -> None:
         "params": raw,
         "thickness": p.material.t_nominal,
         "tables": tables_data(p),
+        "room": room.room_data(p),
         "sheets": sheets_data(p),
         "tests": run_tests() if with_tests else None,
         "docs": {d: (ROOT / d).read_text() for d in DOCS if (ROOT / d).exists()},
