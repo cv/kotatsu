@@ -16,7 +16,7 @@ from __future__ import annotations
 import math
 
 from shapely.ops import unary_union
-from shapely.geometry import Point, Polygon, box
+from shapely.geometry import LineString, Point, Polygon, box
 
 from . import frame as fr
 from .frame import Part, Placement
@@ -149,6 +149,9 @@ def deck(p) -> Polygon:
     if getattr(p.top, "shape", "rect") == "round":
         g = g.intersection(Point(L.cx, L.cy).buffer(p.top.length / 2 - Y.deck_inset, quad_segs=64))
     g = fr._round_outer(g, 8.0)
+    xstyle = getattr(p.deck, "window_style", "hole") == "x"
+    if xstyle:                                          # study: an X of diagonal arms instead of an H
+        g = g.intersection(x_outline(p))
     if post_u(p) > 0:                                   # L-shaped corner cut-outs around the two posts
         k = corner_cut(p)
         j = L.Lf / 2 - p.frame.ear - fr.thick_slot(p) / 2  # plates' inner faces (+ clearance)
@@ -165,7 +168,7 @@ def deck(p) -> Polygon:
                     g = g.difference(fr.dogbone((L.cx + sx * ax, L.cy + sy * ay), (sx, sy), r))
     for x0, y0, x1, y1 in mortises(p):
         g = g.difference(fr.hole(x0, y0, x1, y1, r))
-    for w in windows(p):                                # weight-saving windows away from the heater
+    for w in ([] if xstyle else windows(p)):            # weight-saving windows away from the heater
         g = g.difference(w)
     g = _round_mouths(p, g)
     for xi, sgn in zip(fr.cheek_xs(p), (-1, 1)):        # cheek tab slots, as in the slab deck
@@ -173,6 +176,30 @@ def deck(p) -> Polygon:
         for ya, yb in fr.tab_ys(p):
             g = g.difference(fr.hole(xa, ya - p.fit.tight, xb, yb + p.fit.tight, r))
     return g
+
+
+def x_outline(p) -> Polygon:
+    """Study (owner 2026-10-20): the deck as an X. Four corner pads carry the leg mortises and wedges;
+    diagonal arms join them through the middle, where the cheek tabs already sit (on the diagonals).
+    deck.x_hub = "shield" adds a square over the heater, so the futon can't sag onto it.
+    Inside corners are filleted (deck.x_fillet) before any joint is cut, so the joints stay exact."""
+    D, L = p.deck, fr.layout(p)
+    h, cx, cy = L.Lf / 2, L.cx, L.cy
+    pad, w = D.x_pad, D.x_arm
+    parts = [box(cx + sx * h - (pad if sx > 0 else 0), cy + sy * h - (pad if sy > 0 else 0),
+                 cx + sx * h + (0 if sx > 0 else pad), cy + sy * h + (0 if sy > 0 else pad))
+             for sx in (-1, 1) for sy in (-1, 1)]
+    far = 2 * h
+    for d in (1, -1):                                   # the two diagonals
+        arm = LineString([(cx - far, cy - d * far), (cx + far, cy + d * far)]).buffer(w / 2, cap_style=2)
+        parts.append(arm)
+    if getattr(D, "x_hub", "none") == "shield":
+        sx, sy, _ = fr.heater_box(p)[0]
+        m = D.x_hub_margin
+        parts.append(box(cx - sx / 2 - m, cy - sy / 2 - m, cx + sx / 2 + m, cy + sy / 2 + m))
+    g = unary_union(parts).intersection(box(cx - h, cy - h, cx + h, cy + h))
+    f = D.x_fillet
+    return g.buffer(f, join_style=1).buffer(-f, join_style=1)   # round the inside corners
 
 
 def mouth_corners(p) -> list[tuple[float, float, int, int]]:

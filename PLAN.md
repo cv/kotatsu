@@ -125,7 +125,14 @@ corner, and the wedges and deck don't carry any of the weight from above.
      scent): the cat will sleep in the warm kotatsu, and many essential oils are toxic to cats.
    - Before bevelling, pick the cleaner face of the top (fewest patches) and put it up.
    - Sand to 180, wipe with a damp cloth to raise the grain, let it dry, then sand 220 (320 on the top).
-5. **Lighter-look cuts: mocked up, not used.** Bigger top corners (R70), a curved haunch on the legs,
+5. **X deck: studied, not used (yet).** Diagonal arms from the corner pads through the middle instead of
+   the H. The cheek tabs already sit on the diagonals, so the arms carry them for free. A square over the
+   heater ("shield") stops the futon sagging onto it; without it a fifth of the heater top is open.
+   X + shield: deck 3.68 → 3.08 kg, $353.38 → $349.48 (less cutting), same joints and pads, so the wobble
+   and strength checks don't change. In-plane, diagonal arms brace the corners better than the H's
+   necks (the wobble model treats the deck as rigid either way). The flat-pack plan would need redoing:
+   the plates no longer nest in the H's notches. `deck.window_style = "x"`, `deck.x_hub = "shield"`.
+6. **Lighter-look cuts: mocked up, not used.** Bigger top corners (R70), a curved haunch on the legs,
    and feet tapering 10 mm on plate A. Together: about $1.50 cheaper, 0.1 kg lighter, lower leg stress,
    a little less tipping margin (1698 → 1476 N at the edge). The order had already gone in, and the
    difference was hard to see, so they stay as options in the code (off).

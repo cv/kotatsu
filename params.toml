@@ -53,6 +53,12 @@ mouth_r = 30.0        # owner 2026-10-20: round the notch-mouth corners (the one
 window_margin = 20.0  # clear of the heater, cheeks, cheek wedges, mortises, leg wedges
 window_bar = 30.0     # wood left at the deck edge and between windows
 window_r = 20.0
+# Study (owner 2026-10-20): window_style = "x" makes the deck an X of diagonal arms (kotatsu/yagura.py x_outline)
+x_pad = 125.0         # corner pads: this far in from the frame edge (covers the mortises + leg wedges)
+x_arm = 110.0         # arm width; the cheek tabs + their wedges sit on the arms, ~45 mm from the axis
+x_hub = "none"        # "shield": also a square over the heater, so the futon can't sag onto it
+x_hub_margin = 25.0
+x_fillet = 30.0
 
 [yagura]              # leg <-> deck joints
 tenon_gap = 10.0      # each plate's tenon starts this far past the cross-lap slot (the shoulder on that side)
