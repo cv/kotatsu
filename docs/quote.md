@@ -44,3 +44,11 @@ deep, and charges by that box. Tested by swapping only the top file (frame files
   The published "L + girth ≤ 108"" rule isn't what the cart uses: the free 85 cm box is about 115".
 - The project is left with **top-860-test.dxf** in place of top.dxf. The deck and leg-plate files there are the
   pre-corner-post versions. **Re-upload deck.dxf, leg-plate-a.dxf and leg-plate-b.dxf (and the real top) before ordering.**
+
+### Correction + square top (2026-10-20, later)
+- The weights in the probe table above were low: the cart had counted the leg plates once. The free tier is
+  **box ≤ 91 cm AND weight below about 20 kg**. Ø 860 with the full order came to 18.3 kg, free. An 860 square came to 20.4 kg, **$195.38**.
+- **Square 860 + deck with lightening windows** (−1.5 kg): **91×91×18 cm, 18.9 kg, FREE**.
+  Parts $356.66 + tax $42.80 = **$399.46** (deck $94.95: the windows add routing).
+- The project now holds the current files: top.dxf (860 square), deck.dxf (windows + corner cut-outs),
+  leg-plate-a/b.dxf (corner posts) ×4 each, heater-cheek ×2, leg-wedge ×9, cheek-wedge ×5.

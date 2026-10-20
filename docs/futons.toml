@@ -1,189 +1,132 @@
-# Round kotatsu futon candidates for the Ø900 round table (researched 2026-10-19).
-# Prices as listed on that day; JPY -> CAD at the rate Shopify (wataman) showed: 1 JPY = 0.00907 CAD.
-# Shipping is to rural BC as quoted by the store; import duty / GST / PST NOT included (TODO-verify at checkout).
-# fit: "ideal" = seller lists it for Ø90 round tables (205 丸) | "generous" = bigger drape | "small" = sized for Ø75–80.
+# Square kotatsu futon candidates for the 860 x 860 square top (researched 2026-10-20).
+# (The round-futon list for the old Ø900 top is in git history before this commit.)
+# Prices as listed that day, shipping to rural BC where the store showed it. Import duty / GST / PST NOT
+# included (TODO-verify at checkout). Amazon.ca shows "cannot be shipped to your location" on some
+# listings in our browser profile: check at checkout with your address.
+# Sizing rule (BarklotJapan, Etsy): futon = top + 110..130 cm -> 86 cm top: 196..216 cm, so 205 x 205 is
+# the right size; 225+ square futons that ship to Canada were not found at a reasonable price.
+# fit: "ideal" = 205 (top + ~120) | "generous" = bigger drape | "small" = 185-190 (sized for 70-80 tops).
 
 jpy_cad = 0.00907
-checked = "2026-10-19"
+usd_cad = 1.38
+checked = "2026-10-20"
 
 [[futon]]
-name = "VK Living round futon, reversible, heat-generating fill (1.5 kg)"
-store = "Amazon.co.jp"
-url = "https://www.amazon.co.jp/dp/B0D1K1NHZ1"
-img = "https://m.media-amazon.com/images/I/81TjEctmN4L._AC_SL1500_.jpg"
+name = "Premium cotton-flannel quilted kotatsu futon, gray (made in Japan)"
+store = "Etsy · BarklotJapan"
+url = "https://www.etsy.com/ca/listing/4595968607"
+img = "https://i.etsystatic.com/48090670/r/il/5eee2d/8729998759/il_1080xN.8729998759_or2s.jpg"
+shape = "square"
 size_cm = 205
 fit = "ideal"
-price = 5899
-ship = 11444
-currency = "JPY"
-rating = "4.3 ★ (170)"
-status = "in stock (11 left); ships to Canada, ~10 days"
-notes = "Machine washable (net). Lace-pattern beige; other colours as variants. Cheapest delivered 205."
-
-[[futon]]
-name = "JEMA thick round futon, boa fleece, hollow-core fill"
-store = "Amazon.co.jp"
-url = "https://www.amazon.co.jp/dp/B09YV5L6YY"
-img = "https://m.media-amazon.com/images/I/71KDpe8-bbL._AC_SL1500_.jpg"
-size_cm = 205
-fit = "ideal"
-price = 6280
-ship = 23908
-currency = "JPY"
-rating = "4.4 ★ (149)"
-status = "in stock (6 left); ships to Canada"
-notes = "Seller states: fits round kotatsu Ø 90 cm (our table). Thick, very warm; fluffy texture."
-
-[[futon]]
-name = "JEMA thick round futon, flannel (heat-generating cotton)"
-store = "Amazon.co.jp"
-url = "https://www.amazon.co.jp/dp/B0GVQCWZBM"
-img = "https://m.media-amazon.com/images/I/71U6wghszeL._AC_SL1500_.jpg"
-size_cm = 205
-fit = "ideal"
-price = 6580
-ship = 16674
-currency = "JPY"
-rating = "4.2 ★ (197)"
-status = "in stock (13 left); ships to Canada"
-notes = "Smooth flannel face, reversible. Size variants up to 225."
-
-[[futon]]
-name = "Peto-Raifu thin round kotatsu comforter, flannel"
-store = "Amazon.co.jp"
-url = "https://www.amazon.co.jp/dp/B0FKHNV3VZ"
-img = "https://m.media-amazon.com/images/I/81qWZc1Z-cL._AC_SL1500_.jpg"
-size_cm = 205
-fit = "ideal"
-price = 6690
-ship = 13643
-currency = "JPY"
-rating = "4.0 ★ (39)"
-status = "in stock (11 left); ships to Canada"
-notes = "Seller states: fits round kotatsu Ø 90 cm. Thin 'space-saving' type: drapes neatly, less bulky look, less warm."
-
-[[futon]]
-name = "VK Living round futon, 225 cm (1.8 kg)"
-store = "Amazon.co.jp"
-url = "https://www.amazon.co.jp/dp/B0D1JSF6HZ"
-img = "https://m.media-amazon.com/images/I/91JpfJ-OxHL._AC_SL1500_.jpg"
-size_cm = 225
-fit = "generous"
-price = 7199
-ship = 23482
-currency = "JPY"
-rating = "4.3 ★ (170)"
-status = "in stock (19 left); ships to Canada"
-notes = "Same family as the 205; more drape on the floor, less rug showing."
-
-[[futon]]
-name = "JEMA thick round futon, flannel, 225 cm"
-store = "Amazon.co.jp"
-url = "https://www.amazon.co.jp/dp/B098LNST6V"
-img = "https://m.media-amazon.com/images/I/71xTrTiWcoL._AC_SL1500_.jpg"
-size_cm = 225
-fit = "generous"
-price = 7280
-ship = 26036
-currency = "JPY"
-rating = "4.2 ★ (197)"
-status = "in stock (11 left); ships to Canada"
-notes = "Heavier drape option."
-
-[[futon]]
-name = "Ikehiko round futon, compact-storage, ~220 cm"
-store = "Amazon.co.jp"
-url = "https://www.amazon.co.jp/dp/B09C5LX175"
-img = "https://m.media-amazon.com/images/I/71iBX79jcKL._AC_SL1500_.jpg"
-size_cm = 220
-fit = "generous"
-price = 13351
-ship = 22874
-currency = "JPY"
-rating = "4.3 ★ (94)"
-status = "in stock (8 left); ships to Canada"
-notes = "Seller lists it for Ø 100–110 cm tables, so it's roomy on ours. Gray; packs small."
-
-[[futon]]
-name = "Hagihara 'Luna' round futon, solid colour, washable"
-store = "Amazon.co.jp"
-url = "https://www.amazon.co.jp/dp/B0DJ2JPPR1"
-img = "https://m.media-amazon.com/images/I/81fDuYl311L._AC_SL1500_.jpg"
-size_cm = 190
-fit = "small"
-price = 9016
-ship = 20003
-currency = "JPY"
-rating = "4.9 ★ (45)"
-status = "in stock (7 left); ships to Canada"
-notes = "Best-reviewed, but 190 is sized for Ø75–80 tables: shorter drape on ours."
-
-[[futon]]
-name = "Vamcheer round futon, thick flannel, reversible"
-store = "Amazon.co.jp"
-url = "https://www.amazon.co.jp/dp/B0CDPDQPT1"
-img = "https://m.media-amazon.com/images/I/810y1C9d3ZL._AC_SL1500_.jpg"
-size_cm = 190
-fit = "small"
-price = 5080
-ship = 11785
-currency = "JPY"
-rating = "4.4 ★ (1,356)"
-status = "in stock; ships to Canada"
-notes = "Most-reviewed round futon. Probably sold in 205 too (check the size selector)."
-
-[[futon]]
-name = "Francfranc 'Botine' round futon (2025 model)"
-store = "Amazon.co.jp"
-url = "https://www.amazon.co.jp/dp/B0FR8QMDB1"
-img = "https://m.media-amazon.com/images/I/61JP640Zv5L._AC_SL1500_.jpg"
-size_cm = 190
-fit = "small"
-price = 7980
-ship = 19195
-currency = "JPY"
-rating = ""
-status = "1 left; ships to Canada"
-notes = "Design-led (white). 190 only: a short drape on Ø90."
-
-[[futon]]
-name = "Wataman round futon, shijira-weave cotton face, made in Japan"
-store = "Wataman (Shopify, shop.wataman.co.jp)"
-url = "https://shop.wataman.co.jp/products/ykr205r"
-img = "https://cdn.shopify.com/s/files/1/0708/5116/6464/files/1151240030603_f2dbcee2-9ea1-4a9e-bab0-52d8133d863c.jpg?v=1751879945"
-size_cm = 205
-fit = "ideal"
-price = 196
+price = 229.61
 ship = 0
 currency = "CAD"
 rating = ""
-status = "SOLD OUT (seasonal; watch for restock). Store prices in CAD, so ships here"
-notes = "Classic black/brown shijira cotton (the traditional look). Hand wash only. Also a 225 version, and a set with a matching under-mat (ykrs205r, CAD 232). Shipping cost shown at checkout."
+status = "in stock; free delivery to Canada"
+notes = "Cheapest 205 x 205 found. Same shop sells 205 x 245 (CA$278). Corner ties on the back."
 
 [[futon]]
-name = "Wataman round futon, coral-fleece, machine washable"
-store = "Wataman (Shopify, shop.wataman.co.jp)"
-url = "https://shop.wataman.co.jp/products/g6841419"
-img = "https://cdn.shopify.com/s/files/1/0708/5116/6464/files/1181770026311_578bcedc-717d-4d77-bcd0-a0f980d52a01.jpg?v=1751879793"
-size_cm = 200
+name = "Cotton-flannel kotatsu futon (+ optional matching mat), green"
+store = "Etsy · BarklotJapan"
+url = "https://www.etsy.com/ca/listing/1609281463"
+img = "https://i.etsystatic.com/48090670/r/il/29473a/5544942879/il_1080xN.5544942879_ijgp.jpg"
+shape = "square"
+size_cm = 205
 fit = "ideal"
-price = 91
+price = 250.22
 ship = 0
 currency = "CAD"
 rating = ""
-status = "SOLD OUT (seasonal; watch for restock)"
-notes = "Beige / brown / grey / orange. Shipping cost shown at checkout."
+status = "in stock; free delivery to Canada"
+notes = "Futon only CA$250; futon + under-mat set CA$325. Also brown / pink / blue listings from the same shop."
 
 [[futon]]
-name = "Chubby reversible faux-fur round futon"
-store = "somibeya (Shopify, somibeya.com)"
-url = "https://somibeya.com/products/chubby-eco-166004-w185"
-img = "https://cdn.shopify.com/s/files/1/0764/6520/9621/files/166004-l.jpg?v=1787399991"
-size_cm = 185
-fit = "small"
-price = 9100
+name = "Washable fluffy cotton-flannel kotatsu futon, green"
+store = "Etsy · BarklotJapan"
+url = "https://www.etsy.com/ca/listing/1774239534"
+img = "https://i.etsystatic.com/48090670/r/il/6e801b/6293669551/il_1080xN.6293669551_eit7.jpg"
+shape = "square"
+size_cm = 205
+fit = "ideal"
+price = 322.34
 ship = 0
-currency = "JPY"
+currency = "CAD"
 rating = ""
-status = "beige in stock; international shipping TODO-verify"
-notes = "Faux rabbit fur / flannel. 185 is small for Ø90 (sized for ~Ø70)."
+status = "in stock; free delivery to Canada"
+notes = "Machine washable version."
+
+[[futon]]
+name = "GOTS organic-cotton kotatsu futon quilt, natural beige"
+store = "Futon Tokyo (Shopify)"
+url = "https://futontokyo.com/products/kotatsu-coverlet-cotton-broadcloth315x205"
+img = "https://futontokyo.com/cdn/shop/files/gots-kotatsu-02.jpg?v=1784070856"
+shape = "square"
+size_cm = 205
+fit = "ideal"
+price = 433
+ship = 0
+currency = "USD"
+rating = ""
+status = "in stock; ships internationally (shipping shown at checkout)"
+notes = "Handmade, organic. Expensive."
+
+[[futon]]
+name = "AZUMAYA KK-101BR kotatsu futon, brown"
+store = "Amazon.ca"
+url = "https://www.amazon.ca/dp/B00CXDS8OW"
+img = "https://m.media-amazon.com/images/I/81XNxHdLzUL._AC_SX679_.jpg"
+shape = "square"
+size_cm = 190
+fit = "small"
+price = 251.25
+ship = 6.99
+currency = "CAD"
+rating = "4.8 ★ (174)"
+status = "in stock"
+notes = "Seller: fits tops up to 32 in (81 cm). On our 86 cm top it barely reaches the floor."
+
+[[futon]]
+name = "ROOM ESSENCE kotatsu futon, striped navy"
+store = "Amazon.ca"
+url = "https://www.amazon.ca/dp/B0G4MNN8XX"
+img = "https://m.media-amazon.com/images/I/61E96TQ+8LL._AC_SX679_.jpg"
+shape = "square"
+size_cm = 190
+fit = "small"
+price = 195.81
+ship = 0
+currency = "CAD"
+rating = "5.0 ★ (1)"
+status = "in stock; free delivery"
+notes = "Seller: for 70-80 cm tops. Dry clean only."
+
+[[futon]]
+name = "KEN JAPAN reversible kotatsu blanket, navy / gray"
+store = "Amazon.ca"
+url = "https://www.amazon.ca/dp/B0D91PXDK1"
+img = "https://m.media-amazon.com/images/I/61UZiEtBoyL._AC_SX679_.jpg"
+shape = "square"
+size_cm = 190
+fit = "small"
+price = 145.34
+ship = 11.94
+currency = "CAD"
+rating = "4.5 ★ (17)"
+status = "4 left; shipped internationally"
+notes = "Seller: for 76-81 cm tops. Hand wash."
+
+[[futon]]
+name = "DIY: Douglas Down Alternative Duvet (Full/Queen) + a queen duvet cover"
+store = "douglas.ca + any cover"
+url = "https://www.douglas.ca/en/product/down-alternative-duvet/"
+img = "https://www.douglas.ca/wp-content/uploads/DB-Website-20220607-LowRes-1500px-10-FR.jpg"
+shape = "square"
+size_cm = 229
+fit = "generous"
+price = 139
+ship = 0
+currency = "CAD"
+rating = ""
+status = "in stock; free shipping in Canada"
+notes = "Queen size is about 88-90 x 90-92 in (TODO-verify Douglas's chart); queen covers are 90 x 90 in, CA$45-80 on amazon.ca. Loftier than a kotatsu futon, so the top sits a little higher. Not quilted for kotatsu use."

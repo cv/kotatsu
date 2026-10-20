@@ -1,44 +1,38 @@
-# Round futon + rug (round table, Ø 900 top)
+# Futon + rug (square 860 × 860 top)
 
-Owner, 2026-10: prefers the round table if a round kotatsu futon can be found that looks good on an
-**8 ft (Ø 2440 mm) round rug**. The futon doesn't have to cover the rug.
+Owner, 2026-10-20: round futons that ship to Canada at a reasonable price were hard to find, so the top
+became an **860 × 860 square**. The owner asked for **225 cm+ square** futons.
 
 ## Sizes
-Round kotatsu futons (円形こたつ布団, sold as "○○cm丸") come in **190, 205, 225 and 245 cm**.
-Sellers state which table sizes each one fits (対応天板). Check that before buying.
+Sellers' rule (BarklotJapan, Etsy): **futon = top + 110–130 cm**. For an 86 cm top that's 196–216 cm, so
+**205 × 205** is the right size. 190 × 190 is sold for 70–80 cm tops and barely reaches the floor on ours.
+I found no **225 × 225 or larger** square kotatsu futon that ships to Canada at a reasonable price:
+- Amazon.ca only stocks 185–190 cm squares.
+- Futon Tokyo only lists 205 (US$433+).
+- Wataman's 225 × 225 is sold out and ships within Japan only.
 
-| Futon | Fits (sellers' typical range, TODO-verify per listing) | Hangs past our Ø 900 top* | Lies on the floor, approx. Ø | Rug visible around it |
-|---|---|---|---|---|
-| 190 丸 | Ø 60–80 cm tables | ~0.1 m at the floor | ~1.3 m | ~55 cm |
-| **205 丸** | Ø 75–90 cm (Sakai lists 75–80) | ~0.18 m | **~1.4–1.6 m** | **~40–50 cm** |
-| 225 丸 | Ø 90–105 cm | ~0.28 m | ~1.6–1.8 m | ~30–40 cm |
-| 245 丸 | Ø 105–120 cm | ~0.38 m | ~1.8–2.0 m | ~20–30 cm |
+## Best options (2026-10-20; full list in docs/futons.toml and the site's "Futon & rug" tab)
+| Option | Size | Price (CAD, before duty/tax) | Notes |
+|---|---|---|---|
+| **Etsy · BarklotJapan premium cotton flannel, gray** | 205 × 205 | **$229.61, free delivery** | Made in Japan, quilted, corner ties |
+| Etsy · BarklotJapan cotton flannel (+ optional mat), green | 205 × 205 | $250.22 (with mat: $325) | Also brown / pink / blue |
+| Etsy · BarklotJapan washable, green | 205 × 205 | $322.34 | Machine washable |
+| Futon Tokyo GOTS organic cotton | 205 × 205 | ≈ $598 + shipping | Handmade, expensive |
+| Amazon.ca AZUMAYA / ROOM ESSENCE / KEN JAPAN | 190 × 190 | $157–258 | Small for this top |
+| **DIY: Douglas Down Alternative Duvet (Full/Queen) + queen cover** | ≈ 229 × 229 | **$139 + $45–80** | See below |
 
-*Rough geometry: the futon radius, minus the top's radius (450), minus the drop to the floor
-(375 frame + 18 top). The real footprint is larger because the futon slopes outward instead of
-hanging straight down.
-
-**Pick: 205 cm round.** It is the most common size (most colours and fabrics) and suits Ø 75–90 tables.
-On an 8 ft rug the circles nest as roughly **244 : ~150 : 90**. Each step is about 1.6× the next,
-close to the golden ratio. That leaves a ~45 cm ring of rug: a cushion (zabuton, ~55 cm) sits half on
-the rug and half on the futon edge. Choose 225 if you want a heavier, more generous drape.
-
-The square frame (660) is no problem under a round futon. Its corners are at r = 467, well inside.
-
-## Where to buy online (checked 2026-10-19; full list: docs/futons.toml, site tab "Futon & rug")
-- **Amazon.co.jp ships these to Canada**, with the delivery fee shown at checkout (¥11k–26k ≈ CAD 100–240).
-  Several 205 cm round futons are in stock. Two sellers state "fits round kotatsu Ø 90 cm":
-  JEMA (thick) and Peto-Raifu (thin). The cheapest delivered is VK Living 205, ≈ CAD 157 before duty and tax.
-- **Amazon.ca / Amazon.com**: no round kotatsu futon in stock. The Francfranc φ190 and the "Yukari" shijira 205
-  are both "currently unavailable".
-- **Shopify stores**:
-  - Wataman (shop.wataman.co.jp) prices in CAD and has the traditional shijira-cotton 205/225 丸, made in
-    Japan (CAD 196), plus a set with a matching under-mat. Everything is **sold out** for now (seasonal), so watch for a restock.
-  - somibeya: faux-fur 185/197 丸, mostly sold out, and international shipping is unverified.
-  - Futon Tokyo now lists square futons only (a 205×205 square works on a round table, it just looks square).
-- Import duty, GST and PST are not included anywhere above (TODO-verify at checkout).
+## The duvet option
+A queen duvet (about 88–90 × 90–92 in, so TODO-verify Douglas's own size chart) in a 90 × 90 in cover is
+**bigger than a 205 kotatsu futon**: about 229 cm. It's also cheaper (about $185–220 all in, with free shipping from
+Douglas). It works on a kotatsu. Things to know:
+- **Loft.** A bed duvet is puffier than a quilted kotatsu futon. The top rests on the posts and tenons
+  *through* the duvet, so it sits a bit higher (about +1–2 cm when compressed) and may rock slightly until the
+  fill settles. A lightweight duvet (not the all-season one) is better.
+- **Heat.** Polyester fill is fine. The heater hangs under the solid deck, and the duvet drapes outside the frame.
+- **Cover.** Use a tight-woven cotton or linen cover (zip closure) so you can wash it. Kotatsu futons get feet,
+  crumbs and tea. Some amazon.ca covers showed "cannot ship to your location" in our browser, so check
+  at checkout.
 
 ## Safety
-Only the heater's guard should be anywhere near the futon. The heater hangs under the solid deck, and
-the futon drapes outside the frame, so there is no contact. Don't tuck the futon *inside* the frame
-under the heater.
+Only the heater's guard should be anywhere near the futon. The heater hangs under the solid deck, and the
+futon drapes outside the frame, so there is no contact. Don't tuck the futon *inside* the frame under the heater.

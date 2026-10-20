@@ -98,7 +98,8 @@ futon_kg = 2.0
 
 [room]                # for the Futon & rug page (docs/futons.toml has the candidates)
 rug_d = 2440.0        # 8 ft round rug
-futon_d = 2050.0      # planned futon (205 cm round = sellers' size for Ø90 round tables)
+futon_d = 2050.0      # planned futon: 205 x 205 square (sellers' rule: top + 110-130 cm -> 196-216 for 86)
+futon_shape = "square"
 drape_k = 0.7         # footprint radius ~ futon radius - drape_k * (frame height + top): rough, futons slope out
 zabuton = [550.0, 590.0]  # floor cushion w x d (standard meidosu size)
 
