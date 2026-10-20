@@ -6,21 +6,23 @@ too, if it hangs lower than knee_h. Coordinates here are centred on the table (p
 """
 from __future__ import annotations
 
+import math
+
 from shapely.geometry import box
 from shapely.ops import unary_union
 
 from . import frame
 
 
-def low_footprint(p, z: float):
-    """Plan footprint of side-panel material below height z (the legs, mostly)."""
+def low_footprint(p, z: float, z_lo: float = -10.0):
+    """Plan footprint of side-panel material between heights z_lo and z (the legs, mostly)."""
     L, t = frame.layout(p), p.material.t_max
     c = L.cx
     out = []
     for pt in frame.parts(p):
         if pt.kind != "frame":
             continue
-        low = pt.shape.intersection(box(-1e3, -10, 1e4, z))
+        low = pt.shape.intersection(box(-1e3, z_lo, 1e4, z))
         for g in getattr(low, "geoms", [low]):
             if g.is_empty:
                 continue
@@ -28,10 +30,11 @@ def low_footprint(p, z: float):
             for pl in pt.placements:
                 ox, oy, _ = pl.origin
                 a, b = (-u1, -u0) if pl.mirror_u else (u0, u1)
+                h = (L.t - t) / 2                     # thickest stock, centred on the plate's plane
                 if pl.axis == "x":
-                    out.append(box(ox + a - c, oy - c, ox + b - c, oy + t - c))
+                    out.append(box(ox + a - c, oy + h - c, ox + b - c, oy + L.t - h - c))
                 elif pl.axis == "y":
-                    out.append(box(ox - c, oy + a - c, ox + t - c, oy + b - c))
+                    out.append(box(ox + h - c, oy + a - c, ox + L.t - h - c, oy + b - c))
     return unary_union(out)
 
 
@@ -77,10 +80,35 @@ def tip_load(p, inset: float | None = None) -> float:
     return weight_n(p) * xf / (R - xf)
 
 
+def top_supports(p):
+    """Plan footprint (centred) of what the top (over the futon) rests on: frame material at full height."""
+    H = frame.layout(p).H
+    return low_footprint(p, H + 1, H - 0.6)
+
+
+def top_lift(p, inset: float | None = None, steps: int = 72) -> tuple[float, float]:
+    """Smallest downward push (N), `inset` in from the top's edge, that lifts the loose top's far side off
+    its supports, and the direction (deg) it happens in. The top pivots on the outermost support line."""
+    from . import top
+    inset = getattr(p.comfort, "tip_inset", 0.0) if inset is None else inset
+    pts = list(top_supports(p).convex_hull.exterior.coords)
+    W = top.build(p).outline.area / 1e6 * p.material.t_nominal / 1000 * p.material.density_kg_m3 * 9.81
+    R = p.top.length / 2 - inset
+    best = (float("inf"), 0.0)
+    for i in range(steps):
+        a = math.pi * 2 * i / steps
+        dx, dy = math.cos(a), math.sin(a)
+        h = max(x * dx + y * dy for x, y in pts)          # pivot line's distance from the centre
+        F = W * h / (R - h) if R > h else float("inf")
+        best = min(best, (F, math.degrees(a)))
+    return best
+
+
 def summary(p) -> dict:
     C = p.comfort
     return {"knee_w": C.knee_w, "knee_h": C.knee_h, "reach": round(knee_reach(p), 1),
             "tip_n": round(tip_load(p)), "tip_edge_n": round(tip_load(p, 0.0)),
+            "top_lift_n": round(top_lift(p)[0]), "top_lift_edge_n": round(top_lift(p, 0.0)[0]),
             "tip_inset": getattr(C, "tip_inset", 0.0), "tip_min_n": C.tip_min_n,
             "reach_min": C.knee_reach_min,
             "apron_clear": side_clear(p),

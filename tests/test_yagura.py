@@ -1,7 +1,9 @@
 """Yagura frame: "+" corner legs under a deck, no aprons. Every joint must fit across the
 stock-thickness range."""
 import pytest
+from shapely.affinity import translate
 from shapely.geometry import Point, box
+from shapely.ops import unary_union
 
 from kotatsu import frame, params, yagura
 
@@ -55,7 +57,10 @@ def test_plates_shoulder_under_the_deck_and_tenons_reach_the_top(Y):
     for name in ("leg plate A", "leg plate B"):
         g = parts[name].shape
         assert g.bounds[3] == pytest.approx(L.H), "tenon tops carry the futon + top"
-        assert empty(g, box(-50, zs + 0.5, ta - 5, L.H + 5)) and empty(g, box(tb + 5, zs + 0.5, 400, L.H + 5))
+        pu = yagura.post_u(P)
+        assert empty(g, box(pu + 5, zs + 0.5, ta - 5, L.H + 5)) and empty(g, box(tb + 5, zs + 0.5, 400, L.H + 5))
+        if pu:
+            assert g.intersection(box(1, L.H - 2, pu - 1, L.H)).area > 0.9 * (pu - 2) * 2, "corner post reaches the top"
         assert g.intersection(box(ta + 1, zs - 1, tb - 1, L.H - 1)).area > 0.8 * (tb - ta - 2) * (L.H - zs) * 0.6
 
 
@@ -113,3 +118,25 @@ def test_legs_are_straight(Y):
         lo = g.intersection(box(-50, 10, 400, 11)).bounds       # above the corner rounding
         hi = g.intersection(box(-50, L.z_deck_bot - 20, 400, L.z_deck_bot - 19)).bounds
         assert lo[0] == pytest.approx(hi[0], abs=0.5) and lo[2] == pytest.approx(hi[2], abs=0.5)
+
+
+def test_corner_posts_clear_the_deck(Y):
+    """The posts (ear arms) rise past the deck: the deck's corner cut-outs must clear them for any stock."""
+    from kotatsu import comfort
+    P, L, parts = Y
+    if not yagura.post_u(P):
+        pytest.skip("no corner posts")
+    above = comfort.low_footprint(P, L.H, L.z_deck_bot + 0.5)          # frame material beside the deck
+    d = translate(parts["deck"].shape, -L.cx, -L.cy)
+    tenons = unary_union([translate(box(*m), -L.cx, -L.cy) for m in yagura.mortises(P)])
+    assert d.intersection(above.difference(tenons.buffer(0.01))).area < 1e-6
+    assert d.is_valid and d.geom_type == "Polygon"
+
+
+def test_posts_carry_the_top_further_out(Y):
+    from kotatsu import comfort
+    P = Y[0]
+    with_posts = comfort.top_lift(P)[0]
+    P2 = params.tables(params.load())[0]
+    P2.yagura.corner_posts = False
+    assert with_posts > 1.5 * comfort.top_lift(P2)[0]

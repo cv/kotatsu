@@ -91,6 +91,7 @@ def table_summary(tp, fd: dict, plan) -> dict:
         "cut_m": round(cut / 1000, 1),
         "side_clear": k["apron_clear"], "knee_reach": k["reach"], "shin_w": k["shin_w"],
         "heater_clear": round(hz - sz / 2), "tip_n": k["tip_n"], "tip_edge_n": k["tip_edge_n"],
+        "top_lift_n": k["top_lift_n"], "top_lift_edge_n": k["top_lift_edge_n"],
         "tip_inset": k["tip_inset"],
         "wobble": stiffness.summary(tp),
         "min": {**({"tip_n": k["tip_min_n"]} if k["tip_min_n"] > 0 else {}),

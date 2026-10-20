@@ -41,6 +41,7 @@ const ROWS = [
   ["Leg tilt as the wedges are tapped in (if nothing stops it)", (s) => `${s.wobble.x.rest_tilt_mm} mm at the foot`],
   ["Play in each tenon / per 0.1 mm of loose wedge", (s) => `${s.wobble.tenon_play_mm} mm / ${s.wobble["loose_wedge_mm_per_0.1"]} mm`],
   ["Peak stress: leg (200 N push) · top (1000 N on edge) · wedge bridge", (s) => `${s.wobble.stress.leg_MPa} · ${s.wobble.stress.top_MPa_at_1000N} · ${s.wobble.stress.wedge_bridge_shear_MPa} MPa <span class="stats">(birch bends at ~${s.wobble.stress.f_m})</span>`],
+  ["Lean on the edge that lifts the loose top's far side (50 mm in)", (s) => `${s.top_lift_n} N <span class="stats">(${s.top_lift_edge_n} N at the very edge)</span>`, "high", (s) => s.top_lift_n],
   ["Push to tip it (mid-side, 50 mm in; no limit set yet)", (s) => `${s.tip_n} N <span class="stats">(${s.tip_edge_n} N at the very edge)</span>`, "high", (s) => s.tip_n, "tip_n"],
 ];
 

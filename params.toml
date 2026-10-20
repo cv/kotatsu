@@ -46,6 +46,8 @@ tenon_w = 50.4        # tenon width (>= wedge hole + 2 x 15 mm); leg width beyon
 hole_h = 14.0         # wedge hole above the deck
 hole_drop = 1.0       # hole bottom below the thinnest deck's top face, so the wedge bears on the deck
 deck_inset = 10.0     # deck corners stay this far inside the round top
+corner_posts = true   # each plate's ear arm rises past the deck to the top: the top rests at the frame corners
+                      # (deck corners cut away around them); loose top lifts at ~363 N vs ~205 N without
 wedge_len = 60.0      # leg wedges: shorter than the cheek wedges so the two at each corner don't meet
 wedge_head = 18.0     # (1:8 taper -> 10.5 mm foot)
 

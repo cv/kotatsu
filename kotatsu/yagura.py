@@ -40,6 +40,11 @@ def leg_plate(p, slotted_from_top: bool) -> Polygon:
     g = fr._round_outer(box(0, 0, wt, zs), F.foot_r)
     ta, tb = _tenon_u(p)
     g = g.union(fr._round_outer(box(ta, zs - 10, tb, H), 3.0))
+    pu = post_u(p)
+    if pu > 0:                                           # corner post: the ear arm rises to the top too
+        g = g.union(fr._round_outer(box(0, zs - 10, pu, H), 3.0).intersection(box(0, 0, pu, H)))
+        if not slotted_from_top:                         # B: shoulder runs on from the post -> root relief
+            g = g.difference(fr.dogbone((pu, zs), (1, 1), r))
     g = g.difference(fr.dogbone((ta, zs), (-1, 1), r))   # root reliefs: the shoulders seat flat on the deck
     if tb < wt - 0.01:
         g = g.difference(fr.dogbone((tb, zs), (1, 1), r))
@@ -53,6 +58,20 @@ def leg_plate(p, slotted_from_top: bool) -> Polygon:
     else:
         g = g.difference(fr.notch(u - w / 2, u + w / 2, 0, d, r))
     return g
+
+
+def post_u(p) -> float:
+    """Width of the corner post (each plate's ear arm, outside the cross-lap) that rises past the deck to
+    the top's underside, so the top is carried right at the frame corners. 0 = no posts."""
+    if not getattr(p.yagura, "corner_posts", False):
+        return 0.0
+    return p.frame.ear - fr.slot_w(p) / 2
+
+
+def corner_cut(p) -> float:
+    """Distance from the frame centre at which the deck is cut away for the posts (post inner end -
+    clearance). The deck still covers the cross-laps, so it keeps bearing on the shoulders there."""
+    return fr.layout(p).Lf / 2 - post_u(p) - p.fit.tight
 
 
 def lap_depth(p) -> float:
@@ -82,6 +101,20 @@ def deck(p) -> Polygon:
     if getattr(p.top, "shape", "rect") == "round":
         g = g.intersection(Point(L.cx, L.cy).buffer(p.top.length / 2 - Y.deck_inset, quad_segs=64))
     g = fr._round_outer(g, 8.0)
+    if post_u(p) > 0:                                   # L-shaped corner cut-outs around the two posts
+        k = corner_cut(p)
+        j = L.Lf / 2 - p.frame.ear - fr.thick_slot(p) / 2  # plates' inner faces (+ clearance)
+        far = 500.0
+
+        def quad(sx, sy, ax, ay):                        # box from (ax, ay) outwards, in corner (sx, sy)
+            x0, y0 = L.cx + sx * ax, L.cy + sy * ay
+            return box(min(x0, x0 + sx * far), min(y0, y0 + sy * far), max(x0, x0 + sx * far), max(y0, y0 + sy * far))
+
+        for sx in (-1, 1):
+            for sy in (-1, 1):
+                g = g.difference(quad(sx, sy, k, j)).difference(quad(sx, sy, j, k))
+                for ax, ay in ((k, j), (j, k)):          # the cut-out's two inside corners
+                    g = g.difference(fr.dogbone((L.cx + sx * ax, L.cy + sy * ay), (sx, sy), r))
     for x0, y0, x1, y1 in mortises(p):
         g = g.difference(fr.hole(x0, y0, x1, y1, r))
     for xi, sgn in zip(fr.cheek_xs(p), (-1, 1)):        # cheek tab slots, as in the slab deck
