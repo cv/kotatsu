@@ -28,3 +28,19 @@ Notes
 - **TODO-verify the thickness:** "19mm" is uMake's 3/4" Baltic birch. The joints accept 17.0–18.9 mm (`[material]`). If the
   stock really measures 19.0 mm or more, the cross-laps (19.2 mm slots) would be too tight. Choices: ask or measure before the
   order, or widen `t_max` to about 19.3 (looser fit on thinner stock; the wedges take up the slack at the deck).
+
+## Shipping probe (2026-10-20)
+uMake's cart prices shipping itself. It packs everything into **one box** about 5 cm bigger than the top and 18 cm
+deep, and charges by that box. Tested by swapping only the top file (frame files unchanged), to rural BC:
+
+| Top | Box | Weight | Shipping | Parts | Tax | Total |
+|---|---|---|---|---|---|---|
+| Ø 900 | 95×95×18 cm | 15.5 kg | **$199.07** | $346.40 | $65.46 | $610.93 |
+| Ø 870 | 92×92×18 cm | 15.0 kg | **$195.38** | $342.55 | $64.55 | $602.48 |
+| Ø 860 | 91×91×18 cm | 14.8 kg | **FREE** | $341.10 | $40.93 | $382.03 |
+| Ø 800 | 85×85×18 cm | 13.8 kg | **FREE** | $333.56 | $40.03 | $373.59 |
+
+- Free shipping stops between a 91 and a 92 cm box. That's about 36" (91.4 cm), so the top can be at most about **Ø 860**.
+  The published "L + girth ≤ 108"" rule isn't what the cart uses: the free 85 cm box is about 115".
+- The project is left with **top-860-test.dxf** in place of top.dxf. The deck and leg-plate files there are the
+  pre-corner-post versions. **Re-upload deck.dxf, leg-plate-a.dxf and leg-plate-b.dxf (and the real top) before ordering.**
