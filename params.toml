@@ -436,6 +436,12 @@ cheek_clearance = 1.0  # cheek inner faces = body width + this
 top_gap = 5.0          # heater top below the deck underside (TODO-verify manual clearances)
 holes = []             # TODO measure: side screw positions
 
+[layout]              # sheet nesting choices (kotatsu/cutlist.py, kotatsu/nest.py)
+top_grain = "along"         # along = grain runs the table's 1200 mm length, continuous across the 3 boards
+                            # across = along each board's 800 mm (plank look). "along" nests better for 2 tables
+frame_grain = "horizontal"  # side panels keep their length along the grain (looks right); "free" = any rotation
+tables = [1, 2]             # generate cut layouts for this many tables at once
+
 [shipping]
 std_max_side_in = 48
 oversize_max_side_in = 60

@@ -106,17 +106,19 @@ def frame_data(p) -> dict:
 
 
 def sheets_data(p) -> dict:
-    parts = cutlist.cut_list(p)
-    group = {c.name: c.group for c in parts}
+    group = {c.name: c.group for c in cutlist.cut_list(p)}
     out = {}
-    for name, n in cutbuild.cached_nests(p, parts).items():
-        out[name] = {
-            "w": n.sheet_w, "h": n.sheet_h, "margin": n.margin, "gap": round(n.gap, 2),
-            "count": len(n.sheets), "util": round(n.utilisation, 3),
-            "material_m2": round(len(n.sheets) * n.sheet_w * n.sheet_h / 1e6, 2),
-            "sheets": [{"parts": [{"name": pl.name, "group": group[pl.name], "angle": pl.angle,
-                                   "shape": rings(pl.shape)} for pl in sh.placed]} for sh in n.sheets],
-        }
+    for k, opts in cutbuild.cached_layouts(p).items():
+        out[str(k)] = {}
+        for name, n in sorted(opts.items(), key=lambda kv: nest.material_m2(kv[1])):
+            out[str(k)][name] = {
+                "margin": n.margin, "gap": round(n.gap, 2), "count": len(n.sheets),
+                "util": round(nest.utilisation(n), 3), "material_m2": round(nest.material_m2(n), 2),
+                "sizes": [nest.sheet_name((s.w, s.h)) for s in n.sheets],
+                "sheets": [{"w": sh.w, "h": sh.h, "parts": [
+                    {"name": pl.name, "group": group[pl.name], "angle": pl.angle, "shape": rings(pl.shape)}
+                    for pl in sh.placed]} for sh in n.sheets],
+            }
     return out
 
 

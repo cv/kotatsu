@@ -31,26 +31,42 @@ def slug(s: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-")
 
 
-def cached_nests(p, parts) -> dict:
-    """nest_all is ~10 s; cache it on the hash of everything that can change the result."""
+def layouts(p) -> dict[int, dict[str, nest.Nest]]:
+    """{tables: {"best mix" | "<size> only": Nest}} for every table count in [layout].tables."""
+    out = {}
+    for k in getattr(p.layout, "tables", [1]):
+        parts = cutlist.cut_list(p, copies=k)
+        opts = {}
+        best = nest.plan(p, parts)
+        if best is not None:
+            opts["best mix"] = best
+        for name, n in nest.nest_all(p, parts).items():
+            opts[f"{name} only"] = n
+        out[k] = opts
+    return out
+
+
+def cached_layouts(p) -> dict:
+    """All layouts take ~1-2 min; cache them on the hash of everything that can change the result."""
     h = hashlib.sha256()
     for f in SRC:
         h.update((ROOT / f).read_bytes())
-    path = CACHE / f"nest-{h.hexdigest()[:16]}.pkl"
+    path = CACHE / f"layouts-{h.hexdigest()[:16]}.pkl"
     if path.exists():
         return pickle.loads(path.read_bytes())
-    res = nest.nest_all(p, parts)
-    for n in res.values():
-        for s in n.sheets:
-            s.occ = None                      # don't pickle the raster
+    res = layouts(p)
+    for opts in res.values():
+        for n in opts.values():
+            for s in n.sheets:
+                s.occ = None                  # don't pickle the raster
     CACHE.mkdir(parents=True, exist_ok=True)
-    for old in CACHE.glob("nest-*.pkl"):
+    for old in [*CACHE.glob("nest-*.pkl"), *CACHE.glob("layouts-*.pkl")]:
         old.unlink()
     path.write_bytes(pickle.dumps(res))
     return res
 
 
-def bom_markdown(p, parts, nests) -> str:
+def bom_markdown(p, parts, lays) -> str:
     t, rho = p.material.t_nominal, p.material.density_kg_m3
     kg = lambda a: a / 1e6 * t / 1000 * rho
     rows, tot_q, tot_kg, tot_cut = [], 0, 0.0, 0.0
@@ -60,10 +76,11 @@ def bom_markdown(p, parts, nests) -> str:
         rows.append(f"| {c.name} | {c.qty} | {x1:.0f} × {y1:.0f} | {kg(c.shape.area):.2f} | {cut:.2f} | {c.note} |")
         tot_q += c.qty; tot_kg += c.qty * kg(c.shape.area); tot_cut += c.qty * cut
     sheet_rows = []
-    for name, n in nests.items():
-        area = len(n.sheets) * n.sheet_w * n.sheet_h / 1e6
-        sheet_rows.append(f"| {name} | {len(n.sheets)} | {area:.2f} | {100 * n.utilisation:.0f}% | {'/'.join(n.strategy)} |")
-    best = min(nests.items(), key=lambda kv: (len(kv[1].sheets) * kv[1].sheet_w * kv[1].sheet_h, len(kv[1].sheets)))
+    for k, opts in lays.items():
+        for name, n in sorted(opts.items(), key=lambda kv: nest.material_m2(kv[1])):
+            sizes = " + ".join(nest.sheet_name((s.w, s.h)) for s in n.sheets)
+            m2 = nest.material_m2(n)
+            sheet_rows.append(f"| {k} | {name} | {sizes} | {m2:.2f} | {m2 / k:.2f} | {100 * nest.utilisation(n):.0f}% |")
     return f"""# Bill of materials (generated — do not edit)
 
 Material: {p.material.name}, {t:.0f} mm nominal ({p.material.t_min}–{p.material.t_max} mm accepted by every joint).
@@ -80,13 +97,17 @@ Gap between parts: {nest.effective_gap(p):.2f} mm (uMake asks for >= {p.cnc.part
 must fit between parts). Sheet margin: {p.cnc.sheet_margin:.0f} mm. Grain runs along each sheet's long side:
 the side panels keep their length along the grain, and the top boards keep their 800 mm length along it.
 
-| Sheet | Sheets needed | Material (m²) | Parts / material | Packing |
-|---|---|---|---|---|
+Top grain: **{p.layout.top_grain}**; frame grain: **{p.layout.frame_grain}**.
+
+| Tables | Layout | Sheets | Plywood (m²) | Per table (m²) | Parts / plywood |
+|---|---|---|---|---|---|
 {chr(10).join(sheet_rows)}
 
-Least material: **{best[0]}**. TODO-verify how uMake prices, per sheet or per part area + cut time, before choosing.
+The "best mix" row for each table count is the least plywood found. TODO-verify how uMake prices
+(per sheet, or per part area + cut time) before choosing.
 
-Files: `out/dxf/sheets/<size>/sheet-N.dxf` (upload) and `out/dxf/parts/*.dxf` (one per part).
+Files: `out/dxf/sheets/<N>-table/<layout>/sheet-K-<size>.dxf` (upload) and `out/dxf/parts/*.dxf` (one per part,
+quantities above are for one table).
 """
 
 
@@ -95,20 +116,22 @@ def main() -> None:
     parts = cutlist.cut_list(p)
     for c in parts:
         export.write_dxf(OUT / "dxf" / "parts" / f"{slug(c.name)}.dxf", [("CUT", c.shape)])
-    nests = cached_nests(p, parts)
+    lays = cached_layouts(p)
     n_files = 0
-    for name, n in nests.items():
-        d = OUT / "dxf" / "sheets" / name
-        if d.exists():
-            for f in d.glob("*.dxf"):
-                f.unlink()
-        for i, s in enumerate(n.sheets, 1):
-            geo = [("CUT", pl.shape) for pl in s.placed]
-            export.write_dxf(d / f"sheet-{i}.dxf", geo)
-            export.write_png(OUT / "preview" / "sheets" / f"{name}-{i}.png",
-                             [("ENGRAVE", box(0, 0, s.w, s.h))] + geo, title=f"{name} sheet {i}")
-            n_files += 1
-    (OUT / "BOM.md").write_text(bom_markdown(p, parts, nests))
+    import shutil
+    shutil.rmtree(OUT / "dxf" / "sheets", ignore_errors=True)
+    shutil.rmtree(OUT / "preview" / "sheets", ignore_errors=True)
+    for k, opts in lays.items():
+        for name, n in opts.items():
+            d = OUT / "dxf" / "sheets" / f"{k}-table" / slug(name)
+            for i, s in enumerate(n.sheets, 1):
+                size = nest.sheet_name((s.w, s.h))
+                geo = [("CUT", pl.shape) for pl in s.placed]
+                export.write_dxf(d / f"sheet-{i}-{size}.dxf", geo)
+                export.write_png(OUT / "preview" / "sheets" / f"{k}-table-{slug(name)}-{i}.png",
+                                 [("ENGRAVE", box(0, 0, s.w, s.h))] + geo, title=f"{k} table(s), {name}: sheet {i} ({size})")
+                n_files += 1
+    (OUT / "BOM.md").write_text(bom_markdown(p, parts, lays))
     print(f"wrote {len(parts)} part DXFs, {n_files} sheet DXFs, BOM.md to {OUT}")
 
 

@@ -2,7 +2,7 @@ import { marked } from "marked";
 import { el, drawOption, drawFootprint, drawGrid, staticSvg, jointBox, PanZoom, niceLength, polyD } from "./viewer2d.js";
 
 const $ = (s) => document.querySelector(s);
-const state = { data: null, option: null, tab: "overview", doc: "PLAN.md", compare: false, pz: null, v3d: null, joint: null, part: null, ppz: null, sheet: null, spz: null };
+const state = { data: null, option: null, tab: "overview", doc: "PLAN.md", compare: false, pz: null, v3d: null, joint: null, part: null, ppz: null, sheet: null, spz: null, tables: null };
 
 // ---------- tabs ----------
 function showTab(tab) {
@@ -186,51 +186,60 @@ function renderPartViewer(d, refit = false) {
 }
 
 // ---------- cut sheets ----------
-function renderSheets(d, refit = false) {
-  const S = d.sheets, names = Object.keys(S);
-  if (!names.includes(state.sheet)) {
-    // default: least material, then fewest sheets
-    state.sheet = names.slice().sort((a, b) => S[a].material_m2 - S[b].material_m2 || S[a].count - S[b].count)[0];
+function btnGroup(items, current, onPick) {
+  const span = document.createElement("span"); span.className = "btn-group";
+  for (const [key, label] of items) {
+    const b = document.createElement("button"); b.textContent = label;
+    b.className = key === current ? "on" : ""; b.onclick = () => onPick(key);
+    span.appendChild(b);
   }
-  $("#sheet-btns").replaceChildren(...names.map((n) => {
-    const b = document.createElement("button"); b.textContent = `${n.replace("in", '"').replace("x", "×")} ×${S[n].count}`;
-    b.className = n === state.sheet ? "on" : ""; b.onclick = () => { state.sheet = n; renderSheets(d, true); };
-    return b;
-  }));
-  const N = S[state.sheet];
-  $("#sheet-summary").textContent = `${N.count} sheet${N.count > 1 ? "s" : ""} · ${N.material_m2} m² of plywood · parts use ${Math.round(N.util * 100)}% · gap ${N.gap} mm`;
+  return span;
+}
+
+function renderSheets(d, refit = false) {
+  const S = d.sheets, tablesKeys = Object.keys(S);
+  if (!tablesKeys.includes(state.tables)) state.tables = tablesKeys[0];
+  const opts = S[state.tables], names = Object.keys(opts);   // sorted by plywood, least first
+  if (!names.includes(state.sheet)) state.sheet = names[0];
+  $("#sheet-btns").replaceChildren(
+    btnGroup(tablesKeys.map((k) => [k, k === "1" ? "1 table" : `${k} tables`]), state.tables, (k) => { state.tables = k; state.sheet = null; renderSheets(d, true); }),
+    btnGroup(names.map((n) => [n, `${n} · ${opts[n].material_m2} m²`]), state.sheet, (n) => { state.sheet = n; renderSheets(d, true); }));
+  const N = opts[state.sheet], k = +state.tables;
+  $("#sheet-summary").textContent = `${N.sizes.join(" + ")} · ${N.material_m2} m² (${(N.material_m2 / k).toFixed(2)} m² per table) · parts use ${Math.round(N.util * 100)}% · gap ${N.gap} mm`;
   const host = $("#sviewer");
   let svg = host.querySelector("svg");
-  const step = N.h + 160, totalH = N.count * step;
-  const home = { x: -60, y: -120, w: N.w + 120, h: totalH + 60 };
+  const offs = []; let y = 0;
+  for (const sh of N.sheets) { offs.push(y); y += sh.h + 160; }
+  const maxW = Math.max(...N.sheets.map((sh) => sh.w));
+  const home = { x: -60, y: -120, w: maxW + 120, h: y + 60 };
   if (!svg) {
     svg = el("svg", { preserveAspectRatio: "xMidYMid meet" }, host);
     const bar = document.createElement("div"); bar.className = "scalebar"; host.appendChild(bar);
     state.spz = new PanZoom(svg, home, (pz) => {
-      const k = pz.scale(), L = niceLength(120 / k);
-      bar.innerHTML = `<div style="width:${L * k}px"></div>${L} mm`;
+      const kk = pz.scale(), L = niceLength(120 / kk);
+      bar.innerHTML = `<div style="width:${L * kk}px"></div>${L} mm`;
     });
     svg.addEventListener("pointermove", (e) => {
-      const q = state.spz.toSvg(e.clientX, e.clientY), cur = state.data.sheets[state.sheet];
-      const i = Math.floor((q.y + 80) / (cur.h + 160));
-      $("#sreadout").textContent = `sheet ${i + 1}: x ${q.x.toFixed(0)}  y ${(cur.h - (q.y - i * (cur.h + 160))).toFixed(0)} mm`;
+      const q = state.spz.toSvg(e.clientX, e.clientY);
+      $("#sreadout").textContent = `x ${q.x.toFixed(0)} mm`;
     });
     refit = true;
   }
   state.spz.home = home;
   svg.replaceChildren();
   N.sheets.forEach((sh, i) => {
-    const g = el("g", { transform: `translate(0 ${i * step})` }, svg);
-    el("rect", { x: 0, y: 0, width: N.w, height: N.h, class: "sheet" }, g);
-    el("rect", { x: N.margin, y: N.margin, width: N.w - 2 * N.margin, height: N.h - 2 * N.margin, class: "sheet-margin" }, g);
-    const lab = el("text", { x: 0, y: -24, class: "sheet-label" }, g); lab.textContent = `sheet ${i + 1} of ${N.count}`;
+    const g = el("g", { transform: `translate(0 ${offs[i]})` }, svg);
+    el("rect", { x: 0, y: 0, width: sh.w, height: sh.h, class: "sheet" }, g);
+    el("rect", { x: N.margin, y: N.margin, width: sh.w - 2 * N.margin, height: sh.h - 2 * N.margin, class: "sheet-margin" }, g);
+    const lab = el("text", { x: 0, y: -24, class: "sheet-label" }, g);
+    lab.textContent = `sheet ${i + 1} of ${N.count} · ${N.sizes[i].replace("in", '"').replace("x", "×")}`;
     for (const p of sh.parts) {
-      const path = el("path", { d: polyD(p.shape, N.h), class: `part grp-${p.group}` }, g);
+      const path = el("path", { d: polyD(p.shape, sh.h), class: `part grp-${p.group}` }, g);
       const t = el("title", {}, path); t.textContent = `${p.name} (rotated ${p.angle}°)`;
       const xs = p.shape.ext.map((q) => q[0]), ys = p.shape.ext.map((q) => q[1]);
       const w = Math.max(...xs) - Math.min(...xs), h = Math.max(...ys) - Math.min(...ys);
       if (w > 200 && h > 100) {
-        const tx = el("text", { x: Math.min(...xs) + 14, y: N.h - Math.max(...ys) + 30, class: "part-label" }, g);
+        const tx = el("text", { x: Math.min(...xs) + 14, y: sh.h - Math.max(...ys) + 30, class: "part-label" }, g);
         tx.textContent = p.name;
       }
     }
