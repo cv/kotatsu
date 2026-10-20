@@ -111,13 +111,28 @@ def test_quantities(Y):
 
 
 def test_legs_are_straight(Y):
-    """Plumb plates: as wide at the floor as under the deck."""
+    """Plumb plates: the outer edge is straight; below the haunch the inner edge is too (leg_narrow wide),
+    and the plate is full width just under the deck (shoulders + tenon)."""
     P, L, parts = Y
+    wn = getattr(P.yagura, "leg_narrow", 0.0) or P.frame.leg_width
     for name in ("leg plate A", "leg plate B"):
         g = parts[name].shape
-        lo = g.intersection(box(-50, 10, 400, 11)).bounds       # above the corner rounding
-        hi = g.intersection(box(-50, L.z_deck_bot - 20, 400, L.z_deck_bot - 19)).bounds
-        assert lo[0] == pytest.approx(hi[0], abs=0.5) and lo[2] == pytest.approx(hi[2], abs=0.5)
+        for z in (10, 100, P.yagura.leg_haunch_top - P.yagura.leg_haunch_drop - P.yagura.leg_haunch_r - 2
+                  if getattr(P.yagura, "leg_narrow", 0) else L.z_deck_bot - 20):
+            b = g.intersection(box(-50, z, 400, z + 1)).bounds
+            assert b[0] == pytest.approx(0, abs=0.5) and b[2] == pytest.approx(wn, abs=0.5), (name, z, b)
+        hi = g.intersection(box(-50, L.z_deck_bot - 12, 400, L.z_deck_bot - 11)).bounds
+        assert hi[2] == pytest.approx(P.frame.leg_width, abs=0.5)
+
+
+def test_haunched_leg_fingers(Y):
+    """Beside the cross-lap slot the narrow leg keeps at least the stock thickness of wood."""
+    P = Y[0]
+    wn = getattr(P.yagura, "leg_narrow", 0.0)
+    if not wn:
+        pytest.skip("straight full-width legs")
+    assert wn - (P.frame.ear + frame.slot_w(P) / 2) >= P.material.t_max - 0.5
+    assert P.yagura.leg_haunch_top < frame.layout(P).z_deck_bot - 10
 
 
 def test_corner_posts_clear_the_deck(Y):

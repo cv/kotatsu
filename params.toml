@@ -56,7 +56,11 @@ hole_drop = 1.0       # hole bottom below the thinnest deck's top face, so the w
 deck_inset = 10.0     # deck corners stay this far inside the round top
 corner_posts = true   # each plate's ear arm rises past the deck to the top: the top rests at the frame corners
                       # (deck corners cut away around them); loose top lifts at ~363 N vs ~205 N without
-leg_windows = true    # slot window in each leg plate's inner arm (weight)
+leg_narrow = 80.0     # owner's haunched legs: plates are this wide (from the frame edge) below the haunch
+leg_haunch_top = 320.0  # haunch meets the full-width inner edge here (just under the 341 shoulders)
+leg_haunch_drop = 30.0  # ... and reaches the narrow line this much lower (a ~31° slope)
+leg_haunch_r = 15.0   # inside-corner fillet where the haunch meets the narrow leg
+leg_windows = false   # slot window in each leg plate's inner arm (replaced by the haunched legs)
 leg_window_bar = 20.0 # wood each side of it (>= stock thickness, uMake's minimum feature)
 leg_window_end = 50.0 # wood below it (floor) and above it (shoulder)
 wedge_len = 60.0      # leg wedges: shorter than the cheek wedges so the two at each corner don't meet

@@ -37,7 +37,11 @@ def leg_plate(p, slotted_from_top: bool) -> Polygon:
     F, L, r = p.frame, fr.layout(p), fr._rd(p)
     zs, H = L.z_deck_bot, L.H
     wt = F.leg_width
-    g = fr._round_outer(box(0, 0, wt, zs), F.foot_r)
+    g = box(0, 0, wt, zs)
+    nc = narrow_cut(p)
+    if nc is not None:                                   # haunched leg: narrow below, full width under the deck
+        g = g.difference(nc)
+    g = fr._round_outer(g, F.foot_r)
     ta, tb = _tenon_u(p)
     g = g.union(fr._round_outer(box(ta, zs - 10, tb, H), 3.0))
     pu = post_u(p)
@@ -161,6 +165,22 @@ def windows(p) -> list[Polygon]:
     D, L = p.deck, fr.layout(p)
     return [fr._round_outer(box(L.cx + x0, L.cy + y0, L.cx + x1, L.cy + y1), D.window_r)
             for x0, y0, x1, y1 in window_rects(p)]
+
+
+def narrow_cut(p) -> Polygon | None:
+    """Owner's haunched leg (2026-10-20): below the deck the plate keeps only leg_narrow of its width
+    (from the frame edge); a sloped haunch (leg_haunch_top at the inner edge, leg_haunch_drop lower at
+    the narrow line) widens it back to the full leg_width under the shoulders. Returns the region to cut
+    away, its inside corner rounded by leg_haunch_r. None if disabled."""
+    Y, F = p.yagura, p.frame
+    wn = getattr(Y, "leg_narrow", 0.0)
+    if not wn or wn >= F.leg_width:
+        return None
+    wt, zt = F.leg_width, Y.leg_haunch_top
+    zl = zt - Y.leg_haunch_drop
+    cut = Polygon([(wn, -50), (wn, zl), (wt, zt), (wt + 50, zt), (wt + 50, -50)])
+    rr = Y.leg_haunch_r
+    return cut.buffer(-rr, quad_segs=16, join_style="round").buffer(rr, quad_segs=16, join_style="round")
 
 
 def leg_window(p) -> Polygon | None:
