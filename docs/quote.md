@@ -52,3 +52,20 @@ deep, and charges by that box. Tested by swapping only the top file (frame files
   Parts $356.66 + tax $42.80 = **$399.46** (deck $94.95: the windows add routing).
 - The project now holds the current files: top.dxf (860 square), deck.dxf (windows + corner cut-outs),
   leg-plate-a/b.dxf (corner posts) ×4 each, heater-cheek ×2, leg-wedge ×9, cheek-wedge ×5.
+
+### Frame 780 (2026-10-20, latest)
+Owner asked for the legs further apart: frame 780 × 780 under the 860 top (40 mm overhang), with bigger
+auto-sized deck windows and a slot window in each leg plate. Cart: **91×91×18 cm, 18.5 kg, FREE**.
+| Part | Qty | Line |
+|---|---|---|
+| top.dxf 860 × 860 | 1 | $91.31 |
+| deck.dxf 780 × 780 (4 windows) | 1 | $121.95 |
+| leg-plate-a.dxf (corner post + window) | 4 | $75.92 |
+| leg-plate-b.dxf | 4 | $75.96 |
+| heater-cheek.dxf | 2 | $22.86 |
+| leg-wedge.dxf | 9 | $10.80 |
+| cheek-wedge.dxf | 5 | $7.55 |
+| **Subtotal** | | **$406.35** + tax $48.76 = **$455.11** |
+
+The windows cost routing time. The 660 frame order was $399.46. The leg windows add about $25 and save
+about 0.4 kg; without them the order is about 18.9 kg, the same weight that shipped free before (thin margin).
