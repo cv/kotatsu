@@ -22,7 +22,8 @@ from .frame import Part, Placement
 def _tenon_u(p) -> tuple[float, float]:
     """u-range of a plate's tenon, from the plate's outer end: just past the cross-lap slot."""
     F, Y = p.frame, p.yagura
-    return F.ear + fr.slot_w(p) / 2 + Y.tenon_gap, F.leg_width      # tenon runs out to the inner edge
+    a = F.ear + fr.slot_w(p) / 2 + Y.tenon_gap
+    return a, min(a + Y.tenon_w, F.leg_width)          # any leg width left over is an inner shoulder
 
 
 def leg_hole_z(p) -> tuple[float, float]:
@@ -39,7 +40,9 @@ def leg_plate(p, slotted_from_top: bool) -> Polygon:
     g = fr._round_outer(box(0, 0, wt, zs), F.foot_r)
     ta, tb = _tenon_u(p)
     g = g.union(fr._round_outer(box(ta, zs - 10, tb, H), 3.0))
-    g = g.difference(fr.dogbone((ta, zs), (-1, 1), r))   # root relief: the shoulder seats flat on the deck
+    g = g.difference(fr.dogbone((ta, zs), (-1, 1), r))   # root reliefs: the shoulders seat flat on the deck
+    if tb < wt - 0.01:
+        g = g.difference(fr.dogbone((tb, zs), (1, 1), r))
     hz0, hz1 = leg_hole_z(p)
     uc, ts = (ta + tb) / 2, fr.thick_slot(p)
     g = g.difference(fr.hole(uc - ts / 2, hz0, uc + ts / 2, hz1, r))

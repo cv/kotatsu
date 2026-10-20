@@ -21,7 +21,7 @@ import tomllib
 
 from shapely.geometry import Polygon
 
-from . import build as cutbuild, comfort, cutlist, frame, nest, params, room, top
+from . import build as cutbuild, comfort, cutlist, frame, nest, params, room, stiffness, top
 from .params import ROOT
 
 WEB = ROOT / "web"
@@ -92,6 +92,7 @@ def table_summary(tp, fd: dict, plan) -> dict:
         "side_clear": k["apron_clear"], "knee_reach": k["reach"], "shin_w": k["shin_w"],
         "heater_clear": round(hz - sz / 2), "tip_n": k["tip_n"], "tip_edge_n": k["tip_edge_n"],
         "tip_inset": k["tip_inset"],
+        "wobble": stiffness.summary(tp),
         "min": {**({"tip_n": k["tip_min_n"]} if k["tip_min_n"] > 0 else {}),
                 "knee_reach": k["reach_min"], "side_clear": tp.comfort.knee_h + 5},
         "sheets": [nest.sheet_name((s.w, s.h)) for s in plan.sheets] if plan else [],

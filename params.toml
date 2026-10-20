@@ -6,6 +6,8 @@ t_nominal = 18.0
 t_min = 17.0          # mill tolerance -1.05 (TODO-verify actual stock in app)
 t_max = 18.9          # mill tolerance +0.85
 density_kg_m3 = 700
+E_par = 9000.0        # bending modulus along the face grain, MPa (Baltic/Finnish birch 18 mm ~ 9-10 GPa; TODO-verify Riga Ply handbook)
+f_m = 35.0            # bending strength along the face grain, MPa (characteristic, rough; TODO-verify)
 
 [cnc]
 bit_d = 6.35          # 1/4" router bit -> dogbone radius bit_d/2
@@ -39,6 +41,7 @@ drop = 26.0           # deck top below the futon plane (room for the leg + cheek
 
 [yagura]              # leg <-> deck joints
 tenon_gap = 10.0      # each plate's tenon starts this far past the cross-lap slot (the shoulder on that side)
+tenon_w = 50.4        # tenon width (>= wedge hole + 2 x 15 mm); leg width beyond it is an inner shoulder
 hole_h = 14.0         # wedge hole above the deck
 hole_drop = 1.0       # hole bottom below the thinnest deck's top face, so the wedge bears on the deck
 deck_inset = 10.0     # deck corners stay this far inside the round top
@@ -67,6 +70,12 @@ body_h = 51.0
 cheek_clearance = 1.0  # cheek inner faces = body width + this
 top_gap = 5.0          # heater top below the deck underside (TODO-verify manual clearances)
 holes = []             # TODO measure: side screw positions
+
+[stiffness]           # wobble check (kotatsu/stiffness.py): estimates, TODO-verify the material values
+E_perp = 500.0        # plywood stiffness through its thickness (shoulder/wedge bearing on the deck), MPa: rough, 300-800
+wedge_preload = 300.0 # clamp force a tapped-in leg wedge gives (N): rough guess
+bearing_len = 20.0    # length over which in-plane bearing (tenon face on mortise end) spreads, mm: rough
+report_loads = [50.0, 100.0, 200.0]   # sideways pushes at table height to report (N)
 
 [comfort]
 knee_w = 762.0        # owner, cross-legged: knees need 30" wide ...

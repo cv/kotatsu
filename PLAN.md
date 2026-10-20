@@ -63,6 +63,30 @@ data from the uMake app, or from the heater once it's in hand.
 The figures assume no foot slip, and the weight includes a guessed heater (3 kg) and futon (2 kg). **There is no pass/fail limit yet.**
 It needs a real figure: EN 12521:2023's force table, or a bathroom-scale test on the finished table (`comfort.tip_min_n`, 0 = report only).
 
+### Wobble and strength (`kotatsu/stiffness.py`, estimates)
+This is a spring model of each leg-to-deck joint, not FEA. It includes:
+- the shoulders pressing on the deck (plywood is soft through its thickness);
+- the wedge pulling the tenon up, tapped in to about 300 N;
+- the tenon faces bearing on the mortise ends, with 0.2 mm clearance per side;
+- each plate bending.
+
+Material values are rough (E along the grain 9 GPa, through the thickness 300–800 MPa, bending strength ~35 MPa) and need verifying.
+
+| | Straight 120 mm legs (current) | With a 10 mm inner shoulder (130 mm legs) |
+|---|---|---|
+| Sway under a 100 N sideways push, wedges tight | ≈ 0.3 mm (0.24–0.42 across the material/preload range) | ≈ 0.3 mm (0.29–0.42) |
+| Leg tilt as a wedge is tapped in, if nothing stops it | **≈ 9 mm at the foot** | ≈ 0.3 mm |
+| Room between legs at knee height | 420 mm | 400 mm |
+
+- **Frame stiffness is fine either way.** About 0.3 mm of sway per 100 N, plus up to 0.4 mm of play from the tenon clearance.
+  A wedge that works 0.1 mm loose adds about 0.4 mm at that leg, so re-tap the wedges after the first heating season.
+- **The current leg joint is one-sided.** The tenon runs to the leg's inner edge, so every shoulder sits outboard of the wedge.
+  Tapping the wedge in twists the plate until its tenon jams diagonally in the mortise, about 1.5° (≈ 9 mm at the foot).
+  The joint is stiff once jammed, but the legs end up out of plumb or fighting each other, by however much the real mortise clearance allows (uMake's in-plane tolerance is ±0.3–0.45 mm).
+  A 10 mm shoulder on the inner side of each tenon (legs 130 mm wide) puts the wedge between shoulders and removes the twist.
+- **Stresses are low.** Legs ≈ 1.3 MPa at a 200 N push. Top ≈ 4.7 MPa with 1000 N pressed 50 mm in from the edge.
+  Wood above the wedge hole ≈ 1.4 MPa in shear. That's at least about 8× below the rough bending strength.
+
 ### History
 - 1200 × 900 rectangle with 3 boards and decorative seams (ari, yajiri, maple, …): dropped for the round one-piece top. Git tag `seams-archive`.
 - Slab-side frame (apron + legs in one piece, tapered legs, bell feet; leg-room options A–F) and a splayed-leg yagura: built for comparison, then dropped in favour of the straight yagura. Git tag `frame-variants-archive`.
@@ -81,7 +105,7 @@ It needs a real figure: EN 12521:2023's force table, or a bathroom-scale test on
 1. ✅ Project site (`make dev`, http://127.0.0.1:8765): futon & rug plan, frame parts, cut sheets, 3-D, docs, test status.
 2. ✅ Frame geometry and joint tests; cut list, nesting, DXF per part and per sheet, `out/BOM.md`.
 3. ✅ **Leg room** and ✅ **frame style**: yagura with straight legs (sections 2–3).
-3b. **Stiffness / wobble check** for the yagura (2-D stress model + joint slack), and a real tipping limit.
+3b. ✅ **Wobble/strength estimate** (above): frame stiff, stresses low; one-sided leg joint found (fix: 130 mm legs, owner to decide). Still open: a real tipping limit; a test coupon to measure the tenon/mortise fit.
 4. ◐ **Heater**: measure it when it arrives and freeze `[heater]` (body, screw-hole positions, screw size, cord exit).
 5. **Quote** on app.umake.ca: read the actual stock thickness and price; make sure there's no "manual quote" flag.
 6. Optional fit coupons (a cross-lap pair, a tenon + wedge).
