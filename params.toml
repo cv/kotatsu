@@ -37,6 +37,8 @@ leg_taper = 40.0      # legs narrow by this much at the floor (inner edge slants
 opening_r = 50.0      # fillet radius of the leg-opening top corners
 ear_r = 12.0          # rounding of the panel top/bottom outer corners
 foot_r = 6.0          # rounding of the inner foot corners
+foot_flare = 20.0     # bell feet: panel ends sweep out this far at the floor (tipping vs knee room, see [comfort])
+flare_h = 120.0       # ... starting this high up the panel end (cove arc, tangent to the end edge)
 lap_extra = 0.5       # each cross-lap slot is height/2 + this (so slot bottoms never bottom out; the floor sets height)
 
 [deck]                # horizontal shear plate between two opposite panels; the heater hangs under it
@@ -73,7 +75,10 @@ sitters = [1, 1]      # people per side (long, short) - square frame: 4 people
 leg_gap = 370.0       # min opening width per sitter between the legs
 knee_w = 762.0        # owner, cross-legged: knees need 30" wide ...
 knee_h = 317.5        # ... x 12.5" high
-knee_reach_min = 100.0  # how far that knee zone must reach in under the top's edge (TODO-verify with owner)
+knee_reach_min = 95.0   # how far that knee zone must reach in under the top's edge (TODO-verify with owner)
+tip_min_n = 700.0     # push down on the top's edge (mid-side) it must take without tipping (TODO-verify vs EN 12521)
+heater_kg = 3.0       # for the tipping estimate (TODO weigh the PaletteLife)
+futon_kg = 2.0
 
 [room]                # for the Futon & rug page (docs/futons.toml has the candidates)
 rug_d = 2440.0        # 8 ft round rug

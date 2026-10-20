@@ -56,9 +56,30 @@ def knee_reach(p, width: float | None = None, height: float | None = None) -> fl
     return lo
 
 
+def weight_n(p) -> float:
+    """Table + heater + futon weight (N): what holds it down against tipping."""
+    t, rho = p.material.t_nominal / 1000, p.material.density_kg_m3
+    from . import top
+    area = top.build(p).outline.area + sum(pt.shape.area * pt.qty for pt in frame.parts(p))
+    kg = area / 1e6 * t * rho + p.comfort.heater_kg + p.comfort.futon_kg
+    return kg * 9.81
+
+
+def tip_load(p) -> float:
+    """Downward push (N) on the top's edge, at mid-side (the worst direction), that tips the table:
+    it pivots on the feet at the panel ends, Lf/2 + foot_flare out from the centre."""
+    L = frame.layout(p)
+    lp = frame.long_panel(p)
+    foot = lp.intersection(box(-1e3, -1, 1e4, 1.0))     # what actually touches the floor
+    xf = L.Lf / 2 - foot.bounds[0]
+    R = p.top.length / 2
+    return weight_n(p) * xf / (R - xf)
+
+
 def summary(p) -> dict:
     C = p.comfort
     return {"knee_w": C.knee_w, "knee_h": C.knee_h, "reach": round(knee_reach(p), 1),
+            "tip_n": round(tip_load(p)), "tip_min_n": C.tip_min_n,
             "reach_min": C.knee_reach_min,
             "apron_clear": p.frame.height - p.frame.apron_depth,
             "shin_w": round(p.top.length - 2 * p.frame.overhang - 2 * low_footprint_leg_u(p, C.knee_h), 1)}

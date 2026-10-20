@@ -28,6 +28,9 @@ data from the uMake app, or from the heater once it's in hand.
   - Slots: width = t_max + 0.3; depth = H/2 + 0.5, so the floor sets the height.
   - Legs: 140 wide where they meet the apron, **tapering to 100 at the floor**. The inner edge slants and the outer edge stays plumb.
     That leaves a **380 mm** opening on every side, widening to 460 at the floor. Each short-panel foot is two equal 40 mm fingers either side of the slot.
+  - **Bell feet**: each panel end sweeps out 20 mm at the floor along a cove that starts 120 mm up. This moves the tipping edge outward.
+    Pushing down on the top's edge at mid-side now tips the table at ≈ 730 N (≈ 74 kg), up from 560 N.
+    The cost is knee room: the owner's 30" × 12.5" cross-legged knee zone can come 102 mm in under the edge instead of 120 (`kotatsu/comfort.py`).
   - Aprons: only **55 deep**, leaving **330 mm** of clear height under them. No joint is cut into the apron.
 - **Deck (×1), 500 × 582.** A horizontal shear plate, top at z = 359.
   - It has 4 plain through-tenons (40 wide, standing 2 mm proud), one in each **leg zone**: the 80 mm of solid leg between the cross-lap slot and the opening.

@@ -259,3 +259,9 @@ def test_cross_legged_clearance(C):
     K = P.comfort
     assert P.frame.height - P.frame.apron_depth >= K.knee_h + 5
     assert comfort.knee_reach(P) >= K.knee_reach_min
+
+
+def test_does_not_tip_easily(C):
+    """Pushing down on the top's edge at mid-side (the worst place) takes at least tip_min_n."""
+    from kotatsu import comfort
+    assert comfort.tip_load(C.P) >= C.P.comfort.tip_min_n

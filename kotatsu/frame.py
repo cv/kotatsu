@@ -167,10 +167,27 @@ def leg_opening(p, length: float) -> Polygon:
     return trap.buffer(-r, quad_segs=16, join_style="round").buffer(r, quad_segs=16, join_style="round")
 
 
+def foot_flares(p, length: float):
+    """Bell-shaped feet: each panel end sweeps out by foot_flare at the floor along a cove (circular arc)
+    that leaves the plumb end edge tangentially at flare_h. Moves the tipping edge outward."""
+    F = p.frame
+    f, fh = getattr(F, "foot_flare", 0.0), getattr(F, "flare_h", 120.0)
+    if f <= 0:
+        return None
+    R = (f * f + fh * fh) / (2 * f)                    # circle tangent to the end edge at (0, fh), through (-f, 0)
+    left = box(-f, 0, 0.01, fh).difference(Point(-R, fh).buffer(R, quad_segs=128))
+    right = box(length - 0.01, 0, length + f, fh).difference(Point(length + R, fh).buffer(R, quad_segs=128))
+    return unary_union([left, right])
+
+
 def side_panel(p, length: float, slots_from_top: bool) -> Polygon:
     F, r = p.frame, _rd(p)
     H = F.height
     body = _round_outer(box(0, 0, length, H), F.ear_r)
+    fl = foot_flares(p, length)
+    if fl is not None:                                  # square bottom corners under the flares, then
+        body = body.union(box(0, 0, length, H / 2)).union(fl)   # a small rounding keeps the tips crisp
+        body = _round_outer(body, 3.0)
     opening = leg_opening(p, length)
     g = body.difference(opening)
     g = _round_outer(g, F.foot_r)                       # soften the inner foot corners too
