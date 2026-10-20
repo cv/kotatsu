@@ -163,7 +163,7 @@ def build(with_tests: bool = True) -> None:
                 ["Material", p.material.name],
                 ["Heater", f"{p.heater.model} ({p.heater.mount} mount)"],
                 ["Vendor", "uMake.ca (online instant quote)"],
-                ["Ship to", "rural BC — top ships as an oversize parcel (priced at checkout)"],
+                ["Shipping", "one 91 × 91 × 16 cm box, ~17 kg: uMake's free tier within Canada"],
                 ["Budget", "< $1200 CAD"],
             ],
         },

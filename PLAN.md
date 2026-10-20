@@ -97,7 +97,7 @@ Material values are rough (E along the grain 9 GPa, through the thickness 300–
 | Item | Estimate |
 |---|---|
 | Heater (PaletteLife, amazon.ca, delivered) | $258 |
-| uMake CNC order: **$353.33** for all 28 parts in Baltic birch "19mm" (notched deck, one wedge part ×14), shipping **free** (91×91×16 cm, 16.6 kg), tax $42.40 → **$395.73** (docs/quote.md) | **$396** |
+| uMake CNC order: **$353.33** for all 26 parts in Baltic birch "19mm" (notched deck, one wedge part ×14), shipping **free** (91×91×16 cm, 16.6 kg), tax $42.40 → **$395.73** (docs/quote.md) | **$396** |
 | Round futon 205 cm (Amazon.co.jp delivered, before duty/tax) | $160–280 |
 | Finish oil + sandpaper | $30–50 |
 | **Total** | **~$850–1080** |
