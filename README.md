@@ -5,8 +5,8 @@ ordered online from a CNC shop ([uMake.ca](https://umake.ca)). There's **no glue
 hardware**: the joints are cross-laps and wedged through-tenons. The only metal is the heater, which
 screws into two plywood cheeks.
 
-**Website (drawings, 3-D view, cut sheets, numbers):** https://cv.github.io/kotatsu/
-**Cut files (DXF, mm):** https://cv.github.io/kotatsu/dxf/
+**Website (drawings, 3-D view, cut sheets, numbers):** https://lixo.org/kotatsu/
+**Cut files (DXF, mm):** https://lixo.org/kotatsu/dxf/
 
 | | |
 |---|---|
