@@ -9,7 +9,8 @@ data from the uMake app or from the heater once it's in hand.
 | Heater | none yet. Pick: **PaletteLife 120 V 400 W** (see docs/heater.md); backup Zuomeng PTC |
 | Height | 39–41 cm total → frame 375 + top 18 + futon ≈ 400–410 |
 | Corners | default visible cross-lap "ears"; no engraving |
-| Top | **3 boards, ari-3 dovetail seams, mirrored** (owner's pick; all boxes ≤ 48"). Visible widths 400/400/400 mm |
+| Tables | **Two separate heated kotatsu** (2026-10): **rect 1200 × 900** (4×3 ft, rounded down) with a 3-board seamed top, and **round Ø 900** with a one-piece top on a 660 mm square frame. See `[[tables]]` in params.toml |
+| Top seam | still open (placeholder ari-3); favourites: ya-*, bold-yabane, maple; an artist commission is being considered |
 | Ship to | rural BC |
 | Budget | **< $1200 CAD all-in** |
 
@@ -134,7 +135,7 @@ The budget is tight at the top end. If the uMake quote comes in high:
 2. ◐ **Geometry.** Done: router-aware mating helpers and **7 top-seam variants** (ari-3, ari-5, ari-2-bold, kama-3, puzzle-3, seigaiha-8, chigiri-3) in `[[top.options]]`, with tests for cuttability, overlap and pull-apart locking.
    Done: frame (side panels with cross-laps, deck with wedged tusk tenons, hung heater cheeks, wedges, dogbones), with joint-fit tests across the stock-thickness range.
    Done: cut list, sheet nesting with mixed sheet sizes, per-part and per-sheet DXF, `out/BOM.md` (`make dxf`).
-   Least plywood: **1 table = 4.65 m²** (one 60×120" or two 60×60", 44 % used); **2 tables = 7.62 m²** (48×96" + 2 × 60×60", 53 % used, 3.81 m² per table, 18 % less each).
+   **Both tables together: 60×120" + 60×60" = 6.97 m² (54 % used), ~47 kg of parts.** (Earlier one-table figures:) Least plywood: **1 table = 4.65 m²** (one 60×120" or two 60×60", 44 % used); **2 tables = 7.62 m²** (48×96" + 2 × 60×60", 53 % used, 3.81 m² per table, 18 % less each).
    Top grain now runs the table's length (`layout.top_grain = "along"`), continuous across the 3 boards; that's what lets 2 tables pack well.
    To do: freeze `[heater]` after measuring; check how uMake prices (per sheet or per part area + cut time); fit coupons in the spare sheet area.
 3. **Checks (pytest):** mating dimensions agree (slot depths sum to H, tenon ↔ mortise, crossings
