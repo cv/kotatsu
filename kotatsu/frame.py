@@ -148,11 +148,30 @@ def cheek_hole_z(p) -> tuple[float, float]:
 
 
 # ----------------------------------------------------------------------------- parts
+def leg_inner_u(p, z: float) -> float:
+    """u of a leg's inner (opening-side) edge at height z, near panel end. Legs are leg_width wide where
+    they meet the apron and leg_width - leg_taper wide at the floor; the outer edge stays plumb."""
+    F = p.frame
+    Ha = F.height - F.apron_depth
+    return F.leg_width - getattr(F, "leg_taper", 0.0) * (Ha - z) / Ha
+
+
+def leg_opening(p, length: float) -> Polygon:
+    """Leg opening: a trapezoid (wider at the floor when tapered) with r = opening_r fillets at the top.
+    It runs below the floor far enough that the bottom corner rounding never reaches z = 0."""
+    F = p.frame
+    Ha, r = F.height - F.apron_depth, F.opening_r
+    zb = -(r + 20)
+    ub, ut = leg_inner_u(p, zb), F.leg_width
+    trap = Polygon([(ub, zb), (length - ub, zb), (length - ut, Ha), (ut, Ha)])
+    return trap.buffer(-r, quad_segs=16, join_style="round").buffer(r, quad_segs=16, join_style="round")
+
+
 def side_panel(p, length: float, slots_from_top: bool) -> Polygon:
     F, r = p.frame, _rd(p)
     H = F.height
     body = _round_outer(box(0, 0, length, H), F.ear_r)
-    opening = rounded_rect(F.leg_width, -F.opening_r - 10, length - F.leg_width, H - F.apron_depth, F.opening_r)
+    opening = leg_opening(p, length)
     g = body.difference(opening)
     g = _round_outer(g, F.foot_r)                       # soften the inner foot corners too
     w, d = slot_w(p), lap_depth(p)

@@ -31,7 +31,9 @@ height = 385.0        # + 18 top + ~10 futon ≈ 41 cm total (owner OK'd the top
 overhang = 120.0      # square frame 660 × 660 under the Ø900 top; its ear tips stay ≥ 10 mm inside the circle
 ear = 50.0            # panel end -> crossing centreline (visible "ear"); half-height ear fingers 40 wide
 apron_depth = 55.0    # clear height under the aprons = height - apron_depth (thighs/knees come in here)
-leg_width = 140.0     # from panel end: ear + half slot + an 80 mm leg zone that carries the deck tenon
+leg_width = 140.0     # from panel end, where the leg meets the apron: ear + half slot + an 80 mm leg zone (deck tenon)
+leg_taper = 40.0      # legs narrow by this much at the floor (inner edge slants, outer edge plumb): 140 -> 100,
+                      # so the short panels' feet are two equal 40 mm fingers either side of the slot
 opening_r = 50.0      # fillet radius of the leg-opening top corners
 ear_r = 12.0          # rounding of the panel top/bottom outer corners
 foot_r = 6.0          # rounding of the inner foot corners
@@ -78,6 +80,7 @@ zabuton = [550.0, 590.0]  # floor cushion w x d (standard meidosu size)
 
 [layout]              # sheet nesting choices (kotatsu/cutlist.py, kotatsu/nest.py)
 frame_grain = "horizontal"  # side panels keep their length along the grain (looks right); "free" = any rotation
+interlock = true            # also try nesting each long side with a short side upside down, legs interlocked
 sets = [1]                  # cut layouts for this many copies of the whole set of [[tables]]
 
 [shipping]

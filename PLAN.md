@@ -26,7 +26,8 @@ data from the uMake app, or from the heater once it's in hand.
 - **Side panels (×4), 660 × 385.** Each panel is one slab that forms the apron and both legs.
   - Corners: cross-laps 50 mm in from the panel ends (the "ears"). Long panels are slotted from the top, short panels from the bottom.
   - Slots: width = t_max + 0.3; depth = H/2 + 0.5, so the floor sets the height.
-  - Legs: 140 wide, which leaves a **380 mm** opening on every side.
+  - Legs: 140 wide where they meet the apron, **tapering to 100 at the floor**. The inner edge slants and the outer edge stays plumb.
+    That leaves a **380 mm** opening on every side, widening to 460 at the floor. Each short-panel foot is two equal 40 mm fingers either side of the slot.
   - Aprons: only **55 deep**, leaving **330 mm** of clear height under them. No joint is cut into the apron.
 - **Deck (×1), 500 × 582.** A horizontal shear plate, top at z = 359.
   - It has 4 plain through-tenons (40 wide, standing 2 mm proud), one in each **leg zone**: the 80 mm of solid leg between the cross-lap slot and the opening.
@@ -43,7 +44,9 @@ data from the uMake app, or from the heater once it's in hand.
   - nothing pokes above the futon plane;
   - the frame corners stay ≥ 10 mm inside the round top (currently 11 mm);
   - leg-room minimums.
-- **Parts:** 13 pieces, about 18 kg, on one 48×96" sheet (49 % used).
+- **Parts:** 13 pieces, about 18 kg, on one 48×96" sheet (47 % used).
+  - The nester pairs each long side with a short side turned upside down, one leg inside the other's opening. Each pair needs a 27 % smaller rectangle,
+    so everything fits with room to spare (about 0.45 × 1.2 m free for fit coupons).
 
 ### Assembly (mallet + the heater's screwdriver)
 1. Hang the cheeks: push the tabs up through the deck and tap in the 4 cheek wedges.

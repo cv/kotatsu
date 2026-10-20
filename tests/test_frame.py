@@ -236,3 +236,16 @@ def test_frame_hidden_under_round_top(C):
             pts += [(x - t / 2, y), (x + t / 2, y)]
     worst = max(((x - L.cx) ** 2 + (y - L.cy) ** 2) ** 0.5 for x, y in pts)
     assert worst <= r - 10, f"frame corner {worst:.0f} mm from centre vs top radius {r:.0f}"
+
+
+def test_tapered_feet_are_sturdy(C):
+    """Tapered legs: at the floor, the foot beside the short panel's bottom-open slot is still >= 40 wide,
+    and the taper never reaches up into the deck-tenon leg zone (it stops at the apron underside)."""
+    P = C.P
+    F = P.frame
+    foot = frame.leg_inner_u(P, 0) - F.ear - frame.slot_w(P) / 2
+    assert foot >= 40, f"inner foot finger only {foot:.1f} mm at the floor"
+    assert frame.leg_inner_u(P, F.height - F.apron_depth) == pytest.approx(F.leg_width)
+    sp = C.PARTS["short side"].shape
+    u = frame.leg_inner_u(P, 1.0)
+    assert sp.intersection(box(u + 0.5, 0, u + 30, 2)).area < 1, "opening must be wider at the floor"
