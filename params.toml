@@ -67,6 +67,10 @@ leg_narrow = 60.0     # owner's haunched legs: plates are this wide (from the fr
 leg_haunch_top = 320.0  # haunch meets the full-width inner edge here (just under the 341 shoulders)
 leg_haunch_drop = 30.0  # ... and reaches the narrow line this much lower (a ~31° slope)
 leg_haunch_r = 15.0   # inside-corner fillet where the haunch meets the narrow leg
+leg_haunch_style = "straight"  # straight (above) | curve: a long quarter-ellipse cove instead (lighter-looking)
+leg_haunch_curve_drop = 120.0  # curve: how far below leg_haunch_top the cove starts on the narrow leg
+foot_taper = 0.0      # plate A's feet: each edge slopes in by this much at the floor (0 = plumb)
+foot_taper_from = 200.0  # ... starting this high above the floor
 leg_windows = false   # slot window in each leg plate's inner arm (replaced by the haunched legs)
 leg_window_bar = 20.0 # wood each side of it (>= stock thickness, uMake's minimum feature)
 leg_window_end = 50.0 # wood below it (floor) and above it (shoulder)

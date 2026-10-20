@@ -116,11 +116,16 @@ def top_lift(p, inset: float | None = None) -> tuple[float, float]:
     return _lever_min(W, top_supports(p), top_o, inset)
 
 
+def _n(x: float):
+    """Round a force for reports; None when it never happens (infinite)."""
+    return round(x) if math.isfinite(x) else None
+
+
 def summary(p) -> dict:
     C = p.comfort
     return {"knee_w": C.knee_w, "knee_h": C.knee_h, "reach": round(knee_reach(p), 1),
-            "tip_n": round(tip_load(p)), "tip_edge_n": round(tip_load(p, 0.0)),
-            "top_lift_n": round(top_lift(p)[0]), "top_lift_edge_n": round(top_lift(p, 0.0)[0]),
+            "tip_n": _n(tip_load(p)), "tip_edge_n": _n(tip_load(p, 0.0)),
+            "top_lift_n": _n(top_lift(p)[0]), "top_lift_edge_n": _n(top_lift(p, 0.0)[0]),
             "tip_inset": getattr(C, "tip_inset", 0.0), "tip_min_n": C.tip_min_n,
             "reach_min": C.knee_reach_min,
             "apron_clear": side_clear(p),

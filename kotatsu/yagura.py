@@ -13,6 +13,8 @@ tap in the 8 leg wedges, then hang the cheeks + heater.
 """
 from __future__ import annotations
 
+import math
+
 from shapely.ops import unary_union
 from shapely.geometry import Point, Polygon, box
 
@@ -42,6 +44,10 @@ def leg_plate(p, slotted_from_top: bool) -> Polygon:
     nc = narrow_cut(p)
     if nc is not None:                                   # haunched leg: narrow below, full width under the deck
         g = g.difference(nc)
+    if slotted_from_top:
+        ft = foot_taper_cut(p)
+        if ft is not None:                               # plate A only: its feet narrow toward the floor
+            g = g.difference(ft)
     g = fr._round_outer(g, F.foot_r)
     ta, tb = _tenon_u(p)
     g = g.union(fr._round_outer(box(ta, zs - 10, tb, H), 3.0))
@@ -95,7 +101,8 @@ def foot_relief(p) -> Polygon:
     if sag <= 0:
         return Polygon()
     wn = getattr(Y, "leg_narrow", 0.0) or p.frame.leg_width
-    a, b = Y.foot_relief_margin, wn - Y.foot_relief_margin
+    ft = getattr(Y, "foot_taper", 0.0)                   # plate A's foot is narrower by this much each side
+    a, b = ft + Y.foot_relief_margin, wn - ft - Y.foot_relief_margin
     c = (b - a) / 2
     R = (c * c + sag * sag) / (2 * sag)
     return Point((a + b) / 2, sag - R).buffer(R, quad_segs=64).intersection(box(a - 1, -1, b + 1, sag))
@@ -256,10 +263,32 @@ def narrow_cut(p) -> Polygon | None:
     if not wn or wn >= F.leg_width:
         return None
     wt, zt = F.leg_width, Y.leg_haunch_top
+    if getattr(Y, "leg_haunch_style", "straight") == "curve":
+        # a long cove, like a bracket: leaves the narrow leg's inner edge going straight up (vertical
+        # tangent) and meets the full width under the deck level (horizontal tangent): a quarter ellipse
+        zl = zt - Y.leg_haunch_curve_drop
+        a, b, n = wt - wn, zt - zl, 48
+        curve = [(wt - a * math.cos(math.pi / 2 * k / n), zl + b * math.sin(math.pi / 2 * k / n)) for k in range(n + 1)]
+        return Polygon([(wn, -50), *curve, (wt + 50, zt), (wt + 50, -50)])
     zl = zt - Y.leg_haunch_drop
     cut = Polygon([(wn, -50), (wn, zl), (wt, zt), (wt + 50, zt), (wt + 50, -50)])
     rr = Y.leg_haunch_r
     return cut.buffer(-rr, quad_segs=16, join_style="round").buffer(rr, quad_segs=16, join_style="round")
+
+
+def foot_taper_cut(p) -> Polygon | None:
+    """Plate A's feet taper (2026-10-20 option): both edges of the narrow leg slope in by foot_taper over the
+    bottom foot_taper_from mm, so the foot is leg_narrow - 2 x foot_taper wide. Only plate A can: plate B's
+    floor slot needs its two fingers at full width. Returns the two slivers to cut away. None if disabled."""
+    Y, F = p.yagura, p.frame
+    ft = getattr(Y, "foot_taper", 0.0)
+    if ft <= 0:
+        return None
+    wn = getattr(Y, "leg_narrow", 0.0) or F.leg_width
+    z0 = Y.foot_taper_from
+    left = Polygon([(-1, z0), (0, z0), (ft, 0), (ft, -1), (-1, -1)])
+    right = Polygon([(wn + 1, z0), (wn, z0), (wn - ft, 0), (wn - ft, -1), (wn + 1, -1)])
+    return unary_union([left, right])
 
 
 def leg_window(p) -> Polygon | None:

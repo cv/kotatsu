@@ -119,19 +119,51 @@ def test_quantities(Y):
         assert q["leg wedge"] >= 8 and q["cheek wedge"] >= 4
 
 
+def _haunch_bottom(P):
+    Y = P.yagura
+    if getattr(Y, "leg_haunch_style", "straight") == "curve":
+        return Y.leg_haunch_top - Y.leg_haunch_curve_drop
+    return Y.leg_haunch_top - Y.leg_haunch_drop - Y.leg_haunch_r
+
+
 def test_legs_are_straight(Y):
     """Plumb plates: the outer edge is straight; below the haunch the inner edge is too (leg_narrow wide),
-    and the plate is full width just under the deck (shoulders + tenon)."""
+    and the plate is full width just under the deck (shoulders + tenon). Plate A's feet may taper
+    (yagura.foot_taper) over the bottom foot_taper_from mm; above that it's plumb too."""
     P, L, parts = Y
     wn = getattr(P.yagura, "leg_narrow", 0.0) or P.frame.leg_width
+    ft = getattr(P.yagura, "foot_taper", 0.0)
     for name in ("leg plate A", "leg plate B"):
         g = parts[name].shape
-        for z in (10, 100, P.yagura.leg_haunch_top - P.yagura.leg_haunch_drop - P.yagura.leg_haunch_r - 2
-                  if getattr(P.yagura, "leg_narrow", 0) else L.z_deck_bot - 20):
+        z_hi = _haunch_bottom(P) - 2 if getattr(P.yagura, "leg_narrow", 0) else L.z_deck_bot - 20
+        zs = [z_hi] + [z for z in (10, 100) if not (name == "leg plate A" and ft and z < P.yagura.foot_taper_from)]
+        if name == "leg plate A" and ft:
+            zs.append(P.yagura.foot_taper_from + 2)
+        for z in zs:
             b = g.intersection(box(-50, z, 400, z + 1)).bounds
             assert b[0] == pytest.approx(0, abs=0.5) and b[2] == pytest.approx(wn, abs=0.5), (name, z, b)
         hi = g.intersection(box(-50, L.z_deck_bot - 12, 400, L.z_deck_bot - 11)).bounds
         assert hi[2] == pytest.approx(P.frame.leg_width, abs=0.5)
+
+
+def test_tapered_feet(Y):
+    """Plate A's foot is leg_narrow - 2 x foot_taper wide at the floor, the taper stays clear of A's
+    cross-lap slot (its fingers keep full width), and plate B never tapers (its floor slot needs both fingers)."""
+    P, L, parts = Y
+    ft = getattr(P.yagura, "foot_taper", 0.0)
+    if not ft:
+        pytest.skip("plumb feet")
+    wn = getattr(P.yagura, "leg_narrow", 0.0) or P.frame.leg_width
+    A, B = parts["leg plate A"].shape, parts["leg plate B"].shape
+    b = A.intersection(box(-50, 8, 400, 9)).bounds
+    assert b[2] - b[0] == pytest.approx(wn - 2 * ft * (1 - 8.5 / P.yagura.foot_taper_from), abs=1.0)
+    assert P.yagura.foot_taper_from <= L.z_deck_bot - lap_depth_a(P) + 1e-6   # below A's slot bottom
+    assert B.intersection(box(-50, 8, 400, 9)).bounds[2] == pytest.approx(wn, abs=0.5)
+
+
+def lap_depth_a(P):
+    from kotatsu import yagura
+    return yagura.lap_depth(P)
 
 
 def test_haunched_leg_fingers(Y):
