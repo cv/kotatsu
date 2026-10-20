@@ -13,6 +13,8 @@ import datetime as dt
 import functools
 import http.server
 import json
+import hashlib
+import re
 import shutil
 import subprocess
 import threading
@@ -157,6 +159,28 @@ def story() -> str:
     return text[a + len("<!-- story -->"):b].replace("](docs/img/", "](img/")
 
 
+_LOCAL_REF = re.compile(r'''((?:from|import\()\s*["']\./|(?:href|src)=["'])([\w./-]+\.(?:js|css))(["'])''')
+
+
+def copy_web() -> str:
+    """Copy web/ into the site, tagging every local .js/.css reference with ?v=<hash of all of web/>.
+
+    The public site sits behind a CDN that tells browsers to keep scripts for hours, while the HTML
+    expires in minutes. With versioned URLs, a fresh page always loads matching, fresh scripts."""
+    files = sorted(f for f in WEB.iterdir() if f.is_file())
+    h = hashlib.sha1()
+    for f in files:
+        h.update(f.name.encode()); h.update(f.read_bytes())
+    v = h.hexdigest()[:10]
+    for f in files:
+        if f.suffix in (".js", ".html", ".css"):
+            text = _LOCAL_REF.sub(lambda m: f"{m[1]}{m[2]}?v={v}{m[3]}", f.read_text())
+            (OUT / f.name).write_text(text)
+        else:
+            shutil.copy2(f, OUT / f.name)
+    return v
+
+
 def build(with_tests: bool = True) -> None:
     p = params.load()
     with open(ROOT / "params.toml", "rb") as f:
@@ -174,9 +198,7 @@ def build(with_tests: bool = True) -> None:
         "docs": {d: (ROOT / d).read_text() for d in DOCS if (ROOT / d).exists()},
     }
     OUT.mkdir(parents=True, exist_ok=True)
-    for f in WEB.iterdir():
-        if f.is_file():
-            shutil.copy2(f, OUT / f.name)
+    copy_web()
     (OUT / "img").mkdir(exist_ok=True)
     for f in (ROOT / "docs" / "img").glob("*.png"):
         shutil.copy2(f, OUT / "img" / f.name)
