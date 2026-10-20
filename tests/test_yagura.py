@@ -1,5 +1,6 @@
 """Yagura frame: "+" corner legs under a deck, no aprons. Every joint must fit across the
 stock-thickness range."""
+import numpy as np
 import pytest
 from shapely.affinity import translate
 from shapely.geometry import Point, Polygon, box
@@ -29,8 +30,13 @@ def test_corner_cross_laps(Y, t):
     A, B = parts["leg plate A"].shape, parts["leg plate B"].shape
     d, u, zs = yagura.lap_depth(P), P.frame.ear, L.z_deck_bot
     assert zs <= 2 * d <= zs + 2
-    assert empty(A, box(u - t / 2, zs - d + 0.01, u + t / 2, zs))     # B's upper half passes A
-    assert empty(B, box(u - t / 2, 0, u + t / 2, d - 0.01))           # A's lower half passes B
+    w = frame.slot_w(P)
+    ribs_A = yagura.crush_ribs(P, u - w / 2, u + w / 2, zs - d, zs)     # the bumps are meant to squeeze / be sanded
+    ribs_B = yagura.crush_ribs(P, u - w / 2, u + w / 2, 0, d)
+    assert empty(A.difference(ribs_A), box(u - t / 2, zs - d + 0.01, u + t / 2, zs))     # B's upper half passes A
+    assert empty(B.difference(ribs_B), box(u - t / 2, 0, u + t / 2, d - 0.01))           # A's lower half passes B
+    if t <= w - 2 * getattr(P.fit, "crush_rib", 0.0):                   # stock up to the rib gap: no squeeze at all
+        assert empty(A, box(u - t / 2, zs - d + 0.01, u + t / 2, zs)) and empty(B, box(u - t / 2, 0, u + t / 2, d - 0.01))
 
 
 @pytest.mark.parametrize("t", T_RANGE)
@@ -211,3 +217,39 @@ def test_leg_windows_leave_enough_wood(Y):
         assert x0 - (P.frame.ear + frame.slot_w(P) / 2) >= t - 0.5          # wood beside the cross-lap slot
         assert P.frame.leg_width - x1 >= t - 0.5                            # wood at the inner edge
         assert z0 >= 40 and L.z_deck_bot - z1 >= 40
+
+
+def test_crush_ribs_narrow_the_slots(Y):
+    """Each cross-lap slot has bumps on both walls: the gap there is slot_w - 2 x crush_rib; elsewhere the
+    full slot width (so a thick sheet still goes in after a little sanding)."""
+    P, L, parts = Y
+    h = getattr(P.fit, "crush_rib", 0.0)
+    if not h:
+        pytest.skip("no crush ribs")
+    w, u = frame.slot_w(P), P.frame.ear
+    d = yagura.lap_depth(P)
+    for name, (z0, z1) in (("leg plate A", (L.z_deck_bot - d, L.z_deck_bot)), ("leg plate B", (0.0, d))):
+        g = parts[name].shape
+        gaps = []
+        for f in np.linspace(0.05, 0.95, 181):
+            z = z0 + f * (z1 - z0)
+            cut = box(u - w, z - 0.05, u + w, z + 0.05).difference(g)
+            seg = [c for c in getattr(cut, "geoms", [cut]) if c.bounds[0] < u < c.bounds[2]]
+            gaps.append(seg[0].bounds[2] - seg[0].bounds[0])
+        assert min(gaps) == pytest.approx(w - 2 * h, abs=0.05)
+        assert max(gaps) == pytest.approx(w, abs=0.05)
+        assert min(gaps) >= P.material.t_min, "even the thinnest sheet is gripped, never jammed shut"
+
+
+def test_foot_relief(Y):
+    """Plate A stands on its two ends; the middle of its foot is lifted by foot_relief."""
+    P, L, parts = Y
+    sag = getattr(P.yagura, "foot_relief", 0.0)
+    if not sag:
+        pytest.skip("no foot relief")
+    g = parts["leg plate A"].shape
+    touch = g.intersection(box(-1, -1, 500, 0.2))
+    assert len(getattr(touch, "geoms", [touch])) == 2
+    wn = P.yagura.leg_narrow
+    mid = g.intersection(box(wn / 2 - 1, -1, wn / 2 + 1, sag + 2)).bounds
+    assert mid[1] == pytest.approx(sag, abs=0.1)

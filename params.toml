@@ -17,6 +17,9 @@ sheets = [[1524, 1524], [1524, 3048], [1219, 2438]]  # 60x60, 60x120, 48x96 in
 
 [fit]
 slot_clearance = 0.3      # added to t_max for cross-lap slots
+crush_rib = 0.5           # owner 2026-10-20: bumps on each cross-lap slot wall, proud by this (gap 18.2 at the bumps
+crush_rib_r = 10.0        #   for "19mm" birch that's really ~18.0-18.5); sand them if a joint is too tight
+crush_rib_at = [0.3, 0.75]
 tight = 0.2               # in-plane tenon/mortise clearance
 mortise_height_extra = 0.5
 wedge_taper = 0.125       # 1:8
@@ -66,6 +69,8 @@ leg_haunch_r = 15.0   # inside-corner fillet where the haunch meets the narrow l
 leg_windows = false   # slot window in each leg plate's inner arm (replaced by the haunched legs)
 leg_window_bar = 20.0 # wood each side of it (>= stock thickness, uMake's minimum feature)
 leg_window_end = 50.0 # wood below it (floor) and above it (shoulder)
+foot_relief = 1.5     # shallow arc under plate A's foot: each plate stands on its two ends
+foot_relief_margin = 10.0
 one_wedge = true      # owner 2026-10-20: leg and cheek wedges are the same part (one file, 12 + 2 spares)
 wedge_len = 60.0      # leg wedges: shorter than the cheek wedges so the two at each corner don't meet
 wedge_head = 18.0     # (1:8 taper -> 10.5 mm foot)

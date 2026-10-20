@@ -13,6 +13,7 @@ tap in the 8 leg wedges, then hang the cheeks + heater.
 """
 from __future__ import annotations
 
+from shapely.ops import unary_union
 from shapely.geometry import Point, Polygon, box
 
 from . import frame as fr
@@ -62,9 +63,42 @@ def leg_plate(p, slotted_from_top: bool) -> Polygon:
     u = F.ear
     if slotted_from_top:
         g = g.difference(fr.notch(u - w / 2, u + w / 2, zs, zs - d, r))
+        g = g.union(crush_ribs(p, u - w / 2, u + w / 2, zs - d, zs))
+        g = g.difference(foot_relief(p))
     else:
         g = g.difference(fr.notch(u - w / 2, u + w / 2, 0, d, r))
+        g = g.union(crush_ribs(p, u - w / 2, u + w / 2, 0, d))
     return g
+
+
+def crush_ribs(p, u0: float, u1: float, z0: float, z1: float) -> Polygon:
+    """Small rounded bumps on both walls of a cross-lap slot (fit.crush_rib proud per side, radius
+    fit.crush_rib_r), at fit.crush_rib_at fractions of the slot's length. They make the joint snug on
+    real stock that's thinner than the slot is cut for. Too tight: sand the bumps down (easy)."""
+    F = p.fit
+    h, R = getattr(F, "crush_rib", 0.0), getattr(F, "crush_rib_r", 10.0)
+    if h <= 0:
+        return Polygon()
+    bumps = []
+    for f in getattr(F, "crush_rib_at", [0.3, 0.75]):
+        z = z0 + f * (z1 - z0)
+        bumps.append(Point(u0 + h - R, z).buffer(R, quad_segs=32).intersection(box(u0 - 1, z - R, u0 + h, z + R)))
+        bumps.append(Point(u1 - h + R, z).buffer(R, quad_segs=32).intersection(box(u1 - h, z - R, u1 + 1, z + R)))
+    return unary_union(bumps)
+
+
+def foot_relief(p) -> Polygon:
+    """Shallow arc (yagura.foot_relief deep) under the middle of a full-width foot, so each plate stands
+    on its two ends: no rocking on a slightly uneven floor. Only plate A needs it (B's slot splits its foot)."""
+    Y = p.yagura
+    sag = getattr(Y, "foot_relief", 0.0)
+    if sag <= 0:
+        return Polygon()
+    wn = getattr(Y, "leg_narrow", 0.0) or p.frame.leg_width
+    a, b = Y.foot_relief_margin, wn - Y.foot_relief_margin
+    c = (b - a) / 2
+    R = (c * c + sag * sag) / (2 * sag)
+    return Point((a + b) / 2, sag - R).buffer(R, quad_segs=64).intersection(box(a - 1, -1, b + 1, sag))
 
 
 def post_u(p) -> float:
