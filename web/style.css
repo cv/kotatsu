@@ -15,6 +15,11 @@ main { height: calc(100% - 50px); }
 .cards { display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:16px; width:100%; align-content:start; }
 .card { background:#fff; border:1px solid var(--line); border-radius:10px; padding:14px 16px; }
 .card.wide { grid-column: 1 / -1; }
+.story { font-size:16px; line-height:1.6; padding:22px 28px; }
+.story > * { max-width: 72ch; margin-left:auto; margin-right:auto; }
+.story h2 { font-size:20px; margin:28px auto 8px; }
+.story img { display:block; width:100%; max-width:720px; height:auto; margin:18px auto; border-radius:8px; }
+.story li { margin:4px 0; }
 .card h3 { margin:0 0 10px; font-size:14px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
 dl { display:grid; grid-template-columns: 90px 1fr; gap:4px 12px; margin:0; } dt { color:var(--muted); }
 .ok { color:var(--ok); } .bad { color:var(--bad); }

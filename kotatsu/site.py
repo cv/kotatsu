@@ -27,7 +27,7 @@ from .params import ROOT
 WEB = ROOT / "web"
 OUT = ROOT / "out" / "site"
 DOCS = ["PLAN.md", "AGENTS.md", "docs/research.md", "docs/heater.md", "docs/futon.md"]
-WATCH = ["params.toml", "kotatsu", "web", "docs", "PLAN.md", "AGENTS.md"]
+WATCH = ["params.toml", "kotatsu", "web", "docs", "PLAN.md", "AGENTS.md", "README.md"]
 
 
 def rings(poly: Polygon, nd: int = 2) -> dict:
@@ -148,6 +148,15 @@ def run_tests() -> dict:
             [l for l in lines if "Error" in l or "FAILED" in l][:20]}
 
 
+def story() -> str:
+    """The README's story (between the <!-- story --> markers), with image paths for the site."""
+    text = (ROOT / "README.md").read_text()
+    a, b = text.find("<!-- story -->"), text.find("<!-- /story -->")
+    if a < 0 or b < 0:
+        return ""
+    return text[a + len("<!-- story -->"):b].replace("](docs/img/", "](img/")
+
+
 def build(with_tests: bool = True) -> None:
     p = params.load()
     with open(ROOT / "params.toml", "rb") as f:
@@ -155,6 +164,7 @@ def build(with_tests: bool = True) -> None:
     data = {
         "generated": dt.datetime.now().isoformat(timespec="seconds"),
         "git": git_rev(),
+        "story": story(),
         "project": {
             "title": "Kotatsu — glue-free CNC birch",
             "facts": [
@@ -179,6 +189,9 @@ def build(with_tests: bool = True) -> None:
     for f in WEB.iterdir():
         if f.is_file():
             shutil.copy2(f, OUT / f.name)
+    (OUT / "img").mkdir(exist_ok=True)
+    for f in (ROOT / "docs" / "img").glob("*.png"):
+        shutil.copy2(f, OUT / "img" / f.name)
     tmp = OUT / "data.json.tmp"
     tmp.write_text(json.dumps(data, separators=(",", ":")))
     tmp.replace(OUT / "data.json")

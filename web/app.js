@@ -18,6 +18,9 @@ addEventListener("hashchange", () => showTab(location.hash.slice(1) || "overview
 
 // ---------- overview ----------
 function renderOverview(d) {
+  const st = $("#story");
+  st.innerHTML = d.story ? marked.parse(d.story) : "";
+  st.hidden = !d.story;
   $("#facts").replaceChildren(...d.project.facts.flatMap(([k, v]) => {
     const dt = document.createElement("dt"); dt.textContent = k;
     const dd = document.createElement("dd"); dd.textContent = v; return [dt, dd];
