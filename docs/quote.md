@@ -95,3 +95,18 @@ This reproduces the real order ($374.78 predicted vs $374.74 quoted).
 - **No per-file fee**, so merging identical parts (one wedge file) is tidier but saves about $0.
 - **Pockets aren't offered.** A shape on a POCKET layer was cut through as a hole. "Additional processes" are only
   custom instructions, bending, brushed finish and paint. So summer pockets would need a manual quote (not done).
+
+## Re-quote after optimizing (2026-10-20, saved project)
+Notched H deck, one wedge part (x14 = 12 + 2 spares), crush ribs, foot relief. All Baltic birch 19mm, CNC router, mm.
+
+| File | Size | Qty | Line |
+|---|---|---|---|
+| heater-cheek.dxf | 372 × 94 | 2 | $23.62 |
+| top.dxf | 860 × 860 | 1 | $92.77 |
+| deck.dxf | 780 × 780 | 1 | $102.38 |
+| leg-plate-a.dxf | 110 × 385 | 4 | $58.80 |
+| leg-plate-b.dxf | 110 × 385 | 4 | $58.84 |
+| wedge.dxf | 60 × 17.6 | 14 | $17.50 |
+
+Subtotal **$353.91** (price model predicted $354.03), shipping **FREE** (91 × 91 × 16 cm, 16.6 kg), tax $42.47,
+**total $396.38**. That's $23.33 less than the slim-leg quote ($419.71).
