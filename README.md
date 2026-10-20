@@ -31,6 +31,11 @@ three rules:
 Most of my good ideas got replaced by better ones. These are the four biggest turns, each with what came
 before and what replaced it.
 
+This is the very first full design, from the first afternoon: a 120 × 80 cm top in three boards joined
+by dovetails, sitting on solid side panels. Compare it with the picture at the top of this page.
+
+![The very first full design: a 120 × 80 top in three boards joined by dovetails, on solid side panels](docs/img/first-design.png)
+
 ### The top
 
 My first idea was a big 120 × 80 cm table. A top that big doesn't fit in a normal parcel, so I split it
