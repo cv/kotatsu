@@ -47,7 +47,7 @@ def frame_data(p) -> dict:
     for pt in frame.parts(p):
         g = pt.shape
         x0, y0, x1, y1 = g.bounds
-        plist.append({"name": pt.name, "kind": pt.kind, "qty": pt.qty, "spares": pt.spares,
+        plist.append({"name": pt.name, "kind": pt.kind, "qty": pt.qty, "spares": pt.spares, "grain": pt.grain,
                       "shape": rings(g), "bounds": [x0, y0, x1, y1],
                       "size": [round(x1 - x0, 1), round(y1 - y0, 1)],
                       "kg": round(g.area / 1e6 * t / 1000 * kg_m3, 2),

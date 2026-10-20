@@ -4,9 +4,26 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import GUI from "lil-gui";
+import { birchFace, plyEdge, cotton, braidedRug } from "./textures.js";
 
-const COL = { a: 0xead3a8, b: 0xd9b47c, key: 0x9c6232, panel: 0xe2c595, deck: 0xd6b88a, heater: 0x2b2b2b,
-  rug: 0xcdbfa8, futon: 0x56637f, seat: 0xb4643f };
+const COL = { heater: 0x2b2b2b, futon: 0x56637f, seat: 0xb4643f, rugSide: 0xb9a888 };
+// all parts are the same pale birch; a faint tint per kind keeps them apart in the exploded view
+const TINT = { top: 0xffffff, frame: 0xfbf6ee, deck: 0xf4ebdd, cheek: 0xf4ebdd, wedge: 0xf1e2c8 };
+
+const TEX = {}; // textures and materials, made once
+function woodMats(kind, grain, t) {
+  const key = kind + grain;
+  if (TEX[key]) return TEX[key];
+  if (!TEX.face) { TEX.face = birchFace(11); TEX.edge = plyEdge(t); }
+  let face = TEX.face;
+  if (grain === "v") { face = TEX.face.clone(); face.rotation = Math.PI / 2; face.needsUpdate = true; }
+  const tint = TINT[kind] ?? TINT.frame;
+  TEX[key] = [
+    new THREE.MeshStandardMaterial({ map: face, color: tint, roughness: 0.78, side: THREE.DoubleSide }),
+    new THREE.MeshStandardMaterial({ map: TEX.edge, color: tint, roughness: 0.9, side: THREE.DoubleSide }),
+  ];
+  return TEX[key];
+}
 
 function shapeFrom(p) {
   const s = new THREE.Shape(p.ext.map(([x, y]) => new THREE.Vector2(x, y)));
@@ -14,12 +31,12 @@ function shapeFrom(p) {
   return s;
 }
 
-function slab(p, t, color) {
-  const geo = new THREE.ExtrudeGeometry(shapeFrom(p), { depth: t, bevelEnabled: false, curveSegments: 4 });
-  const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.85, side: THREE.DoubleSide });
-  const mesh = new THREE.Mesh(geo, mat);
+function slab(p, t, kind, grain = "u") {
+  const geo = new THREE.ExtrudeGeometry(shapeFrom(p), { depth: t, bevelEnabled: false, curveSegments: 8 });
+  const mesh = new THREE.Mesh(geo, woodMats(kind, grain, t)); // group 0 = faces, group 1 = cut edges
+  mesh.castShadow = mesh.receiveShadow = true;
   const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 25),
-    new THREE.LineBasicMaterial({ color: 0x3b2f25, transparent: true, opacity: 0.55 }));
+    new THREE.LineBasicMaterial({ color: 0x5a4632, transparent: true, opacity: 0.28 }));
   const g = new THREE.Group(); g.add(mesh, edges);
   return g;
 }
@@ -35,6 +52,8 @@ export class Viewer3D {
     this.c = container;
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(devicePixelRatio);
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(this.renderer.domElement);
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xfdfbf8);
@@ -44,8 +63,14 @@ export class Viewer3D {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.target.set(600, 400, 220);
     this.controls.addEventListener("change", () => this.render());
-    this.scene.add(new THREE.HemisphereLight(0xffffff, 0x8a7a66, 2.2));
-    const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(800, -1200, 2000); this.scene.add(sun);
+    this.scene.add(new THREE.HemisphereLight(0xffffff, 0x8a7a66, 1.9));
+    const sun = new THREE.DirectionalLight(0xfff6ea, 2.1);
+    sun.castShadow = true;
+    sun.shadow.mapSize.set(2048, 2048);
+    Object.assign(sun.shadow.camera, { left: -1700, right: 1700, top: 1700, bottom: -1700, near: 100, far: 6000 });
+    sun.shadow.bias = -0.0004; sun.shadow.normalBias = 1.5; sun.shadow.radius = 4;
+    this.scene.add(sun, sun.target);
+    this.sun = sun;
     const grid = new THREE.GridHelper(3000, 30, 0xcfc6b8, 0xe7e0d6); grid.rotation.x = Math.PI / 2;
     grid.position.set(600, 400, -12); this.scene.add(grid); // just under the rug
     this.grid = grid;
@@ -86,6 +111,9 @@ export class Viewer3D {
       dx += T.top.length + 400;
     }
     for (const it of this.items) this.root.add(it.obj);
+    const c = new THREE.Box3().setFromObject(this.root).getCenter(new THREE.Vector3()); // aim the sun at the table
+    this.sun.target.position.set(c.x, c.y, 0);
+    this.sun.position.set(c.x + 800, c.y - 1200, 2600);
     if (!this.framed) { this.framed = true; this.frame(); }
     this.place();
   }
@@ -98,23 +126,24 @@ export class Viewer3D {
     const nb = opt.boards.length;
     const push = (obj, kind, dir) => { obj.position.add(off); this.items.push({ obj, kind, dir, base: obj.position.clone() }); };
     opt.boards.forEach((h, i) => {
-      const m = slab(h, t, i % 2 ? COL.b : COL.a); m.position.z = ztop;
+      const m = slab(h, t, "top", "u"); m.position.z = ztop;
       const sx = nb > 1 ? (2 * i / (nb - 1) - 1) : 0; // -1 .. +1, left -> right
       push(m, "top", new THREE.Vector3(sx, 0, sx === 0 ? 0.4 : 0));
     });
-    opt.keys.forEach((k) => { const m = slab(k, t, COL.key); m.position.z = ztop; push(m, "key", new THREE.Vector3(0, 0, 1.6)); });
+    opt.keys.forEach((k) => { const m = slab(k, t, "wedge"); m.position.z = ztop; push(m, "key", new THREE.Vector3(0, 0, 1.6)); });
     const byName = Object.fromEntries(F.parts.map((p) => [p.name, p]));
-    const colour = { frame: COL.panel, deck: COL.deck, cheek: COL.deck, wedge: COL.key };
     for (const pl of F.placed) {
-      let shape = byName[pl.part].shape;
+      const part = byName[pl.part];
+      let shape = part.shape;
       if (pl.mirror) shape = { ext: shape.ext.map(([u, v]) => [-u, v]).reverse(), holes: shape.holes.map((h) => h.map(([u, v]) => [-u, v]).reverse()) };
-      const m = slab(shape, t, colour[pl.kind] ?? COL.panel);
+      const m = slab(shape, t, pl.kind, part.grain || "u");
       if (pl.axis !== "z") m.applyMatrix4(BASIS[pl.axis]);
       m.position.set(...pl.origin);
       push(m, pl.kind === "wedge" ? "wedge" : "frame", new THREE.Vector3(...pl.explode));
     }
     const hz = F.heater;
     const heater = new THREE.Mesh(new THREE.BoxGeometry(...hz.size), new THREE.MeshStandardMaterial({ color: COL.heater, roughness: 0.5 }));
+    heater.castShadow = true;
     heater.position.set(...hz.center);
     push(heater, "heater", new THREE.Vector3(0, 0, -0.6));
     if (T.room3d) this.addRoom(T.room3d, push);
@@ -122,8 +151,13 @@ export class Viewer3D {
 
   addRoom(R, push) { // rug, draped futon and floor pillows; geometry comes from Python (room.room3d)
     const still = new THREE.Vector3();
-    const rug = new THREE.Mesh(new THREE.CylinderGeometry(R.rug.d / 2, R.rug.d / 2, R.rug.t, 96),
-      new THREE.MeshStandardMaterial({ color: COL.rug, roughness: 1 }));
+    TEX.rug ??= braidedRug();
+    TEX.cotton ??= cotton(3, false);
+    TEX.quilt ??= cotton(4, true);
+    const rugCap = new THREE.MeshStandardMaterial({ map: TEX.rug, roughness: 1 });
+    const rug = new THREE.Mesh(new THREE.CylinderGeometry(R.rug.d / 2, R.rug.d / 2, R.rug.t, 128),
+      [new THREE.MeshStandardMaterial({ color: COL.rugSide, roughness: 1 }), rugCap, rugCap]); // side, top, bottom
+    rug.receiveShadow = true;
     rug.rotation.x = Math.PI / 2; rug.position.set(R.rug.center[0], R.rug.center[1], -R.rug.t / 2);
     push(rug, "rug", still);
     const n = R.futon.n, geo = new THREE.BufferGeometry(), idx = [];
@@ -132,15 +166,21 @@ export class Viewer3D {
       const a = j * n + i, b = a + 1, c = a + n, d = c + 1;
       idx.push(a, b, d, a, d, c);
     }
+    const uv = [], quilts = Math.max(2, Math.round(R.futon.size / 254)); // ~ 25 cm quilted squares
+    for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) uv.push((i / (n - 1)) * quilts, (j / (n - 1)) * quilts);
+    geo.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
     geo.setIndex(idx); geo.computeVertexNormals();
-    const futon = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: COL.futon, roughness: 0.95, side: THREE.DoubleSide }));
+    const futon = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map: TEX.quilt, color: COL.futon, roughness: 0.95, side: THREE.DoubleSide }));
+    futon.castShadow = futon.receiveShadow = true;
     futon.renderOrder = 2; // drawn after the opaque parts, so it can fade over them
     push(futon, "futon", still);
-    const seatMat = new THREE.MeshStandardMaterial({ color: COL.seat, roughness: 0.9 });
+    const seatTex = TEX.cotton.clone(); seatTex.repeat.set(2, 2); seatTex.needsUpdate = true;
+    const seatMat = new THREE.MeshStandardMaterial({ map: seatTex, color: COL.seat, roughness: 0.9 });
     for (const st of R.seats) {
       const [w, d, h] = st.size;
       const m = new THREE.Mesh(new RoundedBoxGeometry(w, d, h, 4, Math.min(35, h / 2.2)), seatMat);
       m.position.set(...st.center);
+      m.castShadow = m.receiveShadow = true;
       push(m, "seat", still);
     }
   }
@@ -156,6 +196,7 @@ export class Viewer3D {
         const fade = o < 0.999;
         if (m.transparent !== fade) { m.transparent = fade; m.depthWrite = !fade; m.needsUpdate = true; }
         m.opacity = o;
+        it.obj.castShadow = o > 0.6; // a see-through futon shouldn't darken the frame inside it
       }
       const lift = it.kind === "top" ? new THREE.Vector3(0, 0, e * 0.8) : new THREE.Vector3();
       it.obj.position.copy(it.base).addScaledVector(it.dir, e * 0.5).add(lift);
