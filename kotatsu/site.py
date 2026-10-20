@@ -92,6 +92,7 @@ def table_summary(tp, fd: dict, plan) -> dict:
         "cut_m": round(cut / 1000, 1),
         "side_clear": k["apron_clear"], "knee_reach": k["reach"], "shin_w": k["shin_w"],
         "heater_clear": round(hz - sz / 2), "tip_n": k["tip_n"],
+        "min": {"tip_n": k["tip_min_n"], "knee_reach": k["reach_min"], "side_clear": tp.comfort.knee_h + 5},
         "sheets": [nest.sheet_name((s.w, s.h)) for s in plan.sheets] if plan else [],
         "plywood_m2": round(nest.material_m2(plan), 2) if plan else None,
         "util": round(nest.utilisation(plan), 3) if plan else None,

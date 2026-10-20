@@ -67,10 +67,10 @@ def test_leg_wedges_clamp_the_deck(Y, t_deck):
     z0, z1 = yagura.leg_hole_z(P)
     top = L.z_deck_bot + t_deck
     assert z0 < top
-    CW = P.cheek_wedge
+    wl, wh = yagura.wedge_dims(P, "leg")
     need = z1 - top
-    assert CW.head - CW.length * P.fit.wedge_taper < need < CW.head
-    assert L.z_deck_top + CW.head <= L.H - 3, "wedges stay under the futon plane"
+    assert wh - wl * P.fit.wedge_taper < need < wh
+    assert L.z_deck_top + wh <= L.H - 3, "wedges stay under the futon plane"
     ta, tb = yagura._tenon_u(P)
     assert (tb - ta) - frame.thick_slot(P) >= 2 * 15, "wood beside the wedge hole"
     assert L.H - z1 >= 10, "wood above the wedge hole"

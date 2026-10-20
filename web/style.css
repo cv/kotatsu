@@ -88,3 +88,4 @@ table.cmp { border-collapse: collapse; font-size: 14px; }
 table.cmp th, table.cmp td { padding: 5px 12px; border-bottom: 1px solid var(--line); text-align: left; }
 table.cmp tr th:first-child { color: #6b5b4b; font-weight: 500; }
 table.cmp td.best { color: #1f6b3a; font-weight: 600; }
+table.cmp td.below { color: #a3261b; font-weight: 600; }

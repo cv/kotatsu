@@ -105,16 +105,20 @@ label = "3 ft round (Ø 900, one piece)"
 
 [[tables]]            # comparison variant (not cut): no aprons, "+" corner legs under the deck
 name = "round-yagura"
-label = "Yagura variant (no aprons)"
+label = "Yagura variant (no aprons, straight thin legs)"
 compare = true
 [tables.frame]
 style = "yagura"
-leg_width = 160.0     # legs can be wider at the top now that there's no apron: room for a shouldered tenon
-leg_taper = 60.0      # ... same 100 mm at the floor
+leg_width = 120.0     # straight, thin legs: 40 mm ear arm | slot | 10 mm shoulder + 50 mm tenon to the inner edge
+leg_taper = 0.0       # straight (plumb both edges)
+foot_flare = 0.0      # no bell feet
 
 [yagura]              # only used by frame.style = "yagura"
 tenon_w = 56.0        # each leg plate's tenon through the deck
-tenon_gap = 20.0      # tenon starts this far past the cross-lap slot
+tenon_gap = 10.0      # tenon starts this far past the cross-lap slot (the shoulder on that side)
+tenon_to_edge = true  # tenon runs out to the leg's inner edge (thinnest leg that still takes a wedge)
 hole_h = 14.0         # wedge hole above the deck (same small wedges as the cheeks)
 hole_drop = 1.0
 deck_inset = 10.0     # deck corners stay this far inside the round top
+wedge_len = 60.0      # leg wedges: shorter than the cheek wedges so the two at each corner don't meet
+wedge_head = 18.0     # (1:8 taper -> 10.5 mm foot)

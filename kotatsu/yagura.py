@@ -25,6 +25,8 @@ def _tenon_u(p) -> tuple[float, float]:
     """u-range of a plate's tenon, from the plate's outer end: just past the cross-lap slot."""
     F, Y = p.frame, p.yagura
     a = F.ear + fr.slot_w(p) / 2 + Y.tenon_gap
+    if getattr(Y, "tenon_to_edge", False):             # thin legs: tenon runs out to the leg's inner edge
+        return a, F.leg_width
     return a, a + Y.tenon_w
 
 
@@ -53,6 +55,8 @@ def leg_plate(p, slotted_from_top: bool) -> Polygon:
     ta, tb = _tenon_u(p)
     g = g.union(fr._round_outer(box(ta, zs - 10, tb, H), 3.0))
     for u, s in ((ta, -1), (tb, 1)):                     # root reliefs: shoulders seat flat on the deck
+        if s > 0 and tb >= wt - 0.01:
+            continue                                     # tenon flush with the inner edge: no root there
         g = g.difference(fr.dogbone((u, zs), (s, 1), r))
     hz0, hz1 = leg_hole_z(p)
     uc, ts = (ta + tb) / 2, fr.thick_slot(p)
@@ -102,9 +106,18 @@ def deck(p) -> Polygon:
     return g
 
 
-def wedge_shape(p) -> Polygon:
-    CW, taper = p.cheek_wedge, p.fit.wedge_taper
-    w = Polygon([(0, 0), (CW.length, 0), (CW.length, CW.head), (0, CW.head - CW.length * taper)])
+def wedge_dims(p, which: str = "cheek") -> tuple[float, float]:
+    """(length, head) of the cheek wedges, or of the (shorter) leg wedges."""
+    CW, Y = p.cheek_wedge, p.yagura
+    if which == "leg":
+        return getattr(Y, "wedge_len", CW.length), getattr(Y, "wedge_head", CW.head)
+    return CW.length, CW.head
+
+
+def wedge_shape(p, which: str = "cheek") -> Polygon:
+    n, h = wedge_dims(p, which)
+    taper = p.fit.wedge_taper
+    w = Polygon([(0, 0), (n, 0), (n, h), (0, h - n * taper)])
     return fr._round_outer(w, 3.0)
 
 
@@ -125,15 +138,15 @@ def parts(p) -> list[Part]:
     CW = p.cheek_wedge
     w = wedge_shape(p)
     # leg wedges lie on the deck and pass through each tenon, normal to its plate
-    ta, tb = _tenon_u(p)
+    wl, _ = wedge_dims(p, "leg")
     lw = []
     for x0, y0, x1, y1 in mortises(p):
         xc, yc = (x0 + x1) / 2, (y0 + y1) / 2
         if x1 - x0 > y1 - y0:          # x plate tenon: wedge runs along y (plate in the y-z plane)
-            lw.append(Placement("y", (xc - t / 2, yc - CW.length / 2, L.z_deck_top)))
+            lw.append(Placement("y", (xc - t / 2, yc - wl / 2, L.z_deck_top)))
         else:
-            lw.append(Placement("x", (xc - CW.length / 2, yc - t / 2, L.z_deck_top)))
-    out.append(Part("leg wedge", w, lw, spares=1, kind="wedge"))
+            lw.append(Placement("x", (xc - wl / 2, yc - t / 2, L.z_deck_top)))
+    out.append(Part("leg wedge", wedge_shape(p, "leg"), lw, spares=1, kind="wedge"))
     cw_pl = []
     for xi, s in zip(fr.cheek_xs(p), (-1, 1)):
         xmid = xi + s * t / 2

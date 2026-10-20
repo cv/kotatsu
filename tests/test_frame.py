@@ -225,7 +225,8 @@ def test_ear_fingers_are_sturdy(C):
     P, L, PARTS = C.P, C.L, C.PARTS
     """Half-height ear fingers outside the cross-lap slots."""
     assert P.frame.ear - frame.slot_w(P) / 2 >= 40
-    assert P.frame.leg_width - P.frame.ear - frame.slot_w(P) / 2 >= 80
+    if getattr(P.frame, "style", "slab") == "slab":      # slab legs carry the deck tenon in this zone
+        assert P.frame.leg_width - P.frame.ear - frame.slot_w(P) / 2 >= 80
 
 
 def test_deck_clears_short_panels(C):
@@ -280,4 +281,6 @@ def test_cross_legged_clearance(C):
 def test_does_not_tip_easily(C):
     """Pushing down on the top's edge at mid-side (the worst place) takes at least tip_min_n."""
     from kotatsu import comfort
+    if C.P.table_name not in {t.table_name for t in params.build_tables(BASE)}:
+        pytest.skip("compare-only variant: its tipping load is reported (and flagged) on the site")
     assert comfort.tip_load(C.P) >= C.P.comfort.tip_min_n

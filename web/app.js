@@ -34,26 +34,30 @@ const ROWS = [
   ["Frame weight", (s) => s.frame_kg + " kg", "low", (s) => s.frame_kg], ["Total weight", (s) => s.total_kg + " kg", "low", (s) => s.total_kg],
   ["Cut length", (s) => s.cut_m + " m", "low", (s) => s.cut_m],
   ["Plywood", (s) => s.sheets.join(" + ") + ` · ${s.plywood_m2} m² (${Math.round(s.util * 100)} % used)`, "low", (s) => s.plywood_m2],
-  ["Clear height at mid-side", (s) => s.side_clear + " mm", "high", (s) => s.side_clear],
-  ["Knee zone (30″) reach under edge", (s) => Math.round(s.knee_reach) + " mm", "high", (s) => s.knee_reach],
+  ["Clear height at mid-side", (s) => s.side_clear + " mm", "high", (s) => s.side_clear, "side_clear"],
+  ["Knee zone (30″) reach under edge", (s) => Math.round(s.knee_reach) + " mm", "high", (s) => s.knee_reach, "knee_reach"],
   ["Between legs at knee height", (s) => Math.round(s.shin_w) + " mm", "high", (s) => s.shin_w],
   ["Clear under heater", (s) => s.heater_clear + " mm", "high", (s) => s.heater_clear],
-  ["Push on edge to tip", (s) => s.tip_n + " N", "high", (s) => s.tip_n],
+  ["Push on edge to tip", (s) => s.tip_n + " N", "high", (s) => s.tip_n, "tip_n"],
 ];
 
 function renderCompare(d) {
   const T = d.tables;
   const head = "<tr><th></th>" + T.map((t) => `<th>${t.label}${t.compare ? ' <span class="badge">compare only</span>' : ' <span class="badge ok">building</span>'}</th>`).join("") + "</tr>";
-  const body = ROWS.map(([k, f, better, num]) => {
+  const body = ROWS.map(([k, f, better, num, lim]) => {
     let best = null;
     if (better && num && T.length > 1) {
       const vs = T.map((t) => num(t.summary));
       const b = better === "low" ? Math.min(...vs) : Math.max(...vs);
       if (vs.some((v) => v !== b)) best = b;
     }
-    return "<tr><th>" + k + "</th>" + T.map((t) => `<td class="${best !== null && num(t.summary) === best ? "best" : ""}">${f(t.summary)}</td>`).join("") + "</tr>";
+    return "<tr><th>" + k + "</th>" + T.map((t) => {
+      const S = t.summary, low = lim && S.min && num(S) < S.min[lim];
+      const cls = low ? "below" : best !== null && num(S) === best ? "best" : "";
+      return `<td class="${cls}">${f(S)}${low ? ` ⚠ below the ${S.min[lim]} minimum` : ""}</td>`;
+    }).join("") + "</tr>";
   }).join("");
-  $("#compare").innerHTML = `<table class="cmp">${head}${body}</table><p class="stats">green = better · same corners, top, heater and futon in every column · see the 3-D tab ("table: all") and Frame parts</p>`;
+  $("#compare").innerHTML = `<table class="cmp">${head}${body}</table><p class="stats">green = better · red = misses a requirement · same corners, top, heater and futon in every column · see the 3-D tab ("table: all") and Frame parts</p>`;
 }
 
 // ---------- futon & rug ----------
