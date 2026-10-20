@@ -1,15 +1,13 @@
-"""Yagura variant (frame.style = "yagura"): "+" corner legs under a deck, no aprons.
-Every joint must fit across the stock-thickness range, as for the slab frame."""
+"""Yagura frame: "+" corner legs under a deck, no aprons. Every joint must fit across the
+stock-thickness range."""
 import pytest
 from shapely.geometry import Point, box
-from shapely.ops import unary_union
 
 from kotatsu import frame, params, yagura
 
 BASE = params.load()
-YT = [t for t in params.tables(BASE) if getattr(t.frame, "style", "slab") == "yagura"]
+YT = params.tables(BASE)
 T_RANGE = (BASE.material.t_min, BASE.material.t_nominal, BASE.material.t_max)
-pytestmark = pytest.mark.skipif(not YT, reason="no yagura table in params.toml")
 
 
 @pytest.fixture(params=YT, ids=[t.table_name for t in YT])
@@ -98,3 +96,20 @@ def test_deck_inside_round_top(Y):
     dk = parts["deck"].shape
     far = max(Point(L.cx, L.cy).distance(Point(x, y)) for x, y in dk.exterior.coords)
     assert far <= P.top.length / 2 - P.yagura.deck_inset + 0.5
+
+
+def test_quantities(Y):
+    P, L, parts = Y
+    q = {n: pt.qty for n, pt in parts.items()}
+    assert q["leg plate A"] == 4 and q["leg plate B"] == 4 and q["deck"] == 1 and q["heater cheek"] == 2
+    assert q["leg wedge"] >= 8 and q["cheek wedge"] >= 4
+
+
+def test_legs_are_straight(Y):
+    """Plumb plates: as wide at the floor as under the deck."""
+    P, L, parts = Y
+    for name in ("leg plate A", "leg plate B"):
+        g = parts[name].shape
+        lo = g.intersection(box(-50, 10, 400, 11)).bounds       # above the corner rounding
+        hi = g.intersection(box(-50, L.z_deck_bot - 20, 400, L.z_deck_bot - 19)).bounds
+        assert lo[0] == pytest.approx(hi[0], abs=0.5) and lo[2] == pytest.approx(hi[2], abs=0.5)

@@ -7,7 +7,7 @@ data from the uMake app, or from the heater once it's in hand.
 | Question | Answer |
 |---|---|
 | Table | **One round kotatsu, top Ø 900 cut as one piece.** The 1200 × 900 rectangle and all the decorative seam options were dropped (they're archived at git tag `seams-archive`) |
-| Frame | **Yagura, straight legs** (2026-10-19): 4 straight 120 mm "+" corner legs under a wedged deck, no aprons. The slab-side frame and a splayed-leg yagura stay on the site as compare-only designs |
+| Frame | **Yagura, straight legs** (2026-10-19): 4 straight 120 mm "+" corner legs under a wedged deck, no aprons |
 | Heater | **PaletteLife 120 V 400 W** ordered (see docs/heater.md); the backup is Zuomeng PTC |
 | Height | ≈ 41 cm total: frame 385 + top 18 + futon (owner accepted the top of the 39–41 range for leg room) |
 | Corners | the default visible cross-lap "ears"; no engraving |
@@ -48,36 +48,24 @@ data from the uMake app, or from the heater once it's in hand.
 4. Hang the cheeks (tabs up through the deck, 4 cheek wedges), then screw the heater between them.
 5. Lay on the futon, then the top.
 
-## 3. Leg room history (slab frame, 2026-10-19: owner chose A, B, D, E, F)
-| | Before | Now |
-|---|---|---|
-| Clear height under the aprons (thighs/knees) | 285 | **330** |
-| Opening width, each of the 4 sides | 360 | **380** |
-| Interior between the panels | 522 | **542** |
-| Clear height under the heater/cheeks (shins) | 261 / 253 | **285** |
-| Parts sticking into the openings | 4 tusk tenons + wedges | none |
-
-- A: the deck tenons moved into the legs.
-- B: no deck wedges.
-- D: deck drop 40 → 26, using smaller cheek wedges; the cheeks now end level with the heater.
-- E: ear 60 → 50.
-- F: frame height 375 → 385.
-- Not chosen: C (arched apron, which would give ~345 mid-span).
-
-## 3b. Frame styles compared (site Overview, "Frame styles compared")
-| | **Yagura, straight (building)** | Slab-side (compare) | Yagura, splayed 20 mm (compare) |
-|---|---|---|---|
-| Pieces / wedges | 26 / 14 | 13 / 5 | 26 / 14 |
-| Weight | 18 kg | 17.6 kg | 18 kg |
-| Plywood | **60×60", 2.32 m², 62 %** | 48×96", 2.97 m², 47 % | 60×60", 2.32 m² |
-| Clear height at mid-side | **341** | 330 | 341 |
-| Knee-zone reach / between legs at knee height | **120 / 420** | 102 / 357 | 100 / 423 |
-| Push to tip it (mid-side, 50 mm in) | 1019 N | 1391 N | 1480 N |
+## 3. Numbers (site Overview, "Design numbers")
+| | |
+|---|---|
+| Pieces / of which wedges | 26 / 14 (incl. 2 spares) |
+| Weight | ≈ 18 kg |
+| Plywood | one 60×60" sheet, 2.32 m², 62 % used |
+| Clear height at mid-side (deck underside) | 341 mm |
+| Owner's 30" × 12.5" knee zone: reach under the top's edge / room between legs at knee height | 120 mm / 420 mm |
+| Clear height under the heater | 285 mm |
+| Push to tip it (mid-side, 50 mm in / at the very edge) | ≈ 1020 N / 600 N |
 
 **Tipping** is computed the way EN 12521 / EN 1730 test it: a vertical push at the middle of a side, 50 mm in from the edge.
 The figures assume no foot slip, and the weight includes a guessed heater (3 kg) and futon (2 kg). **There is no pass/fail limit yet.**
-The earlier 700 N figure was a placeholder I had tuned to the design, so it was dropped. It needs a real figure: EN 12521:2023's force table, or a
-bathroom-scale test on the finished table (`comfort.tip_min_n`, 0 = report only).
+It needs a real figure: EN 12521:2023's force table, or a bathroom-scale test on the finished table (`comfort.tip_min_n`, 0 = report only).
+
+### History
+- 1200 × 900 rectangle with 3 boards and decorative seams (ari, yajiri, maple, …): dropped for the round one-piece top. Git tag `seams-archive`.
+- Slab-side frame (apron + legs in one piece, tapered legs, bell feet; leg-room options A–F) and a splayed-leg yagura: built for comparison, then dropped in favour of the straight yagura. Git tag `frame-variants-archive`.
 
 ## 4. Budget (CAD, estimates; TODO-verify)
 | Item | Estimate |
@@ -92,7 +80,7 @@ bathroom-scale test on the finished table (`comfort.tip_min_n`, 0 = report only)
 0. ✅ Repo, AGENTS.md, vendor research, tooling (uv, ezdxf, shapely, matplotlib, pytest, Makefile).
 1. ✅ Project site (`make dev`, http://127.0.0.1:8765): futon & rug plan, frame parts, cut sheets, 3-D, docs, test status.
 2. ✅ Frame geometry and joint tests; cut list, nesting, DXF per part and per sheet, `out/BOM.md`.
-3. ✅ **Leg room** (section 3), ✅ **frame style**: yagura with straight legs (section 2).
+3. ✅ **Leg room** and ✅ **frame style**: yagura with straight legs (sections 2–3).
 3b. **Stiffness / wobble check** for the yagura (2-D stress model + joint slack), and a real tipping limit.
 4. ◐ **Heater**: measure it when it arrives and freeze `[heater]` (body, screw-hole positions, screw size, cord exit).
 5. **Quote** on app.umake.ca: read the actual stock thickness and price; make sure there's no "manual quote" flag.

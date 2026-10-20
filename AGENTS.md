@@ -7,7 +7,7 @@ owner's door, and ordering must not involve a phone call or an email.
 
 Deliverables:
 1. Parametric source (Python) that generates every part from one parameter file.
-2. Upload-ready cut files (DXF in mm, plus SVG) for the top, frame/aprons, legs, heater mount, and
+2. Upload-ready cut files (DXF in mm, plus SVG) for the top, legs, deck, heater mount, and
    any joinery pieces (wedges, keys).
 3. Previews (PNG), a cut list/BOM, an estimated weight and shipping-box check, and assembly instructions.
 
@@ -22,7 +22,9 @@ Deliverables:
   - each box ≤ 50 lb (22.7 kg) if possible, and never > 150 lb;
   - no secondary operations (bending, finishing, assembly) ordered from the vendor.
 - **Overall size:** one round table, top Ø 900 mm in one piece (owner, 2026-10; the 1200 × 900
-  rectangle with seams was dropped, see git tag `seams-archive`).
+  rectangle with seams was dropped, see git tag `seams-archive`). Frame: yagura with straight "+" corner
+  legs under a wedged deck (owner, 2026-10-19; earlier frame designs at git tag `frame-variants-archive`).
+- **Focus:** keep only the design being built in the code. Archive alternatives with a git tag, then delete them.
 - **Electrical safety:** the heater must be rated for the local mains (Canada: 120 V / 60 Hz, cUL/CSA/ETL).
   Do not plan around a 100 V Japanese heater with no transformer. Follow the heater maker's
   clearances and mounting instructions; they override this design.

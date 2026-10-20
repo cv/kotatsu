@@ -29,7 +29,6 @@ function renderOverview(d) {
 }
 
 const ROWS = [
-  ["Frame style", (s) => s.style === "yagura" ? "yagura: + legs under a deck" : "slab sides (apron + legs)"],
   ["Pieces (incl. top)", (s) => s.pieces, "low"], ["…of which wedges", (s) => s.wedges, "low"],
   ["Frame weight", (s) => s.frame_kg + " kg", "low", (s) => s.frame_kg], ["Total weight", (s) => s.total_kg + " kg", "low", (s) => s.total_kg],
   ["Cut length", (s) => s.cut_m + " m", "low", (s) => s.cut_m],
@@ -43,7 +42,7 @@ const ROWS = [
 
 function renderCompare(d) {
   const T = d.tables;
-  const head = "<tr><th></th>" + T.map((t) => `<th>${t.label}${t.compare ? ' <span class="badge">compare only</span>' : ' <span class="badge ok">building</span>'}</th>`).join("") + "</tr>";
+  const head = "<tr><th></th>" + T.map((t) => `<th>${t.label}</th>`).join("") + "</tr>";
   const body = ROWS.map(([k, f, better, num, lim]) => {
     let best = null;
     if (better && num && T.length > 1) {
@@ -57,7 +56,7 @@ function renderCompare(d) {
       return `<td class="${cls}">${f(S)}${low ? ` ⚠ below the ${S.min[lim]} minimum` : ""}</td>`;
     }).join("") + "</tr>";
   }).join("");
-  $("#compare").innerHTML = `<table class="cmp">${head}${body}</table><p class="stats">green = better · red = misses a requirement · same corners, top, heater and futon in every column · see the 3-D tab ("table: all") and Frame parts</p>`;
+  $("#compare").innerHTML = `<table class="cmp">${head}${body}</table><p class="stats">red = misses a requirement · earlier designs: git tags seams-archive, frame-variants-archive</p>`;
 }
 
 // ---------- futon & rug ----------

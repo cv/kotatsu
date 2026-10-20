@@ -26,26 +26,24 @@ length = 900.0        # = diameter
 width = 900.0
 corner_r = 20.0       # rect only
 
-[frame]
-height = 385.0        # + 18 top + ~10 futon ≈ 41 cm total (owner OK'd the top of the 39-41 range for leg room)
-overhang = 120.0      # square frame 660 × 660 under the Ø900 top; its ear tips stay ≥ 10 mm inside the circle
-ear = 50.0            # panel end -> crossing centreline (visible "ear"); half-height ear fingers 40 wide
-apron_depth = 55.0    # clear height under the aprons = height - apron_depth (thighs/knees come in here)
-leg_width = 140.0     # from panel end, where the leg meets the apron: ear + half slot + an 80 mm leg zone (deck tenon)
-leg_taper = 40.0      # legs narrow by this much at the floor (inner edge slants, outer edge plumb): 140 -> 100,
-                      # so the short panels' feet are two equal 40 mm fingers either side of the slot
-opening_r = 50.0      # fillet radius of the leg-opening top corners
-ear_r = 12.0          # rounding of the panel top/bottom outer corners
-foot_r = 6.0          # rounding of the inner foot corners
-foot_flare = 20.0     # bell feet: panel ends sweep out this far at the floor (tipping vs knee room, see [comfort])
-flare_h = 120.0       # ... starting this high up the panel end (cove arc, tangent to the end edge)
-lap_extra = 0.5       # each cross-lap slot is height/2 + this (so slot bottoms never bottom out; the floor sets height)
+[frame]               # yagura: 4 straight "+" corner legs (2 crossed plates each) under a deck; no aprons
+height = 385.0        # floor to the tenon tops (futon plane); + 18 top + ~10 futon ≈ 41 cm total
+overhang = 120.0      # square frame 660 × 660 under the Ø900 top; its corners stay ≥ 10 mm inside the circle
+ear = 50.0            # frame edge -> corner cross-lap centreline (visible "ear"); 40 mm ear arm outside the slot
+leg_width = 120.0     # straight leg plates: 40 mm ear arm | slot | 10 mm shoulder + 50 mm tenon to the inner edge
+foot_r = 6.0          # rounding of the plates' outer corners
+lap_extra = 0.5       # each cross-lap slot is (leg height)/2 + this, so slot bottoms never bottom out; the floor sets height
 
-[deck]                # horizontal shear plate between two opposite panels; the heater hangs under it
-drop = 26.0           # deck top below the apron top edge (room for the cheek tabs + wedges above it)
-tenons_per_side = 2   # one through-tenon in each leg zone (outside the leg openings), no wedges:
-tenon_width = 40.0    # the cross-laps fix the panel spacing, so the tenons can't pull out
-tenon_proud = 2.0     # tenon end stands this far past the nominal outer face (sand flush or leave as a detail)
+[deck]                # horizontal plate on the legs' shoulders; the heater hangs under it
+drop = 26.0           # deck top below the futon plane (room for the leg + cheek wedges above it)
+
+[yagura]              # leg <-> deck joints
+tenon_gap = 10.0      # each plate's tenon starts this far past the cross-lap slot (the shoulder on that side)
+hole_h = 14.0         # wedge hole above the deck
+hole_drop = 1.0       # hole bottom below the thinnest deck's top face, so the wedge bears on the deck
+deck_inset = 10.0     # deck corners stay this far inside the round top
+wedge_len = 60.0      # leg wedges: shorter than the cheek wedges so the two at each corner don't meet
+wedge_head = 18.0     # (1:8 taper -> 10.5 mm foot)
 
 [cheek]               # 2 on-edge plates under the deck; the heater screws into their inner faces
 length = 372.0
@@ -71,8 +69,6 @@ top_gap = 5.0          # heater top below the deck underside (TODO-verify manual
 holes = []             # TODO measure: side screw positions
 
 [comfort]
-sitters = [1, 1]      # people per side (long, short) - square frame: 4 people
-leg_gap = 370.0       # min opening width per sitter between the legs
 knee_w = 762.0        # owner, cross-legged: knees need 30" wide ...
 knee_h = 317.5        # ... x 12.5" high
 knee_reach_min = 95.0   # how far that knee zone must reach in under the top's edge (TODO-verify with owner)
@@ -88,8 +84,7 @@ drape_k = 0.7         # footprint radius ~ futon radius - drape_k * (frame heigh
 zabuton = [550.0, 590.0]  # floor cushion w x d (standard meidosu size)
 
 [layout]              # sheet nesting choices (kotatsu/cutlist.py, kotatsu/nest.py)
-frame_grain = "horizontal"  # side panels keep their length along the grain (looks right); "free" = any rotation
-interlock = true            # also try nesting each long side with a short side upside down, legs interlocked
+frame_grain = "horizontal"  # frame parts keep their grain where it looks right (legs: up the leg); "free" = any rotation
 sets = [1]                  # cut layouts for this many copies of the whole set of [[tables]]
 
 [shipping]
@@ -98,41 +93,8 @@ oversize_max_side_in = 60
 max_box_lb = 50
 
 # ------------------------------------------------------------------------------------------------
-# The table(s) to build. Each [[tables]] entry overrides the defaults above section by section.
-# (The 1200 x 900 rectangle with decorative seams was dropped; see git tag seams-archive.)
-[[tables]]            # BUILDING (owner, 2026-10-19): yagura frame, straight thin legs
+# The table to build. (Earlier designs live in git history: the 1200 x 900 rectangle with decorative
+# seams at tag seams-archive; the slab-side frame and a splayed-leg yagura at tag frame-variants-archive.)
+[[tables]]
 name = "yagura"
-label = "Yagura frame, straight legs"
-[tables.frame]
-style = "yagura"
-leg_width = 120.0     # straight, thin legs: 40 mm ear arm | slot | 10 mm shoulder + 50 mm tenon to the inner edge
-leg_taper = 0.0       # straight (plumb both edges)
-foot_flare = 0.0      # no bell feet
-
-[[tables]]            # comparison (not cut): the earlier slab-side frame (aprons + legs in one piece)
-name = "slab"
-label = "Slab-side frame (aprons)"
-compare = true
-
-[[tables]]            # comparison (not cut): the yagura with legs splayed (leaning out) instead of plumb
-name = "yagura-splay"
-label = "Yagura frame, splayed legs"
-compare = true
-[tables.frame]
-style = "yagura"
-leg_width = 120.0
-leg_taper = 0.0
-foot_flare = 0.0
-[tables.yagura]
-leg_splay = 20.0      # feet 20 mm further out than the top of the leg (3.4°)
-
-[yagura]              # only used by frame.style = "yagura"
-tenon_w = 56.0        # each leg plate's tenon through the deck
-tenon_gap = 10.0      # tenon starts this far past the cross-lap slot (the shoulder on that side)
-tenon_to_edge = true  # tenon runs out to the leg's inner edge (thinnest leg that still takes a wedge)
-hole_h = 14.0         # wedge hole above the deck (same small wedges as the cheeks)
-hole_drop = 1.0
-deck_inset = 10.0     # deck corners stay this far inside the round top
-wedge_len = 60.0      # leg wedges: shorter than the cheek wedges so the two at each corner don't meet
-wedge_head = 18.0     # (1:8 taper -> 10.5 mm foot)
-leg_splay = 0.0       # plumb legs by default
+label = "Ø 900 round, yagura frame with straight legs"

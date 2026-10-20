@@ -1,21 +1,19 @@
-"""Yagura-style frame (owner's comparison variant): no aprons. Four "+" corner legs, each two crossed
-plates, carry a deck; the heater hangs under the deck as in the slab frame.
+"""Yagura frame: four "+" corner legs, each two crossed plates, carry a deck; no aprons. The heater
+hangs under the deck from two cheeks (kotatsu/frame.py).
 
-Same plan geometry as the slab frame: the plates lie in the slab panels' planes and cross `ear` in from
-the frame's edge, so leg room, knee reach and tipping compare like for like.
+Legs are straight (plumb edges), 120 mm plates: a 40 mm ear arm outside the corner cross-lap, the slot,
+a 10 mm shoulder, then a tenon out to the inner edge.
 
 Joints
-  * legs: cross-lap at each corner ("x" plates slotted from the shoulder down, "y" plates from the floor up)
+  * legs: cross-lap at each corner ("A" plates slotted from the shoulder down, "B" plates from the floor up)
   * leg -> deck: every plate's top edge is a shoulder under the deck, with one tenon through it.
     A small wedge through the tenon, lying on the deck, clamps the deck between shoulder and wedge.
-  * cheeks: as in the slab frame (tabs up through the deck, flat wedges)
 Assembly: cross the 4 pairs of plates into "+" legs, stand them up, lower the deck over the 8 tenons,
 tap in the 8 leg wedges, then hang the cheeks + heater.
 """
 from __future__ import annotations
 
 from shapely.geometry import Point, Polygon, box
-from shapely.ops import unary_union
 
 from . import frame as fr
 from .frame import Part, Placement
@@ -24,15 +22,7 @@ from .frame import Part, Placement
 def _tenon_u(p) -> tuple[float, float]:
     """u-range of a plate's tenon, from the plate's outer end: just past the cross-lap slot."""
     F, Y = p.frame, p.yagura
-    a = F.ear + fr.slot_w(p) / 2 + Y.tenon_gap
-    if getattr(Y, "tenon_to_edge", False):             # thin legs: tenon runs out to the leg's inner edge
-        return a, F.leg_width
-    return a, a + Y.tenon_w
-
-
-def _flare_near(p):
-    fl = fr.foot_flares(p, 10_000.0)
-    return None if fl is None else fl.intersection(box(-1e3, -1, 5_000, 1e4))
+    return F.ear + fr.slot_w(p) / 2 + Y.tenon_gap, F.leg_width      # tenon runs out to the inner edge
 
 
 def leg_hole_z(p) -> tuple[float, float]:
@@ -46,19 +36,10 @@ def leg_plate(p, slotted_from_top: bool) -> Polygon:
     F, L, r = p.frame, fr.layout(p), fr._rd(p)
     zs, H = L.z_deck_bot, L.H
     wt = F.leg_width
-    wb = wt - getattr(F, "leg_taper", 0.0)
-    sp = getattr(p.yagura, "leg_splay", 0.0)           # whole leg leans out: feet sp further out than the top
-    g = Polygon([(-sp, 0), (wb - sp, 0), (wt, zs), (0, zs)])
-    g = fr._round_outer(g, F.foot_r)
-    fl = _flare_near(p)
-    if fl is not None:
-        g = fr._round_outer(g.union(box(0, 0, 20, zs / 2)).union(fl), 3.0)
+    g = fr._round_outer(box(0, 0, wt, zs), F.foot_r)
     ta, tb = _tenon_u(p)
     g = g.union(fr._round_outer(box(ta, zs - 10, tb, H), 3.0))
-    for u, s in ((ta, -1), (tb, 1)):                     # root reliefs: shoulders seat flat on the deck
-        if s > 0 and tb >= wt - 0.01:
-            continue                                     # tenon flush with the inner edge: no root there
-        g = g.difference(fr.dogbone((u, zs), (s, 1), r))
+    g = g.difference(fr.dogbone((ta, zs), (-1, 1), r))   # root relief: the shoulder seats flat on the deck
     hz0, hz1 = leg_hole_z(p)
     uc, ts = (ta + tb) / 2, fr.thick_slot(p)
     g = g.difference(fr.hole(uc - ts / 2, hz0, uc + ts / 2, hz1, r))

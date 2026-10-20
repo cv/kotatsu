@@ -85,7 +85,6 @@ def table_summary(tp, fd: dict, plan) -> dict:
     (sx, sy, sz), (_, _, hz) = frame.heater_box(tp)
     k = comfort.summary(tp)
     return {
-        "style": getattr(tp.frame, "style", "slab"),
         "pieces": 1 + sum(pt.qty for pt in parts),
         "wedges": sum(pt.qty for pt in parts if pt.kind == "wedge"),
         "frame_kg": fd["total_kg"], "total_kg": round(fd["total_kg"] + top_kg, 1),
@@ -103,15 +102,13 @@ def table_summary(tp, fd: dict, plan) -> dict:
 
 def tables_data(p) -> list[dict]:
     out = []
-    plans = cutbuild.cached_table_plans(p)
-    building = {t.table_name for t in params.build_tables(p)}
+    best = cutbuild.cached_layouts(p).get(1, {}).get("best mix")
     for tp in params.tables(p):
         tb = top.build(tp)
         fd = frame_data(tp)
         out.append({"name": tp.table_name, "label": tp.table_label, "shape": getattr(tp.top, "shape", "rect"),
-                    "compare": tp.table_name not in building,
                     "top": {"length": tp.top.length, "width": tp.top.width, "boards": [rings(b) for b in tb.boards]},
-                    "frame": fd, "summary": table_summary(tp, fd, plans.get(tp.table_name))})
+                    "frame": fd, "summary": table_summary(tp, fd, best)})
     return out
 
 
@@ -159,7 +156,7 @@ def build(with_tests: bool = True) -> None:
         "project": {
             "title": "Kotatsu — glue-free CNC birch",
             "facts": [
-                *[["Table", t.table_label] for t in params.build_tables(p)],
+                *[["Table", t.table_label] for t in params.tables(p)],
                 ["Height", f"{p.frame.height + p.material.t_nominal:.0f} mm + futon ≈ 40–41 cm"],
                 ["Material", p.material.name],
                 ["Heater", f"{p.heater.model} ({p.heater.mount} mount)"],

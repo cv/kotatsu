@@ -67,29 +67,6 @@ def cached_layouts(p) -> dict:
     return res
 
 
-def cached_table_plans(p) -> dict:
-    """{table name: least-plywood Nest} for every [[tables]] entry on its own, compare variants included
-    (for the site's side-by-side comparison). Cached like the layouts."""
-    h = hashlib.sha256(b"table-plans")
-    for f in SRC:
-        h.update((ROOT / f).read_bytes())
-    path = CACHE / f"plans-{h.hexdigest()[:16]}.pkl"
-    if path.exists():
-        return pickle.loads(path.read_bytes())
-    res = {}
-    for tp in params.tables(p):
-        n = nest.plan(tp, cutlist.cut_list(tp))
-        if n is not None:
-            for sh in n.sheets:
-                sh.occ = None
-        res[tp.table_name] = n
-    CACHE.mkdir(parents=True, exist_ok=True)
-    for old in CACHE.glob("plans-*.pkl"):
-        old.unlink()
-    path.write_bytes(pickle.dumps(res))
-    return res
-
-
 def bom_markdown(p, parts, lays) -> str:
     t, rho = p.material.t_nominal, p.material.density_kg_m3
     kg = lambda a: a / 1e6 * t / 1000 * rho
@@ -108,7 +85,7 @@ def bom_markdown(p, parts, lays) -> str:
     return f"""# Bill of materials (generated — do not edit)
 
 Material: {p.material.name}, {t:.0f} mm nominal ({p.material.t_min}–{p.material.t_max} mm accepted by every joint).
-Table: {", ".join(t.table_label for t in params.build_tables(p))} (compare-only designs are on the site, not cut).
+Table: {", ".join(t.table_label for t in params.tables(p))}.
 Top: one piece ({p.top.shape}, {p.top.length:.0f} mm).
 
 | Part | Qty | Size (mm) | kg each | Cut length each (m) | Note |
@@ -120,7 +97,7 @@ Top: one piece ({p.top.shape}, {p.top.length:.0f} mm).
 
 Gap between parts: {nest.effective_gap(p):.2f} mm (uMake asks for >= {p.cnc.part_gap:.0f} mm, and the {p.cnc.bit_d} mm bit
 must fit between parts). Sheet margin: {p.cnc.sheet_margin:.0f} mm. Grain runs along each sheet's long side.
-Frame parts keep their grain where it looks right: slab side panels lengthwise, yagura leg plates running up the leg.
+Leg plates are laid out with the grain running up the leg.
 Frame grain: **{p.layout.frame_grain}**.
 
 | Sets | Layout | Sheets | Plywood (m²) | Per set (m²) | Parts / plywood |

@@ -80,11 +80,12 @@ def test_best_mix_is_least_material():
         assert all(best <= nest.material_m2(n) + 1e-6 for n in opts.values())
 
 
-def test_both_tables_layout():
-    """Regression guard for the current design (update when the design changes on purpose)."""
+def test_current_layout():
+    """Regression guard for the current design (update when the design changes on purpose):
+    everything on one 60 x 60 sheet."""
     one = LAYOUTS[1]["best mix"]
-    assert nest.material_m2(one) <= 7.7
-    assert nest.utilisation(one) >= 0.45
+    assert len(one.sheets) == 1 and nest.material_m2(one) <= 2.33
+    assert nest.utilisation(one) >= 0.55
 
 
 def test_sheet_dxf_roundtrip(n, tmp_path):
@@ -100,18 +101,3 @@ def test_sheet_dxf_roundtrip(n, tmp_path):
             assert e.closed and e.dxf.layer == "CUT"
             xs, ys = zip(*[(x, y) for x, y, *_ in e.get_points()])
             assert min(xs) >= 0 and max(xs) <= s.w and min(ys) >= 0 and max(ys) <= s.h
-
-
-def test_interlocked_pair_saves_sheet_area():
-    """A long side + a short side, one upside down with a leg in the other's opening, need much less
-    rectangle than the two side by side, and stay a full bit-gap apart."""
-    slab = next(t for t in params.tables(P) if getattr(t.frame, "style", "slab") == "slab")
-    parts = {c.name: c for c in cutlist.cut_list(slab)}
-    a, b = parts["long side"], parts["short side"]
-    j = nest._pair_job(a, b, nest.effective_gap(P) + 0.5)
-    x0, y0, x1, y1 = j.shape.bounds
-    sep = (a.shape.bounds[2] * a.shape.bounds[3]) + (b.shape.bounds[2] * b.shape.bounds[3])
-    assert (x1 - x0) * (y1 - y0) < 0.8 * sep
-    (_, am, _), (_, bm, rot) = j.members
-    assert am.distance(bm) >= nest.effective_gap(P) and rot == 180
-    assert am.area == pytest.approx(a.shape.area) and bm.area == pytest.approx(b.shape.area)

@@ -88,10 +88,8 @@ def summary(p) -> dict:
 
 
 def side_clear(p) -> float:
-    """Clear height at the middle of each side: under the apron (slab) or under the deck (yagura)."""
-    if getattr(p.frame, "style", "slab") == "yagura":
-        return frame.layout(p).z_deck_bot
-    return p.frame.height - p.frame.apron_depth
+    """Clear height at the middle of each side: the deck's underside (no aprons)."""
+    return frame.layout(p).z_deck_bot
 
 
 def low_footprint_leg_u(p, z: float) -> float:
