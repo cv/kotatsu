@@ -89,3 +89,14 @@ def test_chigiri_keys_lock_boards():
         for k in t.keys:
             assert all(k.intersection(b).area < 1e-6 for b in t.boards)
             assert any(k.bounds[0] < xs < k.bounds[2] for xs in t.seams)  # straddles a seam
+
+
+def test_round_top_is_one_piece_and_ships():
+    R = params.table(P, "round")
+    t = top.build(R)
+    assert len(t.boards) == 1 and not t.keys
+    b = t.boards[0]
+    assert b.is_valid and len(b.interiors) == 0
+    d = R.top.length
+    assert abs(b.area - 3.14159265 * (d / 2) ** 2) / b.area < 0.002
+    assert d + 50 <= P.shipping.std_max_side_in * INCH

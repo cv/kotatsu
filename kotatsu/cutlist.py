@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from shapely.affinity import translate
 from shapely.geometry import Polygon
 
-from . import frame, top
+from . import frame, params, top
 
 
 @dataclass
@@ -44,7 +44,8 @@ def cut_list(p, seam: str | None = None, copies: int = 1,
     out: list[CutPart] = []
     for i, b in enumerate(tp.boards):
         # top boards: grain across the table (along the 800 mm board length) on every board
-        out.append(CutPart(f"top board {i + 1}", _norm(b), 1, trot, "top", f"seam {tp.name}, grain {top_grain}"))
+        nm = "top" if len(tp.boards) == 1 else f"top board {i + 1}"
+        out.append(CutPart(nm, _norm(b), 1, trot, "top", f"seam {tp.name}, grain {top_grain}" if len(tp.boards) > 1 else "one piece"))
     for i, k in enumerate(tp.keys):
         out.append(CutPart(f"top key {i + 1}", _norm(k), 1, (0, 90, 180, 270), "top"))
     for pt in frame.parts(p):
@@ -54,4 +55,15 @@ def cut_list(p, seam: str | None = None, copies: int = 1,
                            f"{pt.spares} spare" if pt.spares else ""))
     for c in out:
         c.qty *= copies
+    return out
+
+
+def cut_list_all(p, copies: int = 1, **kw) -> list[CutPart]:
+    """Every part of every [[tables]] entry, names prefixed "<table>: ", for one shared nest."""
+    out = []
+    for tp in params.tables(p) or [p]:
+        prefix = f"{getattr(tp, 'table_name', 'table')}: "
+        for c in cut_list(tp, copies=copies, **kw):
+            c.name = prefix + c.name
+            out.append(c)
     return out

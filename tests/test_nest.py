@@ -9,7 +9,7 @@ from kotatsu import build, cutlist, export, nest, params
 P = params.load()
 LAYOUTS = build.cached_layouts(P)          # same cache the build uses (keyed on source hash)
 CASES = [(k, name) for k, opts in LAYOUTS.items() for name in opts]
-PARTS = {k: cutlist.cut_list(P, copies=k) for k in LAYOUTS}
+PARTS = {k: cutlist.cut_list_all(P, copies=k) for k in LAYOUTS}
 PARTS1 = PARTS[min(PARTS)]
 
 
@@ -80,13 +80,11 @@ def test_best_mix_is_least_material():
         assert all(best <= nest.material_m2(n) + 1e-6 for n in opts.values())
 
 
-def test_two_tables_save_plywood():
+def test_both_tables_layout():
     """Regression guard for the current design (update when the design changes on purpose)."""
-    one = nest.material_m2(LAYOUTS[1]["best mix"])
-    assert one <= 4.66
-    if 2 in LAYOUTS:
-        two = nest.material_m2(LAYOUTS[2]["best mix"])
-        assert two <= 7.63 and two / 2 < one * 0.85
+    one = LAYOUTS[1]["best mix"]
+    assert nest.material_m2(one) <= 7.7
+    assert nest.utilisation(one) >= 0.45
 
 
 def test_sheet_dxf_roundtrip(n, tmp_path):

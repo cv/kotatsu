@@ -212,6 +212,9 @@ def _left_region(xs: float, ys, o, flip: bool, Wy: float, pad: float = 60.0) -> 
 def build(p, name: str | None = None) -> TopParts:
     T, r, c = p.top, p.cnc.bit_d / 2, p.fit.inplane_c
     Lx, Wy = T.length, T.width
+    if getattr(T, "shape", "rect") == "round":
+        outline = Point(Lx / 2, Wy / 2).buffer(Lx / 2, quad_segs=64)
+        return TopParts("round", "none", [outline], outline=outline)
     outline = rounded_rect(0, 0, Lx, Wy, T.corner_r)
     name = name or T.split
     if name == "none":
