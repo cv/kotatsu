@@ -253,3 +253,9 @@ def test_foot_relief(Y):
     wn = P.yagura.leg_narrow
     mid = g.intersection(box(wn / 2 - 1, -1, wn / 2 + 1, sag + 2)).bounds
     assert mid[1] == pytest.approx(sag, abs=0.1)
+
+
+def test_storage_layout_fits(Y):
+    """Off-season: every part packs into three flat layers inside the top's footprint, nothing touching."""
+    from kotatsu import storage
+    assert storage.check(Y[0]) == []
