@@ -117,7 +117,14 @@ corner, and the wedges and deck don't carry any of the weight from above.
      inside the cross-laps, and the wedge holes. Only ease the floor edge (about 2 mm). The leg stress is
      1.7 MPa against roughly 35 MPa strength, so losing about 10% of the section costs nothing that
      matters.
-   - Oil the frame a shade darker than the top, so the top seems to float over the legs.
+   - **Finish: pale and matte, like hinoki (白木, "plain wood").** Birch is already close in colour.
+     The aim is to keep it from yellowing and to keep it looking unfinished. Normal oils (linseed, tung,
+     Danish) turn it honey-coloured, so I'm skipping them. Candidates:
+     a water-based flat clear coat, a "raw" hardwax oil with a trace of white (e.g. Osmo Polyx-Oil Raw),
+     or a Scandinavian soap finish. Try them on the 2 spare wedges first. No essential oils (hinoki
+     scent): the cat will sleep in the warm kotatsu, and many essential oils are toxic to cats.
+   - Before bevelling, pick the cleaner face of the top (fewest patches) and put it up.
+   - Sand to 180, wipe with a damp cloth to raise the grain, let it dry, then sand 220 (320 on the top).
 5. **Lighter-look cuts: mocked up, not used.** Bigger top corners (R70), a curved haunch on the legs,
    and feet tapering 10 mm on plate A. Together: about $1.50 cheaper, 0.1 kg lighter, lower leg stress,
    a little less tipping margin (1698 → 1476 N at the edge). The order had already gone in, and the
