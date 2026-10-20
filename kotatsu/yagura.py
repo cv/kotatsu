@@ -117,11 +117,23 @@ def deck(p) -> Polygon:
                     g = g.difference(fr.dogbone((L.cx + sx * ax, L.cy + sy * ay), (sx, sy), r))
     for x0, y0, x1, y1 in mortises(p):
         g = g.difference(fr.hole(x0, y0, x1, y1, r))
+    for w in windows(p):                                # weight-saving windows away from the heater
+        g = g.difference(w)
     for xi, sgn in zip(fr.cheek_xs(p), (-1, 1)):        # cheek tab slots, as in the slab deck
         xa, xb = sorted((xi, xi + sgn * fr.thick_slot(p)))
         for ya, yb in fr.tab_ys(p):
             g = g.difference(fr.hole(xa, ya - p.fit.tight, xb, yb + p.fit.tight, r))
     return g
+
+
+def windows(p) -> list[Polygon]:
+    """Lightening windows in the deck (world coords): [deck] windows = [[x0, y0, x1, y1], ...] relative to
+    the table centre, rounded by window_r. They keep the order under uMake's free-shipping weight."""
+    D, L = p.deck, fr.layout(p)
+    out = []
+    for x0, y0, x1, y1 in getattr(D, "windows", []) or []:
+        out.append(fr._round_outer(box(L.cx + x0, L.cy + y0, L.cx + x1, L.cy + y1), D.window_r))
+    return out
 
 
 def wedge_dims(p, which: str = "cheek") -> tuple[float, float]:

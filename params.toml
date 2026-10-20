@@ -40,6 +40,12 @@ lap_extra = 0.5       # each cross-lap slot is (leg height)/2 + this, so slot bo
 
 [deck]                # horizontal plate on the legs' shoulders; the heater hangs under it
 drop = 26.0           # deck top below the futon plane (room for the leg + cheek wedges above it)
+# Lightening windows (centre-relative mm): uMake ships free up to a 91 cm box AND ~20 kg (18.3 kg free,
+# 20.4 kg not). These take ~1.5 kg out. They stay >= 25 mm from the heater, cheeks, slots, mortises and
+# wedges (tests/test_yagura.py), and >= 30 mm from the deck edge.
+windows = [[191.0, -115.0, 300.0, 115.0], [-300.0, -115.0, -191.0, 115.0],
+           [-184.0, 211.0, 184.0, 300.0], [-184.0, -300.0, 184.0, -211.0]]
+window_r = 20.0
 
 [yagura]              # leg <-> deck joints
 tenon_gap = 10.0      # each plate's tenon starts this far past the cross-lap slot (the shoulder on that side)

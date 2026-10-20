@@ -2,7 +2,7 @@
 stock-thickness range."""
 import pytest
 from shapely.affinity import translate
-from shapely.geometry import Point, box
+from shapely.geometry import Point, Polygon, box
 from shapely.ops import unary_union
 
 from kotatsu import frame, params, yagura
@@ -140,3 +140,34 @@ def test_posts_carry_the_top_further_out(Y):
     P2 = params.tables(params.load())[0]
     P2.yagura.corner_posts = False
     assert with_posts > 1.5 * comfort.top_lift(P2)[0]
+
+
+def test_deck_windows_clear_everything(Y):
+    """Lightening windows: >= 25 mm from every hole, slot, wedge, cheek and the heater; >= 30 mm from
+    the deck's outer edge; the deck stays one piece."""
+    P, L, parts = Y
+    wins = yagura.windows(P)
+    if not wins:
+        pytest.skip("no deck windows")
+    d = parts["deck"].shape
+    assert d.geom_type == "Polygon"
+    t = P.material.t_max
+    keep = [box(*m) for m in yagura.mortises(P)]
+    for xi, s in zip(frame.cheek_xs(P), (-1, 1)):                       # cheeks (plan) + their tab slots
+        xa, xb = sorted((xi, xi + s * t))
+        keep.append(box(xa, L.cy - P.cheek.length / 2, xb, L.cy + P.cheek.length / 2))
+    (sx, sy, _), (hx, hy, _) = frame.heater_box(P)
+    keep.append(box(hx - sx / 2, hy - sy / 2, hx + sx / 2, hy + sy / 2))
+    for pt in frame.parts(P):                                           # wedges lying on the deck
+        if pt.kind != "wedge":
+            continue
+        w0, _, w1, _ = pt.shape.bounds
+        for pl in pt.placements:
+            ox, oy, _ = pl.origin
+            keep.append(box(ox, oy, ox + w1 - w0, oy + t) if pl.axis == "x" else box(ox, oy, ox + t, oy + w1 - w0))
+    keep = unary_union(keep)
+    outer = Polygon(d.exterior)
+    for w in wins:
+        assert w.distance(keep) >= 25 - 1e-6
+        assert outer.exterior.distance(w) >= 30 - 1e-6
+        assert d.intersection(w).area < 1e-6
