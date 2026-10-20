@@ -89,3 +89,21 @@ table.cmp th, table.cmp td { padding: 5px 12px; border-bottom: 1px solid var(--l
 table.cmp tr th:first-child { color: #6b5b4b; font-weight: 500; }
 table.cmp td.best { color: #1f6b3a; font-weight: 600; }
 table.cmp td.below { color: #a3261b; font-weight: 600; }
+
+/* phones / narrow screens */
+@media (max-width: 760px) {
+  html, body { height:auto; min-height:100%; }
+  header { flex-wrap:wrap; gap:6px 12px; padding:8px 12px; }
+  nav { width:100%; overflow-x:auto; white-space:nowrap; -webkit-overflow-scrolling:touch; }
+  nav a { margin-right:10px; display:inline-block; padding:6px 2px; }
+  .meta { margin-left:0; }
+  main { height:auto; }
+  .tab.active { flex-direction:column; height:auto; min-height:calc(100vh - 90px); }
+  #tab-overview { padding:10px; }
+  .cards { grid-template-columns: 1fr; gap:10px; }
+  aside { width:100%; max-height:38vh; border-right:none; border-bottom:1px solid var(--line); }
+  .viewer-wrap { min-height:60vh; }
+  .compare { grid-template-columns: 1fr; }
+  #doc { padding:12px 14px; }
+  table { display:block; overflow-x:auto; }
+}
