@@ -228,11 +228,12 @@ def test_deck_windows_clear_everything(Y):
         assert w.distance(keep) >= P.deck.window_margin - 1e-6
         if not notch:
             assert outer.exterior.distance(w) >= P.deck.window_bar - 1e-6
+    tongues = unary_union(yagura.link_tongues(P)).buffer(getattr(getattr(P, "link", None), "root_r", 0) + 1)
     for a in wins:
         for b in wins:
             if a is not b:
                 assert a.distance(b) >= (P.deck.neck if notch else P.deck.window_bar) - 1e-6
-        assert d.intersection(w).area < 1e-6
+        assert d.intersection(a).difference(tongues).area < 1e-6     # open, except the link tongues
 
 
 def test_leg_windows_leave_enough_wood(Y):
@@ -314,3 +315,47 @@ def test_deck_notch_mouths_rounded_but_leg_side_square():
     lost = sq.difference(deck)
     for m in yagura.mortises(P):                                                  # nothing lost near the legs
         assert lost.distance(box(*m)) >= 15.0
+
+
+def test_link_key_fits_two_modules_side_by_side():
+    """Owner 2026-10-20 (linkable set): with two modules side by side, tops touching, the key's tabs drop
+    into the facing slots with only the in-plane clearance; the key stays under the futon plane, keeps
+    clear of everything else on the deck, and the slots keep their edge wood."""
+    from shapely.affinity import translate
+    P = params.tables(params.load())[0]
+    if not yagura.linking(P):
+        pytest.skip("linking off")
+    K, L, c = P.link, frame.layout(P), P.fit.tight
+    parts = {pt.name: pt for pt in frame.parts(P)}
+    assert parts["link key"].qty >= 1
+    slots = yagura.link_slots(P)
+    assert len(slots) == 4
+    pitch = yagura.link_pitch(P)
+    assert abs(pitch - P.top.length) < 1e-6                              # the tops touch
+    a = max(slots, key=lambda s: s[2])                                   # module A's +x slot
+    b = min(slots, key=lambda s: s[0])                                   # module B's -x slot, shifted
+    b = (b[0] + pitch, b[1], b[2] + pitch, b[3])
+    x0 = a[0] + c                                                        # key placed with its first tab in A
+    n = yagura.key_length(P)
+    assert abs((x0 + n - K.tab_len) - (b[0] + c)) < 1e-6 and abs((x0 + n) - (b[2] - c)) < 1e-6
+    key = parts["link key"].shape
+    assert key.bounds[3] - L.t + L.z_deck_top <= L.H - 4                 # key top under the futon plane
+    deck = parts["deck"].shape
+    h = L.Lf / 2
+    for s in slots:                                                      # edge wood outside each slot
+        xs0, ys0, xs1, ys1 = s
+        edge = min(L.cx + h - xs1, xs0 - (L.cx - h), L.cy + h - ys1, ys0 - (L.cy - h))
+        assert edge >= K.edge - c - 1e-6
+        r = box(*s).buffer(K.edge * 0.6)
+        assert deck.buffer(0.01).contains(r.difference(box(*s).buffer(5)).intersection(box(L.cx - h, L.cy - h, L.cx + h, L.cy + h)))
+    # nothing else lies on the deck where the key goes (wedges, cheek tabs, tenons)
+    kx = box(x0, L.cy - L.t / 2, x0 + n, L.cy + L.t / 2)
+    for pt in parts.values():
+        if pt.kind == "wedge":
+            w0, _, w1, _ = pt.shape.bounds
+            for pl in pt.placements:
+                ox, oy, _ = pl.origin
+                f = box(ox, oy, ox + w1 - w0, oy + L.t) if pl.axis == "x" else box(ox, oy, ox + L.t, oy + w1 - w0)
+                assert f.distance(kx) >= 10
+    for m in yagura.mortises(P):
+        assert box(*m).distance(kx) >= 10

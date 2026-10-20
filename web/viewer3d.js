@@ -75,7 +75,7 @@ export class Viewer3D {
     grid.position.set(600, 400, -12); this.scene.add(grid); // just under the rug
     this.grid = grid;
     this.root = new THREE.Group(); this.scene.add(this.root);
-    this.state = { table: null, explode: 0, showTop: true, showFrame: true, showHeater: true,
+    this.state = { table: null, linked: false, explode: 0, showTop: true, showFrame: true, showHeater: true,
       showFuton: true, showRug: true, showSeats: true };
     new ResizeObserver(() => this.resize()).observe(container);
   }
@@ -88,6 +88,7 @@ export class Viewer3D {
       this.gui = new GUI({ container: this.c, title: "View" });
       this.gui.domElement.style.position = "absolute"; this.gui.domElement.style.right = "8px"; this.gui.domElement.style.top = "8px";
       if (tnames.length > 1) this.gui.add(this.state, "table", tnames).name("table").onChange(() => { this.framed = false; this.build(); });
+      if (data.tables.some((t) => t.link)) this.gui.add(this.state, "linked").name("linked pair").onChange(() => { this.framed = false; this.build(); });
       this.gui.add(this.state, "explode", 0, 400, 1).onChange(() => this.place());
       this.gui.add(this.state, "showTop").name("top").onChange(() => this.place());
       this.gui.add(this.state, "showFrame").name("frame").onChange(() => this.place());
@@ -107,6 +108,13 @@ export class Viewer3D {
     const which = this.state.table === "all" ? d.tables : d.tables.filter((x) => x.name === this.state.table);
     let dx = 0;
     for (const T of which) {
+      if (this.state.linked && T.link) { // two modules side by side, tops touching, one key between them
+        this.addTable(T, dx, t, false);
+        this.addTable(T, dx + T.link.pitch, t, false);
+        this.addKey(T, dx, t);
+        dx += T.link.pitch + T.top.length + 400;
+        continue;
+      }
       this.addTable(T, dx, t);
       dx += T.top.length + 400;
     }
@@ -118,7 +126,17 @@ export class Viewer3D {
     this.place();
   }
 
-  addTable(T, dx, t) {
+  addKey(T, dx, t) {
+    const part = T.frame.parts.find((p) => p.name === T.link.key);
+    for (const pl of T.link.placed) {
+      const m = slab(part.shape, t, "wedge", "u");
+      m.applyMatrix4(BASIS[pl.axis]);
+      m.position.set(pl.origin[0] + dx, pl.origin[1], pl.origin[2]);
+      this.items.push({ obj: m, kind: "wedge", dir: new THREE.Vector3(0, 0, 1.2), base: m.position.clone() });
+    }
+  }
+
+  addTable(T, dx, t, room = true) {
     const F = T.frame;
     const off = new THREE.Vector3(dx, 0, 0);
     const opt = { boards: T.top.boards, keys: [] };
@@ -146,7 +164,7 @@ export class Viewer3D {
     heater.castShadow = true;
     heater.position.set(...hz.center);
     push(heater, "heater", new THREE.Vector3(0, 0, -0.6));
-    if (T.room3d) this.addRoom(T.room3d, push);
+    if (T.room3d && room) this.addRoom(T.room3d, push);
   }
 
   addRoom(R, push) { // rug, draped futon and floor pillows; geometry comes from Python (room.room3d)

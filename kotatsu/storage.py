@@ -1,7 +1,7 @@
 """Off-season storage (owner idea 8): everything packs flat inside the top's footprint.
 
-Layer 1: the top. Layer 2: the deck, with two leg plates (head to tail) in each side notch and the
-wedges in the end notches. Layer 3: the other four plates and the two heater cheeks.
+Layer 1: the top. Layer 2: the deck, with whatever fits in its notches. Layer 3: the rest.
+Packed greedily on a 3 mm grid (largest part first), then checked exactly.
 Stack about 3 x 19 mm thick, 860 x 860. Centred plan coordinates (mm).
 Run: uv run python -m kotatsu.storage  (writes out/preview/storage.png)
 """
@@ -11,7 +11,7 @@ from shapely.affinity import rotate, translate
 from shapely.geometry import box
 from shapely.ops import unary_union
 
-from . import frame, top, yagura
+from . import frame, top
 from .params import ROOT
 
 GAP = 3.0
@@ -22,69 +22,64 @@ def _centred(g):
     return translate(g, -(x0 + x1) / 2, -(y0 + y1) / 2)
 
 
-def _pair(plate):
-    """Two plates head to tail, as tight as GAP allows (the narrow foot beside the wide head)."""
-    a = translate(plate, -plate.bounds[0], -plate.bounds[1])
-    b0 = rotate(a, 180, origin=(0, 0))
-    b0 = translate(b0, -b0.bounds[0], -b0.bounds[1])
-    lo, hi = 0.0, a.bounds[2] + GAP + 1
-    for _ in range(40):
-        m = (lo + hi) / 2
-        lo, hi = (lo, m) if translate(b0, m, 0).distance(a) >= GAP else (m, hi)
-    return [a, translate(b0, hi, 0)]
+def _pack(items, layers, side, res=3.0):
+    """Greedy raster packing (largest first, lowest-then-leftmost spot) into the given layers.
+    layers: {name: [obstacle polygons]}; returns {name: [placed polygons]} (obstacles included)."""
+    import numpy as np
+    from .nest import _fft_free, _mask
+    n = int(side * 2 // res)
+    grow = GAP / 2 + 0.75 * res
+    occ, out = {}, {}
+    for name, obs in layers.items():
+        o = np.zeros((n, n), bool)
+        for g in obs:
+            m = _mask(g, res, grow)
+            x0, y0 = g.buffer(grow, quad_segs=8).bounds[:2]
+            i0, j0 = int(round((y0 + side) / res)), int(round((x0 + side) / res))
+            o[max(i0, 0):i0 + m.shape[0], max(j0, 0):j0 + m.shape[1]] |= m[max(-i0, 0):n - i0, max(-j0, 0):n - j0]
+        occ[name], out[name] = o, list(obs)
+    for label, g in sorted(items, key=lambda it: -it[1].area):
+        done = False
+        for name in layers:
+            best = None
+            for ang in (0, 90, 180, 270):
+                gr = rotate(g, ang, origin=(0, 0))
+                gr = translate(gr, -gr.bounds[0], -gr.bounds[1])
+                m = _mask(gr, res, grow)
+                free = _fft_free(occ[name], m)
+                if free.size == 0 or not free.any():
+                    continue
+                ii, jj = np.nonzero(free)
+                k = np.lexsort((jj, ii))[0]
+                cand = (ii[k], jj[k], ang, gr, m)
+                if best is None or (cand[0], cand[1]) < (best[0], best[1]):
+                    best = cand
+            if best is None:
+                continue
+            i, j, ang, gr, m = best
+            gx = gr.buffer(grow, quad_segs=8).bounds
+            placed = translate(gr, -side + j * res - gx[0], -side + i * res - gx[1])
+            occ[name][i:i + m.shape[0], j:j + m.shape[1]] |= m
+            out[name].append(placed)
+            done = True
+            break
+        if not done:
+            raise ValueError(f"{label} doesn't fit in storage")
+    return out
 
 
 def layout(p) -> dict[str, list]:
     parts = {pt.name: pt for pt in frame.parts(p)}
     deck = _centred(parts["deck"].shape)
     side = p.top.length / 2
-    pair = _pair(parts["leg plate A"].shape) + _pair(parts["leg plate B"].shape)
-    rects = yagura.window_rects(p)
-    deck_layer, loose = [deck], []
-    # side notches (x > 0 and x < 0): one pair each, plates running along y
-    for k, (x0, y0, x1, y1) in enumerate(rects[:2]):
-        pr = pair[2 * k: 2 * k + 2]                     # plate length already runs along y
-        u = unary_union(pr)
-        cx = (max(x0, -side) + min(x1, side)) / 2
-        deck_layer += [translate(g, cx - (u.bounds[0] + u.bounds[2]) / 2, -(u.bounds[1] + u.bounds[3]) / 2) for g in pr]
-    # wedges in the end notches, in a row of columns
-    w = parts["wedge"].shape if "wedge" in parts else parts["leg wedge"].shape
-    w = translate(w, -w.bounds[0], -w.bounds[1])
-    n = parts["wedge"].qty if "wedge" in parts else parts["leg wedge"].qty
-    wl, wh = w.bounds[2], w.bounds[3]
-    slots = []
-    for x0, y0, x1, y1 in rects[2:]:
-        ya, yb = (max(y0, -side) + GAP, min(y1, side) - GAP)
-        xa, xb = x0 + GAP, x1 - GAP
-        y = ya
-        while y + wl <= yb:
-            x = xa
-            while x + wh <= xb:
-                slots.append((x, y)); x += wh + GAP
-            y += wl + GAP
-    wr = rotate(w, 90, origin=(0, 0))
-    placed = 0
-    for x, y in slots:
-        if placed == n:
-            break
-        g = translate(wr, x + wh, y)
-        if g.distance(deck) >= GAP and all(g.distance(o) >= GAP for o in deck_layer[1:]):
-            deck_layer.append(g); placed += 1
-    if placed < n:
-        raise ValueError(f"only {placed} of {n} wedges fit in the end notches")
-    # layer 3: the other plates (as two pairs) + cheeks
-    rest = _pair(parts["leg plate A"].shape) + _pair(parts["leg plate B"].shape)
-    cheek = translate(parts["heater cheek"].shape, -parts["heater cheek"].shape.bounds[0], -parts["heater cheek"].shape.bounds[1])
-    x = -side + 20
-    for g in rest[:2]:
-        loose.append(translate(g, x, -side + 20))
-    x = unary_union(loose).bounds[2] + 20
-    for g in rest[2:]:
-        loose.append(translate(g, x - rest[2].bounds[0], -side + 20))
-    y = unary_union(loose).bounds[3] + 20
-    for k in range(parts["heater cheek"].qty):
-        loose.append(translate(cheek, -side + 20, y + k * (cheek.bounds[3] + 20)))
-    return {"top": [_centred(top.build(p).outline)], "deck layer": deck_layer, "loose layer": loose}
+    items = []
+    for name, pt in parts.items():
+        if name == "deck":
+            continue
+        g = translate(pt.shape, -pt.shape.bounds[0], -pt.shape.bounds[1])
+        items += [(name, g)] * pt.qty
+    packed = _pack(items, {"deck layer": [deck], "loose layer": []}, side)
+    return {"top": [_centred(top.build(p).outline)], **packed}
 
 
 def check(p) -> list[str]:

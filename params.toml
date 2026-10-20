@@ -60,6 +60,17 @@ x_hub = "none"        # "shield": also a square over the heater, so the futon ca
 x_hub_margin = 25.0
 x_fillet = 30.0
 
+[link]                # owner 2026-10-20: modules link side by side into a row, an L or a 2 x 2 square
+enabled = true
+tongue_w = 90.0       # a tongue in the middle of each deck notch, out to the edge
+edge = 25.0           # wood between the key slot and the deck edge
+tab_len = 50.0        # key tab (and slot) length along the link
+above = 20.0          # key height above the deck top (deck top 359, futon plane 385)
+top_gap = 0.0         # tops touch
+root_r = 15.0         # fillet where a tongue meets its notch
+tip_r = 8.0
+keys_per_module = 1
+
 [yagura]              # leg <-> deck joints
 tenon_gap = 10.0      # each plate's tenon starts this far past the cross-lap slot (the shoulder on that side)
 tenon_w = 50.4        # tenon width (>= wedge hole + 2 x 15 mm); leg width beyond it is an inner shoulder
