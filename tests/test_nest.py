@@ -86,7 +86,7 @@ def test_current_layout():
     48 x 96 (uMake prices per part and nests itself, so this only matters for our own estimate)."""
     one = LAYOUTS[1]["best mix"]
     assert len(one.sheets) == 1 and nest.material_m2(one) <= 2.98
-    assert nest.utilisation(one) >= 0.45
+    assert nest.utilisation(one) >= 0.40
 
 
 def test_sheet_dxf_roundtrip(n, tmp_path):

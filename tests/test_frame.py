@@ -111,8 +111,9 @@ def test_total_height_in_owner_range(C):
 
 def test_ear_fingers_are_sturdy(C):
     P, L, PARTS = C.P, C.L, C.PARTS
-    """Half-height ear fingers outside the cross-lap slots."""
-    assert P.frame.ear - frame.slot_w(P) / 2 >= 40
+    """Ear fingers outside the cross-lap slots: at least the stock thickness (uMake's minimum feature).
+    In the yagura they're braced by the crossing plate in the slot (owner chose 20.4 mm, = inner finger)."""
+    assert P.frame.ear - frame.slot_w(P) / 2 >= P.material.t_max
 
 
 def test_frame_hidden_under_round_top(C):

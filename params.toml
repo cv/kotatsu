@@ -33,9 +33,9 @@ corner_r = 20.0       # rect only
 height = 385.0        # floor to the tenon tops (futon plane); + 18 top + ~10 futon ≈ 41 cm total
 overhang = 40.0       # owner 2026-10-20: legs as far apart as reasonable -> frame 780 x 780 under the 860 top
                       # (more room between the legs, much steadier; knees reach 40 mm under the edge)
-ear = 50.0            # frame edge -> corner cross-lap centreline (visible "ear"); 40 mm ear arm outside the slot
-leg_width = 130.0     # straight leg plates: 40 mm ear arm | slot | 10 mm shoulder | 50 mm tenon | 10 mm inner shoulder
-                      # (shoulders both sides of the tenon, so tapping the wedge doesn't twist the plate)
+ear = 30.0            # frame edge -> corner cross-lap centreline; owner 2026-10-20: the outer finger (ear arm, 20.4)
+                      # is as wide as the inner one, so the legs are slim strips with the slot in the middle
+leg_width = 110.0     # full width under the deck: 20 ear arm | slot | 10 shoulder | 50 tenon | 10 inner shoulder
 foot_r = 6.0          # rounding of the plates' outer corners
 lap_extra = 0.5       # each cross-lap slot is (leg height)/2 + this, so slot bottoms never bottom out; the floor sets height
 
@@ -56,7 +56,8 @@ hole_drop = 1.0       # hole bottom below the thinnest deck's top face, so the w
 deck_inset = 10.0     # deck corners stay this far inside the round top
 corner_posts = true   # each plate's ear arm rises past the deck to the top: the top rests at the frame corners
                       # (deck corners cut away around them); loose top lifts at ~363 N vs ~205 N without
-leg_narrow = 80.0     # owner's haunched legs: plates are this wide (from the frame edge) below the haunch
+leg_narrow = 60.0     # owner's haunched legs: plates are this wide (from the frame edge) below the haunch:
+                      # 20.4 outer finger | 19.2 slot | 20.4 inner finger
 leg_haunch_top = 320.0  # haunch meets the full-width inner edge here (just under the 341 shoulders)
 leg_haunch_drop = 30.0  # ... and reaches the narrow line this much lower (a ~31° slope)
 leg_haunch_r = 15.0   # inside-corner fillet where the haunch meets the narrow leg
