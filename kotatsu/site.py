@@ -196,7 +196,18 @@ def _mtime() -> float:
     return m
 
 
-def dev(port: int) -> None:
+def _lan_ip() -> str:
+    """This machine's LAN address (for printing a URL a phone can open)."""
+    import socket
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as so:
+            so.connect(("192.0.2.1", 9))      # TEST-NET address: no packet is sent for UDP connect
+            return so.getsockname()[0]
+    except OSError:
+        return "127.0.0.1"
+
+
+def dev(port: int, host: str = "0.0.0.0") -> None:
     build()
     class Quiet(http.server.SimpleHTTPRequestHandler):
         def log_message(self, *a):  # no access log spam
@@ -207,9 +218,10 @@ def dev(port: int) -> None:
             super().end_headers()
 
     handler = functools.partial(Quiet, directory=str(OUT))
-    srv = http.server.ThreadingHTTPServer(("127.0.0.1", port), handler)
+    srv = http.server.ThreadingHTTPServer((host, port), handler)
     threading.Thread(target=srv.serve_forever, daemon=True).start()
-    print(f"[site] http://127.0.0.1:{port}/  (watching for changes, Ctrl-C to stop)")
+    shown = _lan_ip() if host in ("0.0.0.0", "") else host
+    print(f"[site] http://{shown}:{port}/  (listening on {host}; watching for changes, Ctrl-C to stop)")
     last = _mtime()
     while True:
         time.sleep(1.0)
@@ -226,6 +238,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--dev", action="store_true")
     ap.add_argument("--port", type=int, default=8765)
+    ap.add_argument("--host", default="0.0.0.0", help="bind address (0.0.0.0 = reachable from the LAN, e.g. a phone)")
     ap.add_argument("--no-tests", action="store_true")
     a = ap.parse_args()
-    dev(a.port) if a.dev else build(with_tests=not a.no_tests)
+    dev(a.port, a.host) if a.dev else build(with_tests=not a.no_tests)
