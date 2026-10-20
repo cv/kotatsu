@@ -53,3 +53,16 @@ The frame supports **both mounting methods** (`[heater] mount = "side" | "bracke
 positions (height from the top face and distance from the corners), and the screw diameter and
 length. Enter the numbers in `params.toml [heater]` before ordering the plywood. The CAD is not
 frozen until this is done.
+
+## Mounting, confirmed from the product page (2026-10-19)
+- The listing's "Easy installation" photo shows the heater between **two parallel crossbars**, fixed with
+  **4 screws, 2 per side, driven sideways into the crossbars' inner faces** near the heater's corners. That
+  is the design's `mount = "side"`: our two heater cheeks are those crossbars.
+- Owner measured the body as 29 × 29 × 5 cm (to the cm). Cheek inner faces are 294 mm apart (4 mm play).
+  **TODO-verify:** the exact width across the screw tabs. With the play, a centred heater leaves ~2 mm per
+  side, so the tabs would bend slightly as the screws tighten. Fix: a birch offcut spacer, or narrow the
+  gap once the width is known to the mm.
+- The cheeks run 41 mm past the heater at each end (y 264–636 vs. 305–595), so corner screws land in solid
+  cheek at about mid-height (55 mm cheeks). The tabs and wedges are on the top edge, clear of the screws.
+- **TODO-verify:** screw length ≤ about 16 mm plus the tab thickness, so the tips don't break out of the 18 mm cheek's
+  outer face. Drill 2–2.5 mm pilot holes.
