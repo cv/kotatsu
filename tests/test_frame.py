@@ -49,8 +49,8 @@ def _fits(P, shape):
 
 # ------------------------------------------------------------------ cross-laps
 def test_crossings_agree(C):
-    P, L, PARTS = C.P, C.L, C.PARTS
     """Slot positions in each panel coincide with the other panel's centre plane."""
+    P, L = C.P, C.L
     assert L.xS[0] - L.O == pytest.approx(P.frame.ear) and L.Lf - (L.xS[1] - L.O) == pytest.approx(P.frame.ear)
     assert L.yL[0] - L.O == pytest.approx(P.frame.ear) and L.Wf - (L.yL[1] - L.O) == pytest.approx(P.frame.ear)
 
@@ -58,7 +58,7 @@ def test_crossings_agree(C):
 # ------------------------------------------------------------------ cheeks
 @pytest.mark.parametrize("t", T_RANGE)
 def test_cheek_tabs_fit_deck_slots(C, t):
-    P, L, PARTS = C.P, C.L, C.PARTS
+    P, PARTS = C.P, C.PARTS
     dk = PARTS["deck"].shape
     for xi, s in zip(frame.cheek_xs(P), (-1, 1)):
         xa, xb = sorted((xi, xi + s * t))
@@ -69,7 +69,7 @@ def test_cheek_tabs_fit_deck_slots(C, t):
 @pytest.mark.parametrize("t_deck", T_RANGE)
 @pytest.mark.parametrize("t_wedge", T_RANGE)
 def test_cheek_wedge_through_tab(C, t_deck, t_wedge):
-    P, L, PARTS = C.P, C.L, C.PARTS
+    P, L = C.P, C.L
     ck, _ = frame.cheek(P)
     y_start = L.cy - P.cheek.length / 2
     zb = L.z_deck_bot - P.cheek.height
@@ -86,7 +86,7 @@ def test_cheek_wedge_through_tab(C, t_deck, t_wedge):
 
 
 def test_tabs_and_wedges_stay_below_futon_plane(C):
-    P, L, PARTS = C.P, C.L, C.PARTS
+    P, L = C.P, C.L
     ck, _ = frame.cheek(P)
     zb = L.z_deck_bot - P.cheek.height
     assert ck.bounds[3] + zb <= L.H - 5
@@ -94,7 +94,7 @@ def test_tabs_and_wedges_stay_below_futon_plane(C):
 
 
 def test_cheeks_hug_the_heater(C):
-    P, L, PARTS = C.P, C.L, C.PARTS
+    P = C.P
     a, b = frame.cheek_xs(P)
     assert b - a == pytest.approx(P.heater.body_x + P.heater.cheek_clearance)
     assert P.cheek.length >= P.heater.body_y + 40
@@ -103,15 +103,15 @@ def test_cheeks_hug_the_heater(C):
 
 # ------------------------------------------------------------------ comfort & safety
 def test_total_height_in_owner_range(C):
-    P, L, PARTS = C.P, C.L, C.PARTS
+    P = C.P
     total = P.frame.height + P.material.t_nominal + 10      # ~10 mm compressed futon
     assert 390 <= total <= 415                               # owner OK'd ~41 cm for the leg room
 
 
 def test_ear_fingers_are_sturdy(C):
-    P, L, PARTS = C.P, C.L, C.PARTS
     """Ear fingers outside the cross-lap slots: at least the stock thickness (uMake's minimum feature).
     In the yagura they're braced by the crossing plate in the slot (owner chose 20.4 mm, = inner finger)."""
+    P = C.P
     assert P.frame.ear - frame.slot_w(P) / 2 >= P.material.t_max
 
 

@@ -196,7 +196,7 @@ class PlateCurve:
 
 
 def plate_curve(p, shape, N: float, Hmax: float = 300.0, n: int = 121) -> PlateCurve:
-    L, M = fr.layout(p), p.material
+    L = fr.layout(p)
     Lleg = L.z_deck_bot
     flex = bend_compliance(p, shape)                            # in-plane bending, real sections (slot, windows)
     J = joint(p, shape)

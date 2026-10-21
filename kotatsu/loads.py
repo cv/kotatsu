@@ -18,7 +18,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import numpy as np
-from shapely.geometry import Point, box
+from shapely.geometry import Point
 
 from . import comfort
 

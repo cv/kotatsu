@@ -22,8 +22,6 @@ def load(path, box=None):
     im = Image.open(path).convert("RGB")
     if box:
         im = im.crop(box)
-    bg = Image.new("RGB", im.size, (255, 255, 255))
-    diff = Image.eval(Image.composite(im, bg, Image.new("L", im.size, 255)), lambda v: v)
     bbox = Image.eval(im.convert("L"), lambda v: 255 if v < 245 else 0).getbbox()
     return im.crop(bbox) if bbox else im
 
@@ -40,7 +38,7 @@ def strip(panels, title, out, H=300, W=360):
     d = ImageDraw.Draw(can)
     d.text((pad, pad), title, font=ft, fill=INK)
     y0 = pad + 44
-    for i, (im, label, cap) in enumerate(panels):
+    for i, (im, label, _) in enumerate(panels):
         x0 = pad + i * (W + arrow)
         d.rounded_rectangle((x0, y0, x0 + W, y0 + H), 10, fill=(255, 255, 255), outline=(225, 218, 206))
         s = min((W - 24) / im.width, (H - 24) / im.height)

@@ -191,7 +191,7 @@ def nest(p, parts: list[CutPart], sheet, res: float = 4.0,
             X, Y = j * res - ox, i * res - oy        # translate so the grown mask corner hits cell (i, j)
             s.occ[i:i + m.shape[0], j:j + m.shape[1]] |= m
             rx, ry = rot_off[ang]
-            for mi, (mname, mshape, mrot) in enumerate(cp.members):
+            for mname, mshape, mrot in cp.members:
                 mg = translate(rotate(mshape, ang, origin=(0, 0)), X - rx, Y - ry)
                 s.placed.append(Placed(mname, k, (ang + mrot) % 360, mg))
             if fresh:

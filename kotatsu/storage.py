@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from shapely.affinity import rotate, translate
 from shapely.geometry import box
-from shapely.ops import unary_union
 
 from . import frame, top
 from .params import ROOT

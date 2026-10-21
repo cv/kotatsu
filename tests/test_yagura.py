@@ -3,7 +3,7 @@ stock-thickness range."""
 import numpy as np
 import pytest
 from shapely.affinity import translate
-from shapely.geometry import Point, Polygon, box
+from shapely.geometry import Point, box
 from shapely.ops import unary_union
 
 from kotatsu import frame, params, yagura
@@ -244,7 +244,7 @@ def test_storage_layout_fits(Y):
 def test_deck_notch_mouths_rounded_but_leg_side_square():
     """Owner 2026-10-20: the 8 notch-mouth corners are rounded; enough wood stays beside the mortises,
     and the corner pads around the legs keep their shape (wedge bearing unchanged)."""
-    from shapely.geometry import Point, box
+    from shapely.geometry import box
     P = params.tables(params.load())[0]
     rr = P.deck.mouth_r
     assert rr > 0

@@ -23,7 +23,7 @@ import tomllib
 
 from shapely.geometry import Polygon
 
-from . import yagura, build as cutbuild, comfort, cutlist, frame, nest, params, room, stiffness, top
+from . import build as cutbuild, comfort, cutlist, frame, nest, params, room, stiffness, top
 from .params import ROOT
 
 WEB = ROOT / "web"

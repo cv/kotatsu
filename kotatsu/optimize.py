@@ -24,9 +24,8 @@ GRID = {
 
 
 def weight_kg(p) -> float:
-    t, rho = p.material.t_nominal / 1000, p.material.density_kg_m3
     a = top.build(p).outline.area + sum(pt.shape.area * pt.qty for pt in frame.parts(p))
-    return a / 1e6 * 0.019 * 700 * UMAKE_KG if t else 0.0
+    return a / 1e6 * 0.019 * p.material.density_kg_m3 * UMAKE_KG     # uMake's "19mm" sheet
 
 
 def evaluate(p) -> dict:
