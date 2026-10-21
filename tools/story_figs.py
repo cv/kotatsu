@@ -2,7 +2,8 @@
 
 They're made from preview images saved along the way in out/preview (not in git: the earlier designs
 live in the seams-archive and frame-variants-archive tags), plus the current deck and the top drawn to
-scale. Kept to show how the pictures were made; rerunning it needs those previews.
+scale. Kept to show how the pictures were made. Those previews were deleted in the 2026-10-20 tidy-up, so
+the strips in docs/img are final; to remake one, re-render its previews from the archive tags first.
 Run from the repo root: uv run python tools/story_figs.py
 """
 import textwrap
