@@ -5,6 +5,8 @@ A **kotatsu** (a low Japanese heated table) built only from **flat CNC-cut birch
 from **uMake.ca**, shipped to the owner's door, with no phone calls and no back-and-forth emails. The design
 being built is an **86 × 86 cm square top** on a **yagura frame**: four "+" corner legs under an H-shaped
 deck, with the heater hanging under the deck. `PLAN.md` has the details and the README tells the story.
+That design has been **ordered** (git tag `v1-ordered`). Changes to the cut parts from here are a v2:
+say so in the commit, and don't let tidy-ups change the geometry by accident.
 
 What this repo produces:
 1. Parametric Python that builds every part from one parameter file, `params.toml`.
@@ -26,7 +28,7 @@ What this repo produces:
   CSA listed. Never plan around a 100 V Japanese heater without a transformer. The heater maker's clearances
   and instructions override this design.
 - **Focus.** Keep only the design being built in the code. Archive alternatives with a git tag first, then
-  delete them. (So far: `seams-archive` and `frame-variants-archive`.)
+  delete them. (So far: `seams-archive`, `frame-variants-archive` and `options-archive`.)
 - **Indigenous designs.** Don't imitate them. Use them only if they come from, or are licensed by, an
   Indigenous artist.
 
@@ -79,8 +81,12 @@ What this repo produces:
     `lil-gui` (controls) and `marked` (Markdown).
   - 2-D pan and zoom is a small custom controller in `web/viewer2d.js`. It stays sharp at any zoom and reads
     positions in millimetres.
+  - The 3-D view's textures (birch, plywood edges, fabric, rug, floor) are drawn on canvases at load
+    (`web/textures.js`); the "ambiance" props (tea things, laptop, book, the cat) are in `web/ambiance.js`.
   - `.github/workflows/pages.yml` builds the DXFs and the site (running the tests) on every push to `main`,
     and publishes them to GitHub Pages, with the DXFs under `/dxf/`.
+  - The public site sits behind a CDN that keeps scripts for hours, so the build tags every local .js/.css
+    address with `?v=<hash>`. Add new scripts as plain relative imports; the tagging is automatic.
 
 ## Layout
 ```

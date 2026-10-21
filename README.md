@@ -142,8 +142,9 @@ and quote. `AGENTS.md` has the project's rules.
 **Caveats.** The plywood strength figures are rough textbook values, so read the load numbers as "lots of
 margin", not as a certificate. uMake sells this sheet as "19mm", and the joints are designed for
 17.0–18.9 mm. Follow your heater's instructions and clearances, and make sure it's rated for your mains
-supply. The earlier designs are kept as git tags: `seams-archive` (split tops with decorative seams) and
-`frame-variants-archive` (solid-sided and splayed-leg frames).
+supply. The earlier designs are kept as git tags: `seams-archive` (split tops with decorative seams),
+`frame-variants-archive` (solid-sided and splayed-leg frames) and `options-archive` (options I built and
+didn't use: deck windows, an X deck, leg windows, lighter-look cuts, linking tables, a round top).
 
 ## License
 

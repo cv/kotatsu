@@ -42,7 +42,7 @@ two heater cheeks hanging under the deck.
 - The cheeks run 41 mm past the heater at each end, so the corner screws go into solid wood at about half
   the cheek's 55 mm height. The tabs and wedges are on the top edge, out of the screws' way.
 - **TODO-verify:** the exact width across the screw tabs. If there's a gap, the tabs bend slightly as the
-  screws tighten. A thin birch offcut as a spacer fixes that.
+  screws tighten. A thin shim fixes that (uMake sends only the parts, so no offcuts).
 - **TODO-verify:** the screws must be short enough not to poke out of the 18 mm cheek: about 16 mm plus the
   tab's thickness. Drill 2–2.5 mm pilot holes. I'll drill the holes myself during assembly, so the cut
   files don't have any.

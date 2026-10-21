@@ -108,43 +108,41 @@ Everything packs flat inside the top's footprint, in three layers (kotatsu/stora
    stay inside the 18 mm cheek). Also check the manual's clearances and the rating label for a
    cUL, cETL or CSA mark.
 3. **A tipping limit.** If I want one: EN 12521's force table, or a bathroom-scale test on the finished table.
-4. **Fit-up.** The first assembly will show how the tenons and wedges really fit. Then finish it: ease the
-   edges and oil it. I'll make it look lighter by hand instead of in the cut files:
-   - **Top corners: re-round to R50.** Bigger looks nicer, but R70 brings the edge within 29 mm of where
-     the top rests on the legs, and that leaves no room for the bevel.
-   - **Top edge: 15° underside bevel, 35 mm wide, leaving a 9 mm rim.** The top rests on the leg plates
-     41 mm in from its edge, so the bevel has to stop short of that. The plies show as stripes about
-     5 mm wide, like contour lines.
-   - **Legs: round over every exposed vertical edge**, up to a full half-round (R9). Keep flat: the top
-     edges that carry the top and deck, the tenons and shoulders, the slot walls and the plate faces
-     inside the cross-laps, and the wedge holes. Only ease the floor edge (about 2 mm). The leg stress is
-     1.7 MPa against roughly 35 MPa strength, so losing about 10% of the section costs nothing that
-     matters.
-   - **Finish: pale and matte, like hinoki (白木, "plain wood").** Birch is already close in colour.
-     The aim is to keep it from yellowing and to keep it looking unfinished. Normal oils (linseed, tung,
-     Danish) turn it honey-coloured, so I'm skipping them. Candidates:
-     a water-based flat clear coat, a "raw" hardwax oil with a trace of white (e.g. Osmo Polyx-Oil Raw),
-     or a Scandinavian soap finish. Try them on the 2 spare wedges first. No essential oils (hinoki
-     scent): the cat will sleep in the warm kotatsu, and many essential oils are toxic to cats.
-   - Before bevelling, pick the cleaner face of the top (fewest patches) and put it up.
-   - Sand to 180, wipe with a damp cloth to raise the grain, let it dry, then sand 220 (320 on the top).
-5. **X deck: studied, not used (yet).** Diagonal arms from the corner pads through the middle instead of
-   the H. The cheek tabs already sit on the diagonals, so the arms carry them for free. A square over the
-   heater ("shield") stops the futon sagging onto it; without it a fifth of the heater top is open.
-   X + shield: deck 3.68 → 3.08 kg, $353.38 → $349.48 (less cutting), same joints and pads, so the wobble
-   and strength checks don't change. In-plane, diagonal arms brace the corners better than the H's
-   necks (the wobble model treats the deck as rigid either way). The flat-pack plan would need redoing:
-   the plates no longer nest in the H's notches. `deck.window_style = "x"`, `deck.x_hub = "shield"`.
-   The catch is the futon. The deck is what holds it up across the middle, 26 mm under the top, and it
-   dips into every opening. The widest openings are 18 cm across in the H, 22 cm in X + shield and 26 cm
-   in the plain X. Each one opens at the middle of a side, right where your knees go. So the X sags a
-   bit more for $4 saved: not worth it on its own.
-6. **Lighter-look cuts: mocked up, not used.** Bigger top corners (R70), a curved haunch on the legs,
-   and feet tapering 10 mm on plate A. Together: about $1.50 cheaper, 0.1 kg lighter, lower leg stress,
-   a little less tipping margin (1698 → 1476 N at the edge). The order had already gone in, and the
-   difference was hard to see, so they stay as options in the code (off).
+4. **Fit-up.** The first assembly will show how the tenons and wedges really fit. Then I'll finish it.
+
+## Finishing (by hand, after the first fit-up)
+I'll make it look lighter by hand instead of in the cut files:
+- **Top corners: re-round to R50.** Bigger looks nicer, but R70 brings the edge within 29 mm of where the
+  top rests on the legs, and that leaves no room for the bevel.
+- **Top edge: 15° underside bevel, 35 mm wide, leaving a 9 mm rim.** The top rests on the leg plates 41 mm
+  in from its edge, so the bevel has to stop short of that. The plies show as stripes about 5 mm wide,
+  like contour lines.
+- **Legs: round over every exposed vertical edge**, up to a full half-round (R9). Keep flat: the top edges
+  that carry the top and deck, the tenons and shoulders, the slot walls and the plate faces inside the
+  cross-laps, and the wedge holes. Only ease the floor edge (about 2 mm). The leg stress is 1.7 MPa against
+  roughly 35 MPa strength, so losing about 10% of the section costs nothing that matters.
+- **Pale and matte, like hinoki (白木, "plain wood").** Birch is already close in colour. The aim is to
+  keep it from yellowing and looking unfinished. Normal oils (linseed, tung, Danish) turn it
+  honey-coloured, so I'm skipping them. Candidates: a water-based flat clear coat, a "raw" hardwax oil
+  with a trace of white (e.g. Osmo Polyx-Oil Raw), or a Scandinavian soap finish. Try them on the 2 spare
+  wedges first. No essential oils (hinoki scent): the cat will sleep in the warm kotatsu, and many
+  essential oils are toxic to cats.
+- Before bevelling, pick the cleaner face of the top (fewest patches) and put it up.
+- Sand to 180, wipe with a damp cloth to raise the grain, let it dry, then sand 220 (320 on the top).
 
 ## Earlier designs
 - The 120 × 80 top in three boards with decorative seams (dovetails, arrowheads, maple leaves and more),
   and the 120 × 90 and Ø 90 tables: git tag `seams-archive`.
 - The solid-sided frame (tapered legs, flared feet) and a splayed-leg yagura: git tag `frame-variants-archive`.
+- Options I built and then didn't use, all at git tag `options-archive`:
+  - **Deck windows** (closed holes): the notches took the same wood out with about 1 m less cutting, ~$20.
+  - **X deck**: diagonal arms through the middle, optionally with a square "shield" over the heater.
+    About $4 cheaper and 0.6 kg lighter, with the same joints. But the deck is what holds the futon up
+    across the middle, and the X's openings are 22–26 cm wide against 18 cm in the H, each right where
+    the knees go. Not worth it.
+  - **Leg windows**: replaced by the slim haunched legs.
+  - **Lighter-look cuts**: R70 top corners, a curved haunch, feet tapering 10 mm. About $1.50 cheaper and a
+    little less tipping margin (1698 → 1476 N at the edge), but hard to see. The hand finishing does more.
+  - **Linking modules**: a tongue (or lugs) at each deck notch and a drop-in key, so tables push together
+    into a row. About +$17 a module. I didn't like how it looked.
+  - **Round top** (Ø 90): $199 shipping and round futons that wouldn't ship here.
