@@ -100,15 +100,6 @@ def test_wedges_do_not_collide(Y):
             assert rects[i].distance(rects[j]) > 2, (i, j)
 
 
-def test_deck_inside_round_top(Y):
-    P, L, parts = Y
-    if getattr(P.top, "shape", "rect") != "round":
-        pytest.skip("rectangular top")
-    dk = parts["deck"].shape
-    far = max(Point(L.cx, L.cy).distance(Point(x, y)) for x, y in dk.exterior.coords)
-    assert far <= P.top.length / 2 - P.yagura.deck_inset + 0.5
-
-
 def test_quantities(Y):
     P, L, parts = Y
     q = {n: pt.qty for n, pt in parts.items()}
@@ -121,44 +112,22 @@ def test_quantities(Y):
 
 def _haunch_bottom(P):
     Y = P.yagura
-    if getattr(Y, "leg_haunch_style", "straight") == "curve":
-        return Y.leg_haunch_top - Y.leg_haunch_curve_drop
     return Y.leg_haunch_top - Y.leg_haunch_drop - Y.leg_haunch_r
 
 
 def test_legs_are_straight(Y):
     """Plumb plates: the outer edge is straight; below the haunch the inner edge is too (leg_narrow wide),
-    and the plate is full width just under the deck (shoulders + tenon). Plate A's feet may taper
-    (yagura.foot_taper) over the bottom foot_taper_from mm; above that it's plumb too."""
+    and the plate is full width just under the deck (shoulders + tenon)."""
     P, L, parts = Y
     wn = getattr(P.yagura, "leg_narrow", 0.0) or P.frame.leg_width
-    ft = getattr(P.yagura, "foot_taper", 0.0)
     for name in ("leg plate A", "leg plate B"):
         g = parts[name].shape
         z_hi = _haunch_bottom(P) - 2 if getattr(P.yagura, "leg_narrow", 0) else L.z_deck_bot - 20
-        zs = [z_hi] + [z for z in (10, 100) if not (name == "leg plate A" and ft and z < P.yagura.foot_taper_from)]
-        if name == "leg plate A" and ft:
-            zs.append(P.yagura.foot_taper_from + 2)
-        for z in zs:
+        for z in (z_hi, 10, 100):
             b = g.intersection(box(-50, z, 400, z + 1)).bounds
             assert b[0] == pytest.approx(0, abs=0.5) and b[2] == pytest.approx(wn, abs=0.5), (name, z, b)
         hi = g.intersection(box(-50, L.z_deck_bot - 12, 400, L.z_deck_bot - 11)).bounds
         assert hi[2] == pytest.approx(P.frame.leg_width, abs=0.5)
-
-
-def test_tapered_feet(Y):
-    """Plate A's foot is leg_narrow - 2 x foot_taper wide at the floor, the taper stays clear of A's
-    cross-lap slot (its fingers keep full width), and plate B never tapers (its floor slot needs both fingers)."""
-    P, L, parts = Y
-    ft = getattr(P.yagura, "foot_taper", 0.0)
-    if not ft:
-        pytest.skip("plumb feet")
-    wn = getattr(P.yagura, "leg_narrow", 0.0) or P.frame.leg_width
-    A, B = parts["leg plate A"].shape, parts["leg plate B"].shape
-    b = A.intersection(box(-50, 8, 400, 9)).bounds
-    assert b[2] - b[0] == pytest.approx(wn - 2 * ft * (1 - 8.5 / P.yagura.foot_taper_from), abs=1.0)
-    assert P.yagura.foot_taper_from <= L.z_deck_bot - lap_depth_a(P) + 1e-6   # below A's slot bottom
-    assert B.intersection(box(-50, 8, 400, 9)).bounds[2] == pytest.approx(wn, abs=0.5)
 
 
 def lap_depth_a(P):
@@ -199,12 +168,11 @@ def test_posts_carry_the_top_further_out(Y):
 
 
 def test_deck_windows_clear_everything(Y):
-    """Lightening windows: window_margin from every hole, slot, wedge, cheek and the heater; window_bar
-    from the deck's outer edge; the deck stays one piece."""
+    """The deck's notches: window_margin from every hole, slot, wedge, cheek and the heater, `neck` of wood
+    between neighbours, really open; the deck stays one piece."""
     P, L, parts = Y
     wins = yagura.windows(P)
-    if not wins:
-        pytest.skip("no deck windows")
+    assert len(wins) == 4
     d = parts["deck"].shape
     assert d.geom_type == "Polygon"
     t = P.material.t_max
@@ -222,33 +190,13 @@ def test_deck_windows_clear_everything(Y):
             ox, oy, _ = pl.origin
             keep.append(box(ox, oy, ox + w1 - w0, oy + t) if pl.axis == "x" else box(ox, oy, ox + t, oy + w1 - w0))
     keep = unary_union(keep)
-    outer = Polygon(d.exterior)
-    notch = getattr(P.deck, "window_style", "hole") == "notch"
     for w in wins:
         assert w.distance(keep) >= P.deck.window_margin - 1e-6
-        if not notch:
-            assert outer.exterior.distance(w) >= P.deck.window_bar - 1e-6
     for a in wins:
         for b in wins:
             if a is not b:
-                assert a.distance(b) >= (P.deck.neck if notch else P.deck.window_bar) - 1e-6
+                assert a.distance(b) >= P.deck.neck - 1e-6
         assert d.intersection(a).area < 1e-6                         # really open
-
-
-def test_leg_windows_leave_enough_wood(Y):
-    """Leg windows keep >= stock thickness of wood around them and never touch the slot, tenon or hole."""
-    P, L, parts = Y
-    lw = yagura.leg_window(P)
-    if lw is None:
-        pytest.skip("no leg windows")
-    t = P.material.t_max
-    for name in ("leg plate A", "leg plate B"):
-        g = parts[name].shape
-        assert g.geom_type == "Polygon" and len(g.interiors) == 2          # wedge hole + window
-        x0, z0, x1, z1 = lw.bounds
-        assert x0 - (P.frame.ear + frame.slot_w(P) / 2) >= t - 0.5          # wood beside the cross-lap slot
-        assert P.frame.leg_width - x1 >= t - 0.5                            # wood at the inner edge
-        assert z0 >= 40 and L.z_deck_bot - z1 >= 40
 
 
 def test_crush_ribs_narrow_the_slots(Y):

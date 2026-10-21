@@ -25,12 +25,9 @@ function renderOverview(d) {
 
 // ---------- futon & rug ----------
 const FIT = { ideal: ["right size", "ok"], generous: ["roomy", ""], small: ["small for this top", "warn"] };
-const isSq = (shape) => shape === "square" || shape === "rect";
-const sizeTxt = (shape, mm) => { const c = Math.round(mm / 10); return isSq(shape) ? `${c} × ${c} cm` : `Ø ${c} cm`; };
-// a square or a circle, centred, `s` = side or diameter
-function shapeEl(svg, shape, s, cls, rx = 0) {
-  return isSq(shape) ? el("rect", { x: -s / 2, y: -s / 2, width: s, height: s, rx, class: cls }, svg) : el("circle", { r: s / 2, class: cls }, svg);
-}
+const sizeTxt = (mm) => { const c = Math.round(mm / 10); return `${c} × ${c} cm`; };
+// a centred square, side `s`
+const square = (svg, s, cls, rx = 0) => el("rect", { x: -s / 2, y: -s / 2, width: s, height: s, rx, class: cls }, svg);
 const cad = (n) => "$" + n.toLocaleString("en-CA");
 
 function renderFutonList(d) {
@@ -47,11 +44,11 @@ function renderFutonList(d) {
     const sold = /SOLD/.test(f.status);
     const price = f.currency === "JPY" ? `¥${f.price.toLocaleString()}${f.ship ? ` + ¥${f.ship.toLocaleString()} ship` : ""} ≈ <b>${cad(f.total_cad)}</b>` : f.currency === "USD" ? `US${f.price} ≈ <b>${cad(f.total_cad)}</b> + shipping` : `<b>${cad(f.price)}</b> CAD${f.ship ? ` + ${cad(f.ship)}` : " (free shipping)"}`;
     div.innerHTML = `<img class="fimg" src="${f.img}" alt="" loading="lazy" referrerpolicy="no-referrer">
-      <div class="name">${sizeTxt(f.shape, f.size_cm * 10)} <span class="badge ${fitCls}">${fitTxt}</span>${sold ? '<span class="badge warn">sold out</span>' : ""}</div>
+      <div class="name">${sizeTxt(f.size_cm * 10)} <span class="badge ${fitCls}">${fitTxt}</span>${sold ? '<span class="badge warn">sold out</span>' : ""}</div>
       <div class="label">${f.name}</div>
       <div class="stats">${price}<br>${f.store}${f.rating ? " · " + f.rating : ""}<br>${f.status}<br><i>${f.notes}</i><br>
-      floor footprint ≈ ${sizeTxt(f.shape, f.footprint_d)} · rug ring ≈ ${Math.round(f.rug_ring / 10)} cm · <a href="${f.url}" target="_blank" rel="noopener">open store ↗</a></div>`;
-    div.onclick = (e) => { if (e.target.tagName === "A") return; state.futon = f.url; state.fsize = f.size_cm * 10; state.fshape = f.shape; renderFutonList(d); renderFutonPlan(d); };
+      floor footprint ≈ ${sizeTxt(f.footprint_d)} · rug ring ≈ ${Math.round(f.rug_ring / 10)} cm · <a href="${f.url}" target="_blank" rel="noopener">open store ↗</a></div>`;
+    div.onclick = (e) => { if (e.target.tagName === "A") return; state.futon = f.url; state.fsize = f.size_cm * 10; renderFutonList(d); renderFutonPlan(d); };
     list.appendChild(div);
   }
 }
@@ -59,9 +56,9 @@ function renderFutonList(d) {
 function footprint(R, fd) { return Math.max(R.top_d, fd - 2 * 0.7 * R.height); }
 
 function renderFutonPlan(d, refit = false) {
-  const R = d.room, fd = state.fsize || R.futon_d, fp = footprint(R, fd), fs = state.fshape || R.futon_shape, ts = R.top_shape;
+  const R = d.room, fd = state.fsize || R.futon_d, fp = footprint(R, fd);
   $("#futon-btns").replaceChildren(btnGroup([1900, 2050, 2250, 2290].map((x) => [x, `${x / 10} cm`]), fd, (x) => { state.fsize = x; state.futon = null; renderFutonList(d); renderFutonPlan(d); }));
-  $("#futon-summary").textContent = `futon ${sizeTxt(fs, fd)} → floor ≈ ${sizeTxt(fs, fp)} · rug showing ≈ ${Math.round((R.rug_d - (isSq(fs) ? fp * Math.SQRT2 : fp)) / 20)}–${Math.round((R.rug_d - fp) / 20)} cm · top ${sizeTxt(ts, R.top_d)}`;
+  $("#futon-summary").textContent = `futon ${sizeTxt(fd)} → floor ≈ ${sizeTxt(fp)} · rug showing ≈ ${Math.round((R.rug_d - fp * Math.SQRT2) / 20)}–${Math.round((R.rug_d - fp) / 20)} cm · top ${sizeTxt(R.top_d)}`;
   const host = $("#fviewer");
   let svg = host.querySelector("svg");
   const r0 = R.rug_d / 2 + 80, home = { x: -r0, y: -r0, w: 2 * r0, h: 2 * r0 };
@@ -75,8 +72,8 @@ function renderFutonPlan(d, refit = false) {
   svg.replaceChildren();
   el("circle", { r: R.rug_d / 2, class: "rug" }, svg);
   el("circle", { r: R.rug_d / 2 - 60, class: "rug-border" }, svg);
-  shapeEl(svg, fs, fp, "futon-floor", 60);
-  shapeEl(svg, fs, fd, "futon-flat", 60);
+  square(svg, fp, "futon-floor", 60);
+  square(svg, fd, "futon-flat", 60);
   if ($("#chk-fzab").checked) {
     const [zw, zd] = R.zabuton, rc = R.seat_c;   // pillow centre distance from the table centre (room.seat_offset)
     for (const ang of [0, 90, 180, 270]) {
@@ -89,7 +86,7 @@ function renderFutonPlan(d, refit = false) {
     el("line", { x1: -h, y1: q, x2: h, y2: q, class: "frame-ghost" }, svg);
     el("line", { x1: q, y1: -h, x2: q, y2: h, class: "frame-ghost" }, svg);
   }
-  shapeEl(svg, ts, R.top_d, "top-disc", R.corner_r);
+  square(svg, R.top_d, "top-disc", R.corner_r);
   if (R.knees) {                              // owner's cross-legged knee zone at each side
     const K = R.knees, y0 = R.top_d / 2 - K.reach;
     for (const ang of [0, 90, 180, 270]) {
@@ -101,8 +98,8 @@ function renderFutonPlan(d, refit = false) {
   }
   const lab = (txt, y) => { const t = el("text", { x: 0, y, class: "plan-label" }, svg); t.textContent = txt; };
   lab(`rug Ø ${R.rug_d / 10} cm`, -R.rug_d / 2 + 40);
-  lab(`futon on the floor ≈ ${sizeTxt(fs, Math.round(fp / 10) * 10)}`, -fp / 2 + 45);
-  lab(`top ${sizeTxt(ts, R.top_d)}`, 15);
+  lab(`futon on the floor ≈ ${sizeTxt(Math.round(fp / 10) * 10)}`, -fp / 2 + 45);
+  lab(`top ${sizeTxt(R.top_d)}`, 15);
   if (refit || !state.fpzFitted) requestAnimationFrame(() => requestAnimationFrame(() => state.fpz.fit(home)));
 }
 

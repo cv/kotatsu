@@ -36,7 +36,7 @@ def cut_list(p, copies: int = 1, frame_grain: str | None = None) -> list[CutPart
     (default from params [layout])."""
     frame_grain = frame_grain or getattr(getattr(p, "layout", None), "frame_grain", "horizontal")
     tp = top.build(p)
-    out: list[CutPart] = [CutPart("top", _norm(tp.outline), 1, ANY if tp.name == "round" else GRAIN_ALONG_U,
+    out: list[CutPart] = [CutPart("top", _norm(tp.outline), 1, GRAIN_ALONG_U,
                                   "top", "one piece")]
     for pt in frame.parts(p):
         if pt.kind == "frame" and frame_grain == "horizontal":

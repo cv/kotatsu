@@ -5,7 +5,7 @@ from kotatsu import build, export, params
 
 def test_params_load():
     p = params.load()
-    assert p.top.shape == "rect" and p.top.length == p.top.width == 860
+    assert p.top.length == p.top.width == 860
     assert [t.table_name for t in params.tables(p)] == ["yagura"]
     assert p.material.t_min < p.material.t_nominal < p.material.t_max
 

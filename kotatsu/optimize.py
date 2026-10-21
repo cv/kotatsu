@@ -11,7 +11,6 @@ import itertools
 
 from . import comfort, frame, geom, params, price, stiffness, top
 
-WEIGHT_MAX = 18.9       # kg, the heaviest order uMake has shipped free for us (20.4 was not)
 SWAY_MAX = 1.0          # mm at 100 N sideways, either direction
 LEG_MPA_MAX = 3.0
 UMAKE_KG = 20.4 / 20.85  # our weight model -> uMake's cart weight (calibrated)
@@ -39,7 +38,7 @@ def evaluate(p) -> dict:
     sway = max(s["x"]["sway_mm"]["100"], s["y"]["sway_mm"]["100"])
     r = {"price": e["subtotal"], "cut_m": e["cut_m"], "kg": round(weight_kg(p), 2), "sway": sway,
          "leg_MPa": float(s["stress"]["leg_MPa"]), "reach": c["reach"], "shin": c["shin_w"], "cuttable": ok}
-    r["feasible"] = (ok and r["kg"] <= WEIGHT_MAX and sway <= SWAY_MAX and r["leg_MPa"] <= LEG_MPA_MAX
+    r["feasible"] = (ok and r["kg"] <= p.shipping.free_kg and sway <= SWAY_MAX and r["leg_MPa"] <= LEG_MPA_MAX
                      and c["reach"] >= p.comfort.knee_reach_min)
     return r
 

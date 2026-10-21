@@ -23,14 +23,12 @@ crush_rib_at = [0.3, 0.75]
 tight = 0.2               # in-plane tenon/mortise clearance
 mortise_height_extra = 0.5
 wedge_taper = 0.125       # 1:8
-inplane_c = 0.2           # per-side clearance for in-plane mating shapes (seams, keys)
 
 [top]                 # owner, 2026-10-20: square 860 x 860, ONE piece (was Ø 900 round: +$199 shipping, and round
                       # futons are hard to get). 860 packs in uMake's 91 cm box = free shipping (docs/quote.md).
-shape = "rect"        # rect (one piece, rounded corners) | round: length = width = diameter
 length = 860.0
 width = 860.0
-corner_r = 20.0       # rect only
+corner_r = 20.0
 
 [frame]               # yagura: 4 straight "+" corner legs (2 crossed plates each) under a deck; no aprons
 height = 385.0        # floor to the tenon tops (futon plane); + 18 top + ~10 futon ≈ 41 cm total
@@ -44,28 +42,18 @@ lap_extra = 0.5       # each cross-lap slot is (leg height)/2 + this, so slot bo
 
 [deck]                # horizontal plate on the legs' shoulders; the heater hangs under it
 drop = 26.0           # deck top below the futon plane (room for the leg + cheek wedges above it)
-# Lightening windows: uMake ships free up to a 91 cm box AND ~20 kg (18.9 kg free, 20.4 kg not).
-# "auto" sizes 4 windows from the features around them (kotatsu/yagura.py window_rects).
-windows = "auto"
-window_style = "notch"  # owner 2026-10-20: open the windows through the edge (an H-shaped deck): ~$20 cheaper
+# Four notches (an H-shaped deck), sized from the features around them (kotatsu/yagura.py window_rects).
+# uMake ships free up to a 91 cm box AND ~20 kg (18.9 kg free, 20.4 kg not); the notches also save cutting.
 neck = 70.0           # wood joining each corner pad to the middle
 mouth_r = 30.0        # owner 2026-10-20: round the notch-mouth corners (the ones away from the legs)
 window_margin = 20.0  # clear of the heater, cheeks, cheek wedges, mortises, leg wedges
-window_bar = 30.0     # wood left at the deck edge and between windows
 window_r = 20.0
-# Study (owner 2026-10-20): window_style = "x" makes the deck an X of diagonal arms (kotatsu/yagura.py x_outline)
-x_pad = 125.0         # corner pads: this far in from the frame edge (covers the mortises + leg wedges)
-x_arm = 110.0         # arm width; the cheek tabs + their wedges sit on the arms, ~45 mm from the axis
-x_hub = "none"        # "shield": also a square over the heater, so the futon can't sag onto it
-x_hub_margin = 25.0
-x_fillet = 30.0
 
 [yagura]              # leg <-> deck joints
 tenon_gap = 10.0      # each plate's tenon starts this far past the cross-lap slot (the shoulder on that side)
 tenon_w = 50.4        # tenon width (>= wedge hole + 2 x 15 mm); leg width beyond it is an inner shoulder
 hole_h = 14.0         # wedge hole above the deck
 hole_drop = 1.0       # hole bottom below the thinnest deck's top face, so the wedge bears on the deck
-deck_inset = 10.0     # deck corners stay this far inside the round top
 corner_posts = true   # each plate's ear arm rises past the deck to the top: the top rests at the frame corners
                       # (deck corners cut away around them); loose top lifts at ~363 N vs ~205 N without
 leg_narrow = 60.0     # owner's haunched legs: plates are this wide (from the frame edge) below the haunch:
@@ -73,13 +61,6 @@ leg_narrow = 60.0     # owner's haunched legs: plates are this wide (from the fr
 leg_haunch_top = 320.0  # haunch meets the full-width inner edge here (just under the 341 shoulders)
 leg_haunch_drop = 30.0  # ... and reaches the narrow line this much lower (a ~31° slope)
 leg_haunch_r = 15.0   # inside-corner fillet where the haunch meets the narrow leg
-leg_haunch_style = "straight"  # straight (above) | curve: a long quarter-ellipse cove instead (lighter-looking)
-leg_haunch_curve_drop = 120.0  # curve: how far below leg_haunch_top the cove starts on the narrow leg
-foot_taper = 0.0      # plate A's feet: each edge slopes in by this much at the floor (0 = plumb)
-foot_taper_from = 200.0  # ... starting this high above the floor
-leg_windows = false   # slot window in each leg plate's inner arm (replaced by the haunched legs)
-leg_window_bar = 20.0 # wood each side of it (>= stock thickness, uMake's minimum feature)
-leg_window_end = 50.0 # wood below it (floor) and above it (shoulder)
 foot_relief = 1.5     # shallow arc under plate A's foot: each plate stands on its two ends
 foot_relief_margin = 10.0
 one_wedge = true      # owner 2026-10-20: leg and cheek wedges are the same part (one file, 12 + 2 spares)
@@ -101,7 +82,6 @@ head = 18.0           # height at the thick end; taper fit.wedge_taper (foot 10.
 
 [heater]               # PaletteLife 120V 400W (docs/heater.md). Owner measured 29 x 29 x 5 cm (2026-10-19, to the cm)
 model = "PaletteLife B0CKBS16YY"
-mount = "side"         # side (screws into on-edge cheeks) | bracket (L-brackets under deck)
 body_x = 290.0
 body_y = 290.0
 body_h = 50.0
@@ -139,7 +119,6 @@ futon_kg = 2.0
 [room]                # for the Futon & rug page (docs/futons.toml has the candidates)
 rug_d = 2440.0        # 8 ft round rug
 futon_d = 2032.0      # owner 2026-10-20: an 80 x 80 in square futon (sellers' rule: top + 110-130 cm -> 196-216 for 86)
-futon_shape = "square"
 drape_k = 0.7         # footprint radius ~ futon radius - drape_k * (frame height + top): rough, futons slope out
 zabuton = [635.0, 635.0]  # owner 2026-10-20: square floor pillows, 25 x 25 in
 zabuton_h = 90.0      # pillow thickness (3-D view)
@@ -152,10 +131,9 @@ rug_t = 10.0          # rug thickness (3-D view)
 frame_grain = "horizontal"  # frame parts keep their grain where it looks right (legs: up the leg); "free" = any rotation
 sets = [1]                  # cut layouts for this many copies of the whole set of [[tables]]
 
-[shipping]
-std_max_side_in = 48
-oversize_max_side_in = 60
-max_box_lb = 50
+[shipping]            # uMake's free shipping, as observed at checkout (docs/quote.md)
+box_max = 910.0       # longest box side, mm (a 91 cm box ships free; 87 cm parts + packing fit)
+free_kg = 18.9        # heaviest order that shipped free for us (20.4 kg did not)
 
 # ------------------------------------------------------------------------------------------------
 # The table to build. (Earlier designs live in git history: the 1200 x 900 rectangle with decorative

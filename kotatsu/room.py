@@ -1,4 +1,4 @@
-"""Room fit: futon + 8 ft round rug around the table (Futon & rug page). Square or round futon/top."""
+"""Room fit: a square futon + 8 ft round rug around the square table (Futon & rug page)."""
 from __future__ import annotations
 
 import math
@@ -26,7 +26,6 @@ def futons(p) -> dict:
     out = []
     for f in d["futon"]:
         k = rates[f["currency"]]
-        f.setdefault("shape", "round")
         fd = f["size_cm"] * 10.0
         out.append({**f,
                     "price_cad": round(f["price"] * k), "ship_cad": round(f["ship"] * k),
@@ -53,8 +52,7 @@ def seat_offset(p) -> float:
 
 def room_data(p) -> dict:
     return {"rug_d": p.room.rug_d, "futon_d": p.room.futon_d, "top_d": p.top.length,
-            "top_shape": getattr(p.top, "shape", "rect"), "corner_r": getattr(p.top, "corner_r", 0.0),
-            "futon_shape": getattr(p.room, "futon_shape", "round"),
+            "corner_r": getattr(p.top, "corner_r", 0.0),
             "frame": p.top.length - 2 * p.frame.overhang, "ear": p.frame.ear,
             "height": p.frame.height + p.material.t_nominal, "zabuton": list(p.room.zabuton),
             "seat_c": round(seat_offset(p), 1),
@@ -118,7 +116,7 @@ def room3d(p, n: int = 81) -> dict:
     L = frame.layout(p)
     cx, cy = L.cx, L.cy
     R = p.room
-    fd, shape = R.futon_d, getattr(R, "futon_shape", "square")
+    fd = R.futon_d
     at, rho_floor, rho_out = drape_profile(p, fd)
     half = fd / 2
     w, d = R.zabuton
@@ -141,14 +139,12 @@ def room3d(p, n: int = 81) -> dict:
     for j in range(n):
         for i in range(n):
             a, b = -half + fd * i / (n - 1), -half + fd * j / (n - 1)
-            r = max(abs(a), abs(b)) if shape != "round" else math.hypot(a, b)
-            if shape == "round" and r > half:                 # outside the round cloth: pin to its rim
-                a, b, r = a * half / r, b * half / r, half
+            r = max(abs(a), abs(b))                           # square cloth: rings are squares
             rho, z = at(r)
             k = rho / r if r > 1e-9 else 1.0
             x, y = cx + a * k, cy + b * k
             z = max(z, over_seats(x, y) + 4.0)                 # lies on the rug (and the pillows), not in them
             pts += [round(x, 1), round(y, 1), round(z, 1)]
     return {"rug": {"center": [cx, cy], "d": R.rug_d, "t": getattr(R, "rug_t", 10.0)},
-            "futon": {"n": n, "pts": pts, "shape": shape, "size": fd},
+            "futon": {"n": n, "pts": pts, "size": fd},
             "seats": seats}

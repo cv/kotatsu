@@ -1,8 +1,10 @@
 """Yagura frame: four "+" corner legs, each two crossed plates, carry a deck; no aprons. The heater
 hangs under the deck from two cheeks (kotatsu/frame.py).
 
-Legs are straight (plumb edges), 120 mm plates: a 40 mm ear arm outside the corner cross-lap, the slot,
-a 10 mm shoulder, then a tenon out to the inner edge.
+Leg plates are 110 mm wide under the deck (a 20 mm ear arm outside the corner cross-lap, the slot, a
+10 mm shoulder, a 50 mm tenon, a 10 mm inner shoulder) and slim strips below a short haunch
+(yagura.leg_narrow: a 20 mm finger each side of the slot). The ear arms rise past the deck as corner
+posts that carry the top.
 
 Joints
   * legs: cross-lap at each corner ("A" plates slotted from the shoulder down, "B" plates from the floor up)
@@ -13,10 +15,8 @@ tap in the 8 leg wedges, then hang the cheeks + heater.
 """
 from __future__ import annotations
 
-import math
-
+from shapely.geometry import Point, Polygon, box
 from shapely.ops import unary_union
-from shapely.geometry import LineString, Point, Polygon, box
 
 from . import frame as fr
 from .frame import Part, Placement
@@ -44,10 +44,6 @@ def leg_plate(p, slotted_from_top: bool) -> Polygon:
     nc = narrow_cut(p)
     if nc is not None:                                   # haunched leg: narrow below, full width under the deck
         g = g.difference(nc)
-    if slotted_from_top:
-        ft = foot_taper_cut(p)
-        if ft is not None:                               # plate A only: its feet narrow toward the floor
-            g = g.difference(ft)
     g = fr._round_outer(g, F.foot_r)
     ta, tb = _tenon_u(p)
     g = g.union(fr._round_outer(box(ta, zs - 10, tb, H), 3.0))
@@ -59,9 +55,6 @@ def leg_plate(p, slotted_from_top: bool) -> Polygon:
     g = g.difference(fr.dogbone((ta, zs), (-1, 1), r))   # root reliefs: the shoulders seat flat on the deck
     if tb < wt - 0.01:
         g = g.difference(fr.dogbone((tb, zs), (1, 1), r))
-    lw = leg_window(p)
-    if lw is not None:
-        g = g.difference(lw)
     hz0, hz1 = leg_hole_z(p)
     uc, ts = (ta + tb) / 2, fr.thick_slot(p)
     g = g.difference(fr.hole(uc - ts / 2, hz0, uc + ts / 2, hz1, r))
@@ -101,8 +94,7 @@ def foot_relief(p) -> Polygon:
     if sag <= 0:
         return Polygon()
     wn = getattr(Y, "leg_narrow", 0.0) or p.frame.leg_width
-    ft = getattr(Y, "foot_taper", 0.0)                   # plate A's foot is narrower by this much each side
-    a, b = ft + Y.foot_relief_margin, wn - ft - Y.foot_relief_margin
+    a, b = Y.foot_relief_margin, wn - Y.foot_relief_margin
     c = (b - a) / 2
     R = (c * c + sag * sag) / (2 * sag)
     return Point((a + b) / 2, sag - R).buffer(R, quad_segs=64).intersection(box(a - 1, -1, b + 1, sag))
@@ -143,15 +135,9 @@ def mortises(p) -> list[tuple[float, float, float, float]]:
 
 
 def deck(p) -> Polygon:
-    """Deck in world x-y: the frame square, corners trimmed to stay inside the round top."""
-    L, Y, r = fr.layout(p), p.yagura, fr._rd(p)
-    g = box(L.O, L.O, L.O + L.Lf, L.O + L.Wf)
-    if getattr(p.top, "shape", "rect") == "round":
-        g = g.intersection(Point(L.cx, L.cy).buffer(p.top.length / 2 - Y.deck_inset, quad_segs=64))
-    g = fr._round_outer(g, 8.0)
-    xstyle = getattr(p.deck, "window_style", "hole") == "x"
-    if xstyle:                                          # study: an X of diagonal arms instead of an H
-        g = g.intersection(x_outline(p))
+    """Deck in world x-y: the frame square with a notch in each side (an H shape), cut around the posts."""
+    L, r = fr.layout(p), fr._rd(p)
+    g = fr._round_outer(box(L.O, L.O, L.O + L.Lf, L.O + L.Wf), 8.0)
     if post_u(p) > 0:                                   # L-shaped corner cut-outs around the two posts
         k = corner_cut(p)
         j = L.Lf / 2 - p.frame.ear - fr.thick_slot(p) / 2  # plates' inner faces (+ clearance)
@@ -168,7 +154,7 @@ def deck(p) -> Polygon:
                     g = g.difference(fr.dogbone((L.cx + sx * ax, L.cy + sy * ay), (sx, sy), r))
     for x0, y0, x1, y1 in mortises(p):
         g = g.difference(fr.hole(x0, y0, x1, y1, r))
-    for w in ([] if xstyle else windows(p)):            # weight-saving windows away from the heater
+    for w in windows(p):                                # the notches: weight and cut length saved
         g = g.difference(w)
     g = _round_mouths(p, g)
     for xi, sgn in zip(fr.cheek_xs(p), (-1, 1)):        # cheek tab slots, as in the slab deck
@@ -178,36 +164,10 @@ def deck(p) -> Polygon:
     return g
 
 
-def x_outline(p) -> Polygon:
-    """Study (owner 2026-10-20): the deck as an X. Four corner pads carry the leg mortises and wedges;
-    diagonal arms join them through the middle, where the cheek tabs already sit (on the diagonals).
-    deck.x_hub = "shield" adds a square over the heater, so the futon can't sag onto it.
-    Inside corners are filleted (deck.x_fillet) before any joint is cut, so the joints stay exact."""
-    D, L = p.deck, fr.layout(p)
-    h, cx, cy = L.Lf / 2, L.cx, L.cy
-    pad, w = D.x_pad, D.x_arm
-    parts = [box(cx + sx * h - (pad if sx > 0 else 0), cy + sy * h - (pad if sy > 0 else 0),
-                 cx + sx * h + (0 if sx > 0 else pad), cy + sy * h + (0 if sy > 0 else pad))
-             for sx in (-1, 1) for sy in (-1, 1)]
-    far = 2 * h
-    for d in (1, -1):                                   # the two diagonals
-        arm = LineString([(cx - far, cy - d * far), (cx + far, cy + d * far)]).buffer(w / 2, cap_style=2)
-        parts.append(arm)
-    if getattr(D, "x_hub", "none") == "shield":
-        sx, sy, _ = fr.heater_box(p)[0]
-        m = D.x_hub_margin
-        parts.append(box(cx - sx / 2 - m, cy - sy / 2 - m, cx + sx / 2 + m, cy + sy / 2 + m))
-    g = unary_union(parts).intersection(box(cx - h, cy - h, cx + h, cy + h))
-    f = D.x_fillet
-    return g.buffer(f, join_style=1).buffer(-f, join_style=1)   # round the inside corners
-
-
 def mouth_corners(p) -> list[tuple[float, float, int, int]]:
     """The notched deck's convex corners where the notches meet the edge (away from the legs), as world
     (x, y, dx, dy) with (dx, dy) pointing into the wood."""
-    D, L = p.deck, fr.layout(p)
-    if getattr(D, "window_style", "hole") != "notch":
-        return []
+    L = fr.layout(p)
     h, out = L.Lf / 2, []
     for x0, y0, x1, y1 in window_rects(p):
         if x1 > h:                                      # side notch, open at x = +h
@@ -242,28 +202,21 @@ def _round_mouths(p, g):
 
 
 def window_rects(p) -> list[tuple[float, float, float, float]]:
-    """Deck lightening windows as centre-relative (x0, y0, x1, y1), sized from the features around them:
-    two "side" windows beside the cheeks (x) and two "end" windows past the cheek ends (y), each
-    window_margin clear of the heater, cheeks, cheek wedges, mortises and leg wedges, window_bar from the
-    deck edge and from each other. [deck] windows = "auto" | [] | explicit list.
-    window_style = "notch" opens them through the deck edge (same wood out, ~1 m less cutting); then
-    `neck` is the width of wood joining each corner pad (mortises, posts) to the middle."""
+    """The deck's four notches as centre-relative (x0, y0, x1, y1), sized from the features around them:
+    two "side" notches beside the cheeks (x) and two "end" notches past the cheek ends (y), each
+    window_margin clear of the heater, cheeks, cheek wedges, mortises and leg wedges, and open through
+    the deck edge. `neck` is the width of wood joining each corner pad (mortises, posts) to the middle."""
     D, L = p.deck, fr.layout(p)
-    w = getattr(D, "windows", [])
-    if w != "auto":
-        return [tuple(v) for v in (w or [])]
-    m, bar, t = D.window_margin, D.window_bar, p.material.t_max
+    m, t = D.window_margin, p.material.t_max
     h = L.Lf / 2
     ta, tb = _tenon_u(p)
     m_in = h - tb - p.fit.tight                                  # mortises' inner ends (from the centre)
     ci = abs(fr.cheek_xs(p)[0] - L.cx)                           # cheek inner face
     cw_x = ci + t / 2 + p.cheek_wedge.length / 2                 # cheek wedges' outer ends
-    notch = getattr(D, "window_style", "hole") == "notch"        # notches run out through the deck edge
-    edge = h + 20 if notch else h - bar
+    edge = h + 20                                                # run out through the deck edge
     sx0, sx1, sy = cw_x + m, edge, m_in - m                      # side windows
     ey0 = p.cheek.length / 2 + m                                 # end windows: past the cheek ends ...
-    gap = getattr(D, "neck", bar) if notch else bar              # wood joining each corner pad to the middle
-    ey1, ex = edge, min(sx0 - gap, m_in - m)                     # ... and clear of the side windows / mortises
+    ey1, ex = edge, min(sx0 - D.neck, m_in - m)                  # neck: wood joining each corner pad to the middle                     # ... and clear of the side windows / mortises
     out = []
     if sx1 - sx0 > 40 and sy > 40:
         out += [(sx0, -sy, sx1, sy), (-sx1, -sy, -sx0, sy)]
@@ -273,8 +226,8 @@ def window_rects(p) -> list[tuple[float, float, float, float]]:
 
 
 def windows(p) -> list[Polygon]:
-    """Lightening windows in the deck (world coords), rounded by window_r. They keep the order under
-    uMake's free-shipping weight (box <= 91 cm and under ~20 kg)."""
+    """The deck's notches (world coords), inside corners rounded by window_r. They keep the order under
+    uMake's free-shipping weight (box <= 91 cm and under ~20 kg) and save cutting."""
     D, L = p.deck, fr.layout(p)
     return [fr._round_outer(box(L.cx + x0, L.cy + y0, L.cx + x1, L.cy + y1), D.window_r)
             for x0, y0, x1, y1 in window_rects(p)]
@@ -290,47 +243,10 @@ def narrow_cut(p) -> Polygon | None:
     if not wn or wn >= F.leg_width:
         return None
     wt, zt = F.leg_width, Y.leg_haunch_top
-    if getattr(Y, "leg_haunch_style", "straight") == "curve":
-        # a long cove, like a bracket: leaves the narrow leg's inner edge going straight up (vertical
-        # tangent) and meets the full width under the deck level (horizontal tangent): a quarter ellipse
-        zl = zt - Y.leg_haunch_curve_drop
-        a, b, n = wt - wn, zt - zl, 48
-        curve = [(wt - a * math.cos(math.pi / 2 * k / n), zl + b * math.sin(math.pi / 2 * k / n)) for k in range(n + 1)]
-        return Polygon([(wn, -50), *curve, (wt + 50, zt), (wt + 50, -50)])
     zl = zt - Y.leg_haunch_drop
     cut = Polygon([(wn, -50), (wn, zl), (wt, zt), (wt + 50, zt), (wt + 50, -50)])
     rr = Y.leg_haunch_r
     return cut.buffer(-rr, quad_segs=16, join_style="round").buffer(rr, quad_segs=16, join_style="round")
-
-
-def foot_taper_cut(p) -> Polygon | None:
-    """Plate A's feet taper (2026-10-20 option): both edges of the narrow leg slope in by foot_taper over the
-    bottom foot_taper_from mm, so the foot is leg_narrow - 2 x foot_taper wide. Only plate A can: plate B's
-    floor slot needs its two fingers at full width. Returns the two slivers to cut away. None if disabled."""
-    Y, F = p.yagura, p.frame
-    ft = getattr(Y, "foot_taper", 0.0)
-    if ft <= 0:
-        return None
-    wn = getattr(Y, "leg_narrow", 0.0) or F.leg_width
-    z0 = Y.foot_taper_from
-    left = Polygon([(-1, z0), (0, z0), (ft, 0), (ft, -1), (-1, -1)])
-    right = Polygon([(wn + 1, z0), (wn, z0), (wn - ft, 0), (wn - ft, -1), (wn + 1, -1)])
-    return unary_union([left, right])
-
-
-def leg_window(p) -> Polygon | None:
-    """Slot-shaped window in each leg plate's inner arm (plate coords), leg_window_bar of wood each side
-    and leg_window_end above the floor / below the shoulders. None if disabled or too narrow."""
-    Y, F, L = p.yagura, p.frame, fr.layout(p)
-    if not getattr(Y, "leg_windows", False):
-        return None
-    b = Y.leg_window_bar
-    u0, u1 = F.ear + fr.slot_w(p) / 2 + b, F.leg_width - b
-    z0, z1 = Y.leg_window_end, L.z_deck_bot - Y.leg_window_end
-    if u1 - u0 < 12 or z1 - z0 < 60:
-        return None
-    rr = (u1 - u0) / 2 - 0.01
-    return fr._round_outer(box(u0, z0, u1, z1), rr)
 
 
 def wedge_dims(p, which: str = "cheek") -> tuple[float, float]:

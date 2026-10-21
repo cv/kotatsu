@@ -12,7 +12,6 @@ BASE = params.load()
 TABLES = params.tables(BASE)
 R = BASE.cnc.bit_d / 2
 T_RANGE = (BASE.material.t_min, BASE.material.t_nominal, BASE.material.t_max)
-INCH = 25.4
 
 
 @pytest.fixture(params=TABLES, ids=[t.table_name for t in TABLES])
@@ -42,7 +41,7 @@ def test_part_fits_sheet_and_parcel(C):
 def _fits(P, shape):
     x0, y0, x1, y1 = shape.bounds
     long_side = max(x1 - x0, y1 - y0)
-    assert long_side + 50 <= P.shipping.std_max_side_in * INCH   # boxed, still a standard parcel
+    assert long_side + 50 <= P.shipping.box_max                  # boxed, still ships free
     w, h = sorted((x1 - x0, y1 - y0))
     assert any(w <= min(s) - 2 * P.cnc.sheet_margin and h <= max(s) - 2 * P.cnc.sheet_margin
                for s in P.cnc.sheets)
@@ -114,24 +113,6 @@ def test_ear_fingers_are_sturdy(C):
     """Ear fingers outside the cross-lap slots: at least the stock thickness (uMake's minimum feature).
     In the yagura they're braced by the crossing plate in the slot (owner chose 20.4 mm, = inner finger)."""
     assert P.frame.ear - frame.slot_w(P) / 2 >= P.material.t_max
-
-
-def test_frame_hidden_under_round_top(C):
-    """Round top: every frame corner (ear tips) stays inside the circle, with some overhang."""
-    P, L = C.P, C.L
-    if getattr(P.top, "shape", "rect") != "round":
-        pytest.skip("rectangular top")
-    r = P.top.length / 2
-    t = P.material.t_max
-    pts = []
-    for y in L.yL:      # long panels' ends
-        for x in (L.O, L.O + L.Lf):
-            pts += [(x, y - t / 2), (x, y + t / 2)]
-    for x in L.xS:      # short panels' ends
-        for y in (L.O, L.O + L.Wf):
-            pts += [(x - t / 2, y), (x + t / 2, y)]
-    worst = max(((x - L.cx) ** 2 + (y - L.cy) ** 2) ** 0.5 for x, y in pts)
-    assert worst <= r - 10, f"frame corner {worst:.0f} mm from centre vs top radius {r:.0f}"
 
 
 def test_cross_legged_clearance(C):

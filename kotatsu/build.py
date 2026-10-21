@@ -98,7 +98,7 @@ def bom_markdown(p, parts, lays) -> str:
 
 Material: {p.material.name}, {t:.0f} mm nominal ({p.material.t_min}–{p.material.t_max} mm accepted by every joint).
 Table: {", ".join(t.table_label for t in params.tables(p))}.
-Top: one piece ({p.top.shape}, {p.top.length:.0f} mm).
+Top: one piece, {p.top.length:.0f} × {p.top.width:.0f} mm.
 
 | Part | Qty | Size (mm) | kg each | Cut length each (m) | Note |
 |---|---|---|---|---|---|
