@@ -93,20 +93,168 @@ Here's the frame all together, without its top:
 
 ## Checking it in code
 
-Every dimension lives in one file, `params.toml`. Python turns it into the shapes the shop cuts, and a
-set of tests checks each version:
+I couldn't afford to learn things by cutting wood: every mistake would be a new order and another week
+of waiting. So the design lives in code, and nearly 90 tests try to break it every time something changes.
 
-- **Can a router cut it?** A spinning bit can't make sharp inside corners, so every slot gets small round
-  "dogbone" corners.
-- **Will it fit together?** Plywood sold as 18 mm can be anywhere from 17 to 18.9 mm thick. The slots
-  have small bumps you sand to fit, and the wedges take up the rest.
-- **Will it wobble, tip or break?** A little model of each joint gives the sway: under a millimetre for a
-  firm push. A plate model of the top says napping on it with a 7 kg cat and a laptop uses about 7 % of
-  the wood's strength.
-- **What will it cost?** A price model fitted to my test uploads predicts uMake's quote to within
-  15 cents, so I can price a change before uploading it.
+Every dimension lives in one file, `params.toml`, including the things I'm not sure of yet:
 
-The parts even pack flat into the top's footprint for summer.
+```toml
+[material]
+t_nominal = 18.0
+t_min = 17.0          # mill tolerance -1.05 (TODO-verify actual stock in app)
+t_max = 18.9          # mill tolerance +0.85
+
+[cnc]
+bit_d = 6.35          # 1/4" router bit -> dogbone radius bit_d/2
+part_gap = 5.0        # min spacing between parts (uMake)
+sheet_margin = 20.0   # margin around sheet (uMake)
+```
+
+Python turns it into the outlines the shop cuts (with `shapely` for the 2-D shapes and `numpy` for the
+maths), and the tests ask the same questions a woodworker would. The snippets below are from the repo,
+lightly trimmed.
+
+### Can a router cut it?
+
+A router bit is round, so it can't cut a sharp inside corner. It leaves a little curve the size of the
+bit, and a square edge won't seat in a slot like that. The fix is a *dogbone*: a small circle cut just
+past each inside corner. To check that every corner has one, I borrowed a trick from image processing
+called *closing*. Grow the shape by the bit's radius, then shrink it back. Anything the bit can't reach
+gets filled in, so if the result isn't the same as the drawing, some corner is too sharp:
+
+```python
+def closing(g: BaseGeometry, r: float) -> BaseGeometry:
+    return g.buffer(r, quad_segs=Q, join_style="round").buffer(-r, quad_segs=Q, join_style="round")
+
+
+def router_cuttable(g: BaseGeometry, r: float, tol: float = 0.5) -> bool:
+    """True if every concave corner already has radius >= r (closing adds no real material)."""
+    d = closing(g, r).symmetric_difference(g)
+    return all(piece.area < tol for piece in getattr(d, "geoms", [d]))
+```
+
+Every frame part goes through it. A square corner leaves about 2.2 mm² behind, which is easy to tell
+apart from rounding noise.
+
+### Will it fit together?
+
+This was the scary one. Plywood sold as 18 mm can be anywhere from 17.0 to 18.9 mm thick, and I wouldn't
+know which until the box arrived. So every slot is cut for the thickest sheet (19.2 mm), with two small
+bumps on each wall, 0.5 mm proud, that narrow it to 18.2 mm. If a sheet turns out thicker, I sand the
+bumps down.
+The wedges have a 1:8 taper, so they take up whatever is left.
+
+Each joint test runs three times: at the thinnest, the nominal and the thickest sheet. Here's the one
+for the leg wedges. Whatever the deck's real thickness, the gap above it has to land somewhere along
+the wedge, thicker than its tip and thinner than its head, and the wedge must stay below the futon:
+
+```python
+T_RANGE = (BASE.material.t_min, BASE.material.t_nominal, BASE.material.t_max)
+
+
+@pytest.mark.parametrize("t_deck", T_RANGE)
+def test_leg_wedges_clamp_the_deck(Y, t_deck):
+    P, L, parts = Y
+    z0, z1 = yagura.leg_hole_z(P)
+    top = L.z_deck_bot + t_deck
+    wl, wh = yagura.wedge_dims(P, "leg")
+    need = z1 - top
+    assert wh - wl * P.fit.wedge_taper < need < wh
+    assert L.z_deck_top + wh <= L.H - 3, "wedges stay under the futon plane"
+```
+
+### Will it wobble?
+
+There's no big engineering package here, just small models I could read. Each leg-to-deck joint is a
+handful of springs: the leg's shoulder pressing up under the deck, the wedge pulling the tenon up, and
+the tenon's faces bearing on the sides of its hole. The catch is that wood in contact can push but
+not pull: lean on the table and one side of a joint can lift off. The model handles that with
+"compression-only" springs, smoothed just enough (a *softplus*) that Newton's method can step across
+the moment a gap opens:
+
+```python
+EPS = 0.002   # mm: contact smoothing (softplus) so Newton can cross contact changes
+
+
+def _pos(c):
+    return EPS * np.logaddexp(0.0, c / EPS)
+```
+
+A firm 100 N sideways push (about 10 kg) sways the table about 0.9 mm. The model also caught a sneaky
+problem before I ordered: when the tenon ran right to the leg's inner edge, tapping the wedge in
+twisted the leg about 9 mm at the foot. A 10 mm shoulder on the other side fixed it.
+
+### Will the top break?
+
+The top is a loose board resting on the four corner posts. The model treats it as a grid of little
+beams that bend and twist like a plate. The posts can hold the top up but can't hold it down, so the
+solver works it out in rounds: solve, find any post that would have to pull, let it go, and solve
+again.
+
+```python
+for _ in range(30):                                       # compression-only supports
+    fixed = sorted(idx(i, j) for i, j in active)
+    free = np.setdiff1d(np.arange(N), fixed)
+    u = np.zeros(N)
+    u[free] = np.linalg.solve(K[np.ix_(free, free)], F[free])
+    R = F - K @ u                                         # what the pads must push on the top (+ = upward, compression)
+    neg = [(i, j) for i, j in active if R[idx(i, j)] < -1e-6]   # pad would have to pull the top down
+    if not neg:
+        break
+    active -= set(neg)
+```
+
+Before trusting it, a test checks it against the textbook answer for a square plate with a weight in
+the middle (Timoshenko's), and it lands within 3 %. Then come the loads I actually care about:
+
+```python
+"nap: cat curled in the middle, laptop pushed back": arms(nap) + curled_cat(0, 120) + laptop,
+"slump: flopping down (x1.5) + cat jumping up mid-table (x4)":
+    arms(Ld.slump * nap) + paws(Ld.cat_impact * cat, 0, 0) + laptop,
+"cat lands on the corner (x4), nobody else": paws(Ld.cat_impact * cat, h - 60, h - 60),
+```
+
+Napping hunched over the table with a 7 kg cat and a laptop uses about 7 % of the wood's strength and
+sags it 1 mm. Even an 80 kg adult sitting hard on an edge uses about a quarter.
+
+### What will it cost?
+
+uMake quotes instantly, so I uploaded a few test shapes and wrote down the prices. Each part costs a
+rate per square metre of wood, plus a rate per metre the bit travels, plus a little per hole. Then the
+order total follows a volume curve:
+
+```python
+A_RATE, L_RATE, H_RATE = 101.03, 15.25, 0.18     # $/m2, $/m of cut, $/hole (raw, before the volume curve)
+K, B = 11.25, 0.551                              # total = K * raw ** B  (fit: 6 probe states + the real order)
+
+
+def raw(g) -> float:
+    a, l, h = features(g)
+    return A_RATE * a + L_RATE * l + H_RATE * h
+```
+
+It predicts uMake's quotes to within 15 cents, and for the real order it says $353.38 against the
+$353.33 I paid. It also showed that about three-quarters of the price is cutting, not wood, which is
+why the deck's windows became notches open to the edge: same wood out, a metre less cutting.
+
+### Will it fit on the sheet?
+
+All 26 parts go on one 48 × 96" sheet. The packer draws each part on a grid of 4 mm squares, then
+uses a Fourier transform to test every position on the sheet at once, the way image software finds a
+pattern in a photo:
+
+```python
+F = np.fft.rfft2(occ.astype(np.float32), sh)
+M = np.fft.rfft2(m[::-1, ::-1].astype(np.float32), sh)
+corr = np.fft.irfft2(F * M, sh)[mh - 1:H, mw - 1:W]
+return corr < 0.5
+```
+
+Big parts go first and the wedges fall into the gaps. A test then measures the real distances: no two
+parts are closer than 7.35 mm (the shop asks for 5, and the bit needs room to pass between them), and
+nothing crosses the 20 mm margin.
+
+The same packer folds the parts flat into the top's footprint for summer.
 
 ![Off-season storage: three flat layers inside the top's footprint](docs/img/storage.png)
 
