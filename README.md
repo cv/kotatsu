@@ -106,7 +106,7 @@ The parts even pack flat into the top's footprint for summer.
 ## Building it
 
 The box arrived at the end of October: one flat parcel, with every part in a single shrink-wrapped stack.
-The cat checked it first.
+The feline QA department was eager to begin inspections.
 
 [![The opened box on the living-room floor: every part in one shrink-wrapped stack, and a ginger cat looking up](docs/img/build-1-box.jpg)](docs/img/build-1-box.jpg)
 
@@ -132,13 +132,15 @@ spent looking for the right drill bit.
 
 ## In use
 
-A fleece blanket goes over the frame and the top sits on the blanket. Then it's tea, crosswords, and two
-cats keeping an eye on things.
+On the first day, a fleece blanket I had at hand went over the frame, with the top sitting on it. It now
+has a proper kotatsu futon. Then it's tea, crosswords, and two cats keeping an eye on things.
+
+[![The table under its plaid blanket, a white Persian cat sitting beside it and the ginger cat in a tunnel underneath](docs/img/use-blanket.jpg)](docs/img/use-blanket.jpg)
 
 [![From above: a crossword and a phone on the birch top, with the plaid blanket draped all round](docs/img/use-crossword.jpg)](docs/img/use-crossword.jpg)
-[![From above: a cast-iron teapot and a crossword on the top, and the ginger cat lying on its back by the blanket](docs/img/use-tea.jpg)](docs/img/use-tea.jpg)
-[![The table under its plaid blanket, a white Persian cat sitting beside it and the ginger cat in a tunnel underneath](docs/img/use-blanket.jpg)](docs/img/use-blanket.jpg)
 [![A crossword on the top, and both cats on the rug beyond it](docs/img/use-cats.jpg)](docs/img/use-cats.jpg)
+
+[![From above: a cast-iron teapot and a crossword on the top, and the ginger cat lying on its back by the blanket](docs/img/use-tea.jpg)](docs/img/use-tea.jpg)
 
 ## Where it stands
 
