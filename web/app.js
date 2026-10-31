@@ -13,6 +13,10 @@ function showTab(tab) {
   if (tab === "sheets" && state.spz && !state.spzFitted) { state.spzFitted = true; requestAnimationFrame(() => state.spz.fit(state.spz.home)); }
   if (tab === "futon" && state.fpz && !state.fpzFitted) { state.fpzFitted = true; requestAnimationFrame(() => state.fpz.fit(state.fpz.home)); }
   if (tab === "frame" && state.ppz && !state.ppzFitted) { state.ppzFitted = true; requestAnimationFrame(() => state.ppz.fit(state.ppz.home)); }
+  // The page itself doesn't scroll (each tab scrolls inside a fixed-height box), so focus the tab's
+  // scroll box: then Space, Page Down and the arrow keys scroll it without a click first.
+  const scroller = { overview: "#tab-overview", docs: "#doc" }[tab];
+  if (scroller) { const box = $(scroller); box.tabIndex = -1; box.focus({ preventScroll: true }); }
 }
 addEventListener("hashchange", () => showTab(location.hash.slice(1) || "overview"));
 
