@@ -1,6 +1,7 @@
 # A kotatsu with no glue and no screws
 
 <!-- story -->
+<!-- page: overview Home -->
 ![The finished design: a square birch table on four slim legs](docs/img/table.png)
 
 I designed a kotatsu, the low Japanese table with a heater underneath and a quilt draped over it. A CNC
@@ -26,13 +27,15 @@ three rules:
 - **It has to be comfortable.** I sit cross-legged, and my knees need about 76 × 32 cm of clear space
   under the edge.
 
+<!-- page: design Design -->
+
 ## How the limits shaped it
 
 Most of my good ideas got replaced by better ones. These are the four biggest turns, each with what came
 before and what replaced it.
 
 This is the very first full design, from the first afternoon: a 120 × 80 cm top in three boards joined
-by dovetails, sitting on solid side panels. Compare it with the picture at the top of this page.
+by dovetails, sitting on solid side panels. Compare it with the finished design.
 
 ![The very first full design: a 120 × 80 top in three boards joined by dovetails, on solid side panels](docs/img/first-design.png)
 
@@ -103,6 +106,8 @@ The parts even pack flat into the top's footprint for summer.
 
 ![Off-season storage: three flat layers inside the top's footprint](docs/img/storage.png)
 
+<!-- page: build Build -->
+
 ## Building it
 
 The box arrived at the end of October: one flat parcel, with every part in a single shrink-wrapped stack.
@@ -142,6 +147,8 @@ the factory smell, then lowered it to medium.
 [![The table under its plaid blanket, a white Persian cat sitting beside it and the ginger cat in a tunnel underneath](docs/img/use-blanket.jpg)](docs/img/use-blanket.jpg)
 [![A crossword on the top, and both cats on the rug beyond it](docs/img/use-cats.jpg)](docs/img/use-cats.jpg)
 
+<!-- page: overview -->
+
 ## Where it stands
 
 I placed the order in October 2026. One surprise: uMake's checkout ends with "a representative will reach
@@ -150,13 +157,20 @@ for sanding, staining and wax.
 
 I worked through all of this over about two days with an AI coding agent. I made the choices and drew
 the sketches. It wrote the geometry code and tests, ran the numbers and filled in the quote forms.
-<!-- /story -->
+
+<!-- page: make Make your own -->
 
 ## Make your own
 
+<!-- github-only -->
+
 The website has the drawings, a 3-D view, the cut sheets and all the numbers:
-**https://lixo.org/kotatsu/**. The cut files (DXF, in millimetres) are at
-**https://lixo.org/kotatsu/dxf/**.
+**https://lixo.org/kotatsu/**.
+
+<!-- /github-only -->
+
+The cut files (DXF, in millimetres) are at **https://lixo.org/kotatsu/dxf/**, and the code that makes
+them is at **https://github.com/cv/kotatsu**.
 
 | Part | Detail |
 |---|---|
@@ -184,6 +198,8 @@ margin", not as a certificate. uMake sells this sheet as "19mm", and the joints 
 supply. The earlier designs are kept as git tags: `seams-archive` (split tops with decorative seams),
 `frame-variants-archive` (solid-sided and splayed-leg frames) and `options-archive` (options I built and
 didn't use: deck windows, an X deck, leg windows, lighter-look cuts, linking tables, a round top).
+
+<!-- /story -->
 
 ## License
 

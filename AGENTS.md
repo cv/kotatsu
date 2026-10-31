@@ -75,8 +75,9 @@ What this repo produces:
 - **The website.** `make dev` serves it at http://127.0.0.1:8765, rebuilds on every change, and the page
   reloads by itself.
   - `kotatsu/site.py` writes `out/site/data.json`: geometry, stats, parameters, test results, docs, and the
-    README's story (between the `<!-- story -->` markers). The page in `web/` is plain HTML and JavaScript,
-    with no build step and no npm.
+    README's story (between the `<!-- story -->` markers), split into the site's story tabs (Home, Design,
+    Build, Make your own) at `<!-- page: id Title -->` markers. `<!-- github-only -->` blocks stay off the
+    site. The page in `web/` is plain HTML and JavaScript, with no build step and no npm.
   - The JS libraries are pinned versions on jsdelivr, loaded through an import map: `three` (3-D),
     `lil-gui` (controls) and `marked` (Markdown).
   - 2-D pan and zoom is a small custom controller in `web/viewer2d.js`. It stays sharp at any zoom and reads

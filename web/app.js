@@ -5,7 +5,8 @@ const $ = (s) => document.querySelector(s);
 const state = { data: null, tab: "overview", futon: null, fsize: null, fpz: null, doc: "PLAN.md", v3d: null, part: null, ppz: null, sheet: null, spz: null, tables: null, ptable: null };
 
 // ---------- tabs ----------
-function showTab(tab) {
+function showTab(tab, { focus = true } = {}) {
+  if (!document.getElementById("tab-" + tab)) tab = "overview";    // unknown or old link: go home
   state.tab = tab;
   document.querySelectorAll(".tab").forEach((s) => s.classList.toggle("active", s.id === "tab-" + tab));
   document.querySelectorAll("nav a").forEach((a) => a.classList.toggle("active", a.dataset.tab === tab));
@@ -15,16 +16,37 @@ function showTab(tab) {
   if (tab === "frame" && state.ppz && !state.ppzFitted) { state.ppzFitted = true; requestAnimationFrame(() => state.ppz.fit(state.ppz.home)); }
   // The page itself doesn't scroll (each tab scrolls inside a fixed-height box), so focus the tab's
   // scroll box: then Space, Page Down and the arrow keys scroll it without a click first.
-  const scroller = { overview: "#tab-overview", docs: "#doc" }[tab];
-  if (scroller) { const box = $(scroller); box.tabIndex = -1; box.focus({ preventScroll: true }); }
+  const box = tab === "docs" ? $("#doc") : document.querySelector(`#tab-${tab}.story-tab`);
+  if (focus && box) { box.tabIndex = -1; box.focus({ preventScroll: true }); }
 }
 addEventListener("hashchange", () => showTab(location.hash.slice(1) || "overview"));
 
-// ---------- overview ----------
-function renderOverview(d) {
-  const st = $("#story");
-  st.innerHTML = d.story ? marked.parse(d.story) : "";
-  st.hidden = !d.story;
+// ---------- story pages (Home, Design, Build, Make your own: the README, split up by kotatsu/site.py) ----------
+function renderStory(d) {
+  const pages = d.pages || [], nav = $("#story-nav"), main = $("main");
+  nav.replaceChildren();
+  document.querySelectorAll("section.story-tab").forEach((s) => s.remove());
+  const before = main.firstElementChild;            // the story tabs go in front of the tool tabs
+  pages.forEach((p, i) => {
+    const a = document.createElement("a");
+    a.href = "#" + p.id; a.dataset.tab = p.id; a.textContent = p.title;
+    nav.appendChild(a);
+    const sec = document.createElement("section");
+    sec.id = "tab-" + p.id; sec.className = "tab story-tab";
+    const art = document.createElement("article");
+    art.className = "card wide story";
+    art.innerHTML = marked.parse(p.md);
+    const next = pages[i + 1];
+    if (next) {                                     // read on, from the top of the next page
+      const n = document.createElement("p"), link = document.createElement("a");
+      n.className = "next"; link.href = "#" + next.id; link.textContent = `Next: ${next.title} →`;
+      link.onclick = () => requestAnimationFrame(() => { $(`#tab-${next.id}`).scrollTop = 0; });
+      n.appendChild(link); art.appendChild(n);
+    }
+    sec.appendChild(art);
+    main.insertBefore(sec, before);
+  });
+  if (state.data) showTab(state.tab, { focus: false });   // live reload: keep the open tab open
 }
 
 // ---------- futon & rug ----------
@@ -257,7 +279,7 @@ function renderDocs(d) {
 function renderAll(d) {
   state.data = d;
   $("#meta").innerHTML = `<span class="dot"></span>built ${d.generated} · ${d.git}`;
-  renderOverview(d); renderDocs(d); renderFutonList(d); renderFutonPlan(d);
+  renderStory(d); renderDocs(d); renderFutonList(d); renderFutonPlan(d);
   renderPartList(d); renderPartViewer(d); renderSheets(d);
   state.v3d?.setData(d);
 }

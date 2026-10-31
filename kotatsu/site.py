@@ -150,13 +150,34 @@ def run_tests() -> dict:
             [l for l in lines if "Error" in l or "FAILED" in l][:20]}
 
 
-def story() -> str:
-    """The README's story (between the <!-- story --> markers), with image paths for the site."""
-    text = (ROOT / "README.md").read_text()
+_PAGE = re.compile(r"^<!-- page: ([a-z0-9-]+)(?: (.+?))? -->[ \t]*$", re.M)
+_GITHUB_ONLY = re.compile(r"<!-- github-only -->.*?<!-- /github-only -->", re.S)
+
+
+def story(text: str | None = None) -> list[dict]:
+    """The README's story (between the <!-- story --> markers), split into the site's story pages.
+
+    `<!-- page: id Title -->` starts (or, without a title, goes back to) a page; a page can collect
+    several stretches of the README, kept in README order. `<!-- github-only -->` blocks are dropped
+    (e.g. a link to the site itself), and image paths point at the site's img/ folder.
+    Returns [{"id", "title", "md"}] in order of each page's first marker."""
+    if text is None:
+        text = (ROOT / "README.md").read_text()
     a, b = text.find("<!-- story -->"), text.find("<!-- /story -->")
     if a < 0 or b < 0:
-        return ""
-    return text[a + len("<!-- story -->"):b].replace("](docs/img/", "](img/")
+        return []
+    body = _GITHUB_ONLY.sub("", text[a + len("<!-- story -->"):b]).replace("](docs/img/", "](img/")
+    marks = list(_PAGE.finditer(body))
+    if not marks:
+        return [{"id": "overview", "title": "Overview", "md": body}]
+    pages: dict[str, dict] = {}
+    for i, m in enumerate(marks):
+        end = marks[i + 1].start() if i + 1 < len(marks) else len(body)
+        page = pages.setdefault(m[1], {"id": m[1], "title": m[2] or m[1].capitalize(), "md": ""})
+        if m[2]:
+            page["title"] = m[2]
+        page["md"] += body[m.end():end].strip() + "\n\n"
+    return list(pages.values())
 
 
 _LOCAL_REF = re.compile(r'''((?:from|import\()\s*["']\./|(?:href|src)=["'])([\w./-]+\.(?:js|css))(["'])''')
@@ -188,7 +209,7 @@ def build(with_tests: bool = True) -> None:
     data = {
         "generated": dt.datetime.now().isoformat(timespec="seconds"),
         "git": git_rev(),
-        "story": story(),
+        "pages": story(),
         "params": raw,
         "thickness": p.material.t_nominal,
         "tables": tables_data(p),

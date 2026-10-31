@@ -18,9 +18,9 @@
 </head>
 <body>
 <header>
-  <div class="brand">炬燵 <span>Kotatsu</span></div>
+  <a class="brand" href="#overview">炬燵 <span>Kotatsu</span></a>
   <nav>
-    <a href="#overview" data-tab="overview">Overview</a>
+    <span id="story-nav"></span><span class="nav-sep" aria-hidden="true"></span>
     <a href="#futon" data-tab="futon">Futon &amp; rug</a>
     <a href="#frame" data-tab="frame">Frame parts</a>
     <a href="#sheets" data-tab="sheets">Cut sheets</a>
@@ -31,11 +31,7 @@
 </header>
 
 <main>
-  <section id="tab-overview" class="tab">
-    <div class="cards">
-      <article class="card wide story" id="story"></article>
-    </div>
-  </section>
+  <!-- the story pages (Home, Design, Build, Make your own) come from the README; app.js adds them here -->
 
   <section id="tab-futon" class="tab">
     <aside id="futon-list"></aside>
