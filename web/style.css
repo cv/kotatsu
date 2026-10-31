@@ -20,6 +20,11 @@ main { height: calc(100% - 50px); }
 .story h2 { font-size:20px; margin:28px auto 8px; }
 .story h3, .card.story h3 { text-transform:none; letter-spacing:normal; font-size:17px; color:inherit; margin:22px auto 6px; }
 .story img { display:block; width:100%; max-width:860px; height:auto; margin:18px auto; border-radius:8px; }
+.story a:has(> img) { display:block; }
+.story img[src$=".jpg"] { width:auto; max-width:100%; max-height:720px; }
+.story p:has(> a + a) { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:18px auto; }
+.story p:has(> a + a) img { margin:0; aspect-ratio:4/3; object-fit:cover; }
+@media (max-width: 640px) { .story p:has(> a + a) { grid-template-columns:1fr; } }
 .story li { margin:4px 0; }
 .card h3 { margin:0 0 10px; font-size:14px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
 .ok { color:var(--ok); } .bad { color:var(--bad); }

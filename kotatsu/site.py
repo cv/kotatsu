@@ -200,7 +200,9 @@ def build(with_tests: bool = True) -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     copy_web()
     (OUT / "img").mkdir(exist_ok=True)
-    for f in (ROOT / "docs" / "img").glob("*.png"):
+    for f in (ROOT / "docs" / "img").glob("*.*"):
+        if f.suffix not in (".png", ".jpg"):
+            continue
         shutil.copy2(f, OUT / "img" / f.name)
     tmp = OUT / "data.json.tmp"
     tmp.write_text(json.dumps(data, separators=(",", ":")))
