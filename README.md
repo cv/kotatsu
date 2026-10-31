@@ -2,7 +2,7 @@
 
 <!-- story -->
 <!-- page: overview Home -->
-![The finished design: a square birch table on four slim legs](docs/img/table.png)
+[![The finished kotatsu by a wood stove: a plaid blanket over the frame, a laptop on the top showing this design, and a white Persian cat peeking out from underneath](docs/img/home.jpg)](docs/img/home.jpg)
 
 I designed a kotatsu, the low Japanese table with a heater underneath and a quilt draped over it. A CNC
 shop cuts every part from birch plywood. It all ships to my door in **one box, for free**, and it goes
@@ -35,9 +35,13 @@ Most of my good ideas got replaced by better ones. These are the four biggest tu
 before and what replaced it.
 
 This is the very first full design, from the first afternoon: a 120 × 80 cm top in three boards joined
-by dovetails, sitting on solid side panels. Compare it with the finished design.
+by dovetails, sitting on solid side panels.
 
 ![The very first full design: a 120 × 80 top in three boards joined by dovetails, on solid side panels](docs/img/first-design.png)
+
+And this is where it ended up:
+
+![The finished design: a square birch table on four slim legs](docs/img/table.png)
 
 ### The top
 
