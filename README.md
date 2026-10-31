@@ -103,11 +103,46 @@ The parts even pack flat into the top's footprint for summer.
 
 ![Off-season storage: three flat layers inside the top's footprint](docs/img/storage.png)
 
+## Building it
+
+The box arrived at the end of October: one flat parcel, with every part in a single shrink-wrapped stack.
+The cat checked it first.
+
+[![The opened box on the living-room floor: every part in one shrink-wrapped stack, and a ginger cat looking up](docs/img/build-1-box.jpg)](docs/img/build-1-box.jpg)
+
+Unwrapped, it's the H-shaped deck, the two heater cheeks, eight leg plates crossed into four "+" legs, and
+a small pile of wedges. The top waits at the side.
+
+[![The parts laid out on the cardboard: the deck with its two heater cheeks, four crossed legs, the wedges, and the top leaning at the side](docs/img/build-2-parts.jpg)](docs/img/build-2-parts.jpg)
+
+The legs stand up, the deck drops over their eight tenons, and the cheeks hang through it. A wedge tapped
+through every tenon and cheek tab locks it all together.
+
+[![The frame standing on its four legs, with a wedge through every tenon and cheek tab](docs/img/build-3-frame.jpg)](docs/img/build-3-frame.jpg)
+
+Flipped over, the heater screws in between the two cheeks. Right way up again, it hangs under the deck,
+grille down.
+
+[![The frame upside down, with the heater sitting between the two cheeks](docs/img/build-4-heater.jpg)](docs/img/build-4-heater.jpg)
+[![Looking up from the floor: the heater hanging under the deck between its cheeks, next to a leg](docs/img/build-5-under.jpg)](docs/img/build-5-under.jpg)
+
+From opening the box to the first crossword took about an hour and twenty minutes.
+
+## In use
+
+A fleece blanket goes over the frame and the top sits on the blanket. Then it's tea, crosswords, and two
+cats keeping an eye on things.
+
+[![From above: a crossword and a phone on the birch top, with the plaid blanket draped all round](docs/img/use-crossword.jpg)](docs/img/use-crossword.jpg)
+[![From above: a cast-iron teapot and a crossword on the top, and the ginger cat lying on its back by the blanket](docs/img/use-tea.jpg)](docs/img/use-tea.jpg)
+[![The table under its plaid blanket, a white Persian cat sitting beside it and the ginger cat in a tunnel underneath](docs/img/use-blanket.jpg)](docs/img/use-blanket.jpg)
+[![A crossword on the top, and both cats on the rug beyond it](docs/img/use-cats.jpg)](docs/img/use-cats.jpg)
+
 ## Where it stands
 
 I placed the order in October 2026. One surprise: uMake's checkout ends with "a representative will reach
-out to confirm". So I still get one email. I haven't assembled it yet, and the first fit-up will
-surely teach me something. I'll add photos when the box arrives.
+out to confirm". So I still got one email. Next comes the finishing, by hand: rounder corners on the top
+and a bevel under its edge.
 
 I worked through all of this over about two days with an AI coding agent. I made the choices and drew
 the sketches. It wrote the geometry code and tests, ran the numbers and filled in the quote forms.
