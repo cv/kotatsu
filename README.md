@@ -132,15 +132,15 @@ spent looking for the right drill bit.
 
 ## In use
 
-On the first day, a fleece blanket I had at hand went over the frame, with the top sitting on it. It now
-has a proper kotatsu futon. Then it's tea, crosswords, and two cats keeping an eye on things.
-
-[![The table under its plaid blanket, a white Persian cat sitting beside it and the ginger cat in a tunnel underneath](docs/img/use-blanket.jpg)](docs/img/use-blanket.jpg)
+For now, a fleece blanket I had at hand went over the frame, with the top sitting on it. A proper kotatsu
+futon should be arriving in the next week. Until then, it's tea, crosswords, and the cats keeping an eye
+on things. The heater is incredibly warm and comfortable. I cranked it for a couple of hours to get rid of
+the factory smell, then lowered it to medium.
 
 [![From above: a crossword and a phone on the birch top, with the plaid blanket draped all round](docs/img/use-crossword.jpg)](docs/img/use-crossword.jpg)
-[![A crossword on the top, and both cats on the rug beyond it](docs/img/use-cats.jpg)](docs/img/use-cats.jpg)
-
 [![From above: a cast-iron teapot and a crossword on the top, and the ginger cat lying on its back by the blanket](docs/img/use-tea.jpg)](docs/img/use-tea.jpg)
+[![The table under its plaid blanket, a white Persian cat sitting beside it and the ginger cat in a tunnel underneath](docs/img/use-blanket.jpg)](docs/img/use-blanket.jpg)
+[![A crossword on the top, and both cats on the rug beyond it](docs/img/use-cats.jpg)](docs/img/use-cats.jpg)
 
 ## Where it stands
 
