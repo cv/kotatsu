@@ -115,18 +115,20 @@ a small pile of wedges. The top waits at the side.
 
 [![The parts laid out on the cardboard: the deck with its two heater cheeks, four crossed legs, the wedges, and the top leaning at the side](docs/img/build-2-parts.jpg)](docs/img/build-2-parts.jpg)
 
-The legs stand up, the deck drops over their eight tenons, and the cheeks hang through it. A wedge tapped
-through every tenon and cheek tab locks it all together.
+The legs stand up, the deck drops over their eight tenons, and the cheeks hang through it. A wedge goes
+through every tenon and cheek tab. For now I pushed them in by hand, not with a mallet, so the table still
+comes apart easily.
 
 [![The frame standing on its four legs, with a wedge through every tenon and cheek tab](docs/img/build-3-frame.jpg)](docs/img/build-3-frame.jpg)
 
-Flipped over, the heater screws in between the two cheeks. Right way up again, it hangs under the deck,
-grille down.
+Flipped over, the heater screws in between the two cheeks, after drilling a pilot hole for each screw.
+Right way up again, it hangs under the deck, grille down.
 
 [![The frame upside down, with the heater sitting between the two cheeks](docs/img/build-4-heater.jpg)](docs/img/build-4-heater.jpg)
 [![Looking up from the floor: the heater hanging under the deck between its cheeks, next to a leg](docs/img/build-5-under.jpg)](docs/img/build-5-under.jpg)
 
-From opening the box to the first crossword took about an hour and twenty minutes.
+Putting the frame together took under a minute. The heater's holes took about five more, most of them
+spent looking for the right drill bit.
 
 ## In use
 
@@ -141,8 +143,8 @@ cats keeping an eye on things.
 ## Where it stands
 
 I placed the order in October 2026. One surprise: uMake's checkout ends with "a representative will reach
-out to confirm". So I still got one email. Next comes the finishing, by hand: rounder corners on the top
-and a bevel under its edge.
+out to confirm". So I still got one email. Next, the table comes apart again and goes to the garage
+for sanding, staining and wax.
 
 I worked through all of this over about two days with an AI coding agent. I made the choices and drew
 the sketches. It wrote the geometry code and tests, ran the numbers and filled in the quote forms.
