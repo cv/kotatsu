@@ -31,8 +31,8 @@ three rules:
 
 ## How the limits shaped it
 
-Most of my good ideas got replaced by better ones. These are the four biggest turns, each with what came
-before and what replaced it.
+Most of this table was decided by things other than me: a cardboard box, my knees, a bathroom scale and
+uMake's price list. Here are the four fights, and who won each one.
 
 This is the very first full design, from the first afternoon: a 120 × 80 cm top in three boards joined
 by dovetails, sitting on solid side panels.
@@ -43,47 +43,50 @@ And this is where it ended up:
 
 ![The finished design: a square birch table on four slim legs](docs/img/table.png)
 
-### The top
+### The top: the box decides
 
-My first idea was a big 120 × 80 cm table. A top that big doesn't fit in a normal parcel, so I split it
-into three boards and went down a lovely rabbit hole of decorative seams to hold them together: dovetails,
-Japanese arrowheads, salmon tails, fir-cone scales and half maple leaves. I even drafted a request to
-commission a local Secwépemc artist, rather than borrow Indigenous designs.
+I wanted a big table, 120 × 80 cm. uMake ships free in one box up to 91 cm, so a top that size had to
+come in three boards, and joining boards without glue is where the fun was: dovetails, Japanese
+arrowheads, salmon tails, fir-cone scales, half maple leaves. I'd drafted a request to commission a
+local Secwépemc artist to design one.
 
 ![Some of the seam ideas: half maple leaves, tips up on one seam, tips down on the other](docs/img/seams.png)
 
-Then I measured my room again. For a while there were two tables, then one round one. The round top cost
-**$200 extra** to ship, and round futons were hard to find at a fair price. A square top that fits in a
-91 cm box ships free. So the top became **86 × 86 cm, in one piece**, and the seams went into a git tag
-for another day.
+Then I measured my room again, and it works much better with a square table. A round top looked lovely,
+but it cost $200 more to ship, and round futons were hard to find at a fair price. The box won: 86 × 86 cm
+in one piece, with no joinery at all. I cancelled the commission, and the seams went into a git tag.
 
 ![The top: 120 × 80 in three boards, then 90 cm round, then 86 cm square, drawn to scale against the 91 cm box](docs/img/evolution-top.png)
 
-### The frame
+### The frame: my knees decide
 
-The first frame had solid side panels that slot together at the corners. It was strong and simple, but
-the strip of wood along each side (the apron) sat right where my knees go. Tapering the legs and flaring
-the feet helped a bit. Dropping the aprons altogether helped much more. That's a *yagura*: four
-"+"-shaped corner legs hold up a flat deck, and the heater hangs under the deck.
+Sitting cross-legged, my knees need a space 30" wide and 12.5" high. The first frame had solid side
+panels that slot together at the corners. It was strong and simple, and the strip of wood along each
+side (the apron) sat exactly where my knees wanted to be. Tapering the legs and flaring the feet bought a
+little room. Dropping the aprons altogether bought all of it. That's a *yagura*: four "+"-shaped corner
+legs hold up a flat deck, the heater hangs under the deck, and the middle of each side is open, with
+34 cm of clearance under the deck.
 
 ![The frame: solid side panels, then tapered and flared legs, then the yagura with no aprons](docs/img/evolution-frame.png)
 
-### The legs
+### The legs: the scale decides
 
-The first yagura legs were plain strips. The wobble model then caught a sneaky problem: with wood on only
-one side of the joint, tapping the wedge in would twist the leg about 9 mm at the foot. A small shoulder
-on the other side fixed it. Later, a wider table pushed the weight past uMake's free-shipping limit
-(about 20 kg), so I cut windows in the legs. Then I sketched a better shape, twice, and each sketch came
-out lighter and cheaper than what I had.
+The first yagura legs were plain strips, with wood on only one side of each joint. Tapping a wedge in
+would have twisted each leg about 9 mm at the foot. A 10 mm shoulder on the other side stopped that.
+
+Then the weight crept up. Free shipping stops at about 20 kg, and the order came to 20.4 kg, which put
+shipping at $195. Windows came out of the legs and the deck to get it back under. Then I sketched my own
+leg shape, twice: full width under the deck, where the joints are, then a sloped haunch down to a 60 mm
+leg. It needs no windows.
 
 ![The legs: plates with windows, then my first sketch, then my second, slimmer sketch](docs/img/evolution-legs.png)
 
-### The deck
+### The deck: the price list decides
 
-The deck had windows to save weight too. Then I ran a little price experiment: I uploaded test shapes to
-uMake to see how it charges. About three-quarters of the price is cutting time, not wood. A window is
-all cutting, so I opened the windows out to the edge. That's the same wood out, a metre less cutting and
-about $20 off. Rounding the new corners came last.
+Cutting holes in the deck made the table more expensive. A few test uploads showed why: about
+three-quarters of uMake's price is the router's path, not the wood, and a window is nothing but cutting.
+Opening each window out to the edge took the same wood away with a metre less cutting, and about $20 off.
+Rounding the new corners came last.
 
 ![The deck: windows, then notches open to the edge, then rounded notches](docs/img/evolution-deck.png)
 
