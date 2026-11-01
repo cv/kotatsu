@@ -387,6 +387,11 @@ any of them, so check before you rely on one (the details and sources are in `do
 | Netherlands | [Moderne Ambacht](https://www.moderneambacht.com/prijzen/) | A price calculator instead of an upload: €90 an hour of routing, and 18 mm birch at about €106 a sheet |
 | Australia | [Laser Cutting Experts](https://lasercuttingexperts.com.au/cnc-router-cut-plywood) (Sydney), [GV CNC](https://www.gvcnc.com.au/quote.html) (Victoria) | Both price a DXF for plywood routing instantly |
 | India | [HyperFabs](https://hyperfabs.com/) (Mumbai) | Instant quotes. Its listing says CNC-routed plywood up to 18 mm |
+| Brazil | [ZiOLAB](https://www.ziolab.com.br/corte-compensado/) | Router-cut plywood (compensado) in 4–25 mm, 18 mm included, on 1600 × 2200 or 2500 mm sheets. Quote on request |
+| Argentina | [Trebol CNC](https://trebolcnc.com.ar/servicios) | A 2 × 3 m router; 18 mm guatambú and phenolic plywood (multilaminado). Free quote on request |
+| Chile | [CNC Studio](https://cncstudio.cl/) (Santiago), [Andes Maker](https://andesmaker.cl/comocotizar/) | Both route 18 mm plywood (terciado) from a DXF. CNC Studio answers within a working day; Andes Maker can cut plywood you bring |
+| Colombia | [Makers Medellín](https://makersmedellin.com/cotizacion/) | An instant online quote: upload a DXF or SVG, pick the material and thickness, get a price straight away |
+| Peru | [Laser Cut Peru](https://lasercutperu.com/servicio/corte-router-cnc-lima-peru/) (Lima) | Routes plywood up to 60 mm on a 1.3 × 2.5 m bed. Free quote by email |
 
 Whichever shop you pick, tell the code about it in `params.toml`: the bit size (`[cnc] bit_d`, for the
 dogbones), its sheet sizes, the gap it wants between parts and round the sheet's edge, the real

@@ -78,7 +78,7 @@ Japanese kotatsu heaters run on 100 V. In Canada you want a **120 V replacement-
 cUL, cETL or CSA mark, rather than a transformer. The one I chose, and why, is in `docs/heater.md`.
 
 ## Other shops
-Found in October 2026 (searched in English, French, German, Dutch and Japanese) and checked only against
+Found in October 2026 (searched in English, French, German, Dutch, Japanese, Spanish and Portuguese) and checked only against
 their public pages. I haven't ordered from any of them. Everything here is **TODO-verify** before you rely
 on it: thickness range, largest part, bit size, and whether the price really comes back instantly.
 What this design needs: CNC routing of 18 mm (3/4") birch plywood from a DXF, and a part 860 mm across.
@@ -99,7 +99,15 @@ What this design needs: CNC routing of 18 mm (3/4") birch plywood from a DXF, an
 | Australia | GV CNC (Shepparton VIC) | "Drop DXF files for routing": MDF, plywood, acrylic; DXF priced instantly; inside corners get about a 3 mm radius | <https://www.gvcnc.com.au/quote.html> |
 | New Zealand | CNC Cutting Direct (Christchurch) | Upload a DXF for a quote (not instant); NZ-wide delivery | <https://www.cnccutting.co.nz/cnc-services> |
 | India | HyperFabs (Mumbai) | Instant quotes; search listing says CNC-routed plywood up to 18 mm (the service page was missing) | <https://hyperfabs.com/> |
+| Brazil | ZiOLAB | Router-cut plywood (compensado) on 1600 × 2200 or 1600 × 2500 mm sheets, 4/6/10/15/18/20/25 mm; "envie seu orçamento" (quote on request). City not checked | <https://www.ziolab.com.br/corte-compensado/> |
+| Argentina | Trebol CNC | Router with a 2 × 3 m bed plus a laser; cuts multilaminado de guatambú 3–18 mm and multilaminado fenólico 6/15/18/25 mm (whole sheets); free quote on request. Guatambú and phenolic ply aren't birch: set your own strength and thickness values | <https://trebolcnc.com.ar/servicios> |
+| Chile (Santiago) | CNC Studio | Two CNC routers, 2000 × 3000 mm; takes DXF, AI, SVG, PDF, DWG; quote form answered within 24 working hours | <https://cncstudio.cl/> |
+| Chile | Andes Maker | Router cutting from a DXF; its quoting guide uses "terciado de 18 mm aportado por el cliente" as the example (you can supply the plywood) | <https://andesmaker.cl/comocotizar/> |
+| Colombia (Medellín) | Makers Medellín | "Cotizador CNC instantáneo": upload SVG, DXF, PDF or AI, pick the material and thickness (1–100 mm), get an estimated price at once | <https://makersmedellin.com/cotizacion/> |
+| Peru (Lima) | Laser Cut Peru | Router CNC for wood, MDF, plywood and more; cutting area 1.30 × 2.50 m, up to 60 mm thick; free quote by email | <https://lasercutperu.com/servicio/corte-router-cnc-lima-peru/> |
 
 Not useful here: the German "Zuschnitt" shops (auprotec, plattenzuschnitt24, expresszuschnitt) cut straight
 panels to size, not shapes from a DXF. Laser shops (Snijlab, formulor) can't cut 18 mm plywood. The
-Japanese results were machine sellers and international CNC networks, not plywood routing.
+Japanese results were machine sellers and international CNC networks, not plywood routing. In South America,
+the instant DXF quotes I found are for laser cutting (Makers Manufatura in Rio de Janeiro, CNCero in Argentina),
+which can't cut 18 mm plywood. Makers Medellín was the only instant router quote.
