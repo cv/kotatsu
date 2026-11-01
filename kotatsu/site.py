@@ -23,7 +23,7 @@ import tomllib
 
 from shapely.geometry import Polygon
 
-from . import build as cutbuild, comfort, cutlist, frame, nest, params, room, stiffness, top
+from . import assembly, build as cutbuild, comfort, cutlist, frame, nest, params, room, stiffness, top
 from .params import ROOT
 
 WEB = ROOT / "web"
@@ -54,7 +54,7 @@ def frame_data(p) -> dict:
                       "size": [round(x1 - x0, 1), round(y1 - y0, 1)],
                       "kg": round(g.area / 1e6 * t / 1000 * kg_m3, 2),
                       "cut_m": round((g.exterior.length + sum(h.length for h in g.interiors)) / 1000, 2)})
-        for pl in pt.placements:
+        for k, pl in enumerate(pt.placements):
             ox, oy, oz = pl.origin
             sm = -1 if pl.mirror_u else 1
             if pl.axis == "x":
@@ -63,17 +63,13 @@ def frame_data(p) -> dict:
                 c = (ox + t / 2, oy + sm * (x0 + x1) / 2, oz + (y0 + y1) / 2)
             else:
                 c = ((x0 + x1) / 2, (y0 + y1) / 2, oz)
-            dx, dy = c[0] - L.cx, c[1] - L.cy
-            ex = {"frame": [0.5 * (dx > 0) - 0.5 * (dx < 0) if pl.axis == "y" else 0,
-                            0.5 * (dy > 0) - 0.5 * (dy < 0) if pl.axis == "x" else 0, 0],
-                  "deck": [0, 0, 0.15], "cheek": [0, 0, -0.35],
-                  "wedge": [0, 0, 0.9]}[pt.kind]
             placed.append({"part": pt.name, "kind": pt.kind, "axis": pl.axis, "origin": [ox, oy, oz],
-                           "mirror": pl.mirror_u, "explode": ex})
+                           "mirror": pl.mirror_u, "moves": assembly.part_moves(p, pt, pl, c, k)})
     size, centre = frame.heater_box(p)
     total_kg = sum(x["kg"] * x["qty"] for x in plist)
     return {"thickness": t, "height": L.H, "futon_gap": 12.0, "parts": plist, "placed": placed,
             "heater": {"size": list(size), "center": list(centre)}, "total_kg": round(total_kg, 1),
+            "assembly": assembly.extras(p),
             "draft": False}
 
 

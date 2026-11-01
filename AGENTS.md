@@ -82,6 +82,9 @@ What this repo produces:
     `lil-gui` (controls) and `marked` (Markdown).
   - 2-D pan and zoom is a small custom controller in `web/viewer2d.js`. It stays sharp at any zoom and reads
     positions in millimetres.
+  - The 3-D view's "assembly" slider (and play button) puts the table together step by step. The steps and
+    every part's path are computed in `kotatsu/assembly.py` (tested in `tests/test_assembly.py`); JS only
+    interpolates.
   - The 3-D view's textures (birch, plywood edges, fabric, rug, floor) are drawn on canvases at load
     (`web/textures.js`); the "ambiance" props (tea things, laptop, book, the cat) are in `web/ambiance.js`.
   - `.github/workflows/pages.yml` builds the DXFs and the site (running the tests) on every push to `main`,

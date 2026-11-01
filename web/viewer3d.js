@@ -17,7 +17,7 @@ const LIGHT = {
 };
 
 const COL = { heater: 0x2b2b2b, futon: 0x56637f, seat: 0xb4643f, rugSide: 0xb9a888 };
-// all parts are the same pale birch; a faint tint per kind keeps them apart in the exploded view
+// all parts are the same pale birch; a faint tint per kind keeps them apart while they come together
 const TINT = { top: 0xffffff, frame: 0xfbf6ee, deck: 0xf4ebdd, cheek: 0xf4ebdd, wedge: 0xf1e2c8 };
 
 const TEX = {}; // textures and materials, made once
@@ -92,9 +92,10 @@ export class Viewer3D {
     grid.position.set(600, 400, -12); this.scene.add(grid); // just under the rug
     this.grid = grid;
     this.root = new THREE.Group(); this.scene.add(this.root);
-    this.state = { table: null, explode: 0, showTop: true, showFrame: true, showHeater: true,
+    this.state = { table: null, assembly: null, showTop: true, showFrame: true, showHeater: true,
       showFuton: true, showRug: true, showSeats: true, showAmbiance: true, light: "day" };
     new ResizeObserver(() => this.resize()).observe(container);
+    this.caption = document.createElement("div"); this.caption.className = "asm-caption"; container.appendChild(this.caption);
   }
 
   setData(data) {
@@ -105,7 +106,12 @@ export class Viewer3D {
       this.gui = new GUI({ container: this.c, title: "View" });
       this.gui.domElement.style.position = "absolute"; this.gui.domElement.style.right = "8px"; this.gui.domElement.style.top = "8px";
       if (tnames.length > 1) this.gui.add(this.state, "table", tnames).name("table").onChange(() => { this.framed = false; this.build(); });
-      this.gui.add(this.state, "explode", 0, 400, 1).onChange(() => this.place());
+      // the assembly, step by step (kotatsu/assembly.py): 0 = all apart, n = built
+      this.steps = data.tables[0].frame.assembly?.steps || [];
+      this.state.assembly ??= this.steps.length;
+      this.asmCtl = this.gui.add(this.state, "assembly", 0, this.steps.length, 0.01)
+        .decimals(1).onChange(() => { this.playing = false; this.place(); });
+      this.gui.add(this, "play").name("▶ play the assembly");
       this.gui.add(this.state, "showTop").name("top").onChange(() => this.place());
       this.gui.add(this.state, "showFrame").name("frame").onChange(() => this.place());
       this.gui.add(this.state, "showHeater").name("heater").onChange(() => this.place());
@@ -144,14 +150,16 @@ export class Viewer3D {
     const off = new THREE.Vector3(dx, 0, 0);
     const opt = { boards: T.top.boards, keys: [] };
     const ztop = F.height + F.futon_gap;
-    const nb = opt.boards.length;
-    const push = (obj, kind, dir) => { obj.position.add(off); this.items.push({ obj, kind, dir, base: obj.position.clone() }); };
-    opt.boards.forEach((h, i) => {
+    const A = F.assembly || {};
+    this.asm = A;
+    // hideBefore: things that only turn up at their step (the top, heater, futon, tea), instead of waiting in view
+    const push = (obj, kind, moves = [], hideBefore = false) => {
+      obj.position.add(off); this.items.push({ obj, kind, moves, hideBefore, base: obj.position.clone() });
+    };
+    opt.boards.forEach((h) => {
       const m = slab(h, t, "top", "u"); m.position.z = ztop;
-      const sx = nb > 1 ? (2 * i / (nb - 1) - 1) : 0; // -1 .. +1, left -> right
-      push(m, "top", new THREE.Vector3(sx, 0, sx === 0 ? 0.4 : 0));
+      push(m, "top", A.top, true);
     });
-    opt.keys.forEach((k) => { const m = slab(k, t, "wedge"); m.position.z = ztop; push(m, "key", new THREE.Vector3(0, 0, 1.6)); });
     const byName = Object.fromEntries(F.parts.map((p) => [p.name, p]));
     for (const pl of F.placed) {
       const part = byName[pl.part];
@@ -160,7 +168,7 @@ export class Viewer3D {
       const m = slab(shape, t, pl.kind, part.grain || "u");
       if (pl.axis !== "z") m.applyMatrix4(BASIS[pl.axis]);
       m.position.set(...pl.origin);
-      push(m, pl.kind === "wedge" ? "wedge" : "frame", new THREE.Vector3(...pl.explode));
+      push(m, pl.kind === "wedge" ? "wedge" : "frame", pl.moves, pl.kind !== "frame"); // the legs are there from the start
     }
     const hz = F.heater;
     const heater = new THREE.Mesh(new THREE.BoxGeometry(...hz.size), new THREE.MeshStandardMaterial({ color: COL.heater, roughness: 0.5 }));
@@ -168,13 +176,13 @@ export class Viewer3D {
     const glow = new THREE.PointLight(0xff5a1f, 1, 750, 0); // the heater's orange glow, moves with it
     glow.position.set(0, 0, -hz.size[2] / 2 - 15); heater.add(glow); this.glows.push(glow);
     heater.position.set(...hz.center);
-    push(heater, "heater", new THREE.Vector3(0, 0, -0.6));
+    push(heater, "heater", A.heater, true);
     if (T.room3d) this.addRoom(T.room3d, push);
     const amb = ambiance({ cx: hz.center[0], cy: hz.center[1], topZ: ztop + t, half: T.top.length / 2,
       floorZ: T.room3d ? -T.room3d.rug.t - 0.5 : -1 });   // table-local; push() adds the table offset
-    push(amb.floor, "ambFloor", new THREE.Vector3());
-    for (const o of amb.onTop) push(o, "ambTop", new THREE.Vector3());
-    for (const o of amb.under) push(o, "amb", new THREE.Vector3());
+    push(amb.floor, "ambFloor");
+    for (const o of amb.onTop) push(o, "ambTop", A.tea, true);
+    for (const o of amb.under) push(o, "amb", (A.tea || []).map((m) => ({ ...m, from: [0, 0, 0] })), true); // the cat just turns up
   }
 
   applyLight() {
@@ -189,7 +197,6 @@ export class Viewer3D {
   }
 
   addRoom(R, push) { // rug, draped futon and floor pillows; geometry comes from Python (room.room3d)
-    const still = new THREE.Vector3();
     TEX.rug ??= braidedRug();
     TEX.cotton ??= cotton(3, false);
     TEX.quilt ??= cotton(4, true);
@@ -198,7 +205,7 @@ export class Viewer3D {
       [new THREE.MeshStandardMaterial({ color: COL.rugSide, roughness: 1 }), rugCap, rugCap]); // side, top, bottom
     rug.receiveShadow = true;
     rug.rotation.x = Math.PI / 2; rug.position.set(R.rug.center[0], R.rug.center[1], -R.rug.t / 2);
-    push(rug, "rug", still);
+    push(rug, "rug");
     const n = R.futon.n, geo = new THREE.BufferGeometry(), idx = [];
     geo.setAttribute("position", new THREE.Float32BufferAttribute(R.futon.pts, 3));
     for (let j = 0; j < n - 1; j++) for (let i = 0; i < n - 1; i++) {
@@ -212,7 +219,7 @@ export class Viewer3D {
     const futon = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map: TEX.quilt, color: COL.futon, roughness: 0.95, side: THREE.DoubleSide }));
     futon.castShadow = futon.receiveShadow = true;
     futon.renderOrder = 2; // drawn after the opaque parts, so it can fade over them
-    push(futon, "futon", still);
+    push(futon, "futon", this.asm?.futon, true);
     const seatTex = TEX.cotton.clone(); seatTex.repeat.set(2, 2); seatTex.needsUpdate = true;
     const seatMat = new THREE.MeshStandardMaterial({ map: seatTex, color: COL.seat, roughness: 0.9 });
     for (const st of R.seats) {
@@ -220,29 +227,63 @@ export class Viewer3D {
       const m = new THREE.Mesh(new RoundedBoxGeometry(w, d, h, 4, Math.min(35, h / 2.2)), seatMat);
       m.position.set(...st.center);
       m.castShadow = m.receiveShadow = true;
-      push(m, "seat", still);
+      push(m, "seat");
     }
   }
 
   place() {
-    const e = this.state.explode, S = this.state;
+    const S = this.state, s = S.assembly ?? this.steps?.length ?? 0;
     if (this.grid) this.grid.visible = !S.showAmbiance;
+    const local = (m) => Math.min(1, Math.max(0, (s - m.step - m.a) / (m.b - m.a)));
+    const ease = (x) => x * x * (3 - 2 * x);
     for (const it of this.items || []) {
-      const vis = { top: S.showTop, key: S.showTop, frame: S.showFrame, wedge: S.showFrame, heater: S.showHeater,
+      const vis = { top: S.showTop, frame: S.showFrame, wedge: S.showFrame, heater: S.showHeater,
         futon: S.showFuton, rug: S.showRug, seat: S.showSeats,
         ambTop: S.showAmbiance && S.showTop, amb: S.showAmbiance, ambFloor: S.showAmbiance }[it.kind];
-      it.obj.visible = vis;
-      if (it.kind === "futon") { // fades out as the parts explode, so you can see them through it
-        const m = it.obj.material, o = 1 - 0.9 * Math.min(1, e / 400);
+      const started = !it.moves?.length || s > it.moves[0].step + it.moves[0].a;
+      it.obj.visible = vis && (started || !it.hideBefore);
+      it.obj.position.copy(it.base);
+      for (const m of it.moves || []) {
+        const k = 1 - ease(local(m));
+        it.obj.position.x += m.from[0] * k; it.obj.position.y += m.from[1] * k; it.obj.position.z += m.from[2] * k;
+      }
+      if (it.kind === "futon") { // fades in as it settles over the frame
+        const mat = it.obj.material, o = it.moves?.length ? ease(local(it.moves[0])) : 1;
         const fade = o < 0.999;
-        if (m.transparent !== fade) { m.transparent = fade; m.depthWrite = !fade; m.needsUpdate = true; }
-        m.opacity = o;
+        if (mat.transparent !== fade) { mat.transparent = fade; mat.depthWrite = !fade; mat.needsUpdate = true; }
+        mat.opacity = o;
         it.obj.castShadow = o > 0.6; // a see-through futon shouldn't darken the frame inside it
       }
-      const lift = it.kind === "top" || it.kind === "ambTop" ? new THREE.Vector3(0, 0, e * 0.8) : new THREE.Vector3();
-      it.obj.position.copy(it.base).addScaledVector(it.dir, e * 0.5).add(lift);
     }
+    const n = this.steps?.length || 0, k = Math.min(Math.floor(s), n - 1);
+    this.caption.textContent = s < n && k >= 0 ? `Step ${k + 1} of ${n} · ${this.steps[k]}` : "";
+    this.caption.hidden = !this.caption.textContent;
     this.render();
+  }
+
+  play() { // run the assembly from the start (or stop it), about 1.3 s a step
+    if (this.playing) { this.playing = false; return; }
+    const n = this.steps.length;
+    if (this.state.assembly >= n) { this.state.assembly = 0; this.place(); this.frameClose(); }
+    this.playing = true;
+    let last = performance.now();
+    const tick = (now) => {
+      if (!this.playing) return;
+      this.state.assembly = Math.min(n, this.state.assembly + (now - last) / 1300); last = now;
+      this.asmCtl.updateDisplay(); this.place();
+      if (this.state.assembly < n) requestAnimationFrame(tick); else this.playing = false;
+    };
+    requestAnimationFrame(tick);
+  }
+
+  frameClose() { // a closer look at the frame (legs, deck, cheeks, wedges) for the assembly
+    const box = new THREE.Box3();
+    for (const it of this.items || []) if (it.kind === "frame" || it.kind === "wedge") box.expandByObject(it.obj);
+    if (box.isEmpty()) return;
+    const c = box.getCenter(new THREE.Vector3()), r = box.getSize(new THREE.Vector3()).length() / 2;
+    const dist = r / Math.sin((this.camera.fov * Math.PI) / 360) * 0.85;
+    this.camera.position.copy(c).add(new THREE.Vector3(0.6, -0.8, 0.75).normalize().multiplyScalar(dist));
+    this.controls.target.copy(c); this.controls.update(); this.render();
   }
 
   frame() { // aim the camera at the whole assembly

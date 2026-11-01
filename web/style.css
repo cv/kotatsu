@@ -64,6 +64,8 @@ aside { width:290px; flex:none; overflow:auto; border-right:1px solid var(--line
 .hidden { display:none !important; }
 #doc { flex:1; overflow:auto; padding:20px 40px; max-width:980px; }
 .story-tab:focus, #doc:focus { outline:none; }
+.asm-caption { position:absolute; left:12px; bottom:12px; max-width:calc(100% - 24px); padding:8px 12px; border-radius:8px;
+  background:rgba(255,255,255,.88); color:var(--ink); font-size:15px; font-weight:600; box-shadow:0 1px 6px rgba(0,0,0,.12); pointer-events:none; }
 #doc-list a { display:block; padding:6px 8px; border-radius:6px; color:var(--ink); text-decoration:none; }
 #doc-list a.active { background:#f3ebdf; }
 .markdown table { border-collapse:collapse; margin:10px 0; } .markdown td, .markdown th { border:1px solid var(--line); padding:4px 8px; }
