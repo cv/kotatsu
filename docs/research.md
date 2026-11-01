@@ -77,6 +77,29 @@ about 9.3 kg, and the whole order about 16 kg.
 Japanese kotatsu heaters run on 100 V. In Canada you want a **120 V replacement-style unit**, ideally with a
 cUL, cETL or CSA mark, rather than a transformer. The one I chose, and why, is in `docs/heater.md`.
 
-## Other shops (not checked in detail)
-- SendCutSend (US) ships to Canada. I didn't check its wood thicknesses and size limits.
-- Ponoko is laser only, with small beds, so it can't cut the top.
+## Other shops
+Found in October 2026 (searched in English, French, German, Dutch and Japanese) and checked only against
+their public pages. I haven't ordered from any of them. Everything here is **TODO-verify** before you rely
+on it: thickness range, largest part, bit size, and whether the price really comes back instantly.
+What this design needs: CNC routing of 18 mm (3/4") birch plywood from a DXF, and a part 860 mm across.
+
+| Region | Shop | What its pages say | Source |
+|---|---|---|---|
+| Canada | EZCNC | Upload a DXF, choose a sheet material, configure the routing; a guided quote confirms size, material, thickness and quantity | <https://ezcnc.ca/services/plywood-mdf-cutting> |
+| Canada (Quebec) | Laseo | "Prix instantané" for CNC routing; lists Baltic birch plywood; free delivery from $49. Thicknesses not checked | <https://www.laseo.ca/services/cncrouting/> |
+| US? | ConceptCut | Instant quotes from a DXF, Baltic birch 18 mm on 48 × 96" sheets, ±0.5 mm; priced per sheet used after nesting + per inch of cut; ships in 3–5 days. No address or shipping area on the site | <https://conceptcut.net/> |
+| US | SendCutSend | Baltic birch .125–.472" (3.18–12 mm), CNC-routed from .354"; instant pricing up to 44 × 44", custom quote to 46 × 46". Too thin for this design as drawn | <https://sendcutsend.com/materials/baltic-birch-plywood/> |
+| US | Ponoko | Laser only, small beds: can't cut the top | (earlier note) |
+| US | Xometry | Has a CNC routing service (Big Blue Saw's address now redirects to Xometry). Not checked for plywood | <https://www.xometry.com/capabilities/cnc-machining-service/cnc-routing/> |
+| UK | Chop Shop CNC | "Upload your files and receive an instant quote" (DXF; material, thickness, quantity); delivery anywhere in the UK. Materials not checked | <https://chopshopcnc.com/cnccutting> |
+| UK | Cut Online | Fill in a form for an instant quote, then they review the drawing and confirm; 1220 × 2440 bed, up to 50 mm | <https://www.cut-online.co.uk/> |
+| France | Vectorealism | Online CNC routing: birch plywood 15 and 18 mm, sheets 60 × 60, 120 × 120 and 180 × 120 cm; upload a 2-D drawing, quote by email (usually same day); 7 working days | <https://www.vectorealism.com/fr/fraisage-cnc/> |
+| Netherlands | Moderne Ambacht | Public price calculator: €90/h routing (about half an hour a sheet), €60 setup, 18 mm birch €105.71 a sheet, excl. 21 % VAT | <https://www.moderneambacht.com/prijzen/> |
+| Australia | Laser Cutting Experts | CNC router cut plywood; instant pricing for cut-ready CAD; pickup in Botany NSW or freight anywhere in Australia | <https://lasercuttingexperts.com.au/cnc-router-cut-plywood> |
+| Australia | GV CNC (Shepparton VIC) | "Drop DXF files for routing": MDF, plywood, acrylic; DXF priced instantly; inside corners get about a 3 mm radius | <https://www.gvcnc.com.au/quote.html> |
+| New Zealand | CNC Cutting Direct (Christchurch) | Upload a DXF for a quote (not instant); NZ-wide delivery | <https://www.cnccutting.co.nz/cnc-services> |
+| India | HyperFabs (Mumbai) | Instant quotes; search listing says CNC-routed plywood up to 18 mm (the service page was missing) | <https://hyperfabs.com/> |
+
+Not useful here: the German "Zuschnitt" shops (auprotec, plattenzuschnitt24, expresszuschnitt) cut straight
+panels to size, not shapes from a DXF. Laser shops (Snijlab, formulor) can't cut 18 mm plywood. The
+Japanese results were machine sellers and international CNC networks, not plywood routing.
