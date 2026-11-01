@@ -344,12 +344,61 @@ make dev       # serve it on :8765 and rebuild on every change
 `PLAN.md` has the decisions and open questions. `docs/` has the research on the shop, heater, futon
 and quote. `AGENTS.md` has the project's rules.
 
+### Make it yours
+
+Every size is a number in `params.toml`. Change one, run `make all` and `make test`, and the parts, cut
+sheets, price, weight and 3-D view all follow. The tests tell you when a change breaks something. Here's
+what a few changes do, run through the same code:
+
+| Change | What happens |
+|---|---|
+| A smaller top, 76 × 76 cm | $339 instead of $353, so smaller barely saves anything: most of the price is a fixed share plus cutting. 13.9 kg, and it fits a 60 × 60" sheet. |
+| A bigger top, 100 × 100 cm | $374 to cut, but the box goes past 91 cm, so uMake adds about $195 for shipping. It also weighs 20.5 kg, over the free-shipping weight. The parcel test fails. |
+| A lower frame, 355 mm instead of 385 | It sways less (0.3 mm at 100 N, against 0.9), but the deck's underside drops to 311 mm, under the 317.5 mm my knees need sitting cross-legged. The knee test fails. Set your own in `[comfort]`. |
+| A bigger heater, 33 × 33 cm | The cheeks move apart by themselves. Every test passes, and the price doesn't change. |
+
+Measure your own heater and put its size in `[heater]`. Don't guess it from a listing.
+
+Ideas I built and then dropped are kept as git tags, so you can check one out and build it:
+
+- **`seams-archive`**: the 120 × 80 cm top in three boards, joined by decorative seams (dovetails,
+  arrowheads, maple leaves), and a 90 cm round top. Round looked lovely, but it cost $199 to ship, and
+  round futons wouldn't ship here.
+- **`frame-variants-archive`**: the solid-sided frame with tapered legs and flared feet, and a yagura
+  with splayed legs.
+- **`options-archive`**: windows in the deck and legs, an X-shaped deck, lighter-looking cuts, and
+  modules that link several tables into a row.
+
+### Ordering somewhere else
+
+I only ordered from uMake, in Canada. If you're somewhere else, look for a shop that **CNC-routes 18 mm
+(3/4") birch plywood** from a DXF and can cut a part 86 cm across. Ideally it should also give you a
+price online, without a phone call. These are the ones I found in October 2026. I haven't ordered from
+any of them, so check before you rely on one (the details and sources are in `docs/research.md`):
+
+| Where | Shop | What I found |
+|---|---|---|
+| Canada | [uMake](https://www.umake.ca/) | What I used. Instant quote, CNC-routed "19mm" Baltic birch, free shipping in one box up to 91 cm |
+| Canada | [EZCNC](https://ezcnc.ca/), [Laseo](https://www.laseo.ca/services/cncrouting/) | Both take a DXF online. Laseo shows a price instantly and lists Baltic birch. I haven't checked their thicknesses |
+| US (I think) | [ConceptCut](https://conceptcut.net/) | Instant DXF quotes for 18 mm Baltic birch on 48 × 96" sheets, priced by sheets used plus length of cut. Its site works in inches but doesn't say where it is or ships to |
+| US | [SendCutSend](https://sendcutsend.com/materials/baltic-birch-plywood/) | Instant quotes, but its birch only goes up to 12 mm, and 44 × 44" parts. This design would need a 12 mm rework |
+| UK | [Chop Shop CNC](https://chopshopcnc.com/cnccutting) | Instant quotes from a DXF, delivery anywhere in the UK |
+| France | [Vectorealism](https://www.vectorealism.com/fr/fraisage-cnc/) | Online CNC routing in 15 and 18 mm birch, on 60 × 60, 120 × 120 or 180 × 120 cm sheets. You upload, and the quote comes back by email |
+| Netherlands | [Moderne Ambacht](https://www.moderneambacht.com/prijzen/) | A price calculator instead of an upload: €90 an hour of routing, and 18 mm birch at about €106 a sheet |
+| Australia | [Laser Cutting Experts](https://lasercuttingexperts.com.au/cnc-router-cut-plywood) (Sydney), [GV CNC](https://www.gvcnc.com.au/quote.html) (Victoria) | Both price a DXF for plywood routing instantly |
+| India | [HyperFabs](https://hyperfabs.com/) (Mumbai) | Instant quotes. Its listing says CNC-routed plywood up to 18 mm |
+
+Whichever shop you pick, tell the code about it in `params.toml`: the bit size (`[cnc] bit_d`, for the
+dogbones), its sheet sizes, the gap it wants between parts and round the sheet's edge, the real
+thickness range of its plywood (`[material]`), and its shipping limits (`[shipping]`). The 91 cm box is
+uMake's rule, not a law of nature. A makerspace with a CNC router works too: the DXFs are ordinary cut
+files.
+
+
 **Caveats.** The plywood strength figures are rough textbook values, so read the load numbers as "lots of
 margin", not as a certificate. uMake sells this sheet as "19mm", and the joints are designed for
 17.0–18.9 mm. Follow your heater's instructions and clearances, and make sure it's rated for your mains
-supply. The earlier designs are kept as git tags: `seams-archive` (split tops with decorative seams),
-`frame-variants-archive` (solid-sided and splayed-leg frames) and `options-archive` (options I built and
-didn't use: deck windows, an X deck, leg windows, lighter-look cuts, linking tables, a round top).
+supply.
 
 <!-- /story -->
 
