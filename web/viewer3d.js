@@ -131,7 +131,7 @@ export class Viewer3D {
   build() {
     const d = this.data; if (!d) return;
     this.root.clear();
-    this.items = []; this.glows = []; this.slots = {};   // slots: where each part sits, for the FEA heat maps
+    this.items = []; this.glows = []; this.slots = {}; this.itemPart = new Map(); // where each part sits (FEA)
     const t = d.thickness;
     const which = this.state.table === "all" ? d.tables : d.tables.filter((x) => x.name === this.state.table);
     let dx = 0;
@@ -182,6 +182,7 @@ export class Viewer3D {
       const M = pl.matrix ? new THREE.Matrix4().set(...pl.matrix)
         : (pl.axis !== "z" ? BASIS[pl.axis].clone() : new THREE.Matrix4()).premultiply(new THREE.Matrix4().makeTranslation(...pl.origin));
       (this.slots[pl.part] ??= []).push({ M: M.premultiply(new THREE.Matrix4().makeTranslation(off.x, off.y, off.z)), mirror: !!pl.mirror, it: this.items.at(-1) });
+      this.itemPart.set(this.items.at(-1), pl.part);
     }
     const hz = F.heater;
     const heater = new THREE.Mesh(new THREE.BoxGeometry(...hz.size), new THREE.MeshStandardMaterial({ color: COL.heater, roughness: 0.5 }));
@@ -276,6 +277,7 @@ export class Viewer3D {
     const n = this.steps?.length || 0, k = Math.min(Math.floor(s), n - 1);
     this.caption.textContent = s < n && k >= 0 ? `Step ${k + 1} of ${n} · ${this.steps[k]}` : "";
     this.caption.hidden = !this.caption.textContent;
+    if (fc) this.feaCarry(this.feaK ?? 0);
     this.render();
   }
 
@@ -310,12 +312,15 @@ export class Viewer3D {
     this.feaObjs = []; this.feaHidden = new Set();
     const c = this.fea?.cases.find((x) => x.label === this.state.fea);
     this.feaCase = c || null;
-    if (!c) { this.legend.hidden = true; this.place(); return; }
-    const md = maxDisp(c);
+    if (!c) { for (const it of this.items || []) it.obj.matrixAutoUpdate = true; this.legend.hidden = true; this.place(); return; }
+    const md = Math.max(...(c.senses || [c]).map((x) => maxDisp({ kind: c.kind, ...x })));
     if (resetBend) { this.state.feaBend = md > 0 ? Math.max(1, Math.min(300, Math.round(25 / md))) : 1; this.feaBendCtl.updateDisplay(); }
-    const me = this.fea.meshes[c.mesh], t = this.fea.thickness;
-    for (const sl of this.slots[c.part] || []) {
-      const m = heatSlab(me, c, t, sl.mirror);
+    const me = this.fea.meshes[c.mesh], t = this.fea.thickness, slots = this.slots[c.part] || [];
+    // leg cases name the placements that bend in the push's plane, each with its sense; plates: every placement
+    const on = c.on ? c.on.map((e) => [slots[e.i], { kind: c.kind, ...c.senses[e.sense] }]) : slots.map((sl) => [sl, c]);
+    for (const [sl, data] of on) {
+      if (!sl) continue;
+      const m = heatSlab(me, data, t, sl.mirror);
       m.matrixAutoUpdate = false; m.matrix.copy(sl.M);
       this.root.add(m); this.feaObjs.push(m); this.feaHidden.add(sl.it);
     }
@@ -327,22 +332,41 @@ export class Viewer3D {
     this.feaBendNow(1);
     const pct = (u) => `${Math.round(u * 100)} %`;
     const extra = c.sag_mm != null ? `sags ${c.sag_mm} mm` : c.sway_mm != null ? `sways ${c.sway_mm} mm` : "";
-    this.legend.innerHTML = `<b>${c.label}</b><br>worst ${pct(c.worst)} of its strength${extra ? ", " + extra : ""}
+    this.legend.innerHTML = `<b>${c.label}</b><br>worst ${pct(c.worst)} of its strength${extra ? ", " + extra : ""}${c.on ? " (a push along x: the plates along x bend in their plane, the rest of the frame is carried along)" : ""}
       (deflection drawn × ${this.state.feaBend})
       <div style="height:10px;margin:6px 0 2px;border-radius:3px;background:${GRADIENT}"></div>
       <div style="display:flex;justify-content:space-between"><span>0</span><span>50 %</span><span>100 %</span><span>150 %</span></div>
       <span style="color:#777">Share of strength (Tsai-Hill), thinnest sheet (${this.fea.thickness} mm). Grey: right at a support or
-      contact, where the peaks are local bearing, not bending.${c.part.startsWith("leg") ? " The same plate is drawn at each corner." : ""}
+      contact, where the peaks are local bearing, not bending. Each part is analysed alone, its neighbours as supports: the rest of the frame only follows (shifted, leaning or riding down), it isn't bent.
       ${this.feaInfo.stale ? "<br><b style='color:#b00'>Stale: the design changed since these were computed (make fea).</b>" : ""}</span>`;
     this.legend.hidden = false;
     this.place();
     this.feaAnimate();
   }
 
-  feaBendNow(f) { // the slabs bent by bend × f (the pulse eases f between 0 and 1)
+  feaBendNow(f) { // the slabs bent by bend × f (the pulse eases f between 0 and 1), the frame carried along
     if (!this.feaCase) return;
-    for (const m of this.feaObjs) bend(m, this.state.feaBend * f);
+    this.feaK = this.state.feaBend * f;
+    for (const m of this.feaObjs) bend(m, this.feaK);
+    this.feaCarry(this.feaK);
     this.render();
+  }
+
+  feaCarry(k) { // the parts not analysed follow the analysed one (fea_view.py says how far, at true scale)
+    const c = this.feaCase, sh = c?.frame_shift, carry = c?.carry || {};
+    for (const it of this.items || []) {
+      if (!it.obj.visible || this.feaHidden.has(it)) continue;
+      const part = it.kind === "heater" ? "heater" : this.itemPart.get(it);
+      it.obj.position.copy(it.base);
+      it.obj.matrixAutoUpdate = true;
+      if (carry[part] != null) it.obj.position.z += carry[part] * k;            // rides on the deck (deck cases)
+      if (!sh) continue;
+      const dx = sh.vec[0] * k, dy = sh.vec[1] * k;
+      if (part?.startsWith("leg plate")) {                                       // feet fixed, tops with the deck
+        it.obj.updateMatrix(); it.obj.matrixAutoUpdate = false;
+        it.obj.matrix.premultiply(new THREE.Matrix4().set(1, 0, dx / sh.z_full, 0, 0, 1, dy / sh.z_full, 0, 0, 0, 1, 0, 0, 0, 0, 1));
+      } else { it.obj.position.x += dx; it.obj.position.y += dy; }               // the deck and all on it
+    }
   }
 
   feaAnimate() {

@@ -231,7 +231,12 @@ against comfort (knee room), weight and the cut list before adopting it.
 The site's **3-D view** has a "stress (FEA)" control. Pick a load case: the part is painted where it stands,
 blue (idle) to yellow (half its strength) to red (all of it) and purple (past it), and drawn bent (exaggerated
 "bend ×" times, pulsing load on and off). The load's patch is a dark pad; grey marks pads and contacts, whose
-peaks are local bearing. The leg plates show the same plate at every corner. `kotatsu/fea_view.py` computes it
+peaks are local bearing. Each part is analysed alone, its neighbours standing in as springs and supports, so
+the view only *carries* the rest of the frame: for the leg cases (a push along x) it draws them as the floor
+sees them, feet still and the deck swaying; the two plates along x bend in their plane, each the right way
+round, while the deck and everything on it shift and the other plates lean with it. For the deck, the
+cradle rides down with the ring. At true scale nothing collides: under the 200 N push A's cross-lap slot
+narrows by 0.2 mm at most, against the 0.9 mm a thinnest B plate has between its crush ribs. `kotatsu/fea_view.py` computes it
 on slightly coarser meshes (15 cases, about a minute): run `make fea` after changing the design. The site
 says so when the results are stale. CI runs it on every push.
 

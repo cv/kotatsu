@@ -104,33 +104,62 @@ def deck_cases(p) -> list[dict]:
         util = tsai_hill(p, res.sx, res.sy, res.txy)
         label = f"deck: {name}" + ("" if tight else ", wedges slack")
         hand = [g for g, f in loads_ if f > p.comfort.heater_kg * 9.81]          # the hand, not the heater's ears
+        ears = [g for g, f in loads_ if f <= p.comfort.heater_kg * 9.81]
+        on_ears = fea.in_any(res.m, ears, at="vertices")
+        drop = float(res.w[on_ears].mean()) if on_ears.any() else 0.0           # the cradle rides down with them
         out.append({"part": "deck", "label": label, "kind": "plate", "worst": _worst(util, r["local"]),
                     "sag_mm": round(r["sag_mm"], 1), "loads": _rings(hand),
+                    "carry": {"heater cheek": round(-drop, 3), "heater": round(-drop, 3)},
                     **_pack(res.m, util, r["local"], [res.w])})
     return out
 
 
 def leg_cases(p) -> list[dict]:
+    """The leg plates under a push along +x at table height, drawn as the floor sees it: the feet stay put
+    and the deck sways (the model holds the deck and slides the floor; here that motion is taken off).
+    Only the plates in the push's plane bend in it: `on` lists those placements (frame.parts' order) and
+    the sense of each (a mirrored plate takes the push the other way round: the model's other sense).
+    `frame_shift`: how far the deck moves (world mm, true scale), for the view to carry the rest of the
+    frame along: the parts on the deck shift, the other leg plates lean, feet fixed."""
     from skfem import Basis, ElementTriP2, ElementVector
+    from . import frame as fr
     H = p.fea.push_n
     top = fea.top_on_legs(p)
+    L = fr.layout(p)
+    pls = {pt.name: pt.placements for pt in fr.parts(p)}
     runs = [(f"leg A: {H:g} N sideways push", "A", H, None), (f"leg A: {H:g} N push + the top's worst corner load", "A", H, top),
             ("leg A: the top's worst corner load only", "A", 0.0, top), (f"leg B: its share of {H:g} N, top clamped", "B", H, top)]
     out = []
     for label, which, hh, tp in runs:
         r = fea.leg_case(p, which, hh, tp, h=VIEW_H["leg"])
         local = r["local"]
-        best = None
-        for x in r["result"]:                              # the worse of the two senses of push
-            util = tsai_hill(p, x.sv, x.su, x.tuv)         # grain runs up the leg (v)
-            if best is None or _worst(util, local) > _worst(best[1], local):
-                best = (x, util)
-        x, util = best
-        b = Basis(x.m, ElementVector(ElementTriP2()))
-        disp = [x.u[b.nodal_dofs[0]], x.u[b.nodal_dofs[1]]]
-        out.append({"part": f"leg plate {which}", "label": label, "kind": "plane", "worst": _worst(util, local),
+        senses, deck_u = [], []
+        for x in r["result"]:
+            b = Basis(x.m, ElementVector(ElementTriP2()))
+            U, V = x.u[b.nodal_dofs[0]], x.u[b.nodal_dofs[1]]
+            foot = x.m.p[1] < 1.0
+            fu, fv = float(U[foot].mean()), float(V[foot].mean())       # the floor's motion under the deck
+            util = tsai_hill(p, x.sv, x.su, x.tuv)                       # grain runs up the leg (v)
+            senses.append((util, [U - fu, V - fv]))
+            deck_u.append(-fu)                                            # the deck, seen from the floor (local u)
+        if len(senses) == 1 and abs(deck_u[0]) > 1e-6:                   # B: one sense; its mirror image by symmetry
+            util, (du, dv) = senses[0]
+            senses.append((util, [-du, dv]))
+            deck_u.append(-deck_u[0])
+        worst = max(_worst(u, local) for u, _ in senses)
+        sway = max(abs(d) for d in deck_u)
+        on = []                                                           # push along +x: the x plates bend in plane
+        for i, pl in enumerate(pls[f"leg plate {which}"]):
+            if pl.axis != "x":
+                continue
+            want = -1.0 if pl.mirror_u else 1.0                           # local u = -x on a mirrored placement
+            k = min(range(len(senses)), key=lambda j: -deck_u[j] * want) if sway > 1e-6 else 0
+            on.append({"i": i, "sense": k})
+        packed = [_pack(r["result"][0].m, u, local, d) for u, d in senses]
+        out.append({"part": f"leg plate {which}", "label": label, "kind": "plane", "worst": worst,
                     "sway_mm": None if r["sway_mm"] is None else round(r["sway_mm"], 1),
-                    **_pack(x.m, util, local, disp)})
+                    "mesh": packed[0]["mesh"], "senses": [{k: v for k, v in s.items() if k != "mesh"} for s in packed],
+                    "on": on, "frame_shift": {"vec": [round(sway, 3), 0.0], "z_full": L.z_deck_bot}})
     return out
 
 
