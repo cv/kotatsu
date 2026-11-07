@@ -93,7 +93,7 @@ export class Viewer3D {
     this.grid = grid;
     this.root = new THREE.Group(); this.scene.add(this.root);
     this.state = { table: null, assembly: null, showTop: true, showFrame: true, showHeater: true,
-      showFuton: true, showRug: true, showSeats: true, showAmbiance: true, light: "day" };
+      showFuton: true, showRug: true, showChairs: true, showPillows: true, showAmbiance: true, light: "day" };
     new ResizeObserver(() => this.resize()).observe(container);
     this.caption = document.createElement("div"); this.caption.className = "asm-caption"; container.appendChild(this.caption);
   }
@@ -116,7 +116,8 @@ export class Viewer3D {
       this.gui.add(this.state, "showFrame").name("frame").onChange(() => this.place());
       this.gui.add(this.state, "showHeater").name("heater").onChange(() => this.place());
       this.gui.add(this.state, "showFuton").name("futon").onChange(() => this.place());
-      this.gui.add(this.state, "showSeats").name("seats").onChange(() => this.place());
+      this.gui.add(this.state, "showChairs").name("chairs").onChange(() => this.place());
+      this.gui.add(this.state, "showPillows").name("pillows").onChange(() => this.place()); // floor pillows and the chairs' cushions
       this.gui.add(this.state, "showRug").name("rug").onChange(() => this.place());
       this.gui.add(this.state, "showAmbiance").name("ambiance").onChange(() => this.place());
       this.gui.add(this.state, "light", Object.keys(LIGHT)).name("light").onChange(() => this.applyLight());
@@ -242,7 +243,7 @@ export class Viewer3D {
     const ease = (x) => x * x * (3 - 2 * x);
     for (const it of this.items || []) {
       const vis = { top: S.showTop, frame: S.showFrame, wedge: S.showFrame, heater: S.showHeater,
-        futon: S.showFuton, rug: S.showRug, seat: S.showSeats, chair: S.showSeats,
+        futon: S.showFuton, rug: S.showRug, seat: S.showPillows, chair: S.showChairs,
         ambTop: S.showAmbiance && S.showTop, amb: S.showAmbiance, ambFloor: S.showAmbiance }[it.kind];
       const started = !it.moves?.length || s > it.moves[0].step + it.moves[0].a;
       it.obj.visible = vis && (started || !it.hideBefore);
