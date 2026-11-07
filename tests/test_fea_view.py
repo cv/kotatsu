@@ -27,3 +27,5 @@ def test_top_cases_data():
 
 def test_key_tracks_the_sources():
     assert len(fea_view.key()) == 12
+    assert "zaisu" in fea_view.IGNORED            # changing the chairs doesn't make the table's results stale
+    assert not any(s in fea_view.IGNORED for s in ("material", "loads", "fea", "frame", "yagura", "deck", "top"))

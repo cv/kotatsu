@@ -20,16 +20,25 @@ from . import fea, params
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "out" / "fea.json"
-SRC = ["params.toml", "kotatsu/params.py", "kotatsu/fea.py", "kotatsu/fea_view.py", "kotatsu/yagura.py",
+SRC = ["kotatsu/params.py", "kotatsu/fea.py", "kotatsu/fea_view.py", "kotatsu/yagura.py",
        "kotatsu/frame.py", "kotatsu/top.py", "kotatsu/geom.py", "kotatsu/comfort.py", "kotatsu/loads.py",
        "kotatsu/stiffness.py"]
 VIEW_H = {"top": 28.0, "deck": 12.0, "leg": 4.0}     # element sizes for the view (coarser than the checks)
 
 
+IGNORED = ("zaisu", "room", "layout", "shipping")   # params.toml sections the table's FEA never reads
+
+
 def key() -> str:
+    """Hash of what the results depend on: the code in SRC and params.toml without IGNORED (the chairs'
+    cushions, the rug, the sheet layout and shipping don't change how the table bends)."""
+    import tomllib
     h = hashlib.sha1()
     for f in SRC:
         h.update((ROOT / f).read_bytes())
+    with open(ROOT / "params.toml", "rb") as fh:
+        raw = {k: v for k, v in tomllib.load(fh).items() if k not in IGNORED}
+    h.update(json.dumps(raw, sort_keys=True).encode())
     return h.hexdigest()[:12]
 
 
