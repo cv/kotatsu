@@ -419,6 +419,15 @@ frame stood still. At true scale, the slot round B narrows by 0.2 mm at most, an
 spare. Now the frame moves with the analysed part: the feet stay put, the deck sways, and the other
 plates lean along.
 
+### Summer
+
+In summer the table goes flat into a stack the size of its top, as v1 does: three layers, under 5 cm. The
+chairs can come too, flipped and turned to fit, in five layers and 8 cm. Or they can just stay out: a zaisu
+is a perfectly good chair without a kotatsu. And the heater question is settled: on high, its top reaches
+about 40 °C, warm to the hand, so the futon can lie right on it.
+
+![Summer storage: the top, then the deck with the leg plates and wedges in its openings, then the chairs' parts in three more layers, all inside the top's footprint](docs/img/v2-storage.png)
+
 | | v1 | v2 so far |
 |---|---|---|
 | Parts | 26 | 18, plus 10 for the chairs |
@@ -428,8 +437,8 @@ plates lean along.
 | A hard 200 N shove, finite elements | not checked | 87 % of the legs' strength, 7.2 mm of sway |
 | uMake | $353.33 (the order) | about $474 for the table and chairs (my estimate; the table alone quoted $328.70 before the later changes) |
 
-Before I order it, I want to measure how I really sit (no tape to hand yet), check that the heater's top
-stays cool with the futon right over it, and find out how thick uMake's 15 mm sheet really is. Then a
+Before I order it, I want to measure how I really sit (no tape to hand yet) and find out how thick
+uMake's 15 mm sheet really is. Then a
 fresh quote.
 
 <!-- page: overview -->

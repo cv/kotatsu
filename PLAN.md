@@ -179,14 +179,17 @@ three parts with real outlines on 14.1 mm stock:
 | **Total** | **about $1005–1070 + cushions** |
 
 ## Off-season storage
-Everything packs flat inside the top's footprint, in three layers (kotatsu/storage.py packs it by itself).
+Everything packs flat inside the top's footprint (kotatsu/storage.py packs it by itself, flipping parts over where
+that helps). The table alone is 3 layers, a stack about 47 mm tall. With both zaisu it's 5 layers, about 78 mm: the
+side frames' L-shapes leave one of them on a layer of its own. But the zaisu are ordinary floor chairs, so they
+can stay out all summer.
 
 ## Still open
 1. **The 15 mm sheet.** Order uMake's "15mm" Baltic birch (its "16mm" is probably 5/8", too thick). Its
    real thickness range is assumed at 14.1–15.7 mm: TODO-verify. The price is settled (test quote, `docs/quote.md`).
 2. **Heater details.** The screws' length (the tips must stay inside the 15 mm cheek), and nothing sticking
    out of the heater's ends past the 300 mm well (cord, knob). With the futon now over the heater, check
-   its top stays cool to the touch on high. Look for a cUL, cETL or CSA mark on the rating label.
+   its top stays cool to the touch on high (owner, 2026-11: 40 °C on v1, the same heater: fine). Look for a cUL, cETL or CSA mark on the rating label.
 3. **The gravity-held plates.** Check the B plates don't rattle in the cross-laps once the table is up;
    the crush ribs should hold them snug.
 4. **A tipping limit.** If I want one: EN 12521's force table, or a bathroom-scale test on the finished table.

@@ -55,3 +55,8 @@ two heater cheeks hanging under the deck.
   home insurance.
 - **Airflow.** Don't block the fan or grille. Keep the futon and blankets off the unit, and follow the
   clearances in its manual. They override anything in this design.
+
+## Measured in use
+
+- **Top of the unit, on high: about 40 °C** (owner, 2026-11, on v1). That's the face v2 puts right under the
+  futon (the heater sits flush in the deck's well, the cheeks 20 mm higher), so it's fine to cover.

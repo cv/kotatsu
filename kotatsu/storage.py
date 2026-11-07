@@ -1,19 +1,22 @@
 """Off-season storage (owner idea 8): everything packs flat inside the top's footprint.
 
-Layer 1: the top. Layer 2: the deck, with whatever fits in its notches. Layer 3: the rest.
+Layer 1: the top. Layer 2: the deck, with whatever fits in its openings. Then as many loose layers as the
+rest needs (v2: the two zaisu come too, and small parts can go in their cut-outs).
 Packed greedily on a 3 mm grid (largest part first), then checked exactly.
-Stack about 3 x 19 mm thick, 860 x 860. Centred plan coordinates (mm).
+One sheet thick per layer, 860 x 860. Centred plan coordinates (mm).
 Run: uv run python -m kotatsu.storage  (writes out/preview/storage.png)
 """
 from __future__ import annotations
 
-from shapely.affinity import rotate, translate
+from shapely.affinity import rotate, scale, translate
 from shapely.geometry import box
 
 from . import frame, top
 from .params import ROOT
 
 GAP = 3.0
+TURNS = (0, 90, 180, 270)          # rotations tried for each part (degrees) ...
+FLIP = True                        # ... and flipped over too: in storage a part can lie either face up
 
 
 def _centred(g):
@@ -21,7 +24,7 @@ def _centred(g):
     return translate(g, -(x0 + x1) / 2, -(y0 + y1) / 2)
 
 
-def _pack(items, layers, side, res=3.0):
+def _pack(items, layers, side, res=3.0, order=None):
     """Greedy raster packing (largest first, lowest-then-leftmost spot) into the given layers.
     layers: {name: [obstacle polygons]}; returns {name: [placed polygons]} (obstacles included)."""
     import numpy as np
@@ -37,12 +40,12 @@ def _pack(items, layers, side, res=3.0):
             i0, j0 = int(round((y0 + side) / res)), int(round((x0 + side) / res))
             o[max(i0, 0):i0 + m.shape[0], max(j0, 0):j0 + m.shape[1]] |= m[max(-i0, 0):n - i0, max(-j0, 0):n - j0]
         occ[name], out[name] = o, list(obs)
-    for label, g in sorted(items, key=lambda it: -it[1].area):
+    for label, g in (order(items) if order else sorted(items, key=lambda it: -it[1].area)):
         done = False
         for name in layers:
             best = None
-            for ang in (0, 90, 180, 270):
-                gr = rotate(g, ang, origin=(0, 0))
+            for ang, flip in [(a, f) for a in TURNS for f in ((False, True) if FLIP else (False,))]:
+                gr = rotate(scale(g, -1, 1, origin=(0, 0)) if flip else g, ang, origin=(0, 0))
                 gr = translate(gr, -gr.bounds[0], -gr.bounds[1])
                 m = _mask(gr, res, grow)
                 free = _fft_free(occ[name], m)
@@ -62,23 +65,44 @@ def _pack(items, layers, side, res=3.0):
             out[name].append(placed)
             done = True
             break
-        if not done:
-            raise ValueError(f"{label} doesn't fit in storage")
+        if not done:                                   # open a new loose layer and put it there
+            name = f"layer {len(layers) + 2}"
+            layers[name] = []
+            occ[name], out[name] = np.zeros((n, n), bool), []
+            gr = translate(g, -g.bounds[0], -g.bounds[1])
+            m = _mask(gr, res, grow)
+            free = _fft_free(occ[name], m)
+            if free.size == 0 or not free.any():
+                raise ValueError(f"{label} doesn't fit in the top's footprint at all")
+            ii, jj = np.nonzero(free)
+            k = np.lexsort((jj, ii))[0]
+            i, j = ii[k], jj[k]
+            gx = gr.buffer(grow, quad_segs=8).bounds
+            out[name].append(translate(gr, -side + j * res - gx[0], -side + i * res - gx[1]))
+            occ[name][i:i + m.shape[0], j:j + m.shape[1]] |= m
     return out
 
 
-def layout(p) -> dict[str, list]:
+def layout(p, chairs: bool = True) -> dict[str, list]:
+    """{layer name: placed parts}: the top, the deck with parts in its openings, then layer 3, 4...
+    (spares included: they're kept too)."""
+    from . import zaisu
     parts = {pt.name: pt for pt in frame.parts(p)}
     deck = _centred(parts["deck"].shape)
     side = p.top.length / 2
     items = []
-    for name, pt in parts.items():
+    for name, pt in list(parts.items()) + ([(pt.name, pt) for pt in zaisu.parts(p)] if chairs else []):
         if name == "deck":
             continue
         g = translate(pt.shape, -pt.shape.bounds[0], -pt.shape.bounds[1])
-        items += [(name, g)] * pt.qty
-    packed = _pack(items, {"deck layer": [deck], "loose layer": []}, side)
+        items += [(name, g)] * (pt.qty + getattr(pt, "spares", 0))
+    packed = _pack(items, {"deck layer": [deck], "layer 3": []}, side)
     return {"top": [_centred(top.build(p).outline)], **packed}
+
+
+def stack_mm(p, chairs: bool = True) -> float:
+    """How tall the stack is: a sheet per layer (thickest stock)."""
+    return len(layout(p, chairs)) * p.material.t_max
 
 
 def check(p) -> list[str]:
@@ -103,7 +127,7 @@ def main():
     from . import params
     p = params.tables(params.load())[0]
     L = layout(p)
-    fig, axs = plt.subplots(1, 3, figsize=(15, 5.4))
+    fig, axs = plt.subplots(1, len(L), figsize=(5 * len(L), 5.4))
     for ax, (name, gs) in zip(axs, L.items()):
         s = p.top.length / 2
         ax.add_patch(plt.Rectangle((-s, -s), 2 * s, 2 * s, fill=False, ls="--", ec="#b5793f"))
@@ -112,7 +136,8 @@ def main():
             for h in g.interiors:
                 x, y = h.xy; ax.fill(x, y, fc="white", ec="#2b2118", lw=0.5)
         ax.set_xlim(-s - 10, s + 10); ax.set_ylim(-s - 10, s + 10); ax.set_aspect("equal"); ax.axis("off"); ax.set_title(name)
-    fig.suptitle("Off-season storage: three flat layers inside the top's 860 × 860 footprint")
+    fig.suptitle(f"Off-season storage: {len(L)} flat layers inside the top's 860 × 860 footprint, table and both zaisu "
+                 f"(a stack about {stack_mm(p):.0f} mm tall)")
     fig.tight_layout()
     out = ROOT / "out" / "preview" / "storage.png"
     fig.savefig(out, dpi=85)
