@@ -349,7 +349,7 @@ its straight edges instead of starting suddenly like a radius. The feet are roun
 | | v1 | v2 so far |
 |---|---|---|
 | Parts | 26 | 18 |
-| Weight | 15.9 kg | 11.4 kg |
+| Weight | 15.9 kg | 11.3 kg |
 | Wedges | 14 | 6 (4 + 2 spares) |
 | Clear height under the heater | 286 mm | 309 mm |
 | uMake quote | $353.33 | $328.70 (a test quote, not an order) |

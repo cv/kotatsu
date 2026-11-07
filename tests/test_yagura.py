@@ -279,3 +279,42 @@ def test_inner_shoulder_bears_on_the_deck(Y):
         g = parts[n].shape
         flat = g.intersection(box(tb + 2.0, L.z_deck_bot - 0.6, P.frame.leg_width, L.z_deck_bot - 0.1))
         assert flat.area >= 0.5 * (P.frame.leg_width - tb - 2.0 - P.frame.shoulder_r) * 0.5
+
+
+
+def test_corners_are_the_same_rotated(Y):
+    """The four corner pads (and what they're built round) are one shape, turned 90 deg each time."""
+    from shapely.affinity import rotate
+    P, L, parts = Y
+    q = box(L.O - 50, L.O - 50, L.cx, L.cy)
+    feats = [[box(*m) for m in yagura.mortises(P)], yagura.wedge_footprints(P), yagura.plate_tops(P, "A"),
+             yagura.plate_tops(P, "B"), yagura.pads(P)]
+    for gs in feats:
+        g = unary_union(gs)
+        ref = g.intersection(q)
+        for ang in (90, 180, 270):
+            assert rotate(g, ang, origin=(L.cx, L.cy)).intersection(q).symmetric_difference(ref).area < 1.0
+
+
+def test_plate_tops_sit_on_the_plates(Y):
+    """Each plate-top footprint the deck is built round lies along a real plate: its centre line runs
+    inside one of that plate's placements, in plan."""
+    from shapely.geometry import LineString
+    P, L, parts = Y
+    t, n = L.t, P.frame.leg_width
+    for which in ("A", "B"):
+        pt = parts[f"leg plate {which}"]
+        plans = []
+        for pl in pt.placements:
+            ox, oy, _ = pl.origin
+            u0, u1 = (ox - n, ox) if pl.mirror_u else (ox, ox + n)
+            if pl.axis == "x":
+                plans.append(box(u0, oy, u1, oy + t))
+            else:
+                v0, v1 = (oy - n, oy) if pl.mirror_u else (oy, oy + n)
+                plans.append(box(ox, v0, ox + t, v1))
+        for top in yagura.plate_tops(P, which):
+            x0, y0, x1, y1 = top.bounds
+            mid = LineString([(x0, (y0 + y1) / 2), (x1, (y0 + y1) / 2)]) if x1 - x0 > y1 - y0 else \
+                LineString([((x0 + x1) / 2, y0), ((x0 + x1) / 2, y1)])
+            assert any(pl.buffer(0.01).contains(mid) for pl in plans), f"{which} top {top.bounds} isn't on a plate"

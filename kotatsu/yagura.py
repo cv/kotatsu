@@ -199,16 +199,16 @@ def plate_tops(p, which: str) -> list[Polygon]:
     root relief to its inner end: it bears on the deck (A: the shoulders either side of the tenon; B: all
     of it, which keeps the plate trapped against the floor)."""
     L, t = fr.layout(p), p.material.t_max
-    a, b = L.O + post_u(p) + 2 * fr._rd(p), L.O + p.frame.leg_width
+    u0, u1 = post_u(p) + 2 * fr._rd(p), p.frame.leg_width          # along the plate, from the frame edge
     out = []
     for _, axis, sx, sy in mortise_info(p):              # one A and one B per corner
         if (axis == "x") == (which == "A"):              # this plate runs along x, at y = yL
             y = L.yL[0 if sy < 0 else 1]
-            x0, x1 = (a, b) if sx < 0 else (L.O + L.Lf - b, L.O + L.Lf - a)
+            x0, x1 = (L.O + u0, L.O + u1) if sx < 0 else (L.O + L.Lf - u1, L.O + L.Lf - u0)
             out.append(box(x0, y - t / 2, x1, y + t / 2))
         else:                                            # along y, at x = xS
             x = L.xS[0 if sx < 0 else 1]
-            y0, y1 = (a, b) if sy < 0 else (L.O + L.Wf - b, L.O + L.Wf - a)
+            y0, y1 = (L.O + u0, L.O + u1) if sy < 0 else (L.O + L.Wf - u1, L.O + L.Wf - u0)
             out.append(box(x - t / 2, y0, x + t / 2, y1))
     return out
 
