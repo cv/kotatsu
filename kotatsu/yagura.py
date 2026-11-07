@@ -194,38 +194,33 @@ def wedge_footprints(p) -> list[Polygon]:
     return out
 
 
-def b_shoulders(p) -> list[Polygon]:
-    """Plan (world x-y) of each B plate's top edge under the deck, from its post to its inner end: the
-    deck rests on it, and it keeps the plate trapped against the floor."""
+def plate_tops(p, which: str) -> list[Polygon]:
+    """Plan (world x-y) of each `which` ("A" or "B") plate's top edge under the deck, from past its post's
+    root relief to its inner end: it bears on the deck (A: the shoulders either side of the tenon; B: all
+    of it, which keeps the plate trapped against the floor)."""
     L, t = fr.layout(p), p.material.t_max
-    a, b = L.O + post_u(p) + 2 * fr._rd(p), L.O + p.frame.leg_width   # from past B's root relief at the post
+    a, b = L.O + post_u(p) + 2 * fr._rd(p), L.O + p.frame.leg_width
     out = []
-    for _, axis, sx, sy in mortise_info(p):              # one B per corner, across the A plate
-        if axis == "x":                                  # A along x -> B along y, at x = xS
-            x = L.xS[0 if sx < 0 else 1]
-            y0, y1 = (a, b) if sy < 0 else (L.O + L.Wf - b, L.O + L.Wf - a)
-            out.append(box(x - t / 2, y0, x + t / 2, y1))
-        else:
+    for _, axis, sx, sy in mortise_info(p):              # one A and one B per corner
+        if (axis == "x") == (which == "A"):              # this plate runs along x, at y = yL
             y = L.yL[0 if sy < 0 else 1]
             x0, x1 = (a, b) if sx < 0 else (L.O + L.Lf - b, L.O + L.Lf - a)
             out.append(box(x0, y - t / 2, x1, y + t / 2))
+        else:                                            # along y, at x = xS
+            x = L.xS[0 if sx < 0 else 1]
+            y0, y1 = (a, b) if sy < 0 else (L.O + L.Wf - b, L.O + L.Wf - a)
+            out.append(box(x - t / 2, y0, x + t / 2, y1))
     return out
-
 
 
 def pads(p) -> list[Polygon]:
-    """Each corner's pad: the box round its mortises and lying wedge, pad_margin out."""
-    L, D = fr.layout(p), p.deck
-    keep = unary_union([box(*m) for m in mortises(p)] + wedge_footprints(p) + b_shoulders(p))
-    out = []
-    for sx in (-1, 1):
-        for sy in (-1, 1):
-            quadrant = box(min(L.cx, L.cx + sx * 1e4), min(L.cy, L.cy + sy * 1e4),
-                           max(L.cx, L.cx + sx * 1e4), max(L.cy, L.cy + sy * 1e4))
-            near = keep.intersection(quadrant).buffer(D.pad_margin, join_style="mitre")
-            corner = Point(L.cx + sx * L.Lf / 2, L.cy + sy * L.Wf / 2)       # ... out to the frame's corner
-            out.append(unary_union([near, corner]).envelope)
-    return out
+    """The wood the corners need, and no more (owner 2026-11): pad_margin round each mortise (a hole),
+    bearing_margin past each lying wedge and each plate's top edge. Nothing outside the B plates."""
+    D = p.deck
+    keep = [box(*m).buffer(D.pad_margin, join_style="mitre") for m in mortises(p)]
+    keep += [k.buffer(D.bearing_margin, join_style="mitre")
+             for k in wedge_footprints(p) + plate_tops(p, "A") + plate_tops(p, "B")]
+    return keep
 
 
 def ring(p) -> Polygon:
@@ -244,15 +239,15 @@ def arms(p) -> list[Polygon]:
 
 
 def deck(p) -> Polygon:
-    """Deck in world x-y (v2): X-shaped. Corner pads, a ring round the heater well and four diagonal arms,
-    the inside corners filleted (fillet_r) and the outside ones rounded (edge_r), cut around the posts,
-    with the 4 mortises and the well."""
+    """Deck in world x-y (v2): X-shaped. A ring round the heater well and four diagonal arms (inside corners
+    filleted fillet_r), joined to the corner pads (pad_fillet_r); outside corners rounded edge_r; cut
+    around the posts, with the 4 mortises and the well."""
     D, r = p.deck, fr._rd(p)
     if D.edge_r >= D.arm_w / 2:
         raise ValueError("[deck] edge_r must stay under arm_w / 2, or the rounding eats the arms")
     blank = deck_blank(p)
-    g = unary_union(pads(p) + [ring(p)] + arms(p))
-    g = geom.closing(g, D.fillet_r)
+    core = geom.closing(unary_union([ring(p)] + arms(p)), D.fillet_r)
+    g = geom.closing(unary_union(pads(p) + [core]), D.pad_fillet_r)
     g = g.buffer(-D.edge_r, quad_segs=geom.Q).buffer(D.edge_r, quad_segs=geom.Q)   # before the post cut-outs,
     g = g.intersection(blank)                                                      # which stay as in v1
     for x0, y0, x1, y1 in mortises(p):

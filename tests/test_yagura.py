@@ -199,8 +199,8 @@ def test_x_deck(Y):
     for m in yagura.mortises(P):
         around = box(*m).buffer(P.deck.pad_margin - 0.5).intersection(blank)          # within pad_margin
         assert around.difference(d).difference(holes).area < 1.0, f"wood round mortise {m}"
-    for sh in yagura.b_shoulders(P):
-        assert sh.difference(d).area < 5.0, "each B shoulder bears on the deck (the post cut-out's dogbone nibbles ~3 mm2)"
+    for sh in yagura.plate_tops(P, "A") + yagura.plate_tops(P, "B"):
+        assert sh.difference(d).difference(holes).area < 5.0, "every plate's top edge bears on the deck (a dogbone nibbles ~3 mm2)"
     for w in yagura.wedge_footprints(P):
         assert w.intersection(blank).difference(d).difference(holes).area < 1.0, "a wedge lies on wood"
     core = d.buffer(-(P.deck.arm_w / 2 - 1.0))

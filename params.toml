@@ -52,7 +52,9 @@ arm_w = 30.0          # the diagonal arms: 2 x the sheet (check: kotatsu/loads.p
 hand_n = 300.0        # the arms' check load: a hand pressing hard on the heater ring (+ the heater)
 fillet_r = 90.0       # inside corners where the arms meet the pads and the ring
 edge_r = 12.0         # outside corners (must stay under arm_w / 2)
-pad_margin = 20.0     # wood round every mortise and lying wedge
+pad_margin = 20.0     # wood round every mortise (a hole)
+bearing_margin = 5.0  # ... and past each lying wedge and each plate's top edge (owner: nothing more at the corners)
+pad_fillet_r = 40.0   # where the pads meet the arms
 ring_w = 40.0         # the ring beside the cheeks (x). It holds the futon up at mid-side, where the knees go:
                       # 40 keeps the opening there as deep as the H deck's (188 mm from the edge)
 ear_margin = 15.0     # ... and past the cheek ears (y)
