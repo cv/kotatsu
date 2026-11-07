@@ -19,7 +19,7 @@ from .params import ROOT
 OUT = ROOT / "out"
 CACHE = OUT / ".cache"
 SRC = ["params.toml", "kotatsu/params.py", "kotatsu/build.py", "kotatsu/cutlist.py", "kotatsu/nest.py",
-       "kotatsu/frame.py", "kotatsu/yagura.py", "kotatsu/top.py", "kotatsu/geom.py"]   # anything that can change a layout
+       "kotatsu/frame.py", "kotatsu/yagura.py", "kotatsu/top.py", "kotatsu/geom.py", "kotatsu/zaisu.py"]
 
 
 def top(p):

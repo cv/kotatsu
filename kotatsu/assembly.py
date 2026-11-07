@@ -22,9 +22,10 @@ STEPS = [
     "Lower the heater and cheeks into the deck: the ears rest on it",
     "Drape the futon over the frame",
     "Lay the top on the futon",
+    "Set out the two zaisu",
     "Tea time",
 ]
-LEGS, STAND, DECK, LEG_WEDGES, CRADLE, LOWER, FUTON, TOP, TEA = range(len(STEPS))
+LEGS, STAND, DECK, LEG_WEDGES, CRADLE, LOWER, FUTON, TOP, CHAIRS, TEA = range(len(STEPS))
 CLEAR = 40.0     # mm of daylight between a waiting part and whatever it goes into
 
 
@@ -64,6 +65,12 @@ def part_moves(p, pt, pl, c, k: int) -> list[dict]:
         ux, uy = (1, 0) if pl.axis == "x" else (0, 1)
         d = n * 0.6 + t                          # starts mostly out of its hole, beside the tenon
         return [move(LEG_WEDGES, (ux * d, uy * d, 0), stagger(k, len(yagura.mortises(p))))]
+    if pt.kind == "chair":                       # each chair slides in from further out, whole
+        dx, dy = c[0] - L.cx, c[1] - L.cy
+        ax = (1 if dx > 0 else -1, 0) if abs(dx) > abs(dy) else (0, 1 if dy > 0 else -1)
+        n = int(getattr(p.zaisu, "count", 2))
+        i = [(0, -1), (0, 1), (-1, 0), (1, 0)].index(ax) if ax in [(0, -1), (0, 1), (-1, 0), (1, 0)] else 0
+        return [move(CHAIRS, (ax[0] * 450.0, ax[1] * 450.0, 0), stagger(min(i, n - 1), n, 0.7))]
     raise ValueError(f"no assembly moves for part kind {pt.kind!r}")
 
 

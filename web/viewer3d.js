@@ -166,9 +166,13 @@ export class Viewer3D {
       let shape = part.shape;
       if (pl.mirror) shape = { ext: shape.ext.map(([u, v]) => [-u, v]).reverse(), holes: shape.holes.map((h) => h.map(([u, v]) => [-u, v]).reverse()) };
       const m = slab(shape, t, pl.kind, part.grain || "u");
-      if (pl.axis !== "z") m.applyMatrix4(BASIS[pl.axis]);
-      m.position.set(...pl.origin);
-      push(m, pl.kind === "wedge" ? "wedge" : "frame", pl.moves, pl.kind !== "frame"); // the legs are there from the start
+      if (pl.matrix) m.applyMatrix4(new THREE.Matrix4().set(...pl.matrix)); // Python's placement (the chairs)
+      else {
+        if (pl.axis !== "z") m.applyMatrix4(BASIS[pl.axis]);
+        m.position.set(...pl.origin);
+      }
+      const kind = pl.kind === "wedge" ? "wedge" : pl.kind === "chair" ? "chair" : "frame";
+      push(m, kind, pl.moves, pl.kind !== "frame"); // the legs are there from the start
     }
     const hz = F.heater;
     const heater = new THREE.Mesh(new THREE.BoxGeometry(...hz.size), new THREE.MeshStandardMaterial({ color: COL.heater, roughness: 0.5 }));
@@ -238,7 +242,7 @@ export class Viewer3D {
     const ease = (x) => x * x * (3 - 2 * x);
     for (const it of this.items || []) {
       const vis = { top: S.showTop, frame: S.showFrame, wedge: S.showFrame, heater: S.showHeater,
-        futon: S.showFuton, rug: S.showRug, seat: S.showSeats,
+        futon: S.showFuton, rug: S.showRug, seat: S.showSeats, chair: S.showSeats,
         ambTop: S.showAmbiance && S.showTop, amb: S.showAmbiance, ambFloor: S.showAmbiance }[it.kind];
       const started = !it.moves?.length || s > it.moves[0].step + it.moves[0].a;
       it.obj.visible = vis && (started || !it.hideBefore);
