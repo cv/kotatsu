@@ -185,3 +185,26 @@ def report(p, lift: bool = True) -> dict:
                      "sag_mm": round(r.w_max, 1), "corner_reactions_N": r.reactions,
                      "lift_factor": round(lift_factor(p, pats), 1) if lift else None}
     return out
+
+
+
+def deck_arms(p) -> dict:
+    """The X deck's arms under a hand pressing on the heater ring (deck.hand_n) plus the heater: each of
+    the four takes a quarter, as a cantilever from its corner pad (conservative: the ring is let tilt).
+    The arms run at 45 deg to the face grain, so the cross-grain strength and half the along-grain
+    stiffness are used (both rough, TODO-verify), on the thinnest stock."""
+    from shapely.geometry import LineString
+    from shapely.ops import unary_union
+    from . import frame as fr, yagura
+    L, M, D = fr.layout(p), p.material, p.deck
+    held = unary_union(yagura.pads(p) + [yagura.ring(p)])
+    line = LineString([(L.cx, L.cy), (L.cx + L.Lf / 2, L.cy + L.Wf / 2)])
+    free = line.difference(held)
+    free_mm = max((g.length for g in getattr(free, "geoms", [free])), default=0.0)
+    F = (D.hand_n + p.comfort.heater_kg * 9.81) / 4
+    t, w = M.t_min, D.arm_w
+    sigma = F * free_mm / (w * t * t / 6)
+    E = M.E_par / 2
+    sag = F * free_mm ** 3 / (3 * E * w * t ** 3 / 12)
+    return {"free_mm": round(free_mm), "load_N": round(F), "stress_MPa": round(sigma, 1),
+            "use_of_strength_%": round(100 * sigma / p.loads.f_m_cross, 1), "sag_mm": round(sag, 1)}

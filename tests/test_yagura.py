@@ -180,37 +180,30 @@ def test_posts_carry_the_top_further_out(Y):
     assert with_posts > 1.5 * comfort.top_lift(P2)[0]
 
 
-def test_deck_windows_clear_everything(Y):
-    """The deck's notches: window_margin from every hole, wedge and cheek ear, `ring` from the heater well,
-    `neck` of wood between neighbours, really open; the deck stays one piece."""
+def test_x_deck(Y):
+    """v2's X deck: one piece; pad_margin of wood round every mortise and under every lying wedge (except
+    where the deck's own edge or the post cut-outs come first); the arms at least arm_w wide."""
     P, L, parts = Y
-    wins = yagura.windows(P)
-    assert len(wins) == 4
-    d = parts["deck"].shape
+    d, r = parts["deck"].shape, frame._rd(P)
     assert d.geom_type == "Polygon"
-    t = P.material.t_max
-    keep = [box(*m) for m in yagura.mortises(P)]
-    c0, c1 = frame.cheek_ys(P)
-    for xi, s in zip(frame.cheek_xs(P), (-1, 1)):                       # cheeks (plan), ears included
-        xa, xb = sorted((xi, xi + s * t))
-        keep.append(box(xa, c0, xb, c1))
-    for w in wins:
-        assert w.distance(box(*frame.well(P))) >= P.deck.ring - 1e-6
-    for pt in frame.parts(P):                                           # wedges lying on the deck
-        if pt.kind != "wedge":
-            continue
-        w0, _, w1, _ = pt.shape.bounds
-        for pl in pt.placements:
-            ox, oy, _ = pl.origin
-            keep.append(box(ox, oy, ox + w1 - w0, oy + t) if pl.axis == "x" else box(ox, oy, ox + t, oy + w1 - w0))
-    keep = unary_union(keep)
-    for w in wins:
-        assert w.distance(keep) >= P.deck.window_margin - 1e-6
-    for a in wins:
-        for b in wins:
-            if a is not b:
-                assert a.distance(b) >= P.deck.neck - 1e-6
-        assert d.intersection(a).area < 1e-6                         # really open
+    blank = yagura.deck_blank(P)
+    holes = unary_union([frame.hole(*m, r) for m in yagura.mortises(P)] + [frame.hole(*frame.well(P), r)])
+    for m in yagura.mortises(P):
+        around = box(*m).buffer(P.deck.pad_margin - 0.5).intersection(blank)          # within pad_margin
+        assert around.difference(d).difference(holes).area < 1.0, f"wood round mortise {m}"
+    for w in yagura.wedge_footprints(P):
+        assert w.intersection(blank).difference(d).difference(holes).area < 1.0, "a wedge lies on wood"
+    core = d.buffer(-(P.deck.arm_w / 2 - 1.0))
+    assert core.geom_type == "Polygon", "the arms are at least arm_w wide (the deck stays one piece)"
+
+
+def test_x_deck_arms_carry_a_hand(Y):
+    """A hand pressing on the heater ring (deck.hand_n) plus the heater, on the four arms as cantilevers at
+    45 deg to the grain, thinnest stock: under half the rough strength, a few mm of give."""
+    from kotatsu import loads
+    P, L, parts = Y
+    a = loads.deck_arms(P)
+    assert a["free_mm"] > 0 and a["use_of_strength_%"] < 50 and a["sag_mm"] < 5
 
 
 def test_crush_ribs_narrow_the_slots(Y):
@@ -254,28 +247,6 @@ def test_storage_layout_fits(Y):
     from kotatsu import storage
     assert storage.check(Y[0]) == []
 
-
-def test_deck_notch_mouths_rounded_but_leg_side_square():
-    """Owner 2026-10-20: the 8 notch-mouth corners are rounded; enough wood stays beside the mortises,
-    and the corner pads around the legs keep their shape (wedge bearing unchanged)."""
-    from shapely.geometry import box
-    P = params.tables(params.load())[0]
-    rr = P.deck.mouth_r
-    assert rr > 0
-    deck = [pt for pt in frame.parts(P) if pt.name == "deck"][0].shape
-    pts = yagura.mouth_corners(P)
-    assert len(pts) == 8
-    for x, y, dx, dy in pts:
-        assert not deck.contains(Point(x + dx * 0.2 * rr, y + dy * 0.2 * rr))      # corner wood removed
-        assert deck.contains(Point(x + dx * 0.4 * rr, y + dy * 0.4 * rr))          # just inside the arc: wood
-    holes = [box(*m) for m in yagura.mortises(P)]
-    assert min(c.distance(h) for c in yagura.mouth_cutters(P) for h in holes) >= 15.0
-    P0 = params.tables(params.load())[0]
-    P0.deck.mouth_r = 0.0
-    sq = [pt for pt in frame.parts(P0) if pt.name == "deck"][0].shape
-    lost = sq.difference(deck)
-    for m in yagura.mortises(P):                                                  # nothing lost near the legs
-        assert lost.distance(box(*m)) >= 15.0
 
 
 

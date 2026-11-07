@@ -1,7 +1,7 @@
 """Small design search: cheapest estimated uMake order (kotatsu/price.py) that still meets the limits.
 
 Knobs are the things the owner left open (frame size, slim-leg concept and top are fixed):
-deck notch neck / margin, haunch height and slope. Limits: shipping weight (uMake-calibrated), sway,
+deck arm width and fillets, haunch height and slope. Limits: shipping weight (uMake-calibrated), sway,
 leg stress, knee reach and leg room, and every part still router-cuttable.
 Run: uv run python -m kotatsu.optimize
 """
@@ -11,20 +11,20 @@ import itertools
 
 from . import comfort, frame, geom, params, price, stiffness, top
 
-SWAY_MAX = 1.0          # mm at 100 N sideways, either direction
+SWAY_MAX = 2.5          # mm at 100 N sideways, either direction (v2: one wedge per leg, conservative model)
 LEG_MPA_MAX = 3.0
 UMAKE_KG = 20.4 / 20.85  # our weight model -> uMake's cart weight (calibrated)
 
 GRID = {
-    ("deck", "neck"): [50.0, 70.0, 90.0],
-    ("deck", "window_margin"): [15.0, 20.0],
+    ("deck", "arm_w"): [25.0, 30.0, 40.0],
+    ("deck", "fillet_r"): [60.0, 90.0],
     ("yagura", "leg_haunch_top"): [300.0, 320.0],
     ("yagura", "leg_haunch_drop"): [20.0, 30.0, 45.0],
 }
 
 
 def weight_kg(p) -> float:
-    a = top.build(p).outline.area + sum(pt.shape.area * pt.qty for pt in frame.parts(p))
+    return a / 1e6 * p.material.t_nominal / 1000 * p.material.density_kg_m3 * UMAKE_KG
     return a / 1e6 * 0.019 * p.material.density_kg_m3 * UMAKE_KG     # uMake's "19mm" sheet
 
 

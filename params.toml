@@ -45,14 +45,16 @@ lap_extra = 0.5       # each cross-lap slot is (leg height)/2 + this, so slot bo
 
 [deck]                # horizontal plate on the legs' shoulders; v2: the heater cradle drops into a well in its middle
 drop = 26.0           # deck top below the futon plane (room for the leg wedges above it)
-# Four notches (an H-shaped deck), sized from the features around them (kotatsu/yagura.py window_rects).
-# uMake ships free up to a 91 cm box AND ~20 kg (18.9 kg free, 20.4 kg not); the notches also save cutting.
-neck = 70.0           # wood joining each corner pad to the middle
-mouth_r = 34.0        # round the notch-mouth corners (the ones away from the legs); v2: 34, was 30. More brings the
-                      # arc within 15 mm of a mortise
-window_margin = 20.0  # clear of the cheek ears, mortises, leg wedges
-ring = 40.0           # v2: wood left between the heater well and the side notches
-window_r = 40.0       # the notches' inner corners (v2: 40, was 20)
+# v2 (owner): an X-shaped deck. A pad round each corner's mortises and lying wedge, a ring round the heater well,
+# and four arms along the diagonals joining them, every inside corner filleted (kotatsu/yagura.py deck).
+# uMake ships free up to a 91 cm box AND ~20 kg; the less deck, the less wood (cutting stays about the same).
+arm_w = 30.0          # the diagonal arms: 2 x the sheet (check: kotatsu/loads.py deck_arms)
+hand_n = 300.0        # the arms' check load: a hand pressing hard on the heater ring (+ the heater)
+fillet_r = 90.0       # inside corners where the arms meet the pads and the ring
+edge_r = 12.0         # outside corners (must stay under arm_w / 2)
+pad_margin = 20.0     # wood round every mortise and lying wedge
+ring_w = 30.0         # the ring beside the cheeks (x)
+ear_margin = 15.0     # ... and past the cheek ears (y)
 
 [yagura]              # leg <-> deck joints
 tenon_gap = 10.0      # each plate's tenon starts this far past the cross-lap slot (the shoulder on that side)

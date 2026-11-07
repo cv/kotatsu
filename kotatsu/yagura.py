@@ -21,9 +21,10 @@ tap in the 4 wedges; screw the heater between the cheeks and lower the cradle in
 """
 from __future__ import annotations
 
-from shapely.geometry import Point, Polygon, box
+from shapely.geometry import LineString, Point, Polygon, box
 from shapely.ops import unary_union
 
+from . import geom
 from . import frame as fr
 from .frame import Part, Placement
 
@@ -160,11 +161,11 @@ def wedged_mortises(p) -> list[tuple[float, float, float, float]]:
     return [m for m, axis, sx, sy in mortise_info(p) if (axis == "x") == a_runs_along_x(sx, sy)]
 
 
-def deck(p) -> Polygon:
-    """Deck in world x-y: the frame square with a notch in each side (an H shape), cut around the posts."""
+def deck_blank(p) -> Polygon:
+    """The deck's full square, cut around the two posts at each corner (L-shaped cut-outs)."""
     L, r = fr.layout(p), fr._rd(p)
     g = fr._round_outer(box(L.O, L.O, L.O + L.Lf, L.O + L.Wf), 8.0)
-    if post_u(p) > 0:                                   # L-shaped corner cut-outs around the two posts
+    if post_u(p) > 0:
         k = corner_cut(p)
         j = L.Lf / 2 - p.frame.ear - fr.thick_slot(p) / 2  # plates' inner faces (+ clearance)
         far = 500.0
@@ -178,83 +179,67 @@ def deck(p) -> Polygon:
                 g = g.difference(quad(sx, sy, k, j)).difference(quad(sx, sy, j, k))
                 for ax, ay in ((k, j), (j, k)):          # the cut-out's two inside corners
                     g = g.difference(fr.dogbone((L.cx + sx * ax, L.cy + sy * ay), (sx, sy), r))
+    return g
+
+
+def wedge_footprints(p) -> list[Polygon]:
+    """Plan (world x-y) of each wedge lying on the deck, across its tenon (thickest stock)."""
+    wl, _ = wedge_dims(p)
+    t = p.material.t_max
+    out = []
+    for x0, y0, x1, y1 in wedged_mortises(p):
+        xc, yc = (x0 + x1) / 2, (y0 + y1) / 2
+        out.append(box(xc - t / 2, yc - wl / 2, xc + t / 2, yc + wl / 2) if x1 - x0 > y1 - y0
+                   else box(xc - wl / 2, yc - t / 2, xc + wl / 2, yc + t / 2))
+    return out
+
+
+def pads(p) -> list[Polygon]:
+    """Each corner's pad: the box round its mortises and lying wedge, pad_margin out."""
+    L, D = fr.layout(p), p.deck
+    keep = unary_union([box(*m) for m in mortises(p)] + wedge_footprints(p))
+    out = []
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            quadrant = box(min(L.cx, L.cx + sx * 1e4), min(L.cy, L.cy + sy * 1e4),
+                           max(L.cx, L.cx + sx * 1e4), max(L.cy, L.cy + sy * 1e4))
+            near = keep.intersection(quadrant).buffer(D.pad_margin, join_style="mitre")
+            corner = Point(L.cx + sx * L.Lf / 2, L.cy + sy * L.Wf / 2)       # ... out to the frame's corner
+            out.append(unary_union([near, corner]).envelope)
+    return out
+
+
+def ring(p) -> Polygon:
+    """The wood round the heater well: ring_w beside the cheeks, ear_margin past the cheek ears."""
+    D = p.deck
+    wx0, _, wx1, _ = fr.well(p)
+    c0, c1 = fr.cheek_ys(p)
+    return box(wx0 - D.ring_w, c0 - D.ear_margin, wx1 + D.ring_w, c1 + D.ear_margin)
+
+
+def arms(p) -> list[Polygon]:
+    """The four arms, arm_w wide, along the diagonals from the middle to the corners."""
+    L, h = fr.layout(p), fr.layout(p).Lf / 2
+    return [LineString([(L.cx, L.cy), (L.cx + sx * h, L.cy + sy * h)]).buffer(p.deck.arm_w / 2, cap_style="flat")
+            for sx in (-1, 1) for sy in (-1, 1)]
+
+
+def deck(p) -> Polygon:
+    """Deck in world x-y (v2): X-shaped. Corner pads, a ring round the heater well and four diagonal arms,
+    the inside corners filleted (fillet_r) and the outside ones rounded (edge_r), cut around the posts,
+    with the 8 mortises and the well."""
+    D, r = p.deck, fr._rd(p)
+    if D.edge_r >= D.arm_w / 2:
+        raise ValueError("[deck] edge_r must stay under arm_w / 2, or the rounding eats the arms")
+    blank = deck_blank(p)
+    g = unary_union(pads(p) + [ring(p)] + arms(p))
+    g = geom.closing(g, D.fillet_r)
+    g = g.buffer(-D.edge_r, quad_segs=geom.Q).buffer(D.edge_r, quad_segs=geom.Q)   # before the post cut-outs,
+    g = g.intersection(blank)                                                      # which stay as in v1
     for x0, y0, x1, y1 in mortises(p):
         g = g.difference(fr.hole(x0, y0, x1, y1, r))
-    for w in windows(p):                                # the notches: weight and cut length saved
-        g = g.difference(w)
-    g = _round_mouths(p, g)
     g = g.difference(fr.hole(*fr.well(p), r))           # the heater well: the cradle drops in
     return g
-
-
-def mouth_corners(p) -> list[tuple[float, float, int, int]]:
-    """The notched deck's convex corners where the notches meet the edge (away from the legs), as world
-    (x, y, dx, dy) with (dx, dy) pointing into the wood."""
-    L = fr.layout(p)
-    h, out = L.Lf / 2, []
-    for x0, y0, x1, y1 in window_rects(p):
-        if x1 > h:                                      # side notch, open at x = +h
-            out += [(h, y0, -1, -1), (h, y1, -1, 1)]
-        elif x0 < -h:
-            out += [(-h, y0, 1, -1), (-h, y1, 1, 1)]
-        elif y1 > h:                                    # end notch, open at y = +h
-            out += [(x0, h, -1, -1), (x1, h, 1, -1)]
-        elif y0 < -h:
-            out += [(x0, -h, -1, 1), (x1, -h, 1, 1)]
-    return [(L.cx + x, L.cy + y, dx, dy) for x, y, dx, dy in out]
-
-
-def mouth_cutters(p) -> list[Polygon]:
-    """Fillet cutters for the notch mouths: the r x r corner square minus its quarter circle."""
-    rr = getattr(p.deck, "mouth_r", 0.0)
-    out = []
-    if rr <= 0:
-        return out
-    for x, y, dx, dy in mouth_corners(p):
-        cx, cy = x + dx * rr, y + dy * rr
-        sq = box(min(x, cx), min(y, cy), max(x, cx), max(y, cy))
-        out.append(sq.difference(Point(cx, cy).buffer(rr, quad_segs=32)))
-    return out
-
-
-def _round_mouths(p, g):
-    """Round the notch-mouth corners (owner 2026-10-20) with radius deck.mouth_r; leg-side corners stay square."""
-    for c in mouth_cutters(p):
-        g = g.difference(c)
-    return g
-
-
-def window_rects(p) -> list[tuple[float, float, float, float]]:
-    """The deck's four notches as centre-relative (x0, y0, x1, y1), sized from the features around them:
-    two "side" notches beside the heater well (x), `ring` of wood away from it, and two "end" notches past
-    the cheek ears (y), each window_margin clear of the ears, mortises and leg wedges, and open through
-    the deck edge. `neck` is the width of wood joining each corner pad (mortises, posts) to the middle."""
-    D, L = p.deck, fr.layout(p)
-    m = D.window_margin
-    h = L.Lf / 2
-    ta, tb = _tenon_u(p)
-    m_in = h - tb - p.fit.tight                                  # mortises' inner ends (from the centre)
-    wx0, wy0, _, _ = fr.well(p)
-    wx, wy = L.cx - wx0, L.cy - wy0                               # the well's half sizes
-    ear_y = L.cy - fr.cheek_ys(p)[0]                              # cheek ends (the ears)
-    edge = h + D.window_r + 5                                    # run out through the deck edge (corners past it)
-    sx0, sx1, sy = wx + D.ring, edge, m_in - m                   # side windows
-    ey0 = max(ear_y + m, wy + D.ring)                            # end windows: past the cheek ears ...
-    ey1, ex = edge, min(sx0 - D.neck, m_in - m)                  # ... and clear of the side windows / mortises
-    out = []
-    if sx1 - sx0 > 40 and sy > 40:
-        out += [(sx0, -sy, sx1, sy), (-sx1, -sy, -sx0, sy)]
-    if ey1 - ey0 > 40 and ex > 40:
-        out += [(-ex, ey0, ex, ey1), (-ex, -ey1, ex, -ey0)]
-    return out
-
-
-def windows(p) -> list[Polygon]:
-    """The deck's notches (world coords), inside corners rounded by window_r. They keep the order under
-    uMake's free-shipping weight (box <= 91 cm and under ~20 kg) and save cutting."""
-    D, L = p.deck, fr.layout(p)
-    return [fr._round_outer(box(L.cx + x0, L.cy + y0, L.cx + x1, L.cy + y1), D.window_r)
-            for x0, y0, x1, y1 in window_rects(p)]
 
 
 def narrow_cut(p) -> Polygon | None:
