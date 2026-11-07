@@ -37,10 +37,11 @@ def test_grillage_matches_plate_theory_uniform_load(P):
 
 def test_everyday_loads_have_a_big_margin(P):
     """Napping + cat + laptop, slumping, cat jumps: under 20 % of the (rough) strength, top sags < 5 mm,
-    every corner stays down. Sitting on the table: still under half."""
+    every corner stays down. Sitting on the table: still under half, sag < 10 mm (v2's 15 mm top: 6.7;
+    the futon and the 26 mm gap to the deck take far more)."""
     rep = loads.report(P, lift=False)
     for name, r in rep.items():
-        limit = 50.0 if name.startswith("beyond") else 20.0
-        assert r["use_of_strength_%"] < limit, name
-        assert r["sag_mm"] < 5.0, name
+        beyond = name.startswith("beyond")
+        assert r["use_of_strength_%"] < (50.0 if beyond else 20.0), name
+        assert r["sag_mm"] < (10.0 if beyond else 5.0), name
         assert len(r["corner_reactions_N"]) == 4 and min(r["corner_reactions_N"].values()) > 0, name

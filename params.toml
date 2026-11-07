@@ -2,9 +2,10 @@
 
 [material]
 name = "Baltic birch plywood, CNC routed"
-t_nominal = 18.0
-t_min = 17.0          # mill tolerance -1.05 (TODO-verify actual stock in app)
-t_max = 18.9          # mill tolerance +0.85
+t_nominal = 15.0      # v2: 15 mm throughout (v1 was 18 mm, uMake's "19mm"). TODO-verify which uMake menu entry
+                      #   ("15mm" or "16mm") is 15 mm Baltic birch, and measure the sheet when it arrives
+t_min = 14.1          # mill tolerance about -0.9: interpolated between 12 mm (-0.75) and 18 mm (-1.05), TODO-verify
+t_max = 15.7          # mill tolerance about +0.7: interpolated between 12 mm (+0.55) and 18 mm (+0.85), TODO-verify
 density_kg_m3 = 700
 E_par = 9000.0        # bending modulus along the face grain, MPa (Baltic/Finnish birch 18 mm ~ 9-10 GPa; TODO-verify Riga Ply handbook)
 f_m = 35.0            # bending strength along the face grain, MPa (characteristic, rough; TODO-verify)
