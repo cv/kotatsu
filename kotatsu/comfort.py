@@ -40,10 +40,13 @@ def low_footprint(p, z: float, z_lo: float = -10.0):
 
 def knee_reach(p, width: float | None = None, height: float | None = None) -> float:
     """How far (mm) a width x height knee zone, centred on one side, can come in under the top's edge
-    before it touches the frame (or the heater, if the heater hangs lower than the knees)."""
+    before it touches the frame (or the heater, if the heater hangs lower than the knees). Knees higher than
+    the frame's top can't come in at all: the top, with the futon squeezed under it, is right above."""
     C = p.comfort
     width = C.knee_w if width is None else width
     height = C.knee_h if height is None else height
+    if height > frame.layout(p).H:
+        return 0.0
     R = p.top.length / 2
     fp = low_footprint(p, height)
     (sx, sy, sz), (_, _, hz) = frame.heater_box(p)
@@ -130,6 +133,16 @@ def summary(p) -> dict:
             "reach_min": C.knee_reach_min,
             "apron_clear": side_clear(p),
             "shin_w": round(p.top.length - 2 * p.frame.overhang - 2 * low_footprint_leg_u(p, C.knee_h), 1)}
+
+
+def legs_forward(p, seat: float) -> dict:
+    """Sitting with the legs out under the table (on a zaisu), the sitting surface `seat` mm off the floor:
+    room (mm, after leg_margin) above the thighs, which pass under the deck at mid-side, and above the feet,
+    under the heater. Heels stay on the floor, so the seat raises the thighs but not the feet."""
+    C = p.comfort
+    (_, _, sz), (_, _, hz) = frame.heater_box(p)
+    return {"thigh_room": round(side_clear(p) - C.leg_margin - (seat + C.thigh_h), 1),
+            "feet_room": round(hz - sz / 2 - C.leg_margin - C.foot_h, 1)}
 
 
 def side_clear(p) -> float:

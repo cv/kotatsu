@@ -7,7 +7,7 @@ import pytest
 from shapely.affinity import rotate, translate
 from shapely.geometry import Point, box
 
-from kotatsu import frame as fr, geom, optimize, params, price, zaisu
+from kotatsu import comfort, frame as fr, geom, optimize, params, price, zaisu
 
 P = params.tables(params.load())[0]
 Z = P.zaisu
@@ -147,3 +147,17 @@ def test_order_ships_free():
     rho = P.material.density_kg_m3 * P.material.t_nominal / 1e9
     kg = sum(g.area * rho * q for _, g, q in price.parts(P))        # the table and the chairs, one box
     assert kg * optimize.UMAKE_KG <= P.shipping.free_kg - 0.3       # a little margin for the real sheet
+
+
+def test_legs_forward_fit():
+    """On a zaisu the owner sits legs forward (2026-11): thighs under the deck, feet under the heater."""
+    room = comfort.legs_forward(P, zaisu.seat_top(P) + Z.cushion_squashed)
+    assert room["thigh_room"] >= 0 and room["feet_room"] >= 0
+    assert Z.cushion_squashed <= zaisu.cushion_max(P)
+
+
+def test_cross_legged_knees_need_room_under_the_top():
+    """Knees higher than the frame's top can't come in under the top's edge (the futon is squeezed there)."""
+    L = fr.layout(P)
+    assert comfort.knee_reach(P, height=L.H + 1) == 0.0
+    assert comfort.knee_reach(P) >= P.comfort.knee_reach_min          # the bare-floor posture still fits

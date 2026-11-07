@@ -26,7 +26,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
 | Material | **15 mm Baltic birch for everything**, wedges included (v1: 18 mm). Joints accept 14.1–15.7 mm (TODO-verify the real tolerance, and which uMake menu entry, "15mm" or "16mm", it is) |
 | Heater | **PaletteLife 120 V 400 W**, 29 × 29 × 5 cm, the same unit as v1, screwed in at the sides (`docs/heater.md`). I drill its screw holes during assembly, so the files have none. Its top sits flush with the deck top; the manual sets no clearance above the unit |
 | Height | About 41 cm: 385 mm frame + 15 mm top + the futon |
-| Futon & seats | An 80 × 80 in (203 cm) square futon on an 8 ft round rug (`docs/futon.md`). Two sides get a **zaisu** with its own cushion (not bought yet: about 45 × 45 cm, TODO pick one); the other two keep 25 × 25 in floor pillows. The 3-D view shows them all |
+| Futon & seats | An 80 × 80 in (203 cm) square futon on an 8 ft round rug (`docs/futon.md`). Two sides get a **zaisu** with its own cushion (not bought yet: about 45 × 45 cm, TODO pick one); the other two keep 25 × 25 in floor pillows. On a zaisu I sit **legs forward** (owner, 2026-11), so the cushion can squash to as much as 138 mm under me (about a 12 cm cushion); cross-legged on a chair, my knees wouldn't fit under the top with any cushion worth having. The 3-D view shows them all |
 | Budget | Under CAD $1200 all in |
 
 ## The parts
@@ -112,7 +112,9 @@ Leg plates are laid with the grain running up the leg.
 |---|---|
 | Clear height at the middle of each side (deck underside) | 344 mm |
 | Clear height under the heater | 309 mm (v1: 286) |
-| My 76 × 32 cm cross-legged knee zone: how far it reaches under the top's edge | 40 mm |
+| My 76 × 32 cm cross-legged knee zone (on the bare floor): how far it reaches under the top's edge | 40 mm |
+| On a zaisu, legs forward: room above my thighs under the deck / my feet under the heater (80 mm squashed cushion) | 58 mm / 74 mm (typical body sizes, TODO-verify) |
+| Cross-legged on a zaisu: knee room under the top's edge (385 mm, the futon squeezed over the knees) | only 36 mm for the seat's cushion, so I sit legs forward |
 | Room between the legs at knee height | 568 mm |
 | Sway under a 100 N sideways push (wedges tight, gravity-held plates counted as nothing) | about 2.0 mm (0.8 at 50 N, 4.5 at 200 N; v1: 0.9) |
 | Play in each tenon, and extra wobble per 0.1 mm a wedge works loose | 0.4 mm, about 1 mm |
@@ -170,8 +172,10 @@ Everything packs flat inside the top's footprint, in three layers (kotatsu/stora
    the crush ribs should hold them snug.
 4. **A tipping limit.** If I want one: EN 12521's force table, or a bathroom-scale test on the finished table.
 5. **Fit-up.** v1's wedges went in by hand. Watch whether 15 mm tenons and wedges hold as well.
-6. **Zaisu cushions.** Pick two, about 45 × 45 cm. How thick they can be depends on knee room under the
-   table: TODO-verify how my 32 cm knee height was measured.
+6. **Zaisu cushions.** Pick two, about 45 × 45 cm, up to about 12 cm thick (138 mm when sat on, at most).
+   That limit uses typical body sizes: TODO-verify by measuring me sitting legs forward on the bare floor,
+   the top of a thigh just above the knee (assumed 160 mm) and the top of my toes (220 mm). The feet clear
+   the heater by 74 mm whatever the cushion, because the heels stay on the floor.
 
 ## Finishing (by hand, after the first fit-up)
 I'll make it look lighter by hand instead of in the cut files:

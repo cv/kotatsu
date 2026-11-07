@@ -351,8 +351,9 @@ its straight edges instead of starting suddenly like a radius. The feet are roun
 There was room on the sheet and in the budget for two **zaisu**: legless floor chairs with a back. Each one
 is five parts and no wedges. The seat board's tabs go through the side frames, so sitting down holds
 the chair together and stops it tipping back. The stretcher and the back hook in and drop 8 mm to lock.
-The seat board sits as low as the shop's rules allow, 31 mm off the floor, so the cushion can be thick
-and my knees still fit under the table. Cut-outs in the seat and back keep the box under the weight for
+The seat board sits as low as the shop's rules allow, 31 mm off the floor. On a chair I'll sit with my
+legs out under the table: cross-legged, my knees would rise into the top. Legs forward, my thighs pass
+under the deck and my feet under the heater, so the cushion can be about 12 cm thick. Cut-outs in the seat and back keep the box under the weight for
 free shipping: the chairs add 6.8 kg, and the whole order is about 18.1 kg.
 
 | | v1 | v2 so far |

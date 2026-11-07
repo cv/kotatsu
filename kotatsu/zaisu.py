@@ -283,3 +283,15 @@ def kg_per_chair(p) -> float:
     rho = p.material.density_kg_m3 * p.material.t_nominal / 1e9
     a = 2 * side(p).area + board(p).area + stretcher(p).area + back(p).area
     return a * rho
+
+
+def seat_top(p) -> float:
+    """The seat board's top above the floor."""
+    return _z(p).board_lift + p.material.t_nominal
+
+
+def cushion_max(p) -> float:
+    """The most a cushion may be when sat on (mm), legs out under the table: the thighs, raised by the seat
+    and the cushion, still pass under the deck with leg_margin to spare (kotatsu/comfort.py legs_forward)."""
+    from . import comfort
+    return comfort.legs_forward(p, seat_top(p))["thigh_room"]
