@@ -335,14 +335,20 @@ Could gravity hold the legs as well? Not on its own: the wobble model says the f
 plate is trapped between the floor and the wedged-down deck, and hangs on its partner when I lift the
 frame. That plate doesn't even need a tenon any more, so the deck has 4 mortises instead of 8. The
 model counts the gravity-held plates as doing nothing, and still gets only 2 mm of sway under a hard
-shove (v1: under 1 mm).
+shove (v1: under 1 mm). The finite-element check further down found the legs softer than that, and
+weaker.
 
 ### An X deck and a squircle top
 
 The deck becomes an X: a pad at each corner, a ring round the heater, and four arms at 45°, with a big
 fillet in every inside corner. v1 had rejected an X deck, because its openings let the futon sag right
-where the knees go. The ring round the heater fixes that. The top is a squircle, a curve that eases into
-its straight edges instead of starting suddenly like a radius. The feet are rounder too.
+where the knees go. The ring round the heater fixes that. Each corner pad keeps only the wood that
+does something: round the mortise, under the wedge and over the plates' tops.
+
+The top is a squircle, a curve that eases into its straight edges instead of starting suddenly like a
+radius. I liked it so much that every other corner got the same treatment: the legs' haunch is now one
+smooth S-curve instead of a slope with two small fillets, and the feet and shoulders are squircles too,
+as round as their jobs allow. (The feet stand on just 8 mm at each end, so they can't get much rounder.)
 
 ![v1's cut parts above v2's, to the same scale: the square top becomes a squircle, the H deck an X with the heater's hole in the middle, the B leg plates lose their tenons, the cheeks lose their tabs, and the wedges go from 14 to 6](docs/img/v2-parts.png)
 
@@ -350,11 +356,61 @@ its straight edges instead of starting suddenly like a radius. The feet are roun
 
 There was room on the sheet and in the budget for two **zaisu**: legless floor chairs with a back. Each one
 is five parts and no wedges. The seat board's tabs go through the side frames, so sitting down holds
-the chair together and stops it tipping back. The stretcher and the back hook in and drop 8 mm to lock.
-The seat board sits as low as the shop's rules allow, 31 mm off the floor. On a chair I'll sit with my
-legs out under the table: cross-legged, my knees would rise into the top. Legs forward, my thighs pass
-under the deck and my feet under the heater, so the cushion can be about 12 cm thick. Cut-outs in the seat and back keep the box under the weight for
-free shipping: the chairs add 6.7 kg, and the whole order is about 18.3 kg.
+the chair together and stops it tipping back. The stretcher and the back hook in, then drop 6 mm to lock.
+They're squircles all over: a big sweep where the post meets the runner, round post tops, and cut-outs
+in the seat and the back shaped like the top.
+
+![The 3-D view: two zaisu on the long sides of the kotatsu, each with its cushion, the futon draped over the frame and the top on it](docs/img/v2-zaisu.jpg)
+
+The first draft had back posts working at 15 % of their strength, so I asked for less wood. That turned
+up something more interesting: the posts were the wrong place to look. Leaning back pushes the back
+panel and the seat board face-on, across their 15 mm, and nothing was checking those. They work at
+about 40–46 %, so they stayed as they were. The posts went from 60 to 50 mm (the least that leaves the
+shop's 15 mm of wood beside their slots) and now stop at the top of the back instead of standing 13 cm
+above it. Each chair came down to 3.4 kg.
+
+The seat board sits as low as the shop's rules allow, 31 mm off the floor. Then the cushion: how thick
+could it be? My knee height (32 cm cross-legged) was measured on the bare floor, so a chair raises it by
+the whole seat. With the knees under the table's edge, that left room for only a thin, firm cushion (4–5 cm), and
+it showed a hole in the comfort model: it had never checked the top itself, so any knee height
+"fitted". On a zaisu I'll sit with my legs out under the table instead: thighs under the deck, feet
+under the heater. That leaves room for a cushion about 12 cm thick.
+
+### A second opinion
+
+v1's checks are small models I can read. For v2 I wanted a heavier check, so a second AI agent wrote
+a finite-element model of the three parts that carry load: the top, the deck and the leg plates. It
+worked on its own branch while the chairs took shape, and reported back:
+
+- **The top:** the simple model was right, within 10 %.
+- **The deck:** it works harder than I thought: up to about 68 % of its strength under a hard press on
+  the ring round the heater, not 40 %. Arms at 45° to the grain are softer and weaker than the simple model assumed.
+  That's fine as long as the wedges stay tight. With slack wedges it's overstressed, so I'll re-tap them
+  every season.
+- **The legs:** a real problem. Above its cross-lap slot, the wedged plate is two separate 22 mm
+  fingers, and the wedge hangs the whole joint's bending on one of them. My spring model had quietly
+  treated the slot as glued shut. A hard 200 N shove used 160 % of the leg's strength and swayed it
+  12 mm.
+
+My first fix, a shallow slot in one plate and a deep one in the other, made it worse: the peak just moved
+to the new slot's bottom. The plain fix worked: the narrow part of the legs went from 60 to 70 mm. The
+same shove now uses 87 % at worst and sways the frame 7.2 mm. It costs 0.25 kg and 2 cm of room between
+the legs at shin height, and none at the knees.
+
+### Seeing the stresses
+
+Numbers in a table are easy to skim past, so the 3-D view can now paint them on the parts. Pick a load
+case and the part turns blue where it's idle, yellow at half its strength and red at all of it. It bends,
+exaggerated, as the load comes on and off.
+
+![The FEA heat map in the 3-D view: the X deck under a hand pressing on the ring beside a cheek, mostly blue, warming to yellow in the arm's fillet near the hand](docs/img/v2-fea.jpg)
+
+The first version taught me something about the model, too. In the legs' case, plate A swung right
+through plate B. Nothing was wrong with the joint. Each part is analysed on its own, its neighbours
+standing in as springs and supports, and the view had drawn one plate bending while the rest of the
+frame stood still. At true scale, the slot round B narrows by 0.2 mm at most, and B has 0.9 mm to
+spare. Now the frame moves with the analysed part: the feet stay put, the deck sways, and the other
+plates lean along.
 
 | | v1 | v2 so far |
 |---|---|---|
@@ -362,10 +418,12 @@ free shipping: the chairs add 6.7 kg, and the whole order is about 18.3 kg.
 | Weight | 15.9 kg | 11.6 kg, plus 6.7 for the chairs |
 | Wedges | 14 | 6 (4 + 2 spares) |
 | Clear height under the heater | 286 mm | 309 mm |
-| uMake quote | $353.33 | $328.70 for the table (a test quote, not an order); about $145 more for the chairs |
+| A hard 200 N shove, finite elements | not checked | 87 % of the legs' strength, 7.2 mm of sway |
+| uMake | $353.33 (the order) | about $472 for the table and chairs (my estimate; the table alone quoted $328.70 before the later changes) |
 
-Before I order it, I want to check that the heater's top stays cool with the futon right over it, and how
-thick uMake's 15 mm sheet really is.
+Before I order it, I want to pick the cushions and measure how I really sit, check that the heater's top
+stays cool with the futon right over it, and find out how thick uMake's 15 mm sheet really is. Then a
+fresh quote.
 
 <!-- page: overview -->
 
@@ -375,7 +433,8 @@ I placed the order in October 2026. One surprise: uMake's checkout ends with "a 
 out to confirm". So I still got one email. Next, the table comes apart again and goes to the garage
 for sanding, staining and wax.
 
-Version 2 is in the works: lighter, with the heater up in the deck (see the Version 2 chapter).
+Version 2 is in the works: lighter, with the heater up in the deck, two floor chairs, and a finite-element
+check that found (and fixed) weak legs. See the Version 2 chapter.
 
 I worked through all of this over about two days with an AI coding agent. I made the choices and drew
 the sketches. It wrote the geometry code and tests, ran the numbers and filled in the quote forms.
