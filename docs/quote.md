@@ -20,6 +20,29 @@ The thickness menu offers 3, 6, 9, 12, 15, 16, 19 and 25 mm, with no 18. The "19
 
 Shipping: one 91 × 91 × 16 cm box, 16.6 kg, **free**. No part was flagged for a manual quote.
 
+## v2 test quote (November 2026, not ordered)
+Every file: millimetres, Engineered Wood > Baltic Birch, **15mm**, CNC router, no extra processes. It
+quoted instantly; nothing was flagged.
+
+| File | Size | Qty | Each | Line |
+|---|---|---|---|---|
+| top.dxf (squircle) | 860 × 860 | 1 | $80.32 | $80.32 |
+| deck.dxf (X) | 780 × 780 | 1 | $95.86 | $95.86 |
+| leg-plate-a.dxf | 110 × 385 | 4 | $16.13 | $64.52 |
+| leg-plate-b.dxf (no tenon) | 110 × 385 | 4 | $14.73 | $58.92 |
+| heater-cheek.dxf | 380 × 70 | 2 | $10.01 | $20.02 |
+| wedge.dxf | 60 × 17.6 | 6 | $1.51 | $9.06 |
+| **Subtotal** | | **18** | | **$328.70** |
+
+- `kotatsu/price.py` (fitted on 19mm quotes) predicted $330.36, so 15mm costs about the same per metre
+  of cutting and per m² as 19mm. The saving is weight, not money.
+- The thickness menu has both **15mm** and **16mm**. Since "19mm" is the 3/4" sheet, "16mm" is probably
+  5/8" (15.9 mm), thicker than the 15.7 mm the joints accept. Order "15mm". TODO-verify its real
+  thickness range (14.1–15.7 mm assumed).
+- I didn't open the cart, so no shipping quote; the top is still 860 mm (a 91 cm box) and the parts
+  weigh about 11.6 kg, well inside free shipping.
+- With the top on its own, the top line was $137.78: the fixed share again.
+
 ## How each change moved the price
 
 | Design | Box, weight | Shipping | Total with tax |

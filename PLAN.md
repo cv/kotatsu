@@ -126,18 +126,17 @@ corner, and the wedges and deck don't carry any of the weight from above.
 | Item | Cost |
 |---|---|
 | Heater (PaletteLife, amazon.ca, delivered) | $258 |
-| uMake order: 18 parts, about $330 + tax at the 19 mm rates (v1: $353.33 + tax, `docs/quote.md`). TODO-verify the 15 mm price with a test upload | about $375 |
+| uMake order: 18 parts at 15mm, quoted $328.70 + 12 % tax, free shipping expected (`docs/quote.md`; v1: $353.33 + tax) | $368 |
 | Futon: 205 cm square from Etsy, or a queen duvet + cover from Douglas | $185–230 |
 | Sandpaper and finishing oil | $30–50 |
-| **Total** | **about $850–915** |
+| **Total** | **about $840–905** |
 
 ## Off-season storage
 Everything packs flat inside the top's footprint, in three layers (kotatsu/storage.py packs it by itself).
 
 ## Still open
-1. **The 15 mm sheet.** Which uMake menu entry is 15 mm Baltic birch ("15mm" or "16mm"), its real
-   thickness range (14.1–15.7 mm assumed), and its price per metre of cut. One test upload answers the
-   price.
+1. **The 15 mm sheet.** Order uMake's "15mm" Baltic birch (its "16mm" is probably 5/8", too thick). Its
+   real thickness range is assumed at 14.1–15.7 mm: TODO-verify. The price is settled (test quote, `docs/quote.md`).
 2. **Heater details.** The screws' length (the tips must stay inside the 15 mm cheek), and nothing sticking
    out of the heater's ends past the 300 mm well (cord, knob). With the futon now over the heater, check
    its top stays cool to the touch on high. Look for a cUL, cETL or CSA mark on the rating label.
