@@ -50,9 +50,17 @@ def seat_offset(p) -> float:
     return c
 
 
+def top_outline(p, tol: float = 0.5) -> list[list[float]]:
+    """The top's outline, centred, as [x, y] points (to within tol mm) for the site's plan views."""
+    from . import top
+    g = top.build(p).outline.simplify(tol)
+    return [[round(x - p.top.length / 2, 1), round(y - p.top.width / 2, 1)] for x, y in g.exterior.coords[:-1]]
+
+
+
 def room_data(p) -> dict:
     return {"rug_d": p.room.rug_d, "futon_d": p.room.futon_d, "top_d": p.top.length,
-            "corner_r": getattr(p.top, "corner_r", 0.0),
+            "top_outline": top_outline(p),
             "frame": p.top.length - 2 * p.frame.overhang, "ear": p.frame.ear,
             "height": p.frame.height + p.material.t_nominal, "zabuton": list(p.room.zabuton),
             "seat_c": round(seat_offset(p), 1),

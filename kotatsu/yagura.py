@@ -47,7 +47,10 @@ def leg_plate(p, slotted_from_top: bool) -> Polygon:
     nc = narrow_cut(p)
     if nc is not None:                                   # haunched leg: narrow below, full width under the deck
         g = g.difference(nc)
-    g = fr._round_outer(g, F.foot_r)
+    # round the feet generously, the top corners only a little: the inner shoulder bears on the deck there
+    lo, hi = box(-1, -1, wt + 1, zs / 2), box(-1, zs / 2, wt + 1, zs + 1)
+    g = unary_union([fr._round_outer(g, F.foot_r).intersection(lo),
+                     fr._round_outer(g, F.shoulder_r).intersection(hi)]).buffer(0)
     ta, tb = _tenon_u(p)
     g = g.union(fr._round_outer(box(ta, zs - 10, tb, H), 3.0))
     pu = post_u(p)
@@ -214,7 +217,7 @@ def window_rects(p) -> list[tuple[float, float, float, float]]:
     wx0, wy0, _, _ = fr.well(p)
     wx, wy = L.cx - wx0, L.cy - wy0                               # the well's half sizes
     ear_y = L.cy - fr.cheek_ys(p)[0]                              # cheek ends (the ears)
-    edge = h + 20                                                # run out through the deck edge
+    edge = h + D.window_r + 5                                    # run out through the deck edge (corners past it)
     sx0, sx1, sy = wx + D.ring, edge, m_in - m                   # side windows
     ey0 = max(ear_y + m, wy + D.ring)                            # end windows: past the cheek ears ...
     ey1, ex = edge, min(sx0 - D.neck, m_in - m)                  # ... and clear of the side windows / mortises

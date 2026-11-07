@@ -1,7 +1,7 @@
-"""Table top (tenban): one square piece with rounded corners.
+"""Table top (tenban): one square-ish piece, a squircle (v2; v1 was a square with R20 corners).
 
-Earlier tops are in git history: the decorative split/seam variants (tag seams-archive) and a Ø 900 round
-top (dropped for shipping and futon reasons, docs/quote.md).
+Earlier tops are in git history: the decorative split/seam variants (tag seams-archive), a Ø 900 round
+top (dropped for shipping and futon reasons, docs/quote.md) and v1's R20 square (tag v1-ordered).
 """
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 
 from shapely.geometry import Polygon
 
-from .geom import rounded_rect
+from .geom import squircle
 
 
 @dataclass
@@ -22,5 +22,5 @@ class TopParts:
 
 def build(p) -> TopParts:
     T = p.top
-    outline = rounded_rect(0, 0, T.length, T.width, T.corner_r)
+    outline = squircle(0, 0, T.length, T.width, T.squircle_n)
     return TopParts("rect", [outline], outline)

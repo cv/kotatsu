@@ -23,9 +23,8 @@ SRC = ["params.toml", "kotatsu/params.py", "kotatsu/build.py", "kotatsu/cutlist.
 
 
 def top(p):
-    t = p.top
-    r = t.corner_r
-    return box(r, r, t.length - r, t.width - r).buffer(r, quad_segs=16)
+    from . import top as _top
+    return _top.build(p).outline
 
 
 def slug(s: str) -> str:

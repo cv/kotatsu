@@ -112,7 +112,7 @@ function renderFutonPlan(d, refit = false) {
     el("line", { x1: -h, y1: q, x2: h, y2: q, class: "frame-ghost" }, svg);
     el("line", { x1: q, y1: -h, x2: q, y2: h, class: "frame-ghost" }, svg);
   }
-  square(svg, R.top_d, "top-disc", R.corner_r);
+  el("path", { d: "M" + R.top_outline.map((q) => q.join(" ")).join("L") + "Z", class: "top-disc" }, svg);
   if (R.knees) {                              // owner's cross-legged knee zone at each side
     const K = R.knees, y0 = R.top_d / 2 - K.reach;
     for (const ang of [0, 90, 180, 270]) {

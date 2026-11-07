@@ -5,6 +5,7 @@ r shows what the bit would leave behind, which is how router_cuttable checks eve
 """
 from __future__ import annotations
 
+import numpy as np
 from shapely.geometry import Polygon, box
 from shapely.geometry.base import BaseGeometry
 
@@ -26,5 +27,12 @@ def router_cuttable(g: BaseGeometry, r: float, tol: float = 0.5) -> bool:
     return all(piece.area < tol for piece in getattr(d, "geoms", [d]))
 
 
-def rounded_rect(x0: float, y0: float, x1: float, y1: float, r: float) -> Polygon:
-    return box(x0 + r, y0 + r, x1 - r, y1 - r).buffer(r, quad_segs=Q)
+def squircle(x0: float, y0: float, x1: float, y1: float, n: float, tol: float = 0.02) -> Polygon:
+    """Superellipse |x/a|^n + |y/b|^n = 1 filling the box: n = 2 is an ellipse, larger n squarer. Its
+    curvature fades smoothly into straight-looking edges, unlike a radius that starts abruptly. Sampled
+    densely, then simplified to within tol mm."""
+    a, b, cx, cy = (x1 - x0) / 2, (y1 - y0) / 2, (x0 + x1) / 2, (y0 + y1) / 2
+    t = np.linspace(0, 2 * np.pi, 8192, endpoint=False)
+    c, s = np.cos(t), np.sin(t)
+    xy = np.c_[cx + a * np.sign(c) * np.abs(c) ** (2 / n), cy + b * np.sign(s) * np.abs(s) ** (2 / n)]
+    return Polygon(xy).simplify(tol, preserve_topology=True)

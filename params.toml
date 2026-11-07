@@ -29,7 +29,8 @@ wedge_taper = 0.125       # 1:8
                       # futons are hard to get). 860 packs in uMake's 91 cm box = free shipping (docs/quote.md).
 length = 860.0
 width = 860.0
-corner_r = 20.0
+squircle_n = 10.0     # v2 (owner): a squircle, |x/a|^n + |y/a|^n = 1. n = 10 keeps the corner posts 28 mm inside
+                      # the edge (n = 8: 20 mm; v1's R20 corners: 40 mm). Saves 111 g
 
 [frame]               # yagura: 4 straight "+" corner legs (2 crossed plates each) under a deck; no aprons
 height = 385.0        # floor to the tenon tops (futon plane); + 18 top + ~10 futon ≈ 41 cm total
@@ -38,7 +39,8 @@ overhang = 40.0       # owner 2026-10-20: legs as far apart as reasonable -> fra
 ear = 30.0            # frame edge -> corner cross-lap centreline; owner 2026-10-20: the outer finger (ear arm, 20.4)
                       # is as wide as the inner one, so the legs are slim strips with the slot in the middle
 leg_width = 110.0     # full width under the deck: 20 ear arm | slot | 10 shoulder | 50 tenon | 10 inner shoulder
-foot_r = 6.0          # rounding of the plates' outer corners
+foot_r = 12.0         # rounding of the plates' foot corners (v2: 12, was 6, to go with the squircle top)
+shoulder_r = 6.0      # ... and of their top corners: keep it small, the 12 mm inner shoulder bears on the deck
 lap_extra = 0.5       # each cross-lap slot is (leg height)/2 + this, so slot bottoms never bottom out; the floor sets height
 
 [deck]                # horizontal plate on the legs' shoulders; v2: the heater cradle drops into a well in its middle
@@ -46,10 +48,11 @@ drop = 26.0           # deck top below the futon plane (room for the leg wedges 
 # Four notches (an H-shaped deck), sized from the features around them (kotatsu/yagura.py window_rects).
 # uMake ships free up to a 91 cm box AND ~20 kg (18.9 kg free, 20.4 kg not); the notches also save cutting.
 neck = 70.0           # wood joining each corner pad to the middle
-mouth_r = 30.0        # owner 2026-10-20: round the notch-mouth corners (the ones away from the legs)
+mouth_r = 34.0        # round the notch-mouth corners (the ones away from the legs); v2: 34, was 30. More brings the
+                      # arc within 15 mm of a mortise
 window_margin = 20.0  # clear of the cheek ears, mortises, leg wedges
 ring = 40.0           # v2: wood left between the heater well and the side notches
-window_r = 20.0
+window_r = 40.0       # the notches' inner corners (v2: 40, was 20)
 
 [yagura]              # leg <-> deck joints
 tenon_gap = 10.0      # each plate's tenon starts this far past the cross-lap slot (the shoulder on that side)
@@ -64,7 +67,7 @@ leg_haunch_top = 320.0  # haunch meets the full-width inner edge here (just unde
 leg_haunch_drop = 30.0  # ... and reaches the narrow line this much lower (a ~31° slope)
 leg_haunch_r = 15.0   # inside-corner fillet where the haunch meets the narrow leg
 foot_relief = 1.5     # shallow arc under plate A's foot: each plate stands on its two ends
-foot_relief_margin = 10.0
+foot_relief_margin = 20.0  # past the foot rounding: each end stands on a flat ~8 mm pad
 wedge_len = 60.0      # the leg wedges (v2: the only wedges; the heater cradle hangs by gravity)
 wedge_head = 18.0     # (1:8 taper -> 10.5 mm foot)
 

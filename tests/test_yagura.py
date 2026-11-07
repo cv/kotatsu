@@ -260,3 +260,25 @@ def test_deck_notch_mouths_rounded_but_leg_side_square():
     lost = sq.difference(deck)
     for m in yagura.mortises(P):                                                  # nothing lost near the legs
         assert lost.distance(box(*m)) >= 15.0
+
+
+
+def test_squircle_top_covers_the_posts(Y):
+    """The top rests on the corner posts: they stay at least 25 mm inside its edge (squircle corners)."""
+    from kotatsu import comfort, top
+    P, L, parts = Y
+    posts = comfort.low_footprint(P, L.H, L.z_deck_top + 1)
+    tp = translate(top.build(P).outline, -P.top.length / 2, -P.top.width / 2)
+    if posts.bounds[0] >= 0:
+        tp = top.build(P).outline
+    assert tp.contains(posts) and tp.exterior.distance(posts) >= 25.0
+
+
+def test_inner_shoulder_bears_on_the_deck(Y):
+    """The feet are rounded generously, the top corners not: the inner shoulder keeps a flat top."""
+    P, L, parts = Y
+    _, tb = yagura._tenon_u(P)
+    for n in ("leg plate A", "leg plate B"):
+        g = parts[n].shape
+        flat = g.intersection(box(tb + 2.0, L.z_deck_bot - 0.6, P.frame.leg_width, L.z_deck_bot - 0.1))
+        assert flat.area >= 0.5 * (P.frame.leg_width - tb - 2.0 - P.frame.shoulder_r) * 0.5
