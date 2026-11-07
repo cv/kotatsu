@@ -7,7 +7,7 @@ import GUI from "lil-gui";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { birchFace, plyEdge, cotton, braidedRug } from "./textures.js";
 import { ambiance } from "./ambiance.js";
-import { heatSlab, bend, loadMarks, maxDisp, GRADIENT } from "./fea3d.js";
+import { heatSlab, bend, loadMarks, sinkMarks, maxDisp, GRADIENT } from "./fea3d.js";
 
 // Lighting moods. Key = a window light from the front-left (casts the shadows); env = soft image-based
 // fill from a generic room (gives the glaze and aluminium something to reflect); lamp = a warm pendant
@@ -258,7 +258,8 @@ export class Viewer3D {
       const started = !it.moves?.length || s > it.moves[0].step + it.moves[0].a;
       it.obj.visible = vis && (started || !it.hideBefore);
       if (fc) { // a heat map: just the frame (and the top, if it's the top's case); the analysed part is painted
-        const keep = it.kind === "frame" || it.kind === "wedge" || (it.kind === "heater" && fc.part !== "deck") || (it.kind === "top" && fc.part === "top");
+        const keep = it.kind === "frame" || it.kind === "wedge" || (it.kind === "heater" && fc.part !== "deck") || (it.kind === "top" && fc.part === "top")
+          || (it.kind === "chair" && fc.part.startsWith("zaisu"));
         it.obj.visible = keep && !this.feaHidden?.has(it);
       }
       it.obj.position.copy(it.base);
@@ -331,7 +332,7 @@ export class Viewer3D {
     }
     this.feaBendNow(1);
     const pct = (u) => `${Math.round(u * 100)} %`;
-    const extra = c.sag_mm != null ? `sags ${c.sag_mm} mm` : c.sway_mm != null ? `sways ${c.sway_mm} mm` : "";
+    const extra = c.part === "zaisu side" ? `moves ${c.sag_mm} mm at most` : c.sag_mm != null ? `sags ${c.sag_mm} mm` : c.sway_mm != null ? `sways ${c.sway_mm} mm` : "";
     this.legend.innerHTML = `<b>${c.label}</b><br>worst ${pct(c.worst)} of its strength${extra ? ", " + extra : ""}${c.on ? " (a push along x: the plates along x bend in their plane, the rest of the frame is carried along)" : ""}
       (deflection drawn × ${this.state.feaBend})
       <div style="height:10px;margin:6px 0 2px;border-radius:3px;background:${GRADIENT}"></div>
@@ -348,6 +349,7 @@ export class Viewer3D {
     if (!this.feaCase) return;
     this.feaK = this.state.feaBend * f;
     for (const m of this.feaObjs) bend(m, this.feaK);
+    if (this.feaMarks) sinkMarks(this.feaMarks, this.feaK);
     this.feaCarry(this.feaK);
     this.render();
   }
@@ -360,6 +362,8 @@ export class Viewer3D {
       it.obj.position.copy(it.base);
       it.obj.matrixAutoUpdate = true;
       if (carry[part] != null) it.obj.position.z += carry[part] * k;            // rides on the deck (deck cases)
+      const xyz = c?.carry_xyz?.[part]?.[(this.slots[part] || []).findIndex((sl) => sl.it === it)];
+      if (xyz) { it.obj.position.x += xyz[0] * k; it.obj.position.y += xyz[1] * k; it.obj.position.z += xyz[2] * k; }
       if (!sh) continue;
       const dx = sh.vec[0] * k, dy = sh.vec[1] * k;
       if (part?.startsWith("leg plate")) {                                       // feet fixed, tops with the deck

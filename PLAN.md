@@ -87,7 +87,10 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
     15.7 mm. A 60 kg sitter only tips back past a 540 N lean at 35 cm (1.8× a hard 300 N lean). On the
     thinnest stock, across the grain (30 MPa, rough): a 450 N flop back puts 11 MPa (37 %) in the posts and
     12 MPa (41 %, 4.4 mm of sag) in the back panel; a 1000 N sitter drop puts 14 MPa (46 %, 4.9 mm) in the
-    seat board, which stays off the floor. 3.4 kg a chair. TODO-verify the check loads against EN 12520.
+    seat board, which stays off the floor. 3.4 kg a chair.
+  - Finite elements (`kotatsu/fea_chair.py`, docs/fea.md): seat board 38 %, back panel 49 % (the lean on
+    its top rail alone), side frame 68 %. The side frame's peak is the inside corner behind the post, which the
+    lumped post check missed: 85 % until its fillet grew from 40 to 80 mm on a runner 600 mm long (was 560). TODO-verify the check loads against EN 12520.
 
 That's **18 table parts, about 11.6 kg, 22.7 m of cutting**, plus **10 chair parts, 6.7 kg, 23.2 m**.
 With the chairs, my nester needs one 60 × 120" sheet (the table alone fit a 48 × 96"). uMake lays out

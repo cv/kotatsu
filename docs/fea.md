@@ -226,6 +226,24 @@ against comfort (knee room), weight and the cut list before adopting it.
 - The strengths (f_m 35, f_m,cross 30, f_v 9 MPa) are rough characteristic values (TODO-verify). A typical sheet
   breaks well above them, which is why 160 % is a warning and not a prediction that the leg snaps.
 
+## The zaisu
+
+`kotatsu/fea_chair.py` checks the chairs with the same tools, thinnest stock, each part's grain the weaker way
+round (the nester may turn chair parts any way), next to `zaisu.py`'s lumped checks:
+
+| Part, load | Model | FE (Tsai-Hill) | Lumped |
+|---|---|---|---|
+| Seat board, a 1000 N sitter on a cushion-sized patch towards the back | plate on its 4 tabs (push up only) | 38 %, 5.1 mm sag (16 mm to the floor) | 46 % (point load, mid-span) |
+| Back panel, a 450 N lean along the top rail | plate on its 4 hook tabs (push forward only) | 49 %, 6.3 mm | 41 % (shared by both rails) |
+| Side frame, a 450 N flop back with a 600 N sitter | plane stress on the floor (push only, gripping), the lean through the back's slots (split by lever), the sitter through the board's holes | 68 % (85 % before, see below) | 37 % (post root) |
+| Side frame, a 1000 N sitter alone | as above | 2 % | n/a |
+
+The lumped post check missed the side frame's peak. It isn't at the post's root but in the small inside corner
+*behind* the post, where it meets the runner's short tail: 85 % with a 40 mm fillet on a 560 mm runner. A
+bigger fillet there (80 mm) on a slightly longer runner (600 mm, which also makes the chair harder to tip back:
+600 N instead of 531) brings it to 68 % for 54 g a chair. Adopted (`zaisu.fillet_back_r`, `zaisu.runner_len`).
+`tests/test_fea_chair.py` checks forces balance and that every part holds.
+
 ## Seeing it
 
 The site's **3-D view** has a "stress (FEA)" control. Pick a load case: the part is painted where it stands,

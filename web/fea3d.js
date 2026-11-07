@@ -86,11 +86,16 @@ function slabAt(me, c, t, k, mirror) {
 // The case's loads, drawn as translucent pads just above the part (polygons in the part's own frame, mm).
 export function loadMarks(c, t) {
   const g = new THREE.Group();
+  g.userData.sink = c.loads_w || [];                 // each patch's mean deflection: the markers ride on the bend
   for (const ring of c.loads || []) {
     const sh = new THREE.Shape(ring.map(([x, y]) => new THREE.Vector2(x, y)));
     const geo = new THREE.ExtrudeGeometry(sh, { depth: 6, bevelEnabled: false });
     const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0x222222, transparent: true, opacity: 0.35, toneMapped: false }));
-    m.position.z = t + 2; g.add(m);
+    m.position.z = t + 2; m.userData.z0 = t + 2; g.add(m);
   }
   return g;
+}
+
+export function sinkMarks(g, k) {
+  g.children.forEach((m, i) => { m.position.z = m.userData.z0 - (g.userData.sink[i] || 0) * k; });
 }

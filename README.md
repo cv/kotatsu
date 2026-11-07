@@ -398,6 +398,12 @@ to the new slot's bottom. The plain fix worked: the narrow part of the legs went
 same shove now uses 87 % at worst and sways the frame 7.2 mm. It costs 0.25 kg and 2 cm of room between
 the legs at shin height, and none at the knees.
 
+Then the chairs got the same treatment. The seat and the back hold comfortably (38 % and 49 %), but
+the side frames had a hot spot I hadn't looked at: the small inside corner behind each back post,
+where it meets the runner's short tail. A hard flop back used 85 % of the wood's strength there. A bigger
+curve in that corner, and a runner 4 cm longer to make room for it, brought it down to 68 % for 54 g
+a chair. The chair is harder to tip back now, too.
+
 ### Seeing the stresses
 
 Numbers in a table are easy to skim past, so the 3-D view can now paint them on the parts. Pick a load
