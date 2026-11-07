@@ -374,7 +374,8 @@ could it be? My knee height (32 cm cross-legged) was measured on the bare floor,
 the whole seat. With the knees under the table's edge, that left room for only a thin, firm cushion (4–5 cm), and
 it showed a hole in the comfort model: it had never checked the top itself, so any knee height
 "fitted". On a zaisu I'll sit with my legs out under the table instead: thighs under the deck, feet
-under the heater. That leaves room for a cushion about 12 cm thick.
+under the heater. My cushions are 10 cm thick, and even if they didn't squash at all there'd be
+room to spare. On the floor-pillow sides nothing changes: v2 has the same knee room as v1, or a little more.
 
 ### A second opinion
 
@@ -421,7 +422,7 @@ plates lean along.
 | A hard 200 N shove, finite elements | not checked | 87 % of the legs' strength, 7.2 mm of sway |
 | uMake | $353.33 (the order) | about $472 for the table and chairs (my estimate; the table alone quoted $328.70 before the later changes) |
 
-Before I order it, I want to pick the cushions and measure how I really sit, check that the heater's top
+Before I order it, I want to measure how I really sit (no tape to hand yet), check that the heater's top
 stays cool with the futon right over it, and find out how thick uMake's 15 mm sheet really is. Then a
 fresh quote.
 

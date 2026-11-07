@@ -122,9 +122,9 @@ sitter_n = 600.0      # ... with a 60 kg sitter on the seat
 back_check_n = 450.0  # strength checks: a flop back (1.5 x the lean) ...
 seat_check_n = 1000.0 # ... and a heavy sitter dropping onto the seat (TODO-verify against EN 12520's loads)
 cushion = [450.0, 450.0]  # the chairs' cushions (owner hasn't bought them: TODO pick one, then set these)
-cushion_h = 120.0     # ... thickness as sold (3-D view)
-cushion_squashed = 80.0   # ... and sat on (TODO-verify with the real cushion). Legs forward (owner 2026-11), it
-                      # must leave the thighs room under the deck: kotatsu/zaisu.py cushion_max
+cushion_h = 100.0     # ... thickness as sold (owner 2026-11: 10 cm cushions)
+cushion_squashed = 100.0  # ... and sat on: counted as not squashing at all, the worst case. Legs forward (owner
+                      # 2026-11), it must leave the thighs room under the deck: kotatsu/zaisu.py cushion_max
 
 
 [heater]               # PaletteLife 120V 400W (docs/heater.md). Owner measured 29 x 29 x 5 cm (2026-10-19, to the cm)
@@ -168,7 +168,8 @@ push_n = 200.0        # sideways push at table height for the leg plates, shared
 knee_w = 762.0        # owner, cross-legged: knees need 30" wide ...
 knee_h = 317.5        # ... x 12.5" high (on the bare floor, owner 2026-11)
 thigh_h = 160.0       # legs out forward on the bare floor (the zaisu posture, owner 2026-11): top of the thigh
-                      # just above the knee (TODO-verify: owner to measure; 160 is a typical adult)
+                      # just above the knee (TODO-verify: owner to measure; 160 is a typical adult. With the 10 cm
+                      # cushions there's room for thighs up to about 200 mm)
 foot_h = 220.0        # ... and the top of the toes, relaxed (TODO-verify: owner to measure)
 leg_margin = 15.0     # air left above thighs and feet
 knee_reach_min = 35.0   # how far that knee zone must reach in under the top's edge (owner chose the 780 frame: 40)
