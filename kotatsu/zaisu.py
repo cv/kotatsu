@@ -20,7 +20,7 @@ from shapely.affinity import rotate, translate
 from shapely.geometry import LineString, Polygon, box
 from shapely.ops import unary_union
 
-from . import frame as fr
+from . import frame as fr, geom
 from .frame import Part, Placement
 
 
@@ -114,8 +114,14 @@ def side(p) -> Polygon:
     post = LineString([(y0 - 60 * tan, -60), (y0 + s_end * math.sin(math.radians(Z.recline)),
                                               s_end * math.cos(math.radians(Z.recline)))]).buffer(Z.post_w / 2, cap_style="flat")
     g = unary_union([run, post]).intersection(box(-1, 0, 5000, 5000))
-    g = g.buffer(Z.fillet_r).buffer(-Z.fillet_r).intersection(box(-1, 0, 5000, 5000))   # inside fillet
-    g = fr._round_outer(g, Z.edge_r)
+
+    def size(c, convex):                                 # squircle corners (owner 2026-11)
+        if not convex:                                   # where the post meets the runner: a big sweep in front
+            return Z.fillet_r if c[0] < y0 else Z.fillet_back_r
+        if c[1] > Z.runner_h + 1:
+            return Z.post_end_r                          # the post's top
+        return Z.runner_end_r if c[0] < y0 else Z.runner_tail_r
+    g = geom.squircle_corners(g, size, Z.corner_n)
     sw = fr.slot_w(p)
     ys, zt = stretcher_y(p) - p.fit.slot_clearance / 2, stretcher_tab_z(p)
     g = g.difference(fr.hole(ys, zt, ys + sw, zt + Z.tab_w + Z.hook_drop + p.fit.tight, r))
@@ -134,7 +140,8 @@ def board(p) -> Polygon:
     """Seat board in (u = X, v = Y), with a cut-out under the thighs (weight)."""
     Z, r, tmax = _z(p), fr._rd(p), p.material.t_max
     half = Z.seat_w / 2
-    g = box(-half + 0.5, Z.front_gap, half - 0.5, Z.front_gap + Z.seat_d)
+    g = geom.squircle_corners(box(-half + 0.5, Z.front_gap, half - 0.5, Z.front_gap + Z.seat_d),
+                              lambda c, cv: Z.board_corner_r, Z.corner_n)
     for s in (-1, 1):
         for yb in board_tab_ys(p):
             a, b = sorted((s * (half - 1.0), s * (half + tmax + 1.0 + Z.board_tab_out)))
@@ -145,8 +152,8 @@ def board(p) -> Polygon:
             for dv, sv in ((-Z.board_tab_w / 2, -1), (Z.board_tab_w / 2, 1)):
                 g = g.difference(fr.dogbone((s * (half - 0.5), yb + dv), (s, sv), r))
     m = Z.board_frame
-    cut = box(-half + m, Z.front_gap + m, half - m, Z.front_gap + Z.seat_d * Z.board_cut_depth)
-    return g.difference(fr._round_outer(cut, 40.0))
+    return g.difference(geom.squircle(-half + m, Z.front_gap + m, half - m, Z.front_gap + Z.seat_d * Z.board_cut_depth,
+                                      Z.cutout_n))
 
 
 def stretcher(p) -> Polygon:
@@ -161,9 +168,9 @@ def back(p) -> Polygon:
     """Back panel in (u = X, v = up the panel from its lower edge), with a cut-out (weight, and a handle)."""
     Z = _z(p)
     half, m, st = Z.seat_w / 2, Z.back_frame, Z.back_stile
-    body = box(-half + 0.5, 0, half - 0.5, Z.back_h)
+    body = geom.squircle_corners(box(-half + 0.5, 0, half - 0.5, Z.back_h), lambda c, cv: Z.back_corner_r, Z.corner_n)
     g = _hook_tabs(p, half, back_tabs(p), body)
-    return g.difference(fr._round_outer(box(-half + st, m, half - st, Z.back_h - m), 40.0))
+    return g.difference(geom.squircle(-half + st, m, half - st, Z.back_h - m, Z.cutout_n))
 
 
 # ----------------------------------------------------------------------------- placement

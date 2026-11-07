@@ -48,14 +48,7 @@ def leg_plate(p, slotted_from_top: bool) -> Polygon:
     F, L, r = p.frame, fr.layout(p), fr._rd(p)
     zs, H = L.z_deck_bot, L.H
     wt = F.leg_width
-    g = box(0, 0, wt, zs)
-    nc = narrow_cut(p)
-    if nc is not None:                                   # haunched leg: narrow below, full width under the deck
-        g = g.difference(nc)
-    # round the feet generously, the top corners only a little: the inner shoulder bears on the deck there
-    lo, hi = box(-1, -1, wt + 1, zs / 2), box(-1, zs / 2, wt + 1, zs + 1)
-    g = unary_union([fr._round_outer(g, F.foot_r).intersection(lo),
-                     fr._round_outer(g, F.shoulder_r).intersection(hi)]).buffer(0)
+    g = leg_outline(p)
     ta, tb = _tenon_u(p)
     if slotted_from_top:
         g = g.union(fr._round_outer(box(ta, zs - 10, tb, H), 3.0))
@@ -256,20 +249,29 @@ def deck(p) -> Polygon:
     return g
 
 
-def narrow_cut(p) -> Polygon | None:
-    """Owner's haunched leg (2026-10-20): below the deck the plate keeps only leg_narrow of its width
-    (from the frame edge); a sloped haunch (leg_haunch_top at the inner edge, leg_haunch_drop lower at
-    the narrow line) widens it back to the full leg_width under the shoulders. Returns the region to cut
-    away, its inside corner rounded by leg_haunch_r. None if disabled."""
-    Y, F = p.yagura, p.frame
+def leg_outline(p) -> Polygon:
+    """A leg plate's outline before its joints, in (u from the frame edge inward, v = z), with squircle
+    corners (geom.squircle_corners). Owner's haunched leg (2026-10-20): below the deck it keeps only
+    leg_narrow of its width; a haunch (leg_haunch_top at the inner edge, leg_haunch_drop lower at the narrow
+    line) widens it back to the full leg_width under the shoulders. v2 (owner 2026-11): the haunch is one
+    S-curve (each bend takes up to leg_haunch_r along its edges, half the slope at most), the feet foot_r
+    (they still stand on their ends), the top corners shoulder_r (the inner shoulder bears on the deck)."""
+    Y, F, L = p.yagura, p.frame, fr.layout(p)
+    wt, zs = F.leg_width, L.z_deck_bot
     wn = getattr(Y, "leg_narrow", 0.0)
-    if not wn or wn >= F.leg_width:
-        return None
-    wt, zt = F.leg_width, Y.leg_haunch_top
-    zl = zt - Y.leg_haunch_drop
-    cut = Polygon([(wn, -50), (wn, zl), (wt, zt), (wt + 50, zt), (wt + 50, -50)])
-    rr = Y.leg_haunch_r
-    return cut.buffer(-rr, quad_segs=16, join_style="round").buffer(rr, quad_segs=16, join_style="round")
+    if wn and wn < wt:
+        zt = Y.leg_haunch_top
+        g = Polygon([(0, 0), (wn, 0), (wn, zt - Y.leg_haunch_drop), (wt, zt), (wt, zs), (0, zs)])
+    else:
+        g = box(0, 0, wt, zs)
+
+    def size(c, convex):
+        if c[1] < 1:
+            return F.foot_r
+        if c[1] > zs - 1:
+            return F.shoulder_r
+        return Y.leg_haunch_r
+    return geom.squircle_corners(g, size, F.corner_n)
 
 
 def wedge_dims(p, which: str = "leg") -> tuple[float, float]:

@@ -36,3 +36,29 @@ def squircle(x0: float, y0: float, x1: float, y1: float, n: float, tol: float = 
     c, s = np.cos(t), np.sin(t)
     xy = np.c_[cx + a * np.sign(c) * np.abs(c) ** (2 / n), cy + b * np.sign(s) * np.abs(s) ** (2 / n)]
     return Polygon(xy).simplify(tol, preserve_topology=True)
+
+
+def squircle_corners(poly: Polygon, size, n: float = 4.0, steps: int = 64) -> Polygon:
+    """Replace a straight-edged polygon's corners with superellipse quarters (|x|^n + |y|^n = 1), convex and
+    concave alike: the curvature fades into each edge instead of starting abruptly as a radius does.
+    size(corner (x, y), convex: bool) -> mm along each edge from the corner (0 keeps it sharp). Each edge
+    gives a corner at most half its length, so two corners can share a short edge (an S-curve)."""
+    from shapely.geometry.polygon import orient
+    poly = orient(poly.simplify(0.01), 1.0)
+    pts = np.asarray(poly.exterior.coords)[:-1]
+    m = len(pts)
+    out = []
+    t = np.linspace(np.pi / 2, 0, steps)
+    x, y = np.cos(t) ** (2 / n), np.sin(t) ** (2 / n)
+    for i in range(m):
+        c, a_pt, b_pt = pts[i], pts[i - 1], pts[(i + 1) % m]
+        la, lb = np.linalg.norm(a_pt - c), np.linalg.norm(b_pt - c)
+        ua, ub = (a_pt - c) / la, (b_pt - c) / lb
+        cross = (c - a_pt)[0] * (b_pt - c)[1] - (c - a_pt)[1] * (b_pt - c)[0]
+        r = size((float(c[0]), float(c[1])), bool(cross > 0)) if abs(cross) > 1e-9 * la * lb else 0.0
+        if r <= 0:
+            out.append(c)
+            continue
+        ra, rb = min(r, la / 2), min(r, lb / 2)
+        out.extend(c + np.outer(1 - x, ua * ra) + np.outer(1 - y, ub * rb))
+    return Polygon(out).buffer(0)

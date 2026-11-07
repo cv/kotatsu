@@ -161,3 +161,13 @@ def test_cross_legged_knees_need_room_under_the_top():
     L = fr.layout(P)
     assert comfort.knee_reach(P, height=L.H + 1) == 0.0
     assert comfort.knee_reach(P) >= P.comfort.knee_reach_min          # the bare-floor posture still fits
+
+
+@pytest.mark.parametrize("name", ["zaisu side", "zaisu seat board", "zaisu stretcher", "zaisu back"])
+def test_wood_round_every_hole(name):
+    """Shop rule: no feature thinner than the sheet. Every slot and cut-out keeps that much wood to the
+    part's edge (dogbones and squircle corners included)."""
+    from shapely.geometry import Polygon
+    g = {pt.name: pt.shape for pt in zaisu.parts(P)}[name]
+    for h in g.interiors:
+        assert Polygon(g.exterior).exterior.distance(Polygon(h)) >= P.material.t_nominal - 1e-6, (name, Polygon(h).bounds)
