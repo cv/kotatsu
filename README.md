@@ -346,13 +346,22 @@ its straight edges instead of starting suddenly like a radius. The feet are roun
 
 ![v1's cut parts above v2's, to the same scale: the square top becomes a squircle, the H deck an X with the heater's hole in the middle, the B leg plates lose their tenons, the cheeks lose their tabs, and the wedges go from 14 to 6](docs/img/v2-parts.png)
 
+### Two zaisu
+
+There was room on the sheet and in the budget for two **zaisu**: legless floor chairs with a back. Each one
+is five parts and no wedges. The seat board's tabs go through the side frames, so sitting down holds
+the chair together and stops it tipping back. The stretcher and the back hook in and drop 8 mm to lock.
+The seat board sits as low as the shop's rules allow, 31 mm off the floor, so the cushion can be thick
+and my knees still fit under the table. Cut-outs in the seat and back keep the box under the weight for
+free shipping: the chairs add 7.5 kg, and the whole order is about 18.8 kg.
+
 | | v1 | v2 so far |
 |---|---|---|
-| Parts | 26 | 18 |
-| Weight | 15.9 kg | 11.3 kg |
+| Parts | 26 | 18, plus 10 for the chairs |
+| Weight | 15.9 kg | 11.3 kg, plus 7.5 for the chairs |
 | Wedges | 14 | 6 (4 + 2 spares) |
 | Clear height under the heater | 286 mm | 309 mm |
-| uMake quote | $353.33 | $328.70 (a test quote, not an order) |
+| uMake quote | $353.33 | $328.70 for the table (a test quote, not an order); about $150 more for the chairs |
 
 Before I order it, I want to check that the heater's top stays cool with the futon right over it, and how
 thick uMake's 15 mm sheet really is.
