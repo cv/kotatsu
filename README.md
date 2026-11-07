@@ -428,6 +428,16 @@ about 40 °C, warm to the hand, so the futon can lie right on it.
 
 ![Summer storage: the top, then the deck with the leg plates and wedges in its openings, then the chairs' parts in three more layers, all inside the top's footprint](docs/img/v2-storage.png)
 
+### The quote
+
+The whole thing, table and both chairs, quoted at **$501.66**: 28 parts, all instant, shipping free in one
+91 × 91 × 20 cm box, $561.86 with tax. That's 6 % more than my price model expected, and part by part it was
+further off than that: the open X deck and the chairs' side frames were a quarter dearer than predicted, small
+solid parts cheaper. The pattern gave it away. uMake charges the wood by each part's **bounding box**, not by
+the wood actually in it. Fitted that way, every line matches within 2 %. So v1's lesson needs a correction: a
+window never saves money, only weight. It just adds cutting. (It still had to happen in v1, where weight
+was what stood between me and free shipping.)
+
 | | v1 | v2 so far |
 |---|---|---|
 | Parts | 26 | 18, plus 10 for the chairs |
@@ -435,7 +445,7 @@ about 40 °C, warm to the hand, so the futon can lie right on it.
 | Wedges | 14 | 6 (4 + 2 spares) |
 | Clear height under the heater | 286 mm | 309 mm |
 | A hard 200 N shove, finite elements | not checked | 87 % of the legs' strength, 7.2 mm of sway |
-| uMake | $353.33 (the order) | about $474 for the table and chairs (my estimate; the table alone quoted $328.70 before the later changes) |
+| uMake | $353.33 (the order) | $501.66 for the table and both chairs (a quote, not an order; $561.86 with tax, shipping free) |
 
 Before I order it, I want to measure how I really sit (no tape to hand yet) and find out how thick
 uMake's 15 mm sheet really is. Then a

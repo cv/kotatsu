@@ -42,7 +42,8 @@ What this repo produces:
 - **"18 mm" birch can be anywhere from 17.0 to 18.9 mm**, and uMake sells it as "19mm". Every joint must work
   across that range. Use wedges or crush ribs, never exact press fits.
 - Birch sheets come in 48 × 96", 60 × 60" and 60 × 120".
-- About three-quarters of the price is cutting (`kotatsu/price.py`). Fewer metres of cut beats less wood.
+- uMake charges material by each part's **bounding box** and cutting by the metre (`kotatsu/price.py`, `docs/quote.md`).
+  Cutting is about half the cost. Cut-outs and windows save weight, never money: fewer metres of cut beats less wood.
 
 ## Do
 - Keep **one source of truth**: every dimension lives in `params.toml`. Never hard-code one in geometry code.

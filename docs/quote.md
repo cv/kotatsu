@@ -43,6 +43,41 @@ quoted instantly; nothing was flagged.
   weigh about 11.6 kg, well inside free shipping.
 - With the top on its own, the top line was $137.78: the fixed share again.
 
+## v2 full quote: table and both zaisu (November 2026, not ordered)
+Every file: millimetres, Engineered Wood > Baltic Birch, **15mm**, CNC router, no extra processes. All 28 parts
+quoted instantly; nothing was flagged.
+
+| File | Size | Qty | Each | Line |
+|---|---|---|---|---|
+| top.dxf | 860 × 860 | 1 | $66.47 | $66.47 |
+| deck.dxf | 780 × 780 | 1 | $72.79 | $72.79 |
+| leg-plate-a.dxf | 110 × 385 | 4 | $11.25 | $45.00 |
+| leg-plate-b.dxf | 110 × 385 | 4 | $10.34 | $41.36 |
+| heater-cheek.dxf | 380 × 70 | 2 | $6.96 | $13.92 |
+| wedge.dxf | 60 × 17.6 | 6 | $0.99 | $5.94 |
+| zaisu-side.dxf | 615 × 447 | 4 | $32.86 | $131.44 |
+| zaisu-seat-board.dxf | 493 × 400 | 2 | $28.49 | $56.98 |
+| zaisu-stretcher.dxf | 513 × 32 | 2 | $7.62 | $15.24 |
+| zaisu-back.dxf | 513 × 300 | 2 | $26.26 | $52.52 |
+| **Subtotal** | | **28** | | **$501.66** |
+
+The cart: one **91 × 91 × 20 cm** box, shipping **free**, tax (BC GST/PST) $60.20, **total $561.86**, lead time
+2 days. The cart shows 12.6 kg, which is each file's weight counted once, ignoring quantities (v1's first probe
+saw the same). The real parts weigh about 18.4 kg (about 18.0 kg on uMake's scale), still under free shipping.
+I stopped at the cart: its Confirm Order button wasn't pressed.
+
+**Material is priced by each part's bounding box.** The old model (below) put this order at $473.85, 5.5 % low,
+and part by part it was far off: the deck and the zaisu sides (big outlines, little wood) 25 % too cheap, small
+solid parts 15–29 % too dear. Charging material by the bounding box instead of the wood fits all 10 lines within
+2 % (the tiny wedge within 9 %), and holes cost nothing extra. `kotatsu/price.py` now does that:
+
+    each part (raw) ≈ 64.17 × bounding box (m²) + 5.84 × cutting (m)
+    order total     ≈ 12.45 × (sum of the parts) ^ 0.595
+
+fitted on the two 15mm quotes. It predicts this one at $502.24, and v1's 19mm order 3 % low (thicker stock).
+What it means for the design: **a cut-out or window saves weight, never money.** It only adds cutting, which is
+about half the raw cost. One more metre of cutting costs about as much as 0.09 m² more bounding box.
+
 ## How each change moved the price
 
 | Design | Box, weight | Shipping | Total with tax |
@@ -81,6 +116,9 @@ largest part, and charges by that box. I tested it by swapping only the top file
 time (totals from $119 to $232) fits this model, now in `kotatsu/price.py`:
 
     each part ≈ $101 per m² of wood + $15.25 per metre of cutting + about $0.20 per hole
+
+(Superseded in November 2026: material goes by the bounding box, see the v2 full quote above. The
+conclusions about windows below were right for the wrong reason.)
     order total ≈ 11.25 × (sum of the parts) ^ 0.551
 
 It predicts the real orders to within 15 cents. What it showed:
