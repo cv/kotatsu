@@ -75,3 +75,18 @@ def test_deck_hand_on_ring(p):
     assert tight["fillets"]["sx"] > tight["arms"]["sx"]                 # the fillets carry the peak
     slack = fea.deck_case(p, case, h=16, wedges=False)
     assert slack["sag_mm"] > 2 * tight["sag_mm"]
+
+
+def test_plane_stress_cantilever_matches_timoshenko():
+    L, h, t, E, P = 200.0, 20.0, 10.0, 1e4, 10.0
+    I = t * h ** 3 / 12
+    tip = P * L ** 3 / (3 * E * I) + P * L / (5 / 6 * E / 2 * t * h)       # bending + shear (nu = 0)
+    m = fea.mesh(box(0, 0, L, h), 5)
+    end = box(-0.1, -1, 0.1, h + 1)
+    cs = [fea.Contact("x", end, 0, 1, 1e7, bilateral=True), fea.Contact("y", end, 1, 1, 1e7, bilateral=True)]
+    r = fea.plane(m, t, E, E, E / 2, cs, [(box(L - 0.1, -1, L + 0.1, h + 1), (0.0, -P))])
+    assert -r.u.min() == pytest.approx(tip, rel=0.01)
+    c = m.p[:, m.t].mean(axis=1)
+    mid = np.abs(c[0] - L / 2) < 5
+    assert np.abs(r.su[mid]).max() == pytest.approx(P * L / 2 * (h / 2) / I, rel=0.03)
+    assert r.forces["y"] == pytest.approx(P, rel=1e-3)

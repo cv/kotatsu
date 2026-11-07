@@ -24,8 +24,8 @@ from scipy.sparse.linalg import spsolve
 from shapely import contains_xy, segmentize, set_precision
 from shapely.geometry import Polygon
 from shapely.ops import unary_union
-from skfem import Basis, BilinearForm, ElementTriMorley, LinearForm, MeshTri
-from skfem.helpers import dd
+from skfem import Basis, BilinearForm, ElementTriMorley, ElementTriP2, ElementVector, LinearForm, MeshTri
+from skfem.helpers import dd, sym_grad
 
 
 # ----------------------------------------------------------------------------- mesh
@@ -308,3 +308,87 @@ def deck_report(p, h: float | None = None) -> dict:
                 "sag_mm": round(r["sag_mm"], 1), "max_wedge_N": round(max(r["wedge_N"], default=0.0)),
                 **{k: f(r[k]) for k in ("fillets", "arms", "ring", "pads")}}
     return out
+
+
+# ----------------------------------------------------------------------------- plane stress (P2)
+@dataclass
+class Contact:
+    """Springs along the boundary facets whose midpoints lie in `zone`: they act on displacement component
+    comp (0 = u, 1 = v), k N/mm per mm of edge. Closure = sign * displacement + c0; they push only while
+    closure > 0 (unless bilateral). c0 < 0 is a gap, c0 > 0 an interference (a wedge tapped in)."""
+    name: str
+    zone: object
+    comp: int
+    sign: int
+    k: float
+    c0: float = 0.0
+    bilateral: bool = False
+
+
+@dataclass
+class PlaneResult:
+    m: MeshTri
+    u: np.ndarray
+    su: np.ndarray       # per element, worst quadrature point: stress along u, along v, shear (MPa, signed)
+    sv: np.ndarray
+    tuv: np.ndarray
+    forces: dict         # contact name -> total force it pushes on the plate (N, along its comp, + = +axis)
+    open_: dict          # contact name -> share of its edge length not touching (0..1)
+
+
+def _springs(m, b, c: Contact):
+    """(dofs, spring constants) of a contact, lumped Simpson-wise onto the P2 edge nodes (1/6, 2/3, 1/6)."""
+    f = m.boundary_facets()
+    a, e = m.facets[:, f]
+    mid = (m.p[:, a] + m.p[:, e]) / 2
+    sel = contains_xy(c.zone, mid[0], mid[1])
+    f, a, e = f[sel], a[sel], e[sel]
+    L = np.linalg.norm(m.p[:, e] - m.p[:, a], axis=0)
+    dofs = np.concatenate([b.nodal_dofs[c.comp][a], b.nodal_dofs[c.comp][e], b.facet_dofs[c.comp][f]])
+    k = c.k * np.concatenate([L / 6, L / 6, 2 * L / 3])
+    u, inv = np.unique(dofs, return_inverse=True)
+    return u, np.bincount(inv, weights=k)
+
+
+def plane(m: MeshTri, t: float, Eu: float, Ev: float, G: float, contacts: list[Contact], tractions=(),
+          it: int = 60) -> PlaneResult:
+    """Orthotropic plane stress (nu = 0), thickness t, P2 triangles. tractions: [(zone, (fu, fv))] total
+    forces (N) spread evenly along the boundary facets in each zone. The contacts are the only supports."""
+    b = Basis(m, ElementVector(ElementTriP2()))
+
+    @BilinearForm
+    def stiff(u, v, w):
+        e, d = sym_grad(u), sym_grad(v)
+        return t * (Eu * e[0, 0] * d[0, 0] + Ev * e[1, 1] * d[1, 1] + 4 * G * e[0, 1] * d[0, 1])
+
+    K = stiff.assemble(b).tocsr()
+    F = np.zeros(b.N)
+    for zone, force in tractions:
+        fake = Contact("", zone, 0, 1, 1.0)
+        for comp in (0, 1):
+            fake.comp = comp
+            d, w = _springs(m, b, fake)
+            F[d] += force[comp] * w / w.sum()
+    sp = [(c, *_springs(m, b, c)) for c in contacts]
+    act = [np.ones(len(d), bool) for _, d, _ in sp]
+    from scipy.sparse import diags
+    reg = diags(np.full(b.N, 1e-6))                    # a whisper of ground spring: no free rigid motion
+    for _ in range(it):
+        kd, rhs = np.zeros(b.N), F.copy()
+        for (c, d, k), a in zip(sp, act):
+            np.add.at(kd, d[a], k[a])
+            np.add.at(rhs, d[a], -c.sign * k[a] * c.c0)
+        u = spsolve((K + diags(kd) + reg).tocsc(), rhs)
+        new = [c.bilateral | (c.sign * u[d] + c.c0 > 0) for (c, d, k) in sp]
+        if all(np.array_equal(x, y) for x, y in zip(new, act)):
+            break
+        act = new
+    forces, open_ = {}, {}
+    for (c, d, k), a in zip(sp, act):
+        forces[c.name] = forces.get(c.name, 0.0) - float((c.sign * k[a] * (c.sign * u[d[a]] + c.c0)).sum())
+        open_[c.name] = float(k[~a].sum() / k.sum()) if k.sum() > 0 else 1.0
+    e = b.interpolate(u)
+    E = sym_grad(e)
+    su, sv, tuv = Eu * E[0, 0], Ev * E[1, 1], 2 * G * E[0, 1]
+    pick = lambda x: x[np.arange(x.shape[0]), np.abs(x).argmax(axis=1)]
+    return PlaneResult(m, u, pick(su), pick(sv), pick(tuv), forces, open_)
