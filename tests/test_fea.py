@@ -62,3 +62,16 @@ def test_top_sitter_balances_and_holds(p):
     g = loads.solve(q, [loads.self_weight(q)] + pats)
     assert r["sag_mm"] == pytest.approx(g.w_max, rel=0.2)
     assert r["away"]["sx"] == pytest.approx(g.sigma_x, rel=0.2)
+
+
+def test_deck_hand_on_ring(p):
+    """A hand beside a cheek, coarse mesh: forces balance; with the wedges tight the deck holds (Tsai-Hill
+    under 1 at the fillets) and sags under 15 mm; with them slack it sags much more (keep them tapped in)."""
+    case = fea.deck_cases(p)["hand on the ring beside a cheek (mid-side)"]
+    tight = fea.deck_case(p, case, h=16)
+    assert tight["support_N"] == pytest.approx(tight["load_N"], rel=1e-6)
+    assert tight["fillets"]["tsai_hill"] < 1.0
+    assert tight["sag_mm"] < 15
+    assert tight["fillets"]["sx"] > tight["arms"]["sx"]                 # the fillets carry the peak
+    slack = fea.deck_case(p, case, h=16, wedges=False)
+    assert slack["sag_mm"] > 2 * tight["sag_mm"]

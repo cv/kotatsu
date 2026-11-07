@@ -21,7 +21,7 @@ from dataclasses import dataclass
 import numpy as np
 import triangle
 from scipy.sparse.linalg import spsolve
-from shapely import contains_xy, segmentize
+from shapely import contains_xy, segmentize, set_precision
 from shapely.geometry import Polygon
 from shapely.ops import unary_union
 from skfem import Basis, BilinearForm, ElementTriMorley, LinearForm, MeshTri
@@ -33,12 +33,14 @@ def _parts(g):
     return [x for x in getattr(g, "geoms", [g]) if not x.is_empty]
 
 
-def mesh(poly, h: float, extra=(), h_edge: float | None = None, min_angle: float = 30.0) -> MeshTri:
+def mesh(poly, h: float, extra=(), h_edge: float | None = None, min_angle: float = 30.0,
+         grid: float = 0.5) -> MeshTri:
     """Triangle mesh of `poly` (shapely, holes allowed), elements about h across, boundary pieces
-    h_edge (default h / 2), with the outlines of the `extra` polygons (clipped to poly) built in."""
+    h_edge (default h / 2), with the outlines of the `extra` polygons (clipped to poly) built in, all snapped
+    to a `grid` (mm) so lines a hair apart (a pad 0.2 mm inside an edge) merge instead of choking Triangle."""
     h_edge = h / 2 if h_edge is None else h_edge
     lines = [poly.boundary] + [e.intersection(poly).boundary for e in extra if not e.intersection(poly).is_empty]
-    net = segmentize(unary_union(lines), h_edge)
+    net = segmentize(set_precision(unary_union(lines), grid), h_edge)   # snap: no near-coincident lines
     vid, verts, segs = {}, [], []
     for ln in _parts(net):
         if ln.geom_type != "LineString":
@@ -134,9 +136,13 @@ def plate(m: MeshTri, t: float, Ex: float, Ey: float, G: float, q: np.ndarray, s
 
 
 def peaks(r: PlateResult, keep: np.ndarray, f_x: float, f_y: float, f_v: float) -> dict:
-    """Peak |stresses| over the elements in `keep` and the worst use of strength among them."""
+    """Peak |stresses| over the elements in `keep` and the worst use of strength among them: the largest
+    of the three ratios (as loads.py), and Tsai-Hill's index, which also counts stresses that act together
+    (off-axis bending, as in the deck's 45 deg arms: there it is the one to believe)."""
     sx, sy, tv = (float(np.abs(a[keep]).max()) if keep.any() else 0.0 for a in (r.sx, r.sy, r.txy))
-    return {"sx": sx, "sy": sy, "tau": tv, "util": max(sx / f_x, sy / f_y, tv / f_v)}
+    th = ((r.sx / f_x) ** 2 - r.sx * r.sy / f_x ** 2 + (r.sy / f_y) ** 2 + (r.txy / f_v) ** 2)[keep]
+    return {"sx": sx, "sy": sy, "tau": tv, "util": max(sx / f_x, sy / f_y, tv / f_v),
+            "tsai_hill": float(np.sqrt(th.max())) if keep.any() else 0.0}
 
 
 def near(m: MeshTri, geom, d: float) -> np.ndarray:
@@ -217,4 +223,88 @@ def top_report(p, h: float | None = None, t: float | None = None) -> dict:
                      "corner_N": r["corner_N"], "pads_idle": len(r["idle_pads"]), "pads": len(r["pads"]),
                      "grillage": {"sag_mm": round(g.w_max, 1), "stress_MPa": [round(g.sigma_x, 1), round(g.sigma_y, 1),
                                   round(g.tau, 1)], "use_%": round(100 * g.util, 1), "corner_N": g.reactions}}
+    return out
+
+
+# ----------------------------------------------------------------------------- the X deck
+def deck_cases(p) -> dict:
+    """Hand loads (deck.hand_n over a fea.hand x fea.hand patch) on the heater ring, each with the heater on
+    the cheek ears. World x-y polygons -> force (N)."""
+    from shapely.geometry import box
+    from . import frame as fr, yagura
+    L, D, a = fr.layout(p), p.deck, p.fea.hand / 2
+    rg = yagura.ring(p)
+    x0, y0, x1, y1 = rg.bounds
+    wx0, w0, wx1, w1 = fr.well(p)
+    c0, c1 = fr.cheek_ys(p)
+    xs0, xs1 = fr.cheek_xs(p)
+    t = L.t
+    ears = [box(xa, ya, xb, yb) for xa, xb in ((xs0 - t, xs0), (xs1, xs1 + t)) for ya, yb in ((c0, w0), (w1, c1))]
+    heater = [(e, p.comfort.heater_kg * 9.81 / 4) for e in ears]
+    ring_wood = rg.difference(box(wx0, w0, wx1, w1))
+    hand = lambda x, y: [(box(x - a, y - a, x + a, y + a).intersection(ring_wood), D.hand_n)]
+    return {"hand spread over the whole ring": heater + [(ring_wood, D.hand_n)],
+            "hand on the ring beside a cheek (mid-side)": heater + hand((wx1 + x1) / 2, L.cy),
+            "hand on a corner of the ring": heater + hand(x1 - a, y1 - a),
+            "hand on the ring's end, over the cheek ears": heater + hand(L.cx, y1 - a)}
+
+
+def deck_zones(p) -> dict:
+    """The deck's regions (world x-y): the heater ring, the corner pads, the fillets (the wood the closing
+    adds where arms meet ring and pads, plus a 3 mm skin) and what is left of the arms."""
+    from . import yagura
+    g = yagura.deck(p)
+    rg, pd = yagura.ring(p).intersection(g), unary_union(yagura.pads(p)).intersection(g)
+    fil = g.difference(unary_union([yagura.ring(p)] + yagura.arms(p) + yagura.pads(p))).buffer(3.0).intersection(g)
+    arm = unary_union(yagura.arms(p)).intersection(g).difference(rg).difference(pd).difference(fil)
+    return {"ring": rg.difference(fil), "fillets": fil, "arms": arm, "pads": pd.difference(fil)}
+
+
+def deck_case(p, loads_, h: float | None = None, t: float | None = None, wedges: bool = True) -> dict:
+    """The X deck (t thick, default the thinnest) on its plates' top edges (they push up only) and, if
+    `wedges`, held down under its wedges (they push down only), under its own weight and `loads_`
+    [(polygon, N)]. Both rigid: with wedges the corners are clamped (the stiffest the joints can be),
+    without they only rest (the loosest). The real joint, a preloaded spring (stiffness.py), is between."""
+    from . import yagura
+    M, Ld, F = p.material, p.loads, p.fea
+    h = F.deck_h if h is None else h
+    t = M.t_min if t is None else t
+    g = yagura.deck(p)
+    below = [x.intersection(g) for x in yagura.plate_tops(p, "A") + yagura.plate_tops(p, "B")]
+    above = [x.intersection(g) for x in yagura.wedge_footprints(p)]
+    below, above = [x for x in below if x.area > 0], [x for x in above if x.area > 0]
+    m = mesh(g, h, extra=below + above, h_edge=h / 3)
+    q = np.full(m.t.shape[1], M.density_kg_m3 * 1e-9 * t * 9.81)
+    for poly, f in loads_:
+        q += pressure(m, poly, f)
+    sv = np.where(in_any(m, below, at="vertices"))[0]
+    hv = np.where(in_any(m, above, at="vertices"))[0] if wedges else np.zeros(0, int)
+    r = plate(m, t, M.E_par, Ld.E_cross, Ld.G_plate, q, sv, hv)
+    sup = unary_union(below + above)
+    away = ~near(m, sup, t)
+    args = (M.f_m, Ld.f_m_cross, Ld.f_v_plate)
+    c = m.p[:, m.t].mean(axis=1)
+    zone = lambda z: contains_xy(z, c[0], c[1]) & away
+    return {"t": t, "h": h, "elements": m.t.shape[1], "sag_mm": float(r.w.max()),
+            "load_N": float((q * _areas(m)).sum()), "held_N": float(-r.reaction[hv].sum()),
+            "wedge_N": [float(-r.reaction[np.where(in_any(m, [x], at="vertices"))[0]].sum()) if wedges else 0.0
+                        for x in above],
+            "support_N": float(r.reaction.sum()),
+            "A_tops_N": [float(r.reaction[np.where(in_any(m, [x], at="vertices"))[0]].sum()) for x in below[:len(below) // 2]],
+            "away": peaks(r, away, *args), "result": r,
+            **{k: peaks(r, zone(z), *args) for k, z in deck_zones(p).items()}}
+
+
+def deck_report(p, h: float | None = None) -> dict:
+    """Every deck_cases case, wedges tight (clamped corners) and slack (resting only), next to
+    loads.deck_arms' cantilever. Use of strength is Tsai-Hill (the arms run at 45 deg to the grain)."""
+    from . import loads
+    f = lambda d: {"MPa": [round(d["sx"], 1), round(d["sy"], 1), round(d["tau"], 1)], "use_%": round(100 * d["tsai_hill"])}
+    out = {"lumped (loads.deck_arms)": loads.deck_arms(p)}
+    for name, ld in deck_cases(p).items():
+        for w in (True, False):
+            r = deck_case(p, ld, h, wedges=w)
+            out[f"{name}, wedges {'tight' if w else 'slack'}"] = {
+                "sag_mm": round(r["sag_mm"], 1), "max_wedge_N": round(max(r["wedge_N"], default=0.0)),
+                **{k: f(r[k]) for k in ("fillets", "arms", "ring", "pads")}}
     return out
