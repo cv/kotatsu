@@ -148,6 +148,20 @@ No corner of the top lifts in any of these cases. The strength figures are rough
 (TODO-verify), and a typical sheet breaks at about 1.5× them. The legs carry at most about 60 kg per
 corner, and the wedges and deck don't carry any of the weight from above.
 
+**Finite-element check (branch v2-fea, [docs/fea.md](docs/fea.md)).** `kotatsu/fea.py` re-checks the
+three parts with real outlines on 14.1 mm stock:
+- **Top.** The grillage above is confirmed within 10 %, slightly on the safe side.
+- **X deck.** Under a 300 N hand the deck uses up to about 68 % of its strength at the arm fillets with the
+  wedges tight, not the 40 % of the cantilever estimate (the 45° arms are softer and weaker than assumed). With
+  slack wedges it is overstressed.
+- **Legs (open problem).** A 200 N sideways push is a real issue, at Tsai-Hill 1.6 at the haunch fillet. The
+  lumped 3.6 MPa assumes A's slotted upper half bends as one section, but it is two separate fingers.
+  Sway is about 12 mm, not 4.5.
+
+Fixes for v2 (none adopted yet): wedge the plate that's slotted from the floor, or widen `leg_narrow` to about
+80 mm. TODO-verify the strengths.
+
+
 ## Budget (CAD)
 
 | Item | Cost |
