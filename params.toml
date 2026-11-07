@@ -111,6 +111,9 @@ cat_impact = 4.0      # a cat landing from a jump: peak ~3-4 x body weight on th
 laptop_kg = 2.0
 sitter_kg = 80.0      # 'beyond normal' check: someone sits on the table
 
+[fea]                 # kotatsu/fea.py: finite-element checks (docs/fea.md). Mesh sizes are element sizes (mm)
+top_h = 20.0          # the top (converged to ~2 % at 20, docs/fea.md)
+
 [comfort]
 knee_w = 762.0        # owner, cross-legged: knees need 30" wide ...
 knee_h = 317.5        # ... x 12.5" high

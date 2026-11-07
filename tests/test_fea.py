@@ -43,3 +43,22 @@ def test_plate_simply_supported_square_matches_navier():
     assert r.w.max() == pytest.approx(w0, rel=0.01)
     assert np.abs(r.sx).max() == pytest.approx(6 * m0 / t ** 2, rel=0.01)
     assert r.reaction.sum() == pytest.approx(q * a * a, rel=1e-6)
+
+
+def test_top_sitter_balances_and_holds(p):
+    """The worst case (an adult sitting on an edge), coarse mesh: forces balance, the grillage agrees,
+    and the thinnest top keeps a margin of 2 or more one thickness clear of the pads."""
+    from kotatsu import loads
+    pats = loads.cases(p)["beyond normal: an 80 kg adult sits on the middle of an edge (x1.5)"]
+    r = fea.top_case(p, pats, h=28)
+    assert sum(r["pad_N"]) == pytest.approx(r["load_N"], rel=1e-6)
+    assert r["away"]["util"] < 0.5
+    assert r["sag_mm"] < 12
+    near_edge = r["corner_N"]["+-"] + r["corner_N"]["--"]
+    assert near_edge > 0.9 * r["load_N"]                      # the far corners nearly lift
+    q = params.load()                                          # the grillage at the same (thinnest) stock
+    q = params.tables(q)[0]
+    q.material.t_nominal = q.material.t_min
+    g = loads.solve(q, [loads.self_weight(q)] + pats)
+    assert r["sag_mm"] == pytest.approx(g.w_max, rel=0.2)
+    assert r["away"]["sx"] == pytest.approx(g.sigma_x, rel=0.2)
