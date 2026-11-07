@@ -302,6 +302,61 @@ the factory smell, then lowered it to medium.
 [![The table under its plaid blanket, a white Persian cat sitting beside it and the ginger cat in a tunnel underneath](docs/img/use-blanket.jpg)](docs/img/use-blanket.jpg)
 [![A crossword on the top, and both cats on the rug beyond it](docs/img/use-cats.jpg)](docs/img/use-cats.jpg)
 
+<!-- page: v2 Version 2 -->
+
+## Version 2
+
+v1 works, and it gets used every evening. Living with it showed me what I'd change, so version 2 is
+taking shape on its own branch. It isn't ordered yet. This chapter grows as it does. I wanted four things:
+
+- **The heater sat low.** It hung under the deck, right where shins go.
+- **A lighter box.**
+- **Fewer wedges.** Let gravity do some of the work.
+- **Rounder corners.**
+
+### The heater moves into the deck
+
+The deck now has a hole in the middle, and the two heater cheeks became a cradle. I screw the heater
+between them on the floor, then lower the whole thing into the hole. An ear at each end of the cheeks
+rests on the deck, so gravity holds it up, and in summer it lifts straight out. The heater's top sits
+flush with the deck: 309 mm off the floor instead of 286, and four fewer wedges.
+
+### Thinner plywood
+
+Every part drops from 18 to 15 mm. Each joint is checked again across the range the shop's 15 mm sheet can
+really measure. The top bends a little more: when an adult sits hard on its edge, it sags about 9 mm
+instead of 4. A test quote showed that 15 mm costs about the same as 18 mm, so the saving is weight,
+not money.
+
+### One wedge per leg
+
+Could gravity hold the legs as well? Not on its own: the wobble model says the frame would sway about
+9 mm under a light push. But one wedge per leg is enough, if the wedges alternate. Each leg's other
+plate is trapped between the floor and the wedged-down deck, and hangs on its partner when I lift the
+frame. That plate doesn't even need a tenon any more, so the deck has 4 mortises instead of 8. The
+model counts the gravity-held plates as doing nothing, and still gets only 2 mm of sway under a hard
+shove (v1: under 1 mm).
+
+### An X deck and a squircle top
+
+The deck becomes an X: a pad at each corner, a ring round the heater, and four arms at 45°, with a big
+fillet in every inside corner. v1 had rejected an X deck, because its openings let the futon sag right
+where the knees go. The ring round the heater fixes that. The top is a squircle, a curve that eases into
+its straight edges instead of starting suddenly like a radius. The feet are rounder too.
+
+![v1's cut parts above v2's, to the same scale: the square top becomes a squircle, the H deck an X with the heater's hole in the middle, the B leg plates lose their tenons, the cheeks lose their tabs, and the wedges go from 14 to 6](docs/img/v2-parts.png)
+
+| | v1 | v2 so far |
+|---|---|---|
+| Parts | 26 | 18 |
+| Weight | 15.9 kg | 11.6 kg |
+| Wedges | 14 | 6 (4 + 2 spares) |
+| Clear height under the heater | 286 mm | 309 mm |
+| uMake quote | $353.33 | $328.70 (a test quote, not an order) |
+
+Before I order it, I want to check that the heater's top stays cool with the futon right over it, and how
+thick uMake's 15 mm sheet really is.
+
 <!-- page: overview -->
 
 ## Where it stands
@@ -309,6 +364,8 @@ the factory smell, then lowered it to medium.
 I placed the order in October 2026. One surprise: uMake's checkout ends with "a representative will reach
 out to confirm". So I still got one email. Next, the table comes apart again and goes to the garage
 for sanding, staining and wax.
+
+Version 2 is in the works: lighter, with the heater up in the deck (see the Version 2 chapter).
 
 I worked through all of this over about two days with an AI coding agent. I made the choices and drew
 the sketches. It wrote the geometry code and tests, ran the numbers and filled in the quote forms.

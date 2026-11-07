@@ -9,7 +9,7 @@ README = (ROOT / "README.md").read_text()
 
 def test_story_pages():
     pages = site.story()
-    assert [p["id"] for p in pages] == ["overview", "design", "build", "make"]
+    assert [p["id"] for p in pages] == ["overview", "design", "build", "v2", "make"]
     assert all(p["title"] and p["md"].strip() for p in pages)
     home = pages[0]["md"]
     assert "## The rules" in home and "## Where it stands" in home      # home collects two stretches
