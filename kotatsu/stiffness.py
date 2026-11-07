@@ -2,8 +2,10 @@
 
 How the frame resists a sideways push H at the top
   The deck is a stiff plate; each "+" leg hangs from it and stands on the floor. A push in x is taken by
-  the four "A" plates bending in their own plane (the "B" plates bend the weak way and are ignored),
-  a push in y by the four "B" plates. Each plate deflects at the floor by
+  the plates in the x-z plane bending in their own plane (the others bend the weak way and are ignored),
+  a push in y by those in the y-z plane. v2 wedges one plate per leg (the A plate, kotatsu/yagura.py),
+  alternating, so each direction has two wedged plates. The two unwedged ones, held only by gravity
+  between the floor and the deck, are counted as nothing: conservative. Each plate deflects at the floor by
       delta = theta * L + H_i L^3 / (3 E I)          (joint rotation + plate bending; L = leg height)
   and the joint rotation theta comes from the leg <-> deck joint:
     * shoulders: the plate's top edge presses up on the deck's underside. Modelled as a row of
@@ -13,9 +15,9 @@ How the frame resists a sideways push H at the top
       bearing on the deck in series with the wood above the wedge hole;
     * preload: tapping the wedge in clamps the deck between shoulder and wedge with force P0.
   With the wedge tight every spring works and the joint is stiff. Past some moment one side of the
-  joint unloads (a gap opens) and the stiffness drops: that's where wobble starts. Plates at the two
-  ends of a side are mirror images, so for either push direction two legs work in their strong sense
-  and two in their weak sense.
+  joint unloads (a gap opens) and the stiffness drops: that's where wobble starts. The two wedged plates
+  for either push direction are mirror images (one at each end), so one works in its strong sense and one
+  in its weak sense.
 
 All material values are TODO-verify (params [material] / [stiffness]); results are estimates for
 comparing options and spotting weak links, not certification.
@@ -247,7 +249,8 @@ def plate_curve(p, shape, N: float, Hmax: float = 300.0, n: int = 121) -> PlateC
 def frame_sway(p, H_total: float, direction: str = "x") -> dict:
     """Sway of the deck relative to the floor under a sideways push H_total (N) in x or y."""
     parts = {pt.name: pt for pt in fr.parts(p)}
-    plate = parts["leg plate A" if direction == "x" else "leg plate B"]
+    plate = parts["leg plate A"]                                # the wedged plates, in this direction's plane
+    placements = [pl for pl in plate.placements if pl.axis == direction]
     deck_w = sum(pt.shape.area * pt.qty for pt in parts.values() if pt.kind in ("deck", "cheek", "wedge"))
     deck_n = (deck_w / 1e6 * p.material.t_nominal / 1000 * p.material.density_kg_m3 + p.comfort.heater_kg) * 9.81
     N = deck_n / 8                                              # each plate's share of deck + heater
@@ -258,7 +261,7 @@ def frame_sway(p, H_total: float, direction: str = "x") -> dict:
     H, d = cur.H[ok], cur.delta[ok]
     order = np.argsort(d)
     H, d = H[order], d[order]
-    signs = [(-1 if pl.mirror_u else 1) for pl in plate.placements]
+    signs = [(-1 if pl.mirror_u else 1) for pl in placements]
 
     def total(D):
         return sum(np.interp(s * D, d, H) * s for s in signs)
@@ -278,13 +281,13 @@ def frame_sway(p, H_total: float, direction: str = "x") -> dict:
 def wobble_onset(p, direction: str = "x") -> float:
     """Total sideways push at which the first leg joint starts to open (N)."""
     parts = {pt.name: pt for pt in fr.parts(p)}
-    plate = parts["leg plate A" if direction == "x" else "leg plate B"]
+    n = sum(pl.axis == direction for pl in parts["leg plate A"].placements)
     r = frame_sway(p, 1.0, direction)
     gaps = [g for g in r["gap_H_plate"] if g is not None]
     if not gaps:
         return float("inf")
     g = min(abs(x) for x in gaps)
-    return g * len(plate.placements)                            # all plates share while every joint is tight
+    return g * n                                                # the wedged plates share while every joint is tight
 
 
 def wedge_slack_wobble(p, slack: float = 0.1) -> float:
@@ -340,7 +343,7 @@ def summary(p) -> dict:
             r = frame_sway(p, H, dirn)
             rows[str(int(H))] = round(r["sway_mm"], 2)
         parts = {pt.name: pt for pt in fr.parts(p)}
-        cur = plate_curve(p, parts["leg plate A" if dirn == "x" else "leg plate B"].shape, 10.0)
+        cur = plate_curve(p, parts["leg plate A"].shape, 10.0)
         on = wobble_onset(p, dirn)
         out[dirn] = {"sway_mm": rows, "onset_N": round(on) if np.isfinite(on) else None,
                      "rest_tilt_mm": round(cur.rest_tilt, 1)}

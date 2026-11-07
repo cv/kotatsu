@@ -20,8 +20,10 @@ def test_sway_is_finite_and_grows_with_load(S):
 
 
 def test_sway_small_with_tight_wedges(S):
-    """Rough target (mine, not a standard): under 1 mm of sway for a 100 N sideways push."""
-    assert S["x"]["sway_mm"]["100"] < 1.0 and S["y"]["sway_mm"]["100"] < 1.0
+    """Rough target (mine, not a standard). v2 wedges one plate per leg and counts the other as nothing:
+    under 1 mm for an everyday 50 N lean, under 2.5 mm for a hard 100 N shove."""
+    for d in ("x", "y"):
+        assert S[d]["sway_mm"]["50"] < 1.0 and S[d]["sway_mm"]["100"] < 2.5
 
 
 def test_stress_margins(S):

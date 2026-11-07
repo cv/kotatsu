@@ -17,7 +17,7 @@ STEPS = [
     "Cross each pair of plates into a \"+\" leg",
     "Stand the four legs up",
     "Lower the deck over the 8 tenons",
-    "Push a wedge through each tenon",
+    "Push a wedge through one tenon at each corner",
     "Screw the heater in between the two cheeks",
     "Lower the heater and cheeks into the deck: the ears rest on it",
     "Drape the futon over the frame",
@@ -63,7 +63,7 @@ def part_moves(p, pt, pl, c, k: int) -> list[dict]:
         n, _ = yagura.wedge_dims(p)
         ux, uy = (1, 0) if pl.axis == "x" else (0, 1)
         d = n * 0.6 + t                          # starts mostly out of its hole, beside the tenon
-        return [move(LEG_WEDGES, (ux * d, uy * d, 0), stagger(k, len(yagura.mortises(p))))]
+        return [move(LEG_WEDGES, (ux * d, uy * d, 0), stagger(k, len(yagura.wedged_mortises(p))))]
     raise ValueError(f"no assembly moves for part kind {pt.kind!r}")
 
 

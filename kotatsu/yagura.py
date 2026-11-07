@@ -9,12 +9,15 @@ posts that carry the top.
 Joints
   * legs: cross-lap at each corner ("A" plates slotted from the shoulder down, "B" plates from the floor up)
   * leg -> deck: every plate's top edge is a shoulder under the deck, with one tenon through it.
-    A small wedge through the tenon, lying on the deck, clamps the deck between shoulder and wedge.
-    (Gravity alone can't: the ~20 N on each plate is far too little to keep the shoulders down, and the
-    tenon rocks in its mortise. These 8 are the only wedges.)
+    v2: one wedge per leg. Each corner wedges its "A" plate: a small wedge through the tenon, lying on
+    the deck, clamps the deck between shoulder and wedge. The other plate is held by gravity, trapped
+    between the floor and the wedged-down deck, and hangs on the A plate's cross-lap when the frame is
+    lifted. A runs along x at two diagonal corners and along y at the other two, so a push either way meets
+    two wedged plates. (Gravity alone everywhere can't work: the ~20 N on each plate is far too little to
+    keep the shoulders down, and the tenon rocks in its mortise.)
   * heater cradle -> deck: the cheeks' ears rest on the deck top (gravity), the bodies locate in the well.
 Assembly: cross the 4 pairs of plates into "+" legs, stand them up, lower the deck over the 8 tenons,
-tap in the 8 wedges; screw the heater between the cheeks and lower the cradle into the well.
+tap in the 4 wedges; screw the heater between the cheeks and lower the cradle into the well.
 """
 from __future__ import annotations
 
@@ -125,19 +128,36 @@ def lap_depth(p) -> float:
     return fr.layout(p).z_deck_bot / 2 + p.frame.lap_extra
 
 
-def mortises(p) -> list[tuple[float, float, float, float]]:
-    """World (x0, y0, x1, y1) of the 8 deck mortises (tenon + in-plane clearance, thickest stock)."""
+def a_runs_along_x(sx: int, sy: int) -> bool:
+    """Whether the corner (sx, sy) (each -1 or +1, from the centre) has its wedged A plate along x: at the
+    (-,-) and (+,+) corners. At the other two it runs along y."""
+    return sx * sy > 0
+
+
+def mortise_info(p) -> list[tuple[tuple[float, float, float, float], str, int, int]]:
+    """Every deck mortise as ((x0, y0, x1, y1) world, plate axis, sx, sy): tenon + in-plane clearance,
+    thickest stock."""
     L = fr.layout(p)
     ta, tb = _tenon_u(p)
     c, h = p.fit.tight, fr.thick_slot(p) / 2
     out = []
-    for y in L.yL:                                      # x plates (in the x-z plane at y)
-        for a, b in ((L.O + ta, L.O + tb), (L.O + L.Lf - tb, L.O + L.Lf - ta)):
-            out.append((a - c, y - h, b + c, y + h))
-    for x in L.xS:                                      # y plates (in the y-z plane at x)
-        for a, b in ((L.O + ta, L.O + tb), (L.O + L.Wf - tb, L.O + L.Wf - ta)):
-            out.append((x - h, a - c, x + h, b + c))
+    for y, sy in zip(L.yL, (-1, 1)):                     # x plates (in the x-z plane at y)
+        for (a, b), sx in zip(((L.O + ta, L.O + tb), (L.O + L.Lf - tb, L.O + L.Lf - ta)), (-1, 1)):
+            out.append(((a - c, y - h, b + c, y + h), "x", sx, sy))
+    for x, sx in zip(L.xS, (-1, 1)):                     # y plates (in the y-z plane at x)
+        for (a, b), sy in zip(((L.O + ta, L.O + tb), (L.O + L.Wf - tb, L.O + L.Wf - ta)), (-1, 1)):
+            out.append(((x - h, a - c, x + h, b + c), "y", sx, sy))
     return out
+
+
+def mortises(p) -> list[tuple[float, float, float, float]]:
+    """World (x0, y0, x1, y1) of the 8 deck mortises."""
+    return [m for m, *_ in mortise_info(p)]
+
+
+def wedged_mortises(p) -> list[tuple[float, float, float, float]]:
+    """The 4 mortises whose tenons take a wedge: the A plate's at each corner."""
+    return [m for m, axis, sx, sy in mortise_info(p) if (axis == "x") == a_runs_along_x(sx, sy)]
 
 
 def deck(p) -> Polygon:
@@ -269,21 +289,23 @@ def wedge_shape(p, which: str = "leg") -> Polygon:
 def parts(p) -> list[Part]:
     L, t = fr.layout(p), fr.layout(p).t
     out: list[Part] = []
-    xp = [Placement("x", (L.O, y - t / 2, 0)) for y in L.yL] + \
-         [Placement("x", (L.O + L.Lf, y - t / 2, 0), mirror_u=True) for y in L.yL]
-    yp = [Placement("y", (x - t / 2, L.O, 0)) for x in L.xS] + \
-         [Placement("y", (x - t / 2, L.O + L.Wf, 0), mirror_u=True) for x in L.xS]
-    out.append(Part("leg plate A", leg_plate(p, True), xp, grain="v"))   # slotted from the shoulder down
-    out.append(Part("leg plate B", leg_plate(p, False), yp, grain="v"))  # slotted from the floor up; grain up the leg
+    xp = [(Placement("x", (L.O, y - t / 2, 0)), -1, sy) for y, sy in zip(L.yL, (-1, 1))] + \
+         [(Placement("x", (L.O + L.Lf, y - t / 2, 0), mirror_u=True), 1, sy) for y, sy in zip(L.yL, (-1, 1))]
+    yp = [(Placement("y", (x - t / 2, L.O, 0)), sx, -1) for x, sx in zip(L.xS, (-1, 1))] + \
+         [(Placement("y", (x - t / 2, L.O + L.Wf, 0), mirror_u=True), sx, 1) for x, sx in zip(L.xS, (-1, 1))]
+    pa = [pl for pl, sx, sy in xp if a_runs_along_x(sx, sy)] + [pl for pl, sx, sy in yp if not a_runs_along_x(sx, sy)]
+    pb = [pl for pl, sx, sy in xp if not a_runs_along_x(sx, sy)] + [pl for pl, sx, sy in yp if a_runs_along_x(sx, sy)]
+    out.append(Part("leg plate A", leg_plate(p, True), pa, grain="v"))   # slotted from the shoulder down; wedged
+    out.append(Part("leg plate B", leg_plate(p, False), pb, grain="v"))  # slotted from the floor up; grain up the leg
     out.append(Part("deck", deck(p), [Placement("z", (0, 0, L.z_deck_bot))], kind="deck"))
     cs, y0 = fr.cheek(p)
     zb, _ = fr.cheek_z(p)
     out.append(Part("heater cheek", cs, [Placement("y", (xi - (t if s < 0 else 0), y0, zb))
                                          for xi, s in zip(fr.cheek_xs(p), (-1, 1))], kind="cheek"))
-    # wedges lie on the deck and pass through each tenon, normal to its plate
+    # wedges lie on the deck and pass through each A plate's tenon, normal to its plate
     wl, _ = wedge_dims(p)
     lw = []
-    for x0, y0, x1, y1 in mortises(p):
+    for x0, y0, x1, y1 in wedged_mortises(p):
         xc, yc = (x0 + x1) / 2, (y0 + y1) / 2
         if x1 - x0 > y1 - y0:          # x plate tenon: wedge runs along y (plate in the y-z plane)
             lw.append(Placement("y", (xc - t / 2, yc - wl / 2, L.z_deck_top)))

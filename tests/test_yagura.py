@@ -104,7 +104,23 @@ def test_quantities(Y):
     P, L, parts = Y
     q = {n: pt.qty for n, pt in parts.items()}
     assert q["leg plate A"] == 4 and q["leg plate B"] == 4 and q["deck"] == 1 and q["heater cheek"] == 2
-    assert q["wedge"] == len(yagura.mortises(P)) + 2, "v2: one wedge per tenon (+2 spares), none for the heater"
+    assert q["wedge"] == 4 + 2, "v2: one wedge per leg (+2 spares), none for the heater"
+
+
+def test_one_wedged_plate_per_leg_alternating(Y):
+    """Each corner has one A plate (slotted from the top, so the B plate hangs on it) and it takes the
+    corner's only wedge; A runs along x at two diagonal corners and along y at the others, so each push
+    direction meets two wedged plates, one at each end (mirror images)."""
+    P, L, parts = Y
+    A, B, W = parts["leg plate A"], parts["leg plate B"], parts["wedge"]
+    for d in ("x", "y"):
+        pa = [pl for pl in A.placements if pl.axis == d]
+        assert len(pa) == 2 and sorted(pl.mirror_u for pl in pa) == [False, True]
+    ca = {(1 if (pl.origin[0] > L.cx) else -1, 1 if (pl.origin[1] > L.cy) else -1) for pl in A.placements}
+    cb = {(1 if (pl.origin[0] > L.cx) else -1, 1 if (pl.origin[1] > L.cy) else -1) for pl in B.placements}
+    assert len(ca) == 4 and len(cb) == 4, "one A and one B plate at every corner"
+    wm = yagura.wedged_mortises(P)
+    assert len(wm) == 4 and len({(1 if m[0] > L.cx else -1, 1 if m[1] > L.cy else -1) for m in wm}) == 4
 
 
 def _haunch_bottom(P):
