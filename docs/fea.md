@@ -6,6 +6,12 @@ outlines (`top.build`, `yagura.deck`, `frame.parts`), so it follows `params.toml
 
 ## In short
 
+**Update (v2, owner 2026-11): the legs are fixed.** `yagura.leg_narrow` went from 60 to 70 mm (and the haunch
+became an S-curve of squircle corners). Under the 200 N push, plate A now peaks at the wedge hole (87 %), with
+the haunch at 81 %, the slot root at 77 % and sway 7.2 mm. `tests/test_fea.py::test_leg_plates_hold_the_push`
+is now a plain test, no longer an expected failure. The tables below are the 60 mm study that found it.
+
+
 | Part | Lumped model says | FEA says | Verdict |
 |---|---|---|---|
 | Top, worst case (80 kg sitter × 1.5 on an edge), 14.1 mm | 16.3 MPa, 46 %, 10.4 mm sag (grillage at 14.1 mm) | 14.7 MPa, 42 %, 9.2 mm | **Confirmed.** The grillage is slightly conservative. |

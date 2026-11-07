@@ -354,12 +354,12 @@ the chair together and stops it tipping back. The stretcher and the back hook in
 The seat board sits as low as the shop's rules allow, 31 mm off the floor. On a chair I'll sit with my
 legs out under the table: cross-legged, my knees would rise into the top. Legs forward, my thighs pass
 under the deck and my feet under the heater, so the cushion can be about 12 cm thick. Cut-outs in the seat and back keep the box under the weight for
-free shipping: the chairs add 6.8 kg, and the whole order is about 18.1 kg.
+free shipping: the chairs add 6.7 kg, and the whole order is about 18.3 kg.
 
 | | v1 | v2 so far |
 |---|---|---|
 | Parts | 26 | 18, plus 10 for the chairs |
-| Weight | 15.9 kg | 11.3 kg, plus 6.8 for the chairs |
+| Weight | 15.9 kg | 11.6 kg, plus 6.7 for the chairs |
 | Wedges | 14 | 6 (4 + 2 spares) |
 | Clear height under the heater | 286 mm | 309 mm |
 | uMake quote | $353.33 | $328.70 for the table (a test quote, not an order); about $145 more for the chairs |

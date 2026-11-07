@@ -14,7 +14,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
 | Leg joints | 8 tenons, a wedge in each | **one wedge per leg**: 4 tenons, the other plate held by gravity |
 | Wedges | 12 + 2 spares | **4 + 2 spares** |
 | Top | square, R20 corners (re-rounded by hand) | **squircle** (n = 10), cut in the file; feet and deck rounder to match |
-| Parts, weight, cutting | 26, 15.9 kg, 25.5 m | **18, 11.3 kg, 22.7 m** |
+| Parts, weight, cutting | 26, 15.9 kg, 25.5 m | **18, 11.6 kg, 22.7 m** |
 | Chairs | none | **two zaisu** (floor chairs), cut with the table: 10 parts, 6.8 kg, no wedges |
 
 ## Decisions
@@ -36,7 +36,8 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
   up. The two slot depths add up to 1 mm more than needed, so the floor, not the slots, sets the height.
   - Under the deck, each plate is 110 mm wide: a 22 mm outer finger, the 16 mm slot, a 10 mm shoulder,
     a 50 mm tenon, and a 12 mm inner shoulder. Below a sloped haunch (my sketch), the leg narrows to
-    60 mm: two equal 22 mm fingers either side of the slot.
+    70 mm (v2, owner 2026-11; was 60): a 22 mm outer finger and a 32 mm inner one either side of the slot.
+    The haunch is one S-curve of squircle corners.
   - Only the A plate has a tenon (v2): it rises through the deck and takes the corner's one wedge. The B
     plate's top edge is all shoulder, under the deck. On both, the outer finger rises all the way to the
     top, so the top rests on the frame's four corners (the "corner posts").
@@ -88,7 +89,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
     12 MPa (41 %, 4.4 mm of sag) in the back panel; a 1000 N sitter drop puts 14 MPa (46 %, 4.9 mm) in the
     seat board, which stays off the floor. 3.4 kg a chair. TODO-verify the check loads against EN 12520.
 
-That's **18 table parts, about 11.3 kg, 22.7 m of cutting**, plus **10 chair parts, 6.8 kg, 23.7 m**.
+That's **18 table parts, about 11.6 kg, 22.7 m of cutting**, plus **10 chair parts, 6.7 kg, 23.2 m**.
 With the chairs, my nester needs one 60 × 120" sheet (the table alone fit a 48 × 96"). uMake lays out
 the sheets itself and prices per part, so this only matters for my estimate.
 Leg plates are laid with the grain running up the leg.
@@ -148,18 +149,18 @@ No corner of the top lifts in any of these cases. The strength figures are rough
 (TODO-verify), and a typical sheet breaks at about 1.5× them. The legs carry at most about 60 kg per
 corner, and the wedges and deck don't carry any of the weight from above.
 
-**Finite-element check (branch v2-fea, [docs/fea.md](docs/fea.md)).** `kotatsu/fea.py` re-checks the
+**Finite-element check ([docs/fea.md](docs/fea.md)).** `kotatsu/fea.py` re-checks the
 three parts with real outlines on 14.1 mm stock:
 - **Top.** The grillage above is confirmed within 10 %, slightly on the safe side.
 - **X deck.** Under a 300 N hand the deck uses up to about 68 % of its strength at the arm fillets with the
   wedges tight, not the 40 % of the cantilever estimate (the 45° arms are softer and weaker than assumed). With
   slack wedges it is overstressed.
-- **Legs (open problem).** A 200 N sideways push is a real issue, at Tsai-Hill 1.6 at the haunch fillet. The
-  lumped 3.6 MPa assumes A's slotted upper half bends as one section, but it is two separate fingers.
-  Sway is about 12 mm, not 4.5.
-
-Fixes for v2 (none adopted yet): wedge the plate that's slotted from the floor, or widen `leg_narrow` to about
-80 mm. TODO-verify the strengths.
+- **Legs (fixed: `leg_narrow` 70, owner 2026-11).** At 60 mm a 200 N sideways push overstressed plate A
+  (Tsai-Hill 1.6): the lumped model bends A's slotted upper half as one section, but it is two separate
+  fingers, and sway was about 12 mm, not 4.5. At 70 mm the worst zone is the wedge hole at 87 %, the
+  haunch 81 %, the slot root 77 %, and sway 7.2 mm (the lumped model still says 3.7: trust the FE).
+  It costs about 0.25 kg and 20 mm of room between the legs at shin height (knee height is unchanged).
+  `tests/test_fea.py` now requires it. TODO-verify the strengths.
 
 
 ## Budget (CAD)
@@ -167,11 +168,11 @@ Fixes for v2 (none adopted yet): wedge the plate that's slotted from the floor, 
 | Item | Cost |
 |---|---|
 | Heater (PaletteLife, amazon.ca, delivered) | $258 |
-| uMake order: 28 parts at 15mm, about $474 + 12 % tax by my estimate (the table alone quoted $328.70, `docs/quote.md`; the chairs aren't quoted yet). 18.1 kg, about 17.7 kg in uMake's cart: still free shipping | $531 |
+| uMake order: 28 parts at 15mm, about $472 + 12 % tax by my estimate (the table alone quoted $328.70 before the v2 changes since, `docs/quote.md`; the chairs aren't quoted yet). 18.3 kg, about 17.9 kg in uMake's cart: still free shipping | $529 |
 | Futon: 205 cm square from Etsy, or a queen duvet + cover from Douglas | $185–230 |
 | Sandpaper and finishing oil | $30–50 |
 | Zaisu cushions (2, about 45 × 45 cm: TODO pick) | TODO |
-| **Total** | **about $1005–1070 + cushions** |
+| **Total** | **about $1000–1065 + cushions** |
 
 ## Off-season storage
 Everything packs flat inside the top's footprint, in three layers (kotatsu/storage.py packs it by itself).

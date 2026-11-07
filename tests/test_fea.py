@@ -112,11 +112,11 @@ def test_leg_fingers_bend_alone(p, leg_push):
     the haunch became an S-curve), many times stiffness.stresses' value."""
     from kotatsu import stiffness
     z = leg_push["zones"]
-    worst = max(z, key=lambda k: z[k]["tsai_hill"] if k != "contact edges" else 0)
-    assert worst in ("haunch fillet", "slot root")
-    assert z[worst]["sx"] > 5 * float(stiffness.stresses(p, p.fea.push_n)["leg_MPa"])
+    finger = max(z["haunch fillet"]["sx"], z["slot root"]["sx"])        # at 70 mm the wedge hole can be worse still
+    assert finger > 5 * float(stiffness.stresses(p, p.fea.push_n)["leg_MPa"])
 
 
-@pytest.mark.xfail(strict=True, reason="v2 legs: a 200 N push overstresses A's haunch fillet on 14.1 mm stock (docs/fea.md)")
 def test_leg_plates_hold_the_push(leg_push):
+    """A 200 N shove at table height, 14.1 mm stock: no zone of plate A past its strength (Tsai-Hill; the
+    wedge's bearing peaks are local crushing, kept apart). Failed at leg_narrow 60; holds at 70 (owner 2026-11)."""
     assert max(v["tsai_hill"] for k, v in leg_push["zones"].items() if k != "contact edges") < 1.0
