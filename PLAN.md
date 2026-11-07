@@ -92,7 +92,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
     its top rail alone), side frame 68 %. The side frame's peak is the inside corner behind the post, which the
     lumped post check missed: 85 % until its fillet grew from 40 to 80 mm on a runner 600 mm long (was 560). TODO-verify the check loads against EN 12520.
 
-That's **18 table parts, about 11.6 kg, 22.7 m of cutting**, plus **10 chair parts, 6.7 kg, 23.2 m**.
+That's **18 table parts, about 11.6 kg, 22.7 m of cutting**, plus **10 chair parts, 6.8 kg, 23.2 m**.
 With the chairs, my nester needs one 60 × 120" sheet (the table alone fit a 48 × 96"). uMake lays out
 the sheets itself and prices per part, so this only matters for my estimate.
 Leg plates are laid with the grain running up the leg.
@@ -172,11 +172,11 @@ three parts with real outlines on 14.1 mm stock:
 | Item | Cost |
 |---|---|
 | Heater (PaletteLife, amazon.ca, delivered) | $258 |
-| uMake order: 28 parts at 15mm, about $472 + 12 % tax by my estimate (the table alone quoted $328.70 before the v2 changes since, `docs/quote.md`; the chairs aren't quoted yet). 18.3 kg, about 17.9 kg in uMake's cart: still free shipping | $529 |
+| uMake order: 28 parts at 15mm, about $474 + 12 % tax by my estimate (the table alone quoted $328.70 before the v2 changes since, `docs/quote.md`; the chairs aren't quoted yet). 18.4 kg, about 18.0 kg in uMake's cart: still free shipping | $531 |
 | Futon: 205 cm square from Etsy, or a queen duvet + cover from Douglas | $185–230 |
 | Sandpaper and finishing oil | $30–50 |
 | Zaisu cushions (2, 10 cm thick, about 45 × 45 cm) | TODO-verify the price |
-| **Total** | **about $1000–1065 + cushions** |
+| **Total** | **about $1005–1070 + cushions** |
 
 ## Off-season storage
 Everything packs flat inside the top's footprint, in three layers (kotatsu/storage.py packs it by itself).

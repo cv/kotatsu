@@ -422,11 +422,11 @@ plates lean along.
 | | v1 | v2 so far |
 |---|---|---|
 | Parts | 26 | 18, plus 10 for the chairs |
-| Weight | 15.9 kg | 11.6 kg, plus 6.7 for the chairs |
+| Weight | 15.9 kg | 11.6 kg, plus 6.8 for the chairs |
 | Wedges | 14 | 6 (4 + 2 spares) |
 | Clear height under the heater | 286 mm | 309 mm |
 | A hard 200 N shove, finite elements | not checked | 87 % of the legs' strength, 7.2 mm of sway |
-| uMake | $353.33 (the order) | about $472 for the table and chairs (my estimate; the table alone quoted $328.70 before the later changes) |
+| uMake | $353.33 (the order) | about $474 for the table and chairs (my estimate; the table alone quoted $328.70 before the later changes) |
 
 Before I order it, I want to measure how I really sit (no tape to hand yet), check that the heater's top
 stays cool with the futon right over it, and find out how thick uMake's 15 mm sheet really is. Then a
