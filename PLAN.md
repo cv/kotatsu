@@ -14,7 +14,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
 | Leg joints | 8 tenons, a wedge in each | **one wedge per leg**: 4 tenons, the other plate held by gravity |
 | Wedges | 12 + 2 spares | **4 + 2 spares** |
 | Top | square, R20 corners (re-rounded by hand) | **squircle** (n = 10), cut in the file; feet and deck rounder to match |
-| Parts, weight, cutting | 26, 15.9 kg, 25.5 m | **18, 11.6 kg, 22.8 m** |
+| Parts, weight, cutting | 26, 15.9 kg, 25.5 m | **18, 11.4 kg, 22.9 m** |
 
 ## Decisions
 
@@ -69,7 +69,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
   a radius that starts abruptly. The corner posts stay 28 mm inside its edge (v1: 40). The futon lies
   over the heater as in a traditional open frame (v1 had the deck in between).
 
-That's **18 parts, about 11.4 kg, 22.8 m of cutting**. They all fit on one 48 × 96" sheet (37 % used).
+That's **18 parts, about 11.4 kg, 22.9 m of cutting**. They all fit on one 48 × 96" sheet (37 % used).
 Leg plates are laid with the grain running up the leg.
 
 ## Assembly (a mallet, plus a screwdriver for the heater)
