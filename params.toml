@@ -48,7 +48,7 @@ drop = 26.0           # deck top below the futon plane (room for the leg wedges 
 # v2 (owner): an X-shaped deck. A pad round each corner's mortises and lying wedge, a ring round the heater well,
 # and four arms along the diagonals joining them, every inside corner filleted (kotatsu/yagura.py deck).
 # uMake ships free up to a 91 cm box AND ~20 kg; the less deck, the less wood (cutting stays about the same).
-arm_w = 30.0          # the diagonal arms: 2 x the sheet (check: kotatsu/loads.py deck_arms)
+arm_w = 36.0          # the diagonal arms (owner 2026-11: 36, was 30, for margin in kotatsu/loads.py deck_arms)
 hand_n = 300.0        # the arms' check load: a hand pressing hard on the heater ring (+ the heater)
 fillet_r = 90.0       # inside corners where the arms meet the pads and the ring
 edge_r = 12.0         # outside corners (must stay under arm_w / 2)

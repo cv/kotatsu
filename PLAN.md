@@ -14,7 +14,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
 | Leg joints | 8 tenons, a wedge in each | **one wedge per leg**: 4 tenons, the other plate held by gravity |
 | Wedges | 12 + 2 spares | **4 + 2 spares** |
 | Top | square, R20 corners (re-rounded by hand) | **squircle** (n = 10), cut in the file; feet and deck rounder to match |
-| Parts, weight, cutting | 26, 15.9 kg, 25.5 m | **18, 11.4 kg, 22.9 m** |
+| Parts, weight, cutting | 26, 15.9 kg, 25.5 m | **18, 11.4 kg, 22.8 m** |
 
 ## Decisions
 
@@ -50,13 +50,13 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
   tenon tops. Each corner's pad holds only what needs wood: 20 mm round the mortise (tenon + 0.2 mm each
   side), 5 mm past the lying wedge and past both plates' top edges, which bear on the deck. Nothing
   outside the B plate (owner, 2026-11). A ring round the **heater well** (326 × 300 mm: the heater plus
-  both cheeks) is 40 mm wide beside the cheeks and runs 15 mm past their ears. Four 30 mm arms along the
-  diagonals join them, with R90 fillets at the ring, R40 at the pads and R12 corners outside. 1.36 kg,
+  both cheeks) is 40 mm wide beside the cheeks and runs 15 mm past their ears. Four 36 mm arms along the
+  diagonals join them, with R90 fillets at the ring, R40 at the pads and R12 corners outside. 1.4 kg,
   against 2.1 kg for the H.
   - The deck holds the futon up across the middle. Its openings are as big as the H's were (188 mm deep
     at mid-side, where the knees go); the extra open area is near the corners.
   - The arms: a 300 N hand pressing on the ring, plus the heater, as cantilevers at 45° to the grain on
-    the thinnest stock (173 mm free): 14 MPa, 48 % of the rough strength, 4.5 mm of give
+    the thinnest stock (173 mm free): 12 MPa, 40 % of the rough strength, 3.7 mm of give
 - **Wedges (6: 4 plus 2 spares, 60 × 18 mm, 1:8 taper).** They lie on the deck and tap sideways through
   each A tenon, clamping the deck between shoulder and wedge. This works at any sheet thickness from 14.1
   to 15.7 mm. Gravity can't replace all of them: with the weight alone (about 20 N a plate) the wobble
@@ -69,7 +69,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
   a radius that starts abruptly. The corner posts stay 28 mm inside its edge (v1: 40). The futon lies
   over the heater as in a traditional open frame (v1 had the deck in between).
 
-That's **18 parts, about 11.4 kg, 22.9 m of cutting**. They all fit on one 48 × 96" sheet (37 % used).
+That's **18 parts, about 11.4 kg, 22.8 m of cutting**. They all fit on one 48 × 96" sheet (37 % used).
 Leg plates are laid with the grain running up the leg.
 
 ## Assembly (a mallet, plus a screwdriver for the heater)
