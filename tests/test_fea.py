@@ -90,3 +90,32 @@ def test_plane_stress_cantilever_matches_timoshenko():
     mid = np.abs(c[0] - L / 2) < 5
     assert np.abs(r.su[mid]).max() == pytest.approx(P * L / 2 * (h / 2) / I, rel=0.03)
     assert r.forces["y"] == pytest.approx(P, rel=1e-3)
+
+
+
+@pytest.fixture(scope="module")
+def leg_push(p):
+    return fea.leg_case(p, "A", p.fea.push_n, None, h=6)
+
+
+def test_leg_pair_takes_the_push_and_the_wedge_its_preload(p, leg_push):
+    a, b = leg_push["forces"]                                   # the plate, and its mirror image
+    assert a["floor (grip)"] - b["floor (grip)"] == pytest.approx(p.fea.push_n, abs=1.0)
+    rest = fea.leg_case(p, "A", 0.0, {"A tenon": 600.0}, h=6)
+    assert rest["forces"][0]["wedge"] == pytest.approx(p.stiffness.wedge_preload, abs=2.0)
+    assert max(z["tsai_hill"] for z in rest["zones"].values()) < 0.5   # a sitter's load alone is fine
+
+
+def test_leg_fingers_bend_alone(p, leg_push):
+    """The lumped model bends the slotted part of A as one section; FE finds the fingers either side of the
+    open slot bending each on its own, the peak at the haunch fillet, many times stiffness.stresses' value."""
+    from kotatsu import stiffness
+    z = leg_push["zones"]
+    worst = max(z, key=lambda k: z[k]["tsai_hill"] if k != "contact edges" else 0)
+    assert worst == "haunch fillet"
+    assert z[worst]["sx"] > 5 * float(stiffness.stresses(p, p.fea.push_n)["leg_MPa"])
+
+
+@pytest.mark.xfail(strict=True, reason="v2 legs: a 200 N push overstresses A's haunch fillet on 14.1 mm stock (docs/fea.md)")
+def test_leg_plates_hold_the_push(leg_push):
+    assert max(v["tsai_hill"] for k, v in leg_push["zones"].items() if k != "contact edges") < 1.0

@@ -115,6 +115,8 @@ sitter_kg = 80.0      # 'beyond normal' check: someone sits on the table
 top_h = 20.0          # the top (converged to ~2 % at 20, docs/fea.md)
 deck_h = 8.0          # the X deck (36 mm arms: 4-5 elements across)
 hand = 80.0           # a pressing hand's patch, square (mm). TODO-verify: a palm is ~80 x 100
+leg_h = 3.0           # the leg plates (dogbones are 3.2 mm in radius: their arcs are meshed finer anyway)
+push_n = 200.0        # sideways push at table height for the leg plates, shared as stiffness.frame_sway says
 
 [comfort]
 knee_w = 762.0        # owner, cross-legged: knees need 30" wide ...

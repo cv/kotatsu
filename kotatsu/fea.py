@@ -140,9 +140,12 @@ def peaks(r: PlateResult, keep: np.ndarray, f_x: float, f_y: float, f_v: float) 
     of the three ratios (as loads.py), and Tsai-Hill's index, which also counts stresses that act together
     (off-axis bending, as in the deck's 45 deg arms: there it is the one to believe)."""
     sx, sy, tv = (float(np.abs(a[keep]).max()) if keep.any() else 0.0 for a in (r.sx, r.sy, r.txy))
-    th = ((r.sx / f_x) ** 2 - r.sx * r.sy / f_x ** 2 + (r.sy / f_y) ** 2 + (r.txy / f_v) ** 2)[keep]
+    th = (r.sx / f_x) ** 2 - r.sx * r.sy / f_x ** 2 + (r.sy / f_y) ** 2 + (r.txy / f_v) ** 2
+    th = np.where(keep, th, -1.0)
+    i = int(th.argmax())
+    at = tuple(round(float(x), 1) for x in r.m.p[:, r.m.t[:, i]].mean(axis=1)) if keep.any() else None
     return {"sx": sx, "sy": sy, "tau": tv, "util": max(sx / f_x, sy / f_y, tv / f_v),
-            "tsai_hill": float(np.sqrt(th.max())) if keep.any() else 0.0}
+            "tsai_hill": float(np.sqrt(max(th[i], 0.0))) if keep.any() else 0.0, "at": at}
 
 
 def near(m: MeshTri, geom, d: float) -> np.ndarray:
@@ -323,6 +326,8 @@ class Contact:
     k: float
     c0: float = 0.0
     bilateral: bool = False
+    body: int = 0        # 0: to the ground (the deck); 1: to the floor, a rigid body; 2, 3...: other small
+                         # rigid bodies (the crossing plate in a cross-lap slot, tying its two walls)
 
 
 @dataclass
@@ -351,9 +356,12 @@ def _springs(m, b, c: Contact):
 
 
 def plane(m: MeshTri, t: float, Eu: float, Ev: float, G: float, contacts: list[Contact], tractions=(),
-          it: int = 60) -> PlaneResult:
+          body_load=(0.0, 0.0), body_u: float | None = None, it: int = 60) -> PlaneResult:
     """Orthotropic plane stress (nu = 0), thickness t, P2 triangles. tractions: [(zone, (fu, fv))] total
-    forces (N) spread evenly along the boundary facets in each zone. The contacts are the only supports."""
+    forces (N) spread evenly along the boundary facets in each zone. The contacts are the only supports:
+    to the ground, or (Contact.body) to a rigid body that slides but doesn't turn (the floor under a leg,
+    the deck being the ground), loaded by body_load (fu, fv), or moved to body_u along u (the frame's sway:
+    the other legs hold the deck square over the floor). Its movement is in forces["body"]."""
     b = Basis(m, ElementVector(ElementTriP2()))
 
     @BilinearForm
@@ -361,8 +369,13 @@ def plane(m: MeshTri, t: float, Eu: float, Ev: float, G: float, contacts: list[C
         e, d = sym_grad(u), sym_grad(v)
         return t * (Eu * e[0, 0] * d[0, 0] + Ev * e[1, 1] * d[1, 1] + 4 * G * e[0, 1] * d[0, 1])
 
-    K = stiff.assemble(b).tocsr()
-    F = np.zeros(b.N)
+    from scipy.sparse import bmat, coo_matrix, diags
+    nb = max([1] + [int(c.body) for c in contacts])
+    N = b.N + 2 * nb                                   # + each rigid body's (u, v)
+    bd = lambda c: b.N + 2 * (int(c.body) - 1) + c.comp
+    K = bmat([[stiff.assemble(b), None], [None, coo_matrix((2 * nb, 2 * nb))]]).tocsr()
+    F = np.zeros(N)
+    F[b.N:b.N + 2] = body_load
     for zone, force in tractions:
         fake = Contact("", zone, 0, 1, 1.0)
         for comp in (0, 1):
@@ -371,24 +384,241 @@ def plane(m: MeshTri, t: float, Eu: float, Ev: float, G: float, contacts: list[C
             F[d] += force[comp] * w / w.sum()
     sp = [(c, *_springs(m, b, c)) for c in contacts]
     act = [np.ones(len(d), bool) for _, d, _ in sp]
-    from scipy.sparse import diags
-    reg = diags(np.full(b.N, 1e-6))                    # a whisper of ground spring: no free rigid motion
+    reg = diags(np.full(N, 1e-6))                      # a whisper of ground spring: no free rigid motion
+    if body_u is not None:
+        big = 1e9
+        reg = reg + coo_matrix(([big], ([b.N], [b.N])), shape=(N, N))
+        F[b.N] += big * body_u
+    rel = lambda c, d, u: u[d] - (u[bd(c)] if c.body else 0.0)
     for _ in range(it):
-        kd, rhs = np.zeros(b.N), F.copy()
+        rows, cols, vals, rhs = [], [], [], F.copy()
         for (c, d, k), a in zip(sp, act):
-            np.add.at(kd, d[a], k[a])
-            np.add.at(rhs, d[a], -c.sign * k[a] * c.c0)
-        u = spsolve((K + diags(kd) + reg).tocsc(), rhs)
-        new = [c.bilateral | (c.sign * u[d] + c.c0 > 0) for (c, d, k) in sp]
+            dd_, kk = d[a], k[a]
+            rows += [dd_]; cols += [dd_]; vals += [kk]
+            np.add.at(rhs, dd_, -c.sign * kk * c.c0)
+            if c.body:                                  # k (u_node - u_body): couple the node to the body
+                j = np.full(len(dd_), bd(c))
+                rows += [dd_, j, j]; cols += [j, dd_, j]; vals += [-kk, -kk, kk]
+                rhs[bd(c)] += (c.sign * kk * c.c0).sum()
+        Ks = coo_matrix((np.concatenate(vals), (np.concatenate(rows), np.concatenate(cols))), shape=(N, N))
+        u = spsolve((K + Ks + reg).tocsc(), rhs)
+        new = [c.bilateral | (c.sign * rel(c, d, u) + c.c0 > 0) for (c, d, k) in sp]
         if all(np.array_equal(x, y) for x, y in zip(new, act)):
             break
         act = new
     forces, open_ = {}, {}
     for (c, d, k), a in zip(sp, act):
-        forces[c.name] = forces.get(c.name, 0.0) - float((c.sign * k[a] * (c.sign * u[d[a]] + c.c0)).sum())
+        forces[c.name] = forces.get(c.name, 0.0) - float((c.sign * k[a] * (c.sign * rel(c, d[a], u) + c.c0)).sum())
         open_[c.name] = float(k[~a].sum() / k.sum()) if k.sum() > 0 else 1.0
+    forces["body"] = (float(u[b.N]), float(u[b.N + 1]))
+    u = u[:b.N]
     e = b.interpolate(u)
     E = sym_grad(e)
     su, sv, tuv = Eu * E[0, 0], Ev * E[1, 1], 2 * G * E[0, 1]
     pick = lambda x: x[np.arange(x.shape[0]), np.abs(x).argmax(axis=1)]
     return PlaneResult(m, u, pick(su), pick(sv), pick(tuv), forces, open_)
+
+
+# ----------------------------------------------------------------------------- the leg plates
+def top_on_legs(p, case: str | None = None) -> dict:
+    """What the top puts on each plate at its most loaded corner (N, from top_case): A's post and tenon,
+    B's post. case: a loads.cases name; default the one loading a corner most."""
+    from . import frame as fr, loads, yagura
+    L, cs = fr.layout(p), loads.cases(p)
+    best = None
+    for name, pats in cs.items():
+        if case is not None and name != case:
+            continue
+        r = top_case(p, pats)
+        k, v = max(r["corner_N"].items(), key=lambda kv: kv[1])
+        if best is None or v > best[2]:
+            best = (name, r, v, k)
+    name, r, _, k = best
+    sx, sy = (1 if k[0] == "+" else -1), (1 if k[1] == "+" else -1)
+    ax = yagura.a_runs_along_x(sx, sy)
+    line = sy * (L.cy - L.yL[0]) if ax else sx * (L.cx - L.xS[0])     # A plate's plane, centred coords
+    out = {"case": name, "corner": k, "A post": 0.0, "A tenon": 0.0, "B post": 0.0}
+    for g, R in zip(r["pads"], r["pad_N"]):
+        c = g.centroid
+        if (c.x > 0) != (sx > 0) or (c.y > 0) != (sy > 0):
+            continue
+        across, along = (c.y, abs(c.x)) if ax else (c.x, abs(c.y))
+        if abs(across - line) < L.t:
+            out["A tenon" if along < L.Lf / 2 - 2 * yagura.post_u(p) else "A post"] += R
+        else:
+            out["B post"] += R
+    return out
+
+
+def leg_contacts(p, which: str, shape, clamp_top: bool = False, rib_gap: float | None = None) -> list[Contact]:
+    """The joint as springs (stiffness.joint's values, spread along the edges): the shoulders on the deck's
+    underside, and for A the wedge on its hole's top edge and the tenon's faces on the mortise ends.
+    clamp_top: B's top edge held both ways (as stiffness.stresses assumes for B; conservative).
+    rib_gap: if given, the crossing plate sits in the cross-lap slot as a strut between its two walls at
+    each crush rib, with this gap per side (mm; 0 = just touching): it ties the fingers either side of the
+    slot sideways (no shear: they still bend each on its own). None: the slot is left empty (thin stock)."""
+    from shapely.geometry import box
+    from . import frame as fr, stiffness, yagura
+    S, M, L = p.stiffness, p.material, fr.layout(p)
+    t, zs, ks = M.t_nominal, L.z_deck_bot, S.E_perp * M.t_nominal / L.t
+    band = lambda a, b: box(a, zs - 0.3, b, zs + 0.3)
+    out = []
+    if which == "A":
+        segs = stiffness._shoulders(p, shape)
+    else:
+        strip = shape.intersection(box(-1e3, zs - 0.6, 1e4, zs - 0.1))
+        segs = [(max(g.bounds[0], L.Lf / 2 - yagura.corner_cut(p)), g.bounds[2]) for g in _parts(strip)]
+    for i, (a, b) in enumerate(segs):
+        out.append(Contact(f"shoulder {i}", band(a, b), 1, 1, ks, bilateral=clamp_top))
+        if which == "B":
+            out.append(Contact(f"shoulder {i} (grip)", band(a, b), 0, 1, ks, bilateral=True))
+    if rib_gap is not None:
+        w, d, u0 = fr.slot_w(p), yagura.lap_depth(p), p.frame.ear
+        za, zb = (zs - d, zs) if which == "A" else (0.0, d)
+        for i, f in enumerate(p.fit.crush_rib_at):
+            z = za + f * (zb - za)
+            for uw, sg in ((u0 - w / 2, 1), (u0 + w / 2, -1)):
+                out.append(Contact(f"rib {i} " + ("out" if sg > 0 else "in"), box(uw - 1.0, z - 6, uw + 1.0, z + 6), 0, sg, S.E_perp, -rib_gap, body=2 + i))
+    if which == "A":
+        ta, tb = yagura._tenon_u(p)
+        uc, ts = (ta + tb) / 2, fr.thick_slot(p)
+        _, z1 = yagura.leg_hole_z(p)
+        wl, _ = yagura.wedge_dims(p)
+        k_bear = S.E_perp * (wl - t) * t / L.t
+        out.append(Contact("wedge", box(uc - ts / 2, z1 - 0.3, uc + ts / 2, z1 + 0.3), 1, -1, k_bear / ts))
+        kh = M.E_par * t / S.bearing_len
+        for u, sg in ((ta, -1), (tb, 1)):
+            out.append(Contact("tenon face " + ("out" if sg < 0 else "in"), box(u - 0.3, zs + 0.5, u + 0.3, zs + L.t_min),
+                               0, sg, kh, -p.fit.tight))
+        pu = yagura.post_u(p)                            # the corner post meets the deck's cut-out after fit.tight
+        if pu > 0:
+            out.append(Contact("post on deck", box(pu - 0.3, zs + 0.5, pu + 0.3, zs + L.t_min), 0, 1, kh, -p.fit.tight))
+    return out
+
+
+def leg_zones(p, which: str) -> dict:
+    """Plate-local regions to report: the haunch fillet, the cross-lap slot's root, the tenon's (or post's)
+    root reliefs, the wedge hole and the bridge of wood above it."""
+    from shapely.geometry import Point, box
+    from . import frame as fr, yagura
+    F, Y, L = p.frame, p.yagura, fr.layout(p)
+    zs, d, w = L.z_deck_bot, yagura.lap_depth(p), fr.slot_w(p)
+    z = {"haunch fillet": Point(Y.leg_narrow, Y.leg_haunch_top - Y.leg_haunch_drop).buffer(25),
+         "slot root": Point(F.ear, zs - d if which == "A" else d).buffer(w / 2 + 10)}
+    if which == "A":
+        ta, tb = yagura._tenon_u(p)
+        uc, ts = (ta + tb) / 2, fr.thick_slot(p)
+        z0, z1 = yagura.leg_hole_z(p)
+        z["root reliefs"] = Point(ta, zs).buffer(10).union(Point(tb, zs).buffer(10))
+        z["bridge"] = box(uc - ts / 2 - 2, z1, uc + ts / 2 + 2, L.H)
+        z["wedge hole"] = box(uc - ts / 2, z0, uc + ts / 2, z1).buffer(6).difference(z["bridge"])
+    else:
+        z["root reliefs"] = Point(yagura.post_u(p), zs).buffer(10)
+    return z
+
+
+def leg_case(p, which: str, H: float, top: dict | None = None, N_deck: float | None = None,
+             h: float | None = None, t: float | None = None, ribs: bool = False) -> dict:
+    """One leg plate ("A" or "B") in its own plane, t thick (default the thinnest), standing on a rigid floor
+    (end grain on it, gripping it) and held at the deck by the joint springs; the top presses on its post
+    (and A's tenon) with `top` (top_on_legs). Grain runs up the leg (v).
+    A: its wedge is first tapped in to stiffness.wedge_preload. Then the floor moves sideways by the sway
+    that makes this plate and its mirror image (the other wedged plate in that direction) take H between
+    them, as stiffness.frame_sway shares a push; both senses are reported (worst of each).
+    B: no tenon, no wedge; as stiffness.stresses does, it takes stiffness.frame_sway's larger per-plate
+    share of H at its foot, its top edge clamped to the deck (an upper bound: gravity alone can't hold it).
+    ribs: the crossing plate, t thick, bears on the slot's crush ribs (leg_contacts rib_gap); else the slot is empty."""
+    from types import SimpleNamespace
+    from shapely.geometry import box
+    from . import frame as fr, stiffness, yagura
+    M, Ld, F, L = p.material, p.loads, p.fea, fr.layout(p)
+    h = F.leg_h if h is None else h
+    t = M.t_min if t is None else t
+    top = {} if top is None else top
+    shape = {pt.name: pt for pt in fr.parts(p)}[f"leg plate {which}"].shape
+    N_deck = deck_weight_n(p) / 8 if N_deck is None else N_deck
+    pu, (ta, tb) = yagura.post_u(p), yagura._tenon_u(p)
+    on_post, on_tenon = top.get(f"{which} post", 0.0), top.get("A tenon", 0.0) if which == "A" else 0.0
+    edge = lambda a, b, v: box(a, v - 0.3, b, v + 0.3)
+    m = mesh(shape, h, h_edge=h / 2)
+    trac = [(edge(0, pu, L.H), (0.0, -on_post))] + ([(edge(ta, tb, L.H), (0.0, -on_tenon))] if on_tenon else [])
+    kf = M.E_par * M.t_nominal / p.stiffness.bearing_len               # end grain on the floor, as on the deck
+    foot = edge(-1, p.frame.leg_width + 1, 0.0)
+    gap = (fr.slot_w(p) - 2 * p.fit.crush_rib - t) / 2 if ribs else None
+    cs = leg_contacts(p, which, shape, clamp_top=which == "B", rib_gap=gap) + [
+        Contact("floor", foot, 1, -1, kf, body=True), Contact("floor (grip)", foot, 0, -1, kf, bilateral=True, body=True)]
+    Nv = N_deck + on_post + on_tenon
+    run = lambda **kw: plane(m, t, Ld.E_cross, M.E_par, Ld.G_plate, cs, trac, **kw)
+    wedge = next((c for c in cs if c.name == "wedge"), None)
+    if which == "B":
+        sh = stiffness.frame_sway(p, H, "x").get("per_plate_N", [H / 2])
+        res = [run(body_load=(max(abs(x) for x in sh), Nv))]
+        delta = None
+    else:
+        P0, xs, fs = p.stiffness.wedge_preload, [0.02, 0.08], []     # tap the wedge in: secant on interference
+        for i in range(8):
+            if i >= 2:
+                xs.append(xs[-1] + (P0 - fs[-1]) * (xs[-1] - xs[-2]) / ((fs[-1] - fs[-2]) or 1e-9))
+            wedge.c0 = xs[i]
+            fs.append(run(body_load=(0.0, Nv), body_u=0.0).forces["wedge"])
+            if i >= 2 and abs(fs[-1] - P0) < 1.0:
+                break
+        pair = lambda d: (run(body_load=(0.0, Nv), body_u=d), run(body_load=(0.0, Nv), body_u=-d))
+        tot = lambda rr: rr[0].forces["floor (grip)"] - rr[1].forces["floor (grip)"]
+        ds, rs = [1.0, 3.0], []                                          # sway: secant on the pair's total
+        for i in range(8):
+            if i >= 2:
+                ds.append(ds[-1] + (H - tot(rs[-1])) * (ds[-1] - ds[-2]) / ((tot(rs[-1]) - tot(rs[-2])) or 1e-9))
+            rs.append(pair(ds[i]))
+            if i >= 2 and abs(tot(rs[-1]) - H) < 0.5:
+                break
+        res, delta = list(rs[-1]), ds[len(rs) - 1]
+    zones = leg_zones(p, which)
+    c = m.p[:, m.t].mean(axis=1)
+    loaded = unary_union([z for z, _ in trac] + [x.zone for x in cs]).buffer(3.0)
+    rest = ~contains_xy(unary_union(list(zones.values())).union(loaded), c[0], c[1])
+    args = (M.f_m, Ld.f_m_cross, Ld.f_v_plate)
+    clear = ~contains_xy(loaded, c[0], c[1])                          # contact ends: local bearing peaks
+    sel = {**{k: contains_xy(z, c[0], c[1]) & clear for k, z in zones.items()}, "leg elsewhere": rest,
+           "contact edges": ~clear}
+    out = {}
+    for k, msk in sel.items():                                        # worst of the two senses
+        pk = [peaks(SimpleNamespace(sx=x.sv, sy=x.su, txy=x.tuv, m=m), msk, *args) for x in res]   # sx = along grain
+        out[k] = max(pk, key=lambda d: d["tsai_hill"])
+    for x in res:
+        x.forces.pop("body")
+    return {"which": which, "H": H, "t": t, "h": h, "elements": m.t.shape[1], "zones": out, "sway_mm": delta,
+            "forces": [{k: round(v, 1) for k, v in x.forces.items()} for x in res],
+            "open": [{k: round(v, 2) for k, v in x.open_.items()} for x in res], "result": res}
+
+
+def deck_weight_n(p) -> float:
+    """Deck + cheeks + wedges + heater (N), as stiffness.frame_sway counts it."""
+    from . import frame as fr
+    parts = fr.parts(p)
+    a = sum(pt.shape.area * pt.qty for pt in parts if pt.kind in ("deck", "cheek", "wedge"))
+    return (a / 1e6 * p.material.t_nominal / 1000 * p.material.density_kg_m3 + p.comfort.heater_kg) * 9.81
+
+
+def leg_report(p, h: float | None = None) -> dict:
+    """The leg plates: A under fea.push_n (alone, and with the top's worst corner load on it), A with that
+    load alone, B's upper bound; next to stiffness.stresses / frame_sway. Use of strength is Tsai-Hill."""
+    from . import stiffness
+    H = p.fea.push_n
+    top = top_on_legs(p)
+    lump = stiffness.stresses(p, H)
+    out = {"lumped (stiffness.stresses)": {"leg_MPa": float(lump["leg_MPa"]),
+                                           "wedge_bridge_shear_MPa": float(lump["wedge_bridge_shear_MPa"]),
+                                           "sway_mm": round(stiffness.frame_sway(p, H, "x")["sway_mm"], 1)},
+           "top load": {k: (round(v) if isinstance(v, float) else v) for k, v in top.items()}}
+    runs = {f"A, {H:g} N push": ("A", H, None), f"A, {H:g} N push + top load": ("A", H, top),
+            "A, top load only": ("A", 0.0, top), f"B, its share of {H:g} N, top edge clamped": ("B", H, top),
+            f"A, {H:g} N push, nominal stock, crossing plate on the crush ribs": ("A", H, None)}
+    for name, (w, hh, tp) in runs.items():
+        nom = "nominal" in name
+        r = leg_case(p, w, hh, tp, h=h, t=p.material.t_nominal if nom else None, ribs=nom)
+        out[name] = {"sway_mm": None if r["sway_mm"] is None else round(r["sway_mm"], 1),
+                     "wedge_N": max((x.get("wedge", 0.0) for x in r["forces"]), default=0.0),
+                     **{k: {"MPa": [round(v["sx"], 1), round(v["sy"], 1), round(v["tau"], 1)],
+                            "use_%": round(100 * v["tsai_hill"]), "at": v["at"]} for k, v in r["zones"].items()}}
+    return out
