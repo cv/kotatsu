@@ -51,6 +51,11 @@ def back_s(p) -> tuple[float, float]:
     return s0, s0 + Z.back_h
 
 
+def post_end(p) -> float:
+    """The post stops post_cap past the back panel's top edge (measured along it): nothing to carry above."""
+    return back_s(p)[1] + _z(p).post_cap
+
+
 def back_tabs(p) -> list[float]:
     """Each back tab's lower edge, measured up the panel from its lower edge (installed, dropped)."""
     Z = _z(p)
@@ -105,9 +110,11 @@ def side(p) -> Polygon:
     tan = _tan(p)
     run = box(0, 0, Z.runner_len, Z.runner_h)
     y0 = post_origin(p)
-    post = LineString([(y0, -50), (y0 + (Z.post_top + 50) * tan, Z.post_top + 50)]).buffer(Z.post_w / 2, cap_style="flat")
-    g = unary_union([run, post]).intersection(box(-1, 0, 5000, Z.post_top))
-    g = g.buffer(Z.fillet_r).buffer(-Z.fillet_r).intersection(box(-1, 0, 5000, Z.post_top))   # inside fillet
+    s_end = post_end(p)
+    post = LineString([(y0 - 60 * tan, -60), (y0 + s_end * math.sin(math.radians(Z.recline)),
+                                              s_end * math.cos(math.radians(Z.recline)))]).buffer(Z.post_w / 2, cap_style="flat")
+    g = unary_union([run, post]).intersection(box(-1, 0, 5000, 5000))
+    g = g.buffer(Z.fillet_r).buffer(-Z.fillet_r).intersection(box(-1, 0, 5000, 5000))   # inside fillet
     g = fr._round_outer(g, Z.edge_r)
     sw = fr.slot_w(p)
     ys, zt = stretcher_y(p) - p.fit.slot_clearance / 2, stretcher_tab_z(p)
@@ -153,10 +160,10 @@ def stretcher(p) -> Polygon:
 def back(p) -> Polygon:
     """Back panel in (u = X, v = up the panel from its lower edge), with a cut-out (weight, and a handle)."""
     Z = _z(p)
-    half, m = Z.seat_w / 2, Z.back_frame
+    half, m, st = Z.seat_w / 2, Z.back_frame, Z.back_stile
     body = box(-half + 0.5, 0, half - 0.5, Z.back_h)
     g = _hook_tabs(p, half, back_tabs(p), body)
-    return g.difference(fr._round_outer(box(-half + m, m, half - m, Z.back_h - m), 40.0))
+    return g.difference(fr._round_outer(box(-half + st, m, half - st, Z.back_h - m), 40.0))
 
 
 # ----------------------------------------------------------------------------- placement
@@ -232,12 +239,43 @@ def tipping_n(p) -> float:
     return Z.sitter_n * (Z.runner_len - xs) / Z.lean_z
 
 
-def post_stress(p) -> float:
-    """Bending stress (MPa) at the post's root under lean_n shared by the two posts (in-plane, thinnest
-    stock)."""
+def post_stress(p, n: float | None = None) -> float:
+    """Worst in-plane bending stress (MPa) in a post: at its root (the runner's top) and through the lower back
+    slot (net of the slot), under a lean of n (default back_check_n) at lean_z, shared by the two posts.
+    Thinnest stock."""
     Z, t = _z(p), p.material.t_min
-    M = Z.lean_n / 2 * (Z.lean_z - Z.runner_h)
-    return M / (t * Z.post_w ** 2 / 6)
+    n = Z.back_check_n if n is None else n
+    a = math.radians(Z.recline)
+    w, sw = Z.post_w, fr.slot_w(p)
+    out = (n / 2) * (Z.lean_z - Z.runner_h) / (t * w ** 2 / 6)
+    s0, _ = back_s(p)
+    for v0 in back_tabs(p):
+        z = (s0 + v0 + (Z.tab_w + Z.hook_drop) / 2) * math.cos(a)
+        if z < Z.lean_z:
+            S = 2 * t * (w ** 3 - sw ** 3) / 12 / w
+            out = max(out, (n / 2) * (Z.lean_z - z) / S)
+    return out
+
+
+def back_stress(p, n: float | None = None) -> tuple[float, float]:
+    """The back panel face-on under a lean of n (default back_check_n) at mid-span, simply supported in the
+    posts' slots: (stress MPa, sag mm) in its two rails, thinnest stock, across the face grain (worst)."""
+    Z, t = _z(p), p.material.t_min
+    n = Z.back_check_n if n is None else n
+    E = p.loads.E_cross
+    L, b = Z.seat_w, 2 * Z.back_frame
+    return n * L / 4 / (b * t * t / 6), n * L ** 3 / (48 * E * b * t ** 3 / 12)
+
+
+def board_stress(p, n: float | None = None) -> tuple[float, float]:
+    """The seat board face-on under a sitter of n (default seat_check_n) at mid-span, simply supported on its
+    tabs: (stress MPa, sag mm) through the section beside the cut-out, thinnest stock, across the grain."""
+    Z, t = _z(p), p.material.t_min
+    n = Z.seat_check_n if n is None else n
+    E = p.loads.E_cross
+    L = Z.seat_w
+    b = Z.seat_d - (Z.seat_d * Z.board_cut_depth - Z.board_frame)
+    return n * L / 4 / (b * t * t / 6), n * L ** 3 / (48 * E * b * t ** 3 / 12)
 
 
 def kg_per_chair(p) -> float:

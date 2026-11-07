@@ -101,8 +101,35 @@ def test_no_tipping_back():
     assert zaisu.tipping_n(P) >= 1.5 * Z.lean_n
 
 
+F = P.loads.f_m_cross          # the weaker way round: the nester may turn a part either way
+
+
 def test_post_strength():
-    assert zaisu.post_stress(P) <= 0.3 * P.material.f_m
+    assert zaisu.post_stress(P) <= 0.4 * F                  # a flop back, root and through the lower slot
+
+
+def test_back_panel_strength():
+    stress, sag = zaisu.back_stress(P)
+    assert stress <= 0.5 * F and sag <= 6.0
+
+
+def test_seat_board_strength():
+    stress, sag = zaisu.board_stress(P)
+    assert stress <= 0.5 * F
+    assert sag < Z.board_lift - 5                           # it stays off the floor
+
+
+def test_wood_beside_the_post_slots():
+    """Shop rule: no wood narrower than the sheet. The post's edges vs each back slot (dogbones too)."""
+    from shapely.geometry import Polygon
+    y0 = zaisu.post_origin(P)
+    upright = rotate(translate(SIDE, -y0, 0), Z.recline, origin=(0, 0))
+    s0, _ = zaisu.back_s(P)
+    edges = [box(-Z.post_w / 2 - 50, 0, -Z.post_w / 2, 2000), box(Z.post_w / 2, 0, Z.post_w / 2 + 50, 2000)]
+    for v0 in zaisu.back_tabs(P):
+        hole = _hole_at(upright, 0, s0 + v0 + 1)
+        assert min(hole.distance(e) for e in edges) >= P.material.t_nominal - 1e-6
+        assert zaisu.post_end(P) - hole.bounds[3] >= P.material.t_nominal      # and above the top slot
 
 
 def test_chairs_beside_the_table():

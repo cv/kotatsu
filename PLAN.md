@@ -15,7 +15,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
 | Wedges | 12 + 2 spares | **4 + 2 spares** |
 | Top | square, R20 corners (re-rounded by hand) | **squircle** (n = 10), cut in the file; feet and deck rounder to match |
 | Parts, weight, cutting | 26, 15.9 kg, 25.5 m | **18, 11.3 kg, 22.7 m** |
-| Chairs | none | **two zaisu** (floor chairs), cut with the table: 10 parts, 7.5 kg, no wedges |
+| Chairs | none | **two zaisu** (floor chairs), cut with the table: 10 parts, 6.8 kg, no wedges |
 
 ## Decisions
 
@@ -70,20 +70,25 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
   a radius that starts abruptly. The corner posts stay 28 mm inside its edge (v1: 40). The futon lies
   over the heater as in a traditional open frame (v1 had the deck in between).
 - **Zaisu (2 chairs, 5 parts each; `kotatsu/zaisu.py`).** No wedges: gravity and the sitter hold them.
-  - **Side frames (2 a chair, 655 × 560 mm):** a 60 × 560 mm floor runner and a 60 mm back post leaning
-    back 15°, with an R50 fillet between them.
+  - **Side frames (2 a chair, 611 × 449 mm):** a 60 × 560 mm floor runner and a 50 mm back post leaning
+    back 15°, with an R50 fillet between them. The post stops 15 mm past the back panel's top (owner,
+    2026-11: it was 60 mm wide and stood 130 mm higher, carrying nothing); 50 mm is the narrowest that
+    keeps 15 mm of wood beside its slots.
   - **Seat board (440 × 400 mm between the sides):** two 40 mm tabs a side pass through holes in the
     runners, 16 mm off the floor. The wood under each hole can't be thinner than the sheet (with its
     dogbones), so the seat's top is at **31 mm**, the lowest it can go. Sitting on the board holds the
     runners down, so the chair can't tip back. A cut-out under the thighs saves weight.
   - **Front stretcher and back panel:** they hook into slots in the sides. Each goes in 8 mm high, then
     drops, so a finger on each tab hangs behind the side frame; they stop the sides spreading. The back
-    (440 × 300 mm, up the incline) has a cut-out that is also a handle.
+    (440 × 300 mm, up the incline) has a cut-out that is also a handle. Its 60 mm rails carry the lean
+    face-on; its sides are only 30 mm, since the bending is close to nothing at the posts.
   - Checks (`tests/test_zaisu.py`): the hooks go in and lock, and the board's tabs fit, from 14.1 to
-    15.7 mm. A 60 kg sitter only tips back past a 540 N lean at 35 cm (1.8× a hard 300 N lean); the posts
-    see 5 MPa (15 % of the rough strength). 3.7 kg a chair.
+    15.7 mm. A 60 kg sitter only tips back past a 540 N lean at 35 cm (1.8× a hard 300 N lean). On the
+    thinnest stock, across the grain (30 MPa, rough): a 450 N flop back puts 11 MPa (37 %) in the posts and
+    12 MPa (41 %, 4.4 mm of sag) in the back panel; a 1000 N sitter drop puts 14 MPa (46 %, 4.9 mm) in the
+    seat board, which stays off the floor. 3.4 kg a chair. TODO-verify the check loads against EN 12520.
 
-That's **18 table parts, about 11.3 kg, 22.7 m of cutting**, plus **10 chair parts, 7.5 kg, 24.4 m**.
+That's **18 table parts, about 11.3 kg, 22.7 m of cutting**, plus **10 chair parts, 6.8 kg, 23.7 m**.
 With the chairs, my nester needs one 60 × 120" sheet (the table alone fit a 48 × 96"). uMake lays out
 the sheets itself and prices per part, so this only matters for my estimate.
 Leg plates are laid with the grain running up the leg.
@@ -146,11 +151,11 @@ corner, and the wedges and deck don't carry any of the weight from above.
 | Item | Cost |
 |---|---|
 | Heater (PaletteLife, amazon.ca, delivered) | $258 |
-| uMake order: 28 parts at 15mm, about $479 + 12 % tax by my estimate (the table alone quoted $328.70, `docs/quote.md`; the chairs aren't quoted yet). 18.8 kg, about 18.4 kg in uMake's cart: still free shipping | $536 |
+| uMake order: 28 parts at 15mm, about $474 + 12 % tax by my estimate (the table alone quoted $328.70, `docs/quote.md`; the chairs aren't quoted yet). 18.1 kg, about 17.7 kg in uMake's cart: still free shipping | $531 |
 | Futon: 205 cm square from Etsy, or a queen duvet + cover from Douglas | $185–230 |
 | Sandpaper and finishing oil | $30–50 |
 | Zaisu cushions (2, about 45 × 45 cm: TODO pick) | TODO |
-| **Total** | **about $1010–1075 + cushions** |
+| **Total** | **about $1005–1070 + cushions** |
 
 ## Off-season storage
 Everything packs flat inside the top's footprint, in three layers (kotatsu/storage.py packs it by itself).
