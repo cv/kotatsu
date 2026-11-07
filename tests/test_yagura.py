@@ -57,17 +57,25 @@ def test_tenons_fit_deck_mortises(Y, t):
 
 
 def test_plates_shoulder_under_the_deck_and_tenons_reach_the_top(Y):
+    """Posts (both plates) and A's tenon reach the top; B (v2) has no tenon: nothing past its post rises
+    above its shoulder, so its whole top edge bears on the deck."""
     P, L, parts = Y
     ta, tb = yagura._tenon_u(P)
     zs = L.z_deck_bot
     for name in ("leg plate A", "leg plate B"):
         g = parts[name].shape
-        assert g.bounds[3] == pytest.approx(L.H), "tenon tops carry the futon + top"
+        assert g.bounds[3] == pytest.approx(L.H), "post (and A's tenon) tops carry the futon + top"
         pu = yagura.post_u(P)
         assert empty(g, box(pu + 5, zs + 0.5, ta - 5, L.H + 5)) and empty(g, box(tb + 5, zs + 0.5, 400, L.H + 5))
         if pu:
             assert g.intersection(box(1, L.H - 2, pu - 1, L.H)).area > 0.9 * (pu - 2) * 2, "corner post reaches the top"
-        assert g.intersection(box(ta + 1, zs - 1, tb - 1, L.H - 1)).area > 0.8 * (tb - ta - 2) * (L.H - zs) * 0.6
+        tenon = g.intersection(box(ta + 1, zs - 1, tb - 1, L.H - 1)).area
+        if name == "leg plate A":
+            assert tenon > 0.8 * (tb - ta - 2) * (L.H - zs) * 0.6
+        else:
+            assert empty(g, box(pu + 5, zs + 0.5, 400, L.H + 5)), "B: no tenon"
+            assert g.intersection(box(pu + 5, zs - 0.6, P.frame.leg_width - 7, zs - 0.1)).area > \
+                0.99 * 0.5 * (P.frame.leg_width - 12 - pu - 5), "B: flat shoulder all along"
 
 
 @pytest.mark.parametrize("t_deck", T_RANGE)
@@ -119,7 +127,7 @@ def test_one_wedged_plate_per_leg_alternating(Y):
     ca = {(1 if (pl.origin[0] > L.cx) else -1, 1 if (pl.origin[1] > L.cy) else -1) for pl in A.placements}
     cb = {(1 if (pl.origin[0] > L.cx) else -1, 1 if (pl.origin[1] > L.cy) else -1) for pl in B.placements}
     assert len(ca) == 4 and len(cb) == 4, "one A and one B plate at every corner"
-    wm = yagura.wedged_mortises(P)
+    wm = yagura.mortises(P)
     assert len(wm) == 4 and len({(1 if m[0] > L.cx else -1, 1 if m[1] > L.cy else -1) for m in wm}) == 4
 
 
@@ -191,6 +199,8 @@ def test_x_deck(Y):
     for m in yagura.mortises(P):
         around = box(*m).buffer(P.deck.pad_margin - 0.5).intersection(blank)          # within pad_margin
         assert around.difference(d).difference(holes).area < 1.0, f"wood round mortise {m}"
+    for sh in yagura.b_shoulders(P):
+        assert sh.difference(d).area < 5.0, "each B shoulder bears on the deck (the post cut-out's dogbone nibbles ~3 mm2)"
     for w in yagura.wedge_footprints(P):
         assert w.intersection(blank).difference(d).difference(holes).area < 1.0, "a wedge lies on wood"
     core = d.buffer(-(P.deck.arm_w / 2 - 1.0))

@@ -16,7 +16,7 @@ Joints
     two wedged plates. (Gravity alone everywhere can't work: the ~20 N on each plate is far too little to
     keep the shoulders down, and the tenon rocks in its mortise.)
   * heater cradle -> deck: the cheeks' ears rest on the deck top (gravity), the bodies locate in the well.
-Assembly: cross the 4 pairs of plates into "+" legs, stand them up, lower the deck over the 8 tenons,
+Assembly: cross the 4 pairs of plates into "+" legs, stand them up, lower the deck over the 4 tenons,
 tap in the 4 wedges; screw the heater between the cheeks and lower the cradle into the well.
 """
 from __future__ import annotations
@@ -43,7 +43,8 @@ def leg_hole_z(p) -> tuple[float, float]:
 
 
 def leg_plate(p, slotted_from_top: bool) -> Polygon:
-    """One leg plate in its own (u from the frame edge inward, v = z) plane."""
+    """One leg plate in its own (u from the frame edge inward, v = z) plane. A (slotted from the top) has the
+    tenon through the deck and its wedge hole; B (v2) has none: its top edge is all shoulder, under the deck."""
     F, L, r = p.frame, fr.layout(p), fr._rd(p)
     zs, H = L.z_deck_bot, L.H
     wt = F.leg_width
@@ -56,18 +57,20 @@ def leg_plate(p, slotted_from_top: bool) -> Polygon:
     g = unary_union([fr._round_outer(g, F.foot_r).intersection(lo),
                      fr._round_outer(g, F.shoulder_r).intersection(hi)]).buffer(0)
     ta, tb = _tenon_u(p)
-    g = g.union(fr._round_outer(box(ta, zs - 10, tb, H), 3.0))
+    if slotted_from_top:
+        g = g.union(fr._round_outer(box(ta, zs - 10, tb, H), 3.0))
     pu = post_u(p)
     if pu > 0:                                           # corner post: the ear arm rises to the top too
         g = g.union(fr._round_outer(box(0, zs - 10, pu, H), 3.0).intersection(box(0, 0, pu, H)))
         if not slotted_from_top:                         # B: shoulder runs on from the post -> root relief
             g = g.difference(fr.dogbone((pu, zs), (1, 1), r))
-    g = g.difference(fr.dogbone((ta, zs), (-1, 1), r))   # root reliefs: the shoulders seat flat on the deck
-    if tb < wt - 0.01:
-        g = g.difference(fr.dogbone((tb, zs), (1, 1), r))
-    hz0, hz1 = leg_hole_z(p)
-    uc, ts = (ta + tb) / 2, fr.thick_slot(p)
-    g = g.difference(fr.hole(uc - ts / 2, hz0, uc + ts / 2, hz1, r))
+    if slotted_from_top:                                 # A's tenon: root reliefs (the shoulders seat flat), wedge hole
+        g = g.difference(fr.dogbone((ta, zs), (-1, 1), r))
+        if tb < wt - 0.01:
+            g = g.difference(fr.dogbone((tb, zs), (1, 1), r))
+        hz0, hz1 = leg_hole_z(p)
+        uc, ts = (ta + tb) / 2, fr.thick_slot(p)
+        g = g.difference(fr.hole(uc - ts / 2, hz0, uc + ts / 2, hz1, r))
     w, d = fr.slot_w(p), lap_depth(p)
     u = F.ear
     if slotted_from_top:
@@ -137,28 +140,25 @@ def a_runs_along_x(sx: int, sy: int) -> bool:
 
 def mortise_info(p) -> list[tuple[tuple[float, float, float, float], str, int, int]]:
     """Every deck mortise as ((x0, y0, x1, y1) world, plate axis, sx, sy): tenon + in-plane clearance,
-    thickest stock."""
+    thickest stock. v2: one per corner, for the A plate's tenon (B plates have none)."""
     L = fr.layout(p)
     ta, tb = _tenon_u(p)
     c, h = p.fit.tight, fr.thick_slot(p) / 2
     out = []
     for y, sy in zip(L.yL, (-1, 1)):                     # x plates (in the x-z plane at y)
         for (a, b), sx in zip(((L.O + ta, L.O + tb), (L.O + L.Lf - tb, L.O + L.Lf - ta)), (-1, 1)):
-            out.append(((a - c, y - h, b + c, y + h), "x", sx, sy))
+            if a_runs_along_x(sx, sy):
+                out.append(((a - c, y - h, b + c, y + h), "x", sx, sy))
     for x, sx in zip(L.xS, (-1, 1)):                     # y plates (in the y-z plane at x)
         for (a, b), sy in zip(((L.O + ta, L.O + tb), (L.O + L.Wf - tb, L.O + L.Wf - ta)), (-1, 1)):
-            out.append(((x - h, a - c, x + h, b + c), "y", sx, sy))
+            if not a_runs_along_x(sx, sy):
+                out.append(((x - h, a - c, x + h, b + c), "y", sx, sy))
     return out
 
 
 def mortises(p) -> list[tuple[float, float, float, float]]:
-    """World (x0, y0, x1, y1) of the 8 deck mortises."""
+    """World (x0, y0, x1, y1) of the 4 deck mortises, each with a wedge through its tenon."""
     return [m for m, *_ in mortise_info(p)]
-
-
-def wedged_mortises(p) -> list[tuple[float, float, float, float]]:
-    """The 4 mortises whose tenons take a wedge: the A plate's at each corner."""
-    return [m for m, axis, sx, sy in mortise_info(p) if (axis == "x") == a_runs_along_x(sx, sy)]
 
 
 def deck_blank(p) -> Polygon:
@@ -187,17 +187,36 @@ def wedge_footprints(p) -> list[Polygon]:
     wl, _ = wedge_dims(p)
     t = p.material.t_max
     out = []
-    for x0, y0, x1, y1 in wedged_mortises(p):
+    for x0, y0, x1, y1 in mortises(p):
         xc, yc = (x0 + x1) / 2, (y0 + y1) / 2
         out.append(box(xc - t / 2, yc - wl / 2, xc + t / 2, yc + wl / 2) if x1 - x0 > y1 - y0
                    else box(xc - wl / 2, yc - t / 2, xc + wl / 2, yc + t / 2))
     return out
 
 
+def b_shoulders(p) -> list[Polygon]:
+    """Plan (world x-y) of each B plate's top edge under the deck, from its post to its inner end: the
+    deck rests on it, and it keeps the plate trapped against the floor."""
+    L, t = fr.layout(p), p.material.t_max
+    a, b = L.O + post_u(p) + 2 * fr._rd(p), L.O + p.frame.leg_width   # from past B's root relief at the post
+    out = []
+    for _, axis, sx, sy in mortise_info(p):              # one B per corner, across the A plate
+        if axis == "x":                                  # A along x -> B along y, at x = xS
+            x = L.xS[0 if sx < 0 else 1]
+            y0, y1 = (a, b) if sy < 0 else (L.O + L.Wf - b, L.O + L.Wf - a)
+            out.append(box(x - t / 2, y0, x + t / 2, y1))
+        else:
+            y = L.yL[0 if sy < 0 else 1]
+            x0, x1 = (a, b) if sx < 0 else (L.O + L.Lf - b, L.O + L.Lf - a)
+            out.append(box(x0, y - t / 2, x1, y + t / 2))
+    return out
+
+
+
 def pads(p) -> list[Polygon]:
     """Each corner's pad: the box round its mortises and lying wedge, pad_margin out."""
     L, D = fr.layout(p), p.deck
-    keep = unary_union([box(*m) for m in mortises(p)] + wedge_footprints(p))
+    keep = unary_union([box(*m) for m in mortises(p)] + wedge_footprints(p) + b_shoulders(p))
     out = []
     for sx in (-1, 1):
         for sy in (-1, 1):
@@ -227,7 +246,7 @@ def arms(p) -> list[Polygon]:
 def deck(p) -> Polygon:
     """Deck in world x-y (v2): X-shaped. Corner pads, a ring round the heater well and four diagonal arms,
     the inside corners filleted (fillet_r) and the outside ones rounded (edge_r), cut around the posts,
-    with the 8 mortises and the well."""
+    with the 4 mortises and the well."""
     D, r = p.deck, fr._rd(p)
     if D.edge_r >= D.arm_w / 2:
         raise ValueError("[deck] edge_r must stay under arm_w / 2, or the rounding eats the arms")
@@ -290,7 +309,7 @@ def parts(p) -> list[Part]:
     # wedges lie on the deck and pass through each A plate's tenon, normal to its plate
     wl, _ = wedge_dims(p)
     lw = []
-    for x0, y0, x1, y1 in wedged_mortises(p):
+    for x0, y0, x1, y1 in mortises(p):
         xc, yc = (x0 + x1) / 2, (y0 + y1) / 2
         if x1 - x0 > y1 - y0:          # x plate tenon: wedge runs along y (plate in the y-z plane)
             lw.append(Placement("y", (xc - t / 2, yc - wl / 2, L.z_deck_top)))
