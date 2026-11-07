@@ -189,7 +189,8 @@ def top_case(p, patches, h: float | None = None, t: float | None = None) -> dict
     idle = [i for i, R in enumerate(per_pad) if R < 0.5]                  # pads carrying (next to) nothing
     return {"t": t, "h": h, "elements": m.t.shape[1], "sag_mm": float(r.w.max()), "rise_mm": float(-r.w.min()),
             "peak": pk, "away": pa, "corner_N": {k: round(v, 1) for k, v in sorted(corners.items())},
-            "pads": pads, "pad_N": per_pad, "idle_pads": idle, "load_N": float((q * _areas(m)).sum()), "result": r}
+            "pads": pads, "pad_N": per_pad, "idle_pads": idle, "load_N": float((q * _areas(m)).sum()), "result": r,
+            "local": ~away}                              # elements over or next to a pad: local peaks
 
 
 def pressure(m: MeshTri, patch, force: float) -> np.ndarray:
@@ -294,7 +295,7 @@ def deck_case(p, loads_, h: float | None = None, t: float | None = None, wedges:
                         for x in above],
             "support_N": float(r.reaction.sum()),
             "A_tops_N": [float(r.reaction[np.where(in_any(m, [x], at="vertices"))[0]].sum()) for x in below[:len(below) // 2]],
-            "away": peaks(r, away, *args), "result": r,
+            "away": peaks(r, away, *args), "result": r, "local": ~away,
             **{k: peaks(r, zone(z), *args) for k, z in deck_zones(p).items()}}
 
 
@@ -588,6 +589,7 @@ def leg_case(p, which: str, H: float, top: dict | None = None, N_deck: float | N
     for x in res:
         x.forces.pop("body")
     return {"which": which, "H": H, "t": t, "h": h, "elements": m.t.shape[1], "zones": out, "sway_mm": delta,
+            "local": ~clear,                                                   # contact ends: bearing peaks
             "forces": [{k: round(v, 1) for k, v in x.forces.items()} for x in res],
             "open": [{k: round(v, 2) for k, v in x.open_.items()} for x in res], "result": res}
 

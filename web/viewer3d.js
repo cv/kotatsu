@@ -7,6 +7,7 @@ import GUI from "lil-gui";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { birchFace, plyEdge, cotton, braidedRug } from "./textures.js";
 import { ambiance } from "./ambiance.js";
+import { heatSlab, bend, loadMarks, maxDisp, GRADIENT } from "./fea3d.js";
 
 // Lighting moods. Key = a window light from the front-left (casts the shadows); env = soft image-based
 // fill from a generic room (gives the glaze and aluminium something to reflect); lamp = a warm pendant
@@ -93,7 +94,8 @@ export class Viewer3D {
     this.grid = grid;
     this.root = new THREE.Group(); this.scene.add(this.root);
     this.state = { table: null, assembly: null, showTop: true, showFrame: true, showHeater: true,
-      showFuton: true, showRug: true, showChairs: true, showPillows: true, showAmbiance: true, light: "day" };
+      showFuton: true, showRug: true, showChairs: true, showPillows: true, showAmbiance: true, light: "day",
+      fea: "off", feaBend: 0, feaPulse: true };
     new ResizeObserver(() => this.resize()).observe(container);
     this.caption = document.createElement("div"); this.caption.className = "asm-caption"; container.appendChild(this.caption);
   }
@@ -121,6 +123,7 @@ export class Viewer3D {
       this.gui.add(this.state, "showRug").name("rug").onChange(() => this.place());
       this.gui.add(this.state, "showAmbiance").name("ambiance").onChange(() => this.place());
       this.gui.add(this.state, "light", Object.keys(LIGHT)).name("light").onChange(() => this.applyLight());
+      if (data.fea) this.feaGui(data.fea);
     }
     this.build();
   }
@@ -128,7 +131,7 @@ export class Viewer3D {
   build() {
     const d = this.data; if (!d) return;
     this.root.clear();
-    this.items = []; this.glows = [];
+    this.items = []; this.glows = []; this.slots = {};   // slots: where each part sits, for the FEA heat maps
     const t = d.thickness;
     const which = this.state.table === "all" ? d.tables : d.tables.filter((x) => x.name === this.state.table);
     let dx = 0;
@@ -144,6 +147,7 @@ export class Viewer3D {
     this.applyLight();
     if (!this.framed) { this.framed = true; this.frame(); }
     this.place();
+    if (this.feaCase) this.feaShow(false);   // the heat maps sit on the parts just rebuilt
   }
 
   addTable(T, dx, t) {
@@ -160,6 +164,7 @@ export class Viewer3D {
     opt.boards.forEach((h) => {
       const m = slab(h, t, "top", "u"); m.position.z = ztop;
       push(m, "top", A.top, true);
+      (this.slots.top ??= []).push({ M: new THREE.Matrix4().makeTranslation(off.x, off.y, ztop), mirror: false, it: this.items.at(-1) });
     });
     const byName = Object.fromEntries(F.parts.map((p) => [p.name, p]));
     for (const pl of F.placed) {
@@ -174,6 +179,9 @@ export class Viewer3D {
       }
       const kind = pl.kind === "wedge" ? "wedge" : pl.kind === "chair" ? "chair" : "frame";
       push(m, kind, pl.moves, pl.kind !== "frame"); // the legs are there from the start
+      const M = pl.matrix ? new THREE.Matrix4().set(...pl.matrix)
+        : (pl.axis !== "z" ? BASIS[pl.axis].clone() : new THREE.Matrix4()).premultiply(new THREE.Matrix4().makeTranslation(...pl.origin));
+      (this.slots[pl.part] ??= []).push({ M: M.premultiply(new THREE.Matrix4().makeTranslation(off.x, off.y, off.z)), mirror: !!pl.mirror, it: this.items.at(-1) });
     }
     const hz = F.heater;
     const heater = new THREE.Mesh(new THREE.BoxGeometry(...hz.size), new THREE.MeshStandardMaterial({ color: COL.heater, roughness: 0.5 }));
@@ -237,7 +245,8 @@ export class Viewer3D {
   }
 
   place() {
-    const S = this.state, s = S.assembly ?? this.steps?.length ?? 0;
+    const S = this.state, fc = this.feaCase;
+    const s = fc ? (this.steps?.length ?? 0) : (S.assembly ?? this.steps?.length ?? 0); // FEA: the table as built
     if (this.grid) this.grid.visible = !S.showAmbiance;
     const local = (m) => Math.min(1, Math.max(0, (s - m.step - m.a) / (m.b - m.a)));
     const ease = (x) => x * x * (3 - 2 * x);
@@ -247,6 +256,10 @@ export class Viewer3D {
         ambTop: S.showAmbiance && S.showTop, amb: S.showAmbiance, ambFloor: S.showAmbiance }[it.kind];
       const started = !it.moves?.length || s > it.moves[0].step + it.moves[0].a;
       it.obj.visible = vis && (started || !it.hideBefore);
+      if (fc) { // a heat map: just the frame (and the top, if it's the top's case); the analysed part is painted
+        const keep = it.kind === "frame" || it.kind === "wedge" || (it.kind === "heater" && fc.part !== "deck") || (it.kind === "top" && fc.part === "top");
+        it.obj.visible = keep && !this.feaHidden?.has(it);
+      }
       it.obj.position.copy(it.base);
       for (const m of it.moves || []) {
         const k = 1 - ease(local(m));
@@ -264,6 +277,85 @@ export class Viewer3D {
     this.caption.textContent = s < n && k >= 0 ? `Step ${k + 1} of ${n} · ${this.steps[k]}` : "";
     this.caption.hidden = !this.caption.textContent;
     this.render();
+  }
+
+  // ---------------------------------------------------------------- FEA heat maps (kotatsu/fea_view.py)
+  feaGui(info) {
+    const f = this.gui.addFolder("stress (FEA)");
+    this.feaInfo = info;
+    this.feaCtl = f.add(this.state, "fea", ["off"]).name("load case").onChange(() => this.feaShow());
+    this.feaBendCtl = f.add(this.state, "feaBend", 0, 300, 1).name("bend ×").onChange(() => this.feaShow(false));
+    f.add(this.state, "feaPulse").name("pulse").onChange(() => this.feaAnimate());
+    f.close();
+    f.onOpenClose((g) => { if (!g._closed) this.feaLoad(); });
+    this.legend = document.createElement("div");
+    Object.assign(this.legend.style, { position: "absolute", left: "12px", bottom: "40px", padding: "8px 10px", maxWidth: "430px",
+      background: "rgba(255,255,255,0.92)", borderRadius: "6px", font: "12px/1.4 system-ui, sans-serif", color: "#333" });
+    this.legend.hidden = true;
+    this.c.appendChild(this.legend);
+  }
+
+  async feaLoad() {
+    if (this.fea) return this.fea;
+    const r = await fetch("fea.json", { cache: "no-store" });
+    this.fea = await r.json();
+    const labels = ["off", ...this.fea.cases.map((c) => c.label)];
+    this.feaCtl = this.feaCtl.options(labels).onChange(() => this.feaShow());
+    return this.fea;
+  }
+
+  feaShow(resetBend = true) {
+    for (const o of this.feaObjs || []) { this.root.remove(o); o.geometry.dispose(); }
+    if (this.feaMarks) { this.root.remove(this.feaMarks); this.feaMarks = null; }
+    this.feaObjs = []; this.feaHidden = new Set();
+    const c = this.fea?.cases.find((x) => x.label === this.state.fea);
+    this.feaCase = c || null;
+    if (!c) { this.legend.hidden = true; this.place(); return; }
+    const md = maxDisp(c);
+    if (resetBend) { this.state.feaBend = md > 0 ? Math.max(1, Math.min(300, Math.round(25 / md))) : 1; this.feaBendCtl.updateDisplay(); }
+    const me = this.fea.meshes[c.mesh], t = this.fea.thickness;
+    for (const sl of this.slots[c.part] || []) {
+      const m = heatSlab(me, c, t, sl.mirror);
+      m.matrixAutoUpdate = false; m.matrix.copy(sl.M);
+      this.root.add(m); this.feaObjs.push(m); this.feaHidden.add(sl.it);
+    }
+    const sl0 = (this.slots[c.part] || [])[0];
+    if (sl0 && c.loads?.length) {                       // where the load presses (plates seen from above)
+      const lm = loadMarks(c, t); lm.matrixAutoUpdate = false; lm.matrix.copy(sl0.M);
+      this.root.add(lm); this.feaMarks = lm;
+    }
+    this.feaBendNow(1);
+    const pct = (u) => `${Math.round(u * 100)} %`;
+    const extra = c.sag_mm != null ? `sags ${c.sag_mm} mm` : c.sway_mm != null ? `sways ${c.sway_mm} mm` : "";
+    this.legend.innerHTML = `<b>${c.label}</b><br>worst ${pct(c.worst)} of its strength${extra ? ", " + extra : ""}
+      (deflection drawn × ${this.state.feaBend})
+      <div style="height:10px;margin:6px 0 2px;border-radius:3px;background:${GRADIENT}"></div>
+      <div style="display:flex;justify-content:space-between"><span>0</span><span>50 %</span><span>100 %</span><span>150 %</span></div>
+      <span style="color:#777">Share of strength (Tsai-Hill), thinnest sheet (${this.fea.thickness} mm). Grey: right at a support or
+      contact, where the peaks are local bearing, not bending.${c.part.startsWith("leg") ? " The same plate is drawn at each corner." : ""}
+      ${this.feaInfo.stale ? "<br><b style='color:#b00'>Stale: the design changed since these were computed (make fea).</b>" : ""}</span>`;
+    this.legend.hidden = false;
+    this.place();
+    this.feaAnimate();
+  }
+
+  feaBendNow(f) { // the slabs bent by bend × f (the pulse eases f between 0 and 1)
+    if (!this.feaCase) return;
+    for (const m of this.feaObjs) bend(m, this.state.feaBend * f);
+    this.render();
+  }
+
+  feaAnimate() {
+    cancelAnimationFrame(this.feaRaf);
+    if (!this.feaCase) return;
+    if (!this.state.feaPulse) { this.feaBendNow(1); return; }
+    const t0 = performance.now();
+    const tick = (now) => {
+      if (!this.feaCase || !this.state.feaPulse) return;
+      this.feaBendNow(0.5 - 0.5 * Math.cos(((now - t0) / 1600) * Math.PI));   // load on, load off: 3.2 s
+      this.feaRaf = requestAnimationFrame(tick);
+    };
+    this.feaRaf = requestAnimationFrame(tick);
   }
 
   play() { // run the assembly from the start (or stop it), about 1.3 s a step

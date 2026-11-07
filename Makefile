@@ -1,8 +1,8 @@
-.PHONY: all dxf preview test site dev clean sync
+.PHONY: all dxf preview test fea site dev clean sync
 UV ?= uv
 PORT ?= 8765
 
-all: test dxf site
+all: test dxf fea site
 
 sync:
 	$(UV) sync
@@ -12,6 +12,9 @@ dxf preview:
 
 test:
 	$(UV) run pytest -q
+
+fea:             ## FEA heat maps for the 3-D view (out/fea.json; a minute or so; skipped when up to date)
+	$(UV) run python -m kotatsu.fea_view --if-stale
 
 site:            ## build out/site (static; serve it over http)
 	$(UV) run python -m kotatsu.site

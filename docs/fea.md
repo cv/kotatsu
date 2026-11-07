@@ -226,6 +226,15 @@ against comfort (knee room), weight and the cut list before adopting it.
 - The strengths (f_m 35, f_m,cross 30, f_v 9 MPa) are rough characteristic values (TODO-verify). A typical sheet
   breaks well above them, which is why 160 % is a warning and not a prediction that the leg snaps.
 
+## Seeing it
+
+The site's **3-D view** has a "stress (FEA)" control. Pick a load case: the part is painted where it stands,
+blue (idle) to yellow (half its strength) to red (all of it) and purple (past it), and drawn bent (exaggerated
+"bend ×" times, pulsing load on and off). The load's patch is a dark pad; grey marks pads and contacts, whose
+peaks are local bearing. The leg plates show the same plate at every corner. `kotatsu/fea_view.py` computes it
+on slightly coarser meshes (15 cases, about a minute): run `make fea` after changing the design. The site
+says so when the results are stale. CI runs it on every push.
+
 ## Running it
 
 ```

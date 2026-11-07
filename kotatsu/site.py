@@ -223,6 +223,13 @@ def build(with_tests: bool = True) -> None:
     }
     OUT.mkdir(parents=True, exist_ok=True)
     copy_web()
+    from . import fea_view                               # FEA heat maps: cached, refreshed by `make fea`
+    fv = fea_view.load_cached()
+    if fv is not None:
+        (OUT / "fea.json").write_text(json.dumps(fv, separators=(",", ":")))
+        data["fea"] = {"built": fv["built"], "stale": fv["stale"], "cases": len(fv["cases"])}
+    else:
+        data["fea"] = None
     (OUT / "img").mkdir(exist_ok=True)
     for f in (ROOT / "docs" / "img").glob("*.*"):
         if f.suffix not in (".png", ".jpg"):

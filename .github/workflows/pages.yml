@@ -25,6 +25,8 @@ jobs:
       - run: uv sync --locked
       - name: Cut files (DXF) and layouts
         run: uv run python -m kotatsu.build
+      - name: FEA heat maps for the 3-D view (about a minute)
+        run: uv run python -m kotatsu.fea_view
       - name: Site (runs the tests too; the results show on the page)
         run: uv run python -m kotatsu.site
       - name: Add the DXFs and an index
