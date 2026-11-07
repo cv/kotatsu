@@ -55,50 +55,55 @@ def test_crossings_agree(C):
     assert L.yL[0] - L.O == pytest.approx(P.frame.ear) and L.Wf - (L.yL[1] - L.O) == pytest.approx(P.frame.ear)
 
 
-# ------------------------------------------------------------------ cheeks
+# ------------------------------------------------------------------ heater cradle (cheeks in the deck well)
 @pytest.mark.parametrize("t", T_RANGE)
-def test_cheek_tabs_fit_deck_slots(C, t):
-    P, PARTS = C.P, C.PARTS
-    dk = PARTS["deck"].shape
+def test_cradle_drops_into_the_well(C, t):
+    """Both cheek bodies pass the deck's well at any stock thickness, with the heater between them."""
+    P, L, dk = C.P, C.L, C.PARTS["deck"].shape
+    (_, w0, _, w1) = frame.well(P)
     for xi, s in zip(frame.cheek_xs(P), (-1, 1)):
         xa, xb = sorted((xi, xi + s * t))
-        for ya, yb in frame.tab_ys(P):
-            assert clear(dk, box(xa, ya, xb, yb))
+        assert clear(dk, box(xa, w0 + P.fit.tight, xb, w1 - P.fit.tight)), "cheek body passes the well"
+    (sx, sy, _), (hx, hy, _) = frame.heater_box(P)
+    assert clear(dk, box(hx - sx / 2, hy - sy / 2, hx + sx / 2, hy + sy / 2)), "heater passes the well"
 
 
-@pytest.mark.parametrize("t_deck", T_RANGE)
-@pytest.mark.parametrize("t_wedge", T_RANGE)
-def test_cheek_wedge_through_tab(C, t_deck, t_wedge):
+@pytest.mark.parametrize("t", T_RANGE)
+def test_cradle_ears_rest_on_the_deck(C, t):
+    """Gravity holds the cradle: each ear's flat underside sits on solid deck, ear_len long (any stock)."""
+    P, L, dk = C.P, C.L, C.PARTS["deck"].shape
+    ck, y0 = frame.cheek(P)
+    zb, _ = frame.cheek_z(P)
+    (_, w0, _, w1), (c0, c1) = frame.well(P), frame.cheek_ys(P)
+    v = L.z_deck_top - zb
+    for u0, u1 in ((c0 - y0 + 8, w0 - y0 - 6), (w1 - y0 + 6, c1 - y0 - 8)):    # ear, clear of the rounded ends
+        assert ck.intersection(box(u0, v - 1.0, u1, v - 0.2)).area < 1e-6, "nothing below the ear"
+        assert ck.intersection(box(u0, v + 0.2, u1, v + 1.0)).area > 0.99 * 0.8 * (u1 - u0), "ear underside"
+    for xi, s in zip(frame.cheek_xs(P), (-1, 1)):
+        xa, xb = sorted((xi, xi + s * t))
+        for ya, yb in ((c0, w0), (w1, c1)):
+            ear = box(xa, ya, xb, yb)
+            assert dk.intersection(ear).area > 0.85 * ear.area, "deck under the ear"
+    assert w0 - c0 >= P.cheek.ear_len and c1 - w1 >= P.cheek.ear_len
+
+
+def test_cradle_stays_below_futon_plane(C):
     P, L = C.P, C.L
+    zb, zt = frame.cheek_z(P)
     ck, _ = frame.cheek(P)
-    y_start = L.cy - P.cheek.length / 2
-    zb = L.z_deck_bot - P.cheek.height
-    z_top = L.z_deck_bot + t_deck
-    z0, z1 = frame.cheek_hole_z(P)
-    assert z0 < z_top, "hole must start below the deck top, so the wedge bears on the deck"
-    need = z1 - z_top                                  # wedge height that pulls the cheek up tight
-    CW = P.cheek_wedge
-    assert CW.head - CW.length * P.fit.wedge_taper < need < CW.head
-    for ya, yb in frame.tab_ys(P):
-        uc = (ya + yb) / 2 - y_start
-        sec = box(uc - t_wedge / 2, z_top - zb, uc + t_wedge / 2, z_top - zb + need - 0.01)
-        assert clear(ck, sec)
-
-
-def test_tabs_and_wedges_stay_below_futon_plane(C):
-    P, L = C.P, C.L
-    ck, _ = frame.cheek(P)
-    zb = L.z_deck_bot - P.cheek.height
-    assert ck.bounds[3] + zb <= L.H - 5
-    assert L.z_deck_top + P.cheek_wedge.head <= L.H - 3
+    assert zb + ck.bounds[3] == pytest.approx(zt) and zt <= L.H - 5
+    assert L.z_deck_top + P.yagura.wedge_head <= L.H - 3
 
 
 def test_cheeks_hug_the_heater(C):
     P = C.P
     a, b = frame.cheek_xs(P)
     assert b - a == pytest.approx(P.heater.body_x + P.heater.cheek_clearance)
-    assert P.cheek.length >= P.heater.body_y + 40
-    assert P.cheek.height >= P.heater.body_h + P.heater.top_gap
+    c0, c1 = frame.cheek_ys(P)
+    assert c1 - c0 >= P.heater.body_y + 40
+    (_, _, sz), (_, _, hz) = frame.heater_box(P)
+    zb, zt = frame.cheek_z(P)
+    assert zb <= hz - sz / 2 + 0.01 and zt >= hz + sz / 2, "the cheeks cover the heater's whole side"
 
 
 # ------------------------------------------------------------------ comfort & safety
@@ -139,5 +144,5 @@ def test_does_not_tip_easily(C):
 def test_heater_leaves_shin_room(C):
     P, L = C.P, C.L
     (sx, sy, sz), (cx, cy, cz) = frame.heater_box(P)
-    assert cz - sz / 2 >= 280, "shins under the heater"
-    assert L.z_deck_bot - P.cheek.height >= cz - sz / 2 - 0.01, "cheeks must not hang below the heater"
+    assert cz - sz / 2 >= 300, "shins under the heater (v2: it rides in the deck, 309 mm up)"
+    assert frame.cheek_z(P)[0] >= cz - sz / 2 - 0.01, "cheeks must not hang below the heater"

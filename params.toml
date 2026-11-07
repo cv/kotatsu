@@ -41,13 +41,14 @@ leg_width = 110.0     # full width under the deck: 20 ear arm | slot | 10 should
 foot_r = 6.0          # rounding of the plates' outer corners
 lap_extra = 0.5       # each cross-lap slot is (leg height)/2 + this, so slot bottoms never bottom out; the floor sets height
 
-[deck]                # horizontal plate on the legs' shoulders; the heater hangs under it
-drop = 26.0           # deck top below the futon plane (room for the leg + cheek wedges above it)
+[deck]                # horizontal plate on the legs' shoulders; v2: the heater cradle drops into a well in its middle
+drop = 26.0           # deck top below the futon plane (room for the leg wedges above it)
 # Four notches (an H-shaped deck), sized from the features around them (kotatsu/yagura.py window_rects).
 # uMake ships free up to a 91 cm box AND ~20 kg (18.9 kg free, 20.4 kg not); the notches also save cutting.
 neck = 70.0           # wood joining each corner pad to the middle
 mouth_r = 30.0        # owner 2026-10-20: round the notch-mouth corners (the ones away from the legs)
-window_margin = 20.0  # clear of the heater, cheeks, cheek wedges, mortises, leg wedges
+window_margin = 20.0  # clear of the cheek ears, mortises, leg wedges
+ring = 40.0           # v2: wood left between the heater well and the side notches
 window_r = 20.0
 
 [yagura]              # leg <-> deck joints
@@ -64,22 +65,13 @@ leg_haunch_drop = 30.0  # ... and reaches the narrow line this much lower (a ~31
 leg_haunch_r = 15.0   # inside-corner fillet where the haunch meets the narrow leg
 foot_relief = 1.5     # shallow arc under plate A's foot: each plate stands on its two ends
 foot_relief_margin = 10.0
-one_wedge = true      # owner 2026-10-20: leg and cheek wedges are the same part (one file, 12 + 2 spares)
-wedge_len = 60.0      # leg wedges: shorter than the cheek wedges so the two at each corner don't meet
+wedge_len = 60.0      # the leg wedges (v2: the only wedges; the heater cradle hangs by gravity)
 wedge_head = 18.0     # (1:8 taper -> 10.5 mm foot)
 
-[cheek]               # 2 on-edge plates under the deck; the heater screws into their inner faces
-length = 372.0
-height = 55.0         # = heater body_h + top_gap: the cheek covers the heater's full side, not lower
-tab_w = 50.0
-tab_spacing = 300.0
-tab_above_deck = 21.0 # tab top above (nominal) deck top
-hole_h = 14.0         # wedge hole height
-hole_drop = 1.0       # hole bottom below the thinnest deck's top face
-
-[cheek_wedge]         # lies on the deck top, driven sideways through the tab hole: pulls the cheek up
-length = 60.0         # = the leg wedge (yagura.one_wedge): one wedge part for everything
-head = 18.0           # height at the thick end; taper fit.wedge_taper (foot 10.5)
+[cheek]               # v2 "cradle": 2 on-edge plates the heater screws in between (on the bench). The pair drops into
+                      # the deck's heater well; an ear at each end rests on the deck top. Gravity holds it: no wedges
+ear_len = 40.0        # each ear's bearing on the deck top, past the well
+ear_h = 20.0          # cheek height above the deck top (the ears' depth); stays under the futon plane
 
 [heater]               # PaletteLife 120V 400W (docs/heater.md). Owner measured 29 x 29 x 5 cm (2026-10-19, to the cm)
 model = "PaletteLife B0CKBS16YY"
@@ -87,7 +79,10 @@ body_x = 290.0
 body_y = 290.0
 body_h = 50.0
 cheek_clearance = 4.0  # cheek inner faces = body width + this; 4 mm covers a 290-293 mm body (measured to the cm)
-top_gap = 5.0          # heater top below the deck underside (TODO-verify manual clearances)
+top_rise = 0.0         # v2: heater top above the deck top (0 = flush, so its top is deck.drop below the futon plane).
+                       #   The manual sets no clearance above the unit (owner 2026-10); the futon lies over it as in
+                       #   a traditional open frame. TODO-verify the unit's top stays cool to the touch
+end_clearance = 10.0   # heater well length = body_y + this (a 290-293 body; TODO-verify nothing sticks out at the ends)
 holes = []             # not cut: the owner drills the heater's screw holes on assembly
 
 [stiffness]           # wobble check (kotatsu/stiffness.py): estimates, TODO-verify the material values

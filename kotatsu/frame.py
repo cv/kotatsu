@@ -8,8 +8,8 @@ Every part is a flat 2-D shape in its own (u, v) plane, plus a placement:
   axis "z": plate in the x-y plane (u -> x, v -> y, thickness along z)
 origin = world position of local (0, 0, 0); the plate occupies [0, t] along its thickness axis.
 
-Cheeks: 2 on-edge plates under the deck, 2 tabs each up through deck slots, locked by flat wedges lying
-on the deck (cheek_wedge); the heater screws into their inner faces.
+Heater cradle (v2): 2 on-edge cheeks the heater screws in between. The pair drops into a well in the deck's
+middle and an ear at each cheek end rests on the deck top, so gravity holds it up: no tabs, no wedges.
 Every square-cornered opening (and every male root corner) gets a dogbone for the round bit.
 """
 from __future__ import annotations
@@ -113,35 +113,47 @@ def cheek_xs(p) -> list[float]:
     return [L.cx - half, L.cx + half]
 
 
-def tab_ys(p) -> list[tuple[float, float]]:
-    C, L = p.cheek, layout(p)
-    return [(L.cy + s * C.tab_spacing / 2 - C.tab_w / 2, L.cy + s * C.tab_spacing / 2 + C.tab_w / 2) for s in (-1, 1)]
+def well(p) -> tuple[float, float, float, float]:
+    """World (x0, y0, x1, y1) of the deck's heater well: the heater between the cheeks, plus both cheeks (for
+    the thickest stock + slot clearance) across x; the heater body + end_clearance along y."""
+    L, h = layout(p), p.heater
+    wx = (h.body_x + h.cheek_clearance) / 2 + slot_w(p)
+    wy = (h.body_y + h.end_clearance) / 2
+    return L.cx - wx, L.cy - wy, L.cx + wx, L.cy + wy
 
 
-def cheek_hole_z(p) -> tuple[float, float]:
+def cheek_z(p) -> tuple[float, float]:
+    """(bottom, top) z of the cheeks: from the heater's underside (they cover its whole side) to ear_h above the
+    nominal deck top."""
     L, C = layout(p), p.cheek
-    z0 = L.z_deck_bot + L.t_min - C.hole_drop
-    return z0, z0 + C.hole_h
+    (_, _, sz), (_, _, hz) = heater_box(p)
+    zb, zt = hz - sz / 2, L.z_deck_top + C.ear_h
+    if zt < hz + sz / 2:
+        raise ValueError("[cheek] ear_h must reach the heater top ([heater] top_rise)")
+    return zb, zt
+
+
+def cheek_ys(p) -> tuple[float, float]:
+    """World (y0, y1) of each cheek: the well's length plus an ear of ear_len at each end."""
+    _, y0, _, y1 = well(p)
+    return y0 - p.cheek.ear_len, y1 + p.cheek.ear_len
 
 
 # ----------------------------------------------------------------------------- parts
 def cheek(p) -> tuple[Polygon, float]:
-    """Cheek in its own (u = y - y_start, v = z - z_bottom) plane. Returns (shape, y_start)."""
+    """Cheek in its own (u = y - y_start, v = z - z_bottom) plane. Returns (shape, y_start).
+    The body (below the deck top) fits the well's length with p.fit.tight a side; above the deck top the
+    cheek runs on as an ear at each end, whose underside rests on the deck. Root reliefs at the two
+    inside corners let the ears seat flat on the well's edge."""
     L, C, r = layout(p), p.cheek, _rd(p)
-    y_start = L.cy - C.length / 2
-    zb = L.z_deck_bot - C.height
-    g = box(0, 0, C.length, C.height)
+    (_, w0, _, w1), (y0, y1) = well(p), cheek_ys(p)
+    zb, zt = cheek_z(p)
+    n, v_deck, top = y1 - y0, L.z_deck_top - zb, zt - zb
+    b0, b1 = w0 - y0 + p.fit.tight, w1 - y0 - p.fit.tight
+    g = box(b0, 0, b1, top).union(box(0, v_deck, n, top))
     g = _round_outer(g, 6.0)
-    top_v = L.z_deck_top + C.tab_above_deck - zb
-    hz0, hz1 = cheek_hole_z(p)
-    for ya, yb in tab_ys(p):
-        u0, u1 = ya - y_start, yb - y_start
-        tab = _round_outer(box(u0, C.height - 15, u1, top_v), 5.0)  # rounding buried in the body
-        g = g.union(tab)
-        g = g.difference(dogbone((u0, C.height), (-1, 1), r)).difference(dogbone((u1, C.height), (1, 1), r))
-        uc = (u0 + u1) / 2
-        g = g.difference(hole(uc - thick_slot(p) / 2, hz0 - zb, uc + thick_slot(p) / 2, hz1 - zb, r))
-    return g, y_start
+    g = g.difference(dogbone((b0, v_deck), (-1, -1), r)).difference(dogbone((b1, v_deck), (1, -1), r))
+    return g, y0
 
 
 # ----------------------------------------------------------------------------- assembly
@@ -152,7 +164,7 @@ def parts(p) -> list[Part]:
 
 
 def heater_box(p) -> tuple[tuple[float, float, float], tuple[float, float, float]]:
-    """(size, centre) of the heater body hanging between the cheeks."""
+    """(size, centre) of the heater body, screwed between the cheeks; its top is top_rise above the deck top."""
     L, h = layout(p), p.heater
-    ztop = L.z_deck_bot - h.top_gap
+    ztop = L.z_deck_top + h.top_rise
     return (h.body_x, h.body_y, h.body_h), (L.cx, L.cy, ztop - h.body_h / 2)

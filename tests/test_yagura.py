@@ -104,10 +104,7 @@ def test_quantities(Y):
     P, L, parts = Y
     q = {n: pt.qty for n, pt in parts.items()}
     assert q["leg plate A"] == 4 and q["leg plate B"] == 4 and q["deck"] == 1 and q["heater cheek"] == 2
-    if "wedge" in q:
-        assert q["wedge"] >= 12
-    else:
-        assert q["leg wedge"] >= 8 and q["cheek wedge"] >= 4
+    assert q["wedge"] == len(yagura.mortises(P)) + 2, "v2: one wedge per tenon (+2 spares), none for the heater"
 
 
 def _haunch_bottom(P):
@@ -168,8 +165,8 @@ def test_posts_carry_the_top_further_out(Y):
 
 
 def test_deck_windows_clear_everything(Y):
-    """The deck's notches: window_margin from every hole, slot, wedge, cheek and the heater, `neck` of wood
-    between neighbours, really open; the deck stays one piece."""
+    """The deck's notches: window_margin from every hole, wedge and cheek ear, `ring` from the heater well,
+    `neck` of wood between neighbours, really open; the deck stays one piece."""
     P, L, parts = Y
     wins = yagura.windows(P)
     assert len(wins) == 4
@@ -177,11 +174,12 @@ def test_deck_windows_clear_everything(Y):
     assert d.geom_type == "Polygon"
     t = P.material.t_max
     keep = [box(*m) for m in yagura.mortises(P)]
-    for xi, s in zip(frame.cheek_xs(P), (-1, 1)):                       # cheeks (plan) + their tab slots
+    c0, c1 = frame.cheek_ys(P)
+    for xi, s in zip(frame.cheek_xs(P), (-1, 1)):                       # cheeks (plan), ears included
         xa, xb = sorted((xi, xi + s * t))
-        keep.append(box(xa, L.cy - P.cheek.length / 2, xb, L.cy + P.cheek.length / 2))
-    (sx, sy, _), (hx, hy, _) = frame.heater_box(P)
-    keep.append(box(hx - sx / 2, hy - sy / 2, hx + sx / 2, hy + sy / 2))
+        keep.append(box(xa, c0, xb, c1))
+    for w in wins:
+        assert w.distance(box(*frame.well(P))) >= P.deck.ring - 1e-6
     for pt in frame.parts(P):                                           # wedges lying on the deck
         if pt.kind != "wedge":
             continue

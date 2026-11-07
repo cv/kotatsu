@@ -30,9 +30,9 @@ def test_every_step_moves_something():
 
 def test_steps_follow_the_real_order():
     S = EXTRAS["steps"]
-    order = [assembly.LEGS, assembly.STAND, assembly.DECK, assembly.LEG_WEDGES, assembly.CHEEKS,
-             assembly.CHEEK_WEDGES, assembly.HEATER, assembly.FUTON, assembly.TOP]
-    assert order == sorted(order) and "deck" in S[assembly.DECK] and "heater" in S[assembly.HEATER].lower()
+    order = [assembly.LEGS, assembly.STAND, assembly.DECK, assembly.LEG_WEDGES, assembly.CRADLE,
+             assembly.LOWER, assembly.FUTON, assembly.TOP]
+    assert order == sorted(order) and "deck" in S[assembly.DECK] and "heater" in S[assembly.CRADLE].lower()
 
 
 def test_parts_start_clear():
@@ -40,11 +40,13 @@ def test_parts_start_clear():
     assert L.z_deck_bot + deck[2] > L.H, "the deck starts above the tenon tops"
     for moves in first_from("leg plate B"):
         assert moves[0]["step"] == assembly.LEGS and moves[0]["from"][2] >= yagura.lap_depth(P)
-    for moves in first_from("heater cheek"):
-        tab_top = L.z_deck_top + P.cheek.tab_above_deck
-        assert tab_top + moves[0]["from"][2] < L.z_deck_bot, "the cheek tabs start below the deck"
+    lift = assembly.cradle_lift(P)
+    for moves in first_from("heater cheek"):                  # put together above the table, then lowered in
+        assert [m["step"] for m in moves] == [assembly.CRADLE, assembly.LOWER]
+        assert moves[1]["from"][2] == lift and frame.cheek_z(P)[0] + lift > L.H, "starts above the post tops"
     (_, _, sz), (_, _, hz) = frame.heater_box(P)
-    assert hz - sz / 2 + EXTRAS["heater"][0]["from"][2] > 0, "the heater starts above the floor"
+    assert [m["step"] for m in EXTRAS["heater"]] == [assembly.CRADLE, assembly.LOWER]
+    assert EXTRAS["heater"][1]["from"][2] == lift, "the heater travels with its cheeks"
 
 
 @pytest.mark.parametrize("pl", [pl for pl in FD["placed"] if pl["kind"] == "wedge"], ids=lambda pl: str(pl["origin"]))

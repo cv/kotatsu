@@ -1,5 +1,5 @@
 """Yagura frame: four "+" corner legs, each two crossed plates, carry a deck; no aprons. The heater
-hangs under the deck from two cheeks (kotatsu/frame.py).
+sits in a well in the deck, in a cradle of two cheeks that hangs from the deck by gravity (kotatsu/frame.py).
 
 Leg plates are 110 mm wide under the deck (a 20 mm ear arm outside the corner cross-lap, the slot, a
 10 mm shoulder, a 50 mm tenon, a 10 mm inner shoulder) and slim strips below a short haunch
@@ -10,8 +10,11 @@ Joints
   * legs: cross-lap at each corner ("A" plates slotted from the shoulder down, "B" plates from the floor up)
   * leg -> deck: every plate's top edge is a shoulder under the deck, with one tenon through it.
     A small wedge through the tenon, lying on the deck, clamps the deck between shoulder and wedge.
+    (Gravity alone can't: the ~20 N on each plate is far too little to keep the shoulders down, and the
+    tenon rocks in its mortise. These 8 are the only wedges.)
+  * heater cradle -> deck: the cheeks' ears rest on the deck top (gravity), the bodies locate in the well.
 Assembly: cross the 4 pairs of plates into "+" legs, stand them up, lower the deck over the 8 tenons,
-tap in the 8 leg wedges, then hang the cheeks + heater.
+tap in the 8 wedges; screw the heater between the cheeks and lower the cradle into the well.
 """
 from __future__ import annotations
 
@@ -157,10 +160,7 @@ def deck(p) -> Polygon:
     for w in windows(p):                                # the notches: weight and cut length saved
         g = g.difference(w)
     g = _round_mouths(p, g)
-    for xi, sgn in zip(fr.cheek_xs(p), (-1, 1)):        # cheek tab slots, as in the slab deck
-        xa, xb = sorted((xi, xi + sgn * fr.thick_slot(p)))
-        for ya, yb in fr.tab_ys(p):
-            g = g.difference(fr.hole(xa, ya - p.fit.tight, xb, yb + p.fit.tight, r))
+    g = g.difference(fr.hole(*fr.well(p), r))           # the heater well: the cradle drops in
     return g
 
 
@@ -203,20 +203,21 @@ def _round_mouths(p, g):
 
 def window_rects(p) -> list[tuple[float, float, float, float]]:
     """The deck's four notches as centre-relative (x0, y0, x1, y1), sized from the features around them:
-    two "side" notches beside the cheeks (x) and two "end" notches past the cheek ends (y), each
-    window_margin clear of the heater, cheeks, cheek wedges, mortises and leg wedges, and open through
+    two "side" notches beside the heater well (x), `ring` of wood away from it, and two "end" notches past
+    the cheek ears (y), each window_margin clear of the ears, mortises and leg wedges, and open through
     the deck edge. `neck` is the width of wood joining each corner pad (mortises, posts) to the middle."""
     D, L = p.deck, fr.layout(p)
-    m, t = D.window_margin, p.material.t_max
+    m = D.window_margin
     h = L.Lf / 2
     ta, tb = _tenon_u(p)
     m_in = h - tb - p.fit.tight                                  # mortises' inner ends (from the centre)
-    ci = abs(fr.cheek_xs(p)[0] - L.cx)                           # cheek inner face
-    cw_x = ci + t / 2 + p.cheek_wedge.length / 2                 # cheek wedges' outer ends
+    wx0, wy0, _, _ = fr.well(p)
+    wx, wy = L.cx - wx0, L.cy - wy0                               # the well's half sizes
+    ear_y = L.cy - fr.cheek_ys(p)[0]                              # cheek ends (the ears)
     edge = h + 20                                                # run out through the deck edge
-    sx0, sx1, sy = cw_x + m, edge, m_in - m                      # side windows
-    ey0 = p.cheek.length / 2 + m                                 # end windows: past the cheek ends ...
-    ey1, ex = edge, min(sx0 - D.neck, m_in - m)                  # neck: wood joining each corner pad to the middle                     # ... and clear of the side windows / mortises
+    sx0, sx1, sy = wx + D.ring, edge, m_in - m                   # side windows
+    ey0 = max(ear_y + m, wy + D.ring)                            # end windows: past the cheek ears ...
+    ey1, ex = edge, min(sx0 - D.neck, m_in - m)                  # ... and clear of the side windows / mortises
     out = []
     if sx1 - sx0 > 40 and sy > 40:
         out += [(sx0, -sy, sx1, sy), (-sx1, -sy, -sx0, sy)]
@@ -249,16 +250,14 @@ def narrow_cut(p) -> Polygon | None:
     return cut.buffer(-rr, quad_segs=16, join_style="round").buffer(rr, quad_segs=16, join_style="round")
 
 
-def wedge_dims(p, which: str = "cheek") -> tuple[float, float]:
-    """(length, head) of the cheek wedges, or of the (shorter) leg wedges."""
-    CW, Y = p.cheek_wedge, p.yagura
-    if which == "leg":
-        return getattr(Y, "wedge_len", CW.length), getattr(Y, "wedge_head", CW.head)
-    return CW.length, CW.head
+def wedge_dims(p, which: str = "leg") -> tuple[float, float]:
+    """(length, head) of the wedges (v2: only the leg wedges; `which` is kept for older callers)."""
+    Y = p.yagura
+    return Y.wedge_len, Y.wedge_head
 
 
-def wedge_shape(p, which: str = "cheek") -> Polygon:
-    n, h = wedge_dims(p, which)
+def wedge_shape(p, which: str = "leg") -> Polygon:
+    n, h = wedge_dims(p)
     taper = p.fit.wedge_taper
     w = Polygon([(0, 0), (n, 0), (n, h), (0, h - n * taper)])
     return fr._round_outer(w, 3.0)
@@ -275,13 +274,11 @@ def parts(p) -> list[Part]:
     out.append(Part("leg plate B", leg_plate(p, False), yp, grain="v"))  # slotted from the floor up; grain up the leg
     out.append(Part("deck", deck(p), [Placement("z", (0, 0, L.z_deck_bot))], kind="deck"))
     cs, y0 = fr.cheek(p)
-    zb = L.z_deck_bot - p.cheek.height
+    zb, _ = fr.cheek_z(p)
     out.append(Part("heater cheek", cs, [Placement("y", (xi - (t if s < 0 else 0), y0, zb))
                                          for xi, s in zip(fr.cheek_xs(p), (-1, 1))], kind="cheek"))
-    CW = p.cheek_wedge
-    w = wedge_shape(p)
-    # leg wedges lie on the deck and pass through each tenon, normal to its plate
-    wl, _ = wedge_dims(p, "leg")
+    # wedges lie on the deck and pass through each tenon, normal to its plate
+    wl, _ = wedge_dims(p)
     lw = []
     for x0, y0, x1, y1 in mortises(p):
         xc, yc = (x0 + x1) / 2, (y0 + y1) / 2
@@ -289,18 +286,5 @@ def parts(p) -> list[Part]:
             lw.append(Placement("y", (xc - t / 2, yc - wl / 2, L.z_deck_top)))
         else:
             lw.append(Placement("x", (xc - wl / 2, yc - t / 2, L.z_deck_top)))
-    out.append(Part("leg wedge", wedge_shape(p, "leg"), lw, spares=1, kind="wedge"))
-    cw_pl = []
-    for xi, s in zip(fr.cheek_xs(p), (-1, 1)):
-        xmid = xi + s * t / 2
-        for ya, yb in fr.tab_ys(p):
-            yc = (ya + yb) / 2
-            cw_pl.append(Placement("x", (xmid - CW.length / 2, yc - t / 2, L.z_deck_top)))
-    if getattr(p.yagura, "one_wedge", False):          # owner: one wedge part for legs and cheeks
-        if wedge_dims(p, "cheek") != wedge_dims(p, "leg"):
-            raise ValueError("one_wedge needs [cheek_wedge] length/head = [yagura] wedge_len/wedge_head")
-        lw_part = out.pop()
-        out.append(Part("wedge", lw_part.shape, lw_part.placements + cw_pl, spares=2, kind="wedge"))
-    else:
-        out.append(Part("cheek wedge", w, cw_pl, spares=1, kind="wedge"))
+    out.append(Part("wedge", wedge_shape(p), lw, spares=2, kind="wedge"))
     return out

@@ -18,14 +18,13 @@ STEPS = [
     "Stand the four legs up",
     "Lower the deck over the 8 tenons",
     "Push a wedge through each tenon",
-    "Hang the two heater cheeks, tabs up through the deck",
-    "Push a wedge through each cheek tab",
-    "Screw the heater in between the cheeks",
+    "Screw the heater in between the two cheeks",
+    "Lower the heater and cheeks into the deck: the ears rest on it",
     "Drape the futon over the frame",
     "Lay the top on the futon",
     "Tea time",
 ]
-LEGS, STAND, DECK, LEG_WEDGES, CHEEKS, CHEEK_WEDGES, HEATER, FUTON, TOP, TEA = range(len(STEPS))
+LEGS, STAND, DECK, LEG_WEDGES, CRADLE, LOWER, FUTON, TOP, TEA = range(len(STEPS))
 CLEAR = 40.0     # mm of daylight between a waiting part and whatever it goes into
 
 
@@ -57,27 +56,30 @@ def part_moves(p, pt, pl, c, k: int) -> list[dict]:
         return out
     if pt.kind == "deck":                        # comes down over the tenons
         return [move(DECK, (0, 0, L.H - L.z_deck_bot + CLEAR))]
-    if pt.kind == "cheek":                       # comes up from below until its tabs poke through
-        rise = L.z_deck_top + p.cheek.tab_above_deck - L.z_deck_bot + CLEAR
-        return [move(CHEEKS, (0, 0, -rise), stagger(k, 2, 0.7))]
+    if pt.kind == "cheek":                       # closes in on the heater above the table, then drops in
+        side = -1 if k == 0 else 1
+        return [move(CRADLE, (side * 80.0, 0, 0), stagger(k, 2, 0.7)), move(LOWER, (0, 0, cradle_lift(p)))]
     if pt.kind == "wedge":                       # slides in tip first (tip at u = 0, head at u = length)
-        n_leg = len(yagura.mortises(p))
-        leg = pt.name == "leg wedge" or (pt.name == "wedge" and k < n_leg)
-        n, head = yagura.wedge_dims(p, "leg" if leg else "cheek")
+        n, _ = yagura.wedge_dims(p)
         ux, uy = (1, 0) if pl.axis == "x" else (0, 1)
-        d = n * 0.6 + t                          # starts mostly out of its hole, beside the tenon or tab
-        i, m = (k, n_leg) if leg else (k - n_leg if pt.name == "wedge" else k, 4)
-        return [move(LEG_WEDGES if leg else CHEEK_WEDGES, (ux * d, uy * d, 0), stagger(i, m))]
+        d = n * 0.6 + t                          # starts mostly out of its hole, beside the tenon
+        return [move(LEG_WEDGES, (ux * d, uy * d, 0), stagger(k, len(yagura.mortises(p))))]
     raise ValueError(f"no assembly moves for part kind {pt.kind!r}")
+
+
+def cradle_lift(p) -> float:
+    """How far above home the heater cradle is put together: its underside clear of the post tops."""
+    zb, _ = fr.cheek_z(p)
+    return fr.layout(p).H - zb + CLEAR
 
 
 def extras(p) -> dict:
     """Moves for the things the 3-D view adds itself: the heater, the futon, the top and the tea things."""
     L = fr.layout(p)
-    (_, _, sz), (_, _, hz) = fr.heater_box(p)
     return {
         "steps": STEPS,
-        "heater": [move(HEATER, (0, 0, -min(hz - sz / 2 - CLEAR, 220.0)))],    # up from the floor
+        "heater": [move(CRADLE, (0, 0, 0), (0.0, 0.2)),                       # turns up above the table ...
+                   move(LOWER, (0, 0, cradle_lift(p)))],                         # ... and drops in with the cheeks
         "futon": [move(FUTON, (0, 0, 120.0))],                                 # settles and fades in
         "top": [move(TOP, (0, 0, L.H + CLEAR * 4))],
         "tea": [move(TEA, (0, 0, 160.0))],
