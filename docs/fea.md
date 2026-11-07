@@ -258,6 +258,9 @@ narrows by 0.2 mm at most, against the 0.9 mm a thinnest B plate has between its
 on slightly coarser meshes (15 cases, about a minute): run `make fea` after changing the design. The site
 says so when the results are stale. CI runs it on every push.
 
+The **Frame parts** tab shows the same heat maps flat on each part (pick a case in its toolbar): crisp at any
+zoom, for reading exactly where a peak sits.
+
 ## Running it
 
 ```

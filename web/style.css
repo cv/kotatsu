@@ -116,3 +116,6 @@ aside { width:290px; flex:none; overflow:auto; border-right:1px solid var(--line
   #doc { padding:12px 14px; }
   table { display:block; overflow-x:auto; }
 }
+.pfea-legend { font-size:12px; color:#555; display:inline-flex; align-items:center; gap:6px; }
+.pfea-legend .bar { display:inline-block; width:120px; height:9px; border-radius:3px; }
+.pfea-legend .ticks { color:#888; }

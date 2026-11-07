@@ -1,5 +1,6 @@
 import { marked } from "marked";
 import { el, PanZoom, niceLength, polyD } from "./viewer2d.js";
+import { heat, GRADIENT } from "./heat.js";
 
 const $ = (s) => document.querySelector(s);
 const state = { data: null, tab: "overview", futon: null, fsize: null, fpz: null, doc: "PLAN.md", v3d: null, part: null, ppz: null, sheet: null, spz: null, tables: null, ptable: null };
@@ -191,7 +192,50 @@ function renderPartViewer(d, refit = false) {
     for (let v = Math.floor(y0 / 50) * 50; v <= y1; v += 50) el("line", { x1: x0 - 10, y1: top - v, x2: x1 + 10, y2: top - v }, g);
   }
   el("path", { d: polyD(p.shape, top), class: "part board0" }, svg);
+  partFea(p, svg, top);
   if (refit) requestAnimationFrame(() => state.ppz.fit(home));
+}
+
+// FEA heat map on the part (kotatsu/fea_view.py computes it; this only draws). One path per colour band:
+// each triangle takes the mean of its corners' share of strength, so it stays crisp at any zoom.
+async function partFea(p, svg, top) {
+  const sel = $("#sel-pfea"), leg = $("#pfea-legend");
+  if (!state.data?.fea) { sel.parentElement.hidden = true; return; }
+  if (!state.fea && state.wantFea) state.fea = await (state.v3d?.feaLoad?.() ?? fetch("fea.json").then((r) => r.json()));
+  const cases = (state.fea?.cases || []).filter((c) => c.part === p.name);
+  const want = sel.value;
+  const opt = (value, text) => { const o = document.createElement("option"); o.value = value; o.textContent = text; sel.appendChild(o); };
+  sel.replaceChildren();
+  opt("", state.fea ? (cases.length ? "off" : "no case for this part") : "off");
+  for (const c of cases) opt(c.label, c.label.replace(/^[^:]*: /, ""));
+  if (!state.fea) opt("__load", "load the FEA cases…");
+  sel.value = cases.some((c) => c.label === want) ? want : "";
+  sel.onchange = () => { if (sel.value === "__load") { state.wantFea = true; sel.value = ""; } renderPartViewer(state.data); };
+  const c = cases.find((x) => x.label === sel.value);
+  leg.innerHTML = "";
+  if (!c) return;
+  const me = state.fea.meshes[c.mesh], xy = me.xy, tri = me.tri;
+  const data = c.senses ? c.senses[c.on?.[0]?.sense ?? 0] : c;          // leg cases: a plate as placed
+  const bands = new Map();
+  for (let e = 0; e < tri.length / 3; e++) {
+    const a = tri[3 * e], b = tri[3 * e + 1], d = tri[3 * e + 2];
+    const loc = data.local[a] + data.local[b] + data.local[d] >= 2;
+    const u = (data.util[a] + data.util[b] + data.util[d]) / 3;
+    const key = loc ? "local" : Math.min(30, Math.round(u / 0.05));
+    const pt = (i) => `${xy[2 * i].toFixed(1)},${(top - xy[2 * i + 1]).toFixed(1)}`;
+    bands.set(key, (bands.get(key) || "") + `M${pt(a)}L${pt(b)}L${pt(d)}Z`);
+  }
+  const g = el("g", { class: "fea" }, svg);
+  for (const [k, d] of bands) {
+    const rgb = k === "local" ? [0.59, 0.59, 0.59] : heat(k * 0.05);
+    const col = `rgb(${rgb.map((x) => Math.round(x * 255)).join(",")})`;
+    el("path", { d, fill: col, stroke: col, "stroke-width": 0.3, "vector-effect": "non-scaling-stroke" }, g);
+  }
+  el("path", { d: polyD(p.shape, top), class: "part", fill: "none" }, svg);   // the outline on top
+  const extra = c.sag_mm != null ? `, ${c.part === "zaisu side" ? "moves" : "sags"} ${c.sag_mm} mm` : c.sway_mm != null ? `, sways ${c.sway_mm} mm` : "";
+  leg.innerHTML = `worst <b>${Math.round(c.worst * 100)} %</b>${extra}
+    <span class="bar" style="background:${GRADIENT}"></span><span class="ticks">0 · 50 · 100 · 150 %</span>
+    ${state.data.fea.stale ? '<b style="color:#b00">stale (make fea)</b>' : ""}`;
 }
 
 // ---------- cut sheets ----------
