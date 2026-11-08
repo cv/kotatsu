@@ -111,3 +111,23 @@ panels to size, not shapes from a DXF. Laser shops (Snijlab, formulor) can't cut
 Japanese results were machine sellers and international CNC networks, not plywood routing. In South America,
 the instant DXF quotes I found are for laser cutting (Makers Manufatura in Rio de Janeiro, CNCero in Argentina),
 which can't cut 18 mm plywood. Makers Medellín was the only instant router quote.
+
+## Nicer woods: who cuts them online (owner question, 2026-11)
+Looking for walnut, white oak, "real" birch or hinoki, CNC-routed from a DXF with an instant online price and
+shipping to BC. Checked 2026-11; nothing ordered.
+
+| Shop | Where | Sheets that matter | Online price? | Notes / source |
+|---|---|---|---|---|
+| uMake | Montreal | Baltic birch 3–25 mm (15mm, 16mm, 19mm, 25mm…). Engineered Wood also: aircraft ply, construction ply, hardboard, MDF, melamine particle board, OSB. Composites: ACM, G-10. **No hardwood-veneer plywood** | Instant | Its material menu, 2026-11. The top alone at 19 mm: +$37.37 on the order; at 25 mm: +$97.60 |
+| EZCNC | Canada (ships Canada-wide) | **Bamboo plywood 3/4"** (Natural, Caramel), **All-Birch plywood** 1/4, 1/2, 3/4" (birch faces and core), standard plywood 1/2, 3/4", all 48 × 96" | "Calculated pricing" for supported work; unusual work or shipments go to a person | <https://ezcnc.ca/materials/plywood>, <https://ezcnc.ca/services>. Not yet quoted (TODO-verify: price, and whether an 86 cm part ships as a standard package) |
+| Laseo | Québec | Baltic birch 9–12 mm only | Instant | <https://www.laseo.ca/materials/merisier-baltique/>. Too thin |
+| SendCutSend | US | Baltic birch to 12 mm (.472"), birch plywood, hardboard, MDF | Instant | <https://sendcutsend.com/materials/>. Too thin, 44" parts |
+| Xometry | US | Baltic birch (and MDF, plastics) for routing | Instant | <https://www.xometry.com/capabilities/cnc-machining-service/cnc-routing/> |
+| ConceptCut | US? | Baltic birch 18 mm only | Instant | <https://conceptcut.net/> |
+| CNC Cut to Size | Toronto / Arizona | Baltic birch, "hardwood plywood"; maple, oak, walnut *tabletops* | No: "confirmed per project" by quote brief | <https://cnccuttosize.com/llms-full.txt>. Commercial millwork; breaks the no-email rule |
+
+- **Walnut, white oak and hinoki:** no shop found that cuts them from a DXF with an instant price and ships to BC.
+  Veneered hardwood plywood shows up only behind manual quotes. Hinoki plywood is essentially not stocked in North
+  America (solid hinoki boards come from specialty lumber dealers).
+- **Bamboo** (EZCNC, 3/4") is the only premium-looking sheet on an online quote found so far. It would mean a 19 mm
+  version of the design (v1's thickness), or a bamboo top only, with the frame still from uMake.
