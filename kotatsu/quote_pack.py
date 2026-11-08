@@ -41,7 +41,7 @@ def spec_lines(p) -> list[str]:
             f"kiln-dried to {Q.moisture[0]:g}-{Q.moisture[1]:g} % moisture",
             f"sanded to {Q.grit} grit, edges routed as drawn",
             Q.finish,
-            "packed flat: edge and corner protectors, foam, double-wall box"]
+            "packed flat and wrapped in plastic film (it keeps its moisture), with edge and corner protectors, foam, double-wall box"]
 
 
 def write_dxf(p, path: Path) -> Path:
@@ -108,10 +108,10 @@ def request_text(p) -> str:
     opts = options(p)
     en = "\n".join([
         "Hello,", "",
-        f"I'd like a quote for one table top, {L:.0f} x {W:.0f} mm, cut to a squircle outline (a square with very",
+        f"I'd like a quote for one table top, {L:.0f} x {W:.0f} mm ({L / 25.4:.2f} x {W / 25.4:.2f} in), cut to a squircle outline (a square with very",
         "rounded corners), in solid pale wood. The DXF and a one-page drawing are attached. Please quote any of",
         "these you offer:", ""]
-        + [f"- {o['name']}, {o['t']:g} mm thick" for o in opts] + ["", "Quality and finish:"]
+        + [f"- {o['name']}, {o['t']:g} mm ({o['t'] / 25.4:.2f} in) thick, or the nearest you make" for o in opts] + ["", "Quality and finish:"]
         + [f"- {x}" for x in spec_lines(p)] + [
         f"- eased edges (about {p.top_quote.edge_r:g} mm) on both faces; please also price an optional bevel under the edge",
         "", "Before shipping, please send photos of both faces, the edges and a moisture-meter reading.",
@@ -123,7 +123,7 @@ def request_text(p) -> str:
         "硬枫木实木 20 mm（Acer saccharum），或日本扁柏（桧木）无节 25 mm。",
         f"要求：FAS/精选级，无节、无边材、无裂、无补腻子；整根长木条直拼（宽 {p.top_quote.staves[0]:g}-{p.top_quote.staves[1]:g} mm），不要指接板，颜色和纹理匹配；",
         f"窑干，含水率 {p.top_quote.moisture[0]:g}-{p.top_quote.moisture[1]:g}%；砂光至 {p.top_quote.grit} 目；边缘倒圆约 {p.top_quote.edge_r:g} mm（另请报价底面斜边）；",
-        "两面木蜡油 2 遍，不染色，用原木色/白色系（如 Osmo 3044 Raw 或 Rubio Monocoat Pure），保持浅色。",
+        "不上油、不涂装（我自己上油），砂光后用保鲜膜包好以保持含水率。",
         "发货前请发两面、边缘和含水率读数的照片。包装：护角、泡沫、双层瓦楞纸箱。数量 1 件，无孔。",
         "请包含运到加拿大的快递运费（DHL/FedEx）、交期。谢谢！"])
     ja = "\n".join([
@@ -132,7 +132,7 @@ def request_text(p) -> str:
         "切り抜き。材料：ヒノキ無節 25 mm、または ホワイトオーク（柾目・追柾）・ハードメープル 20 mm。",
         f"幅はぎ（通し材、幅 {p.top_quote.staves[0]:g}〜{p.top_quote.staves[1]:g} mm、フィンガージョイント無し、色・木目を揃えて）、含水率 {p.top_quote.moisture[0]:g}〜{p.top_quote.moisture[1]:g}%、",
         f"#{p.top_quote.grit} 仕上げ、上下の角は {p.top_quote.edge_r:g}R 程度（裏面の面取りも別途お見積もりください）。",
-        "両面 自然塗料クリアー（色の変わりにくいもの）。穴なし、数量 1。送料と納期も教えてください。よろしくお願いします。"])
+        "塗装なし（こちらでオイル仕上げします）。ラップで包んで発送してください。穴なし、数量 1。送料と納期も教えてください。よろしくお願いします。"])
     return f"# Request for quote: kotatsu top\n\n## English\n\n{en}\n\n## 中文 (Alibaba)\n\n{zh}\n\n## 日本語 (Marutoku)\n\n{ja}\n"
 
 

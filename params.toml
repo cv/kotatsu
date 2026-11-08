@@ -100,7 +100,7 @@ undercut = 6.0        # optional: a bevel under the edge, leaving this much visi
 tolerance = 1.0       # outline, +/- mm
 flatness = 1.0        # mm, over the whole top
 options = [            # pale wood (owner 2026-11: careful use, no sitting); thickness from the top FEA (docs/research.md)
-  { name = "Solid white oak, rift- or quarter-sawn (Quercus alba or Q. robur / petraea; not Mongolian oak)", t = 20.0, density = 750, note = "first choice" },
+  { name = "Solid white oak, rift- or quarter-sawn if you can (Quercus alba or Q. robur / petraea; not Mongolian oak)", t = 20.0, density = 750, note = "first choice" },
   { name = "Solid hard maple (Acer saccharum)", t = 20.0, density = 705, note = "palest, hardest" },
   { name = "Solid hinoki (Chamaecyparis obtusa), knot-free", t = 25.0, density = 430, note = "softer, so 25 mm" },
 ]
@@ -108,7 +108,7 @@ grade = "select / FAS: no knots, no sapwood, no cracks, no filler"
 staves = [80.0, 120.0]  # board widths (mm): full length, edge-glued, no finger joints, colour and grain matched
 moisture = [8.0, 10.0]  # kiln-dried, % (a heated room in winter: wetter wood cups and cracks)
 grit = 240
-finish = "hardwax oil, 2 coats, both faces, no stain: a raw-look one so the pale wood stays pale (Osmo Polyx-Oil Raw 3044, Rubio Monocoat Pure, or equal)"
+finish = "unfinished, sanded and ready for oil (I'll oil it myself: Osmo Polyx-Oil Clear Satin, both faces)"
 
 
 [heater]               # PaletteLife 120V 400W (docs/heater.md). Owner measured 29 x 29 x 5 cm (2026-10-19, to the cm)
