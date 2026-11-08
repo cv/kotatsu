@@ -160,6 +160,20 @@ three parts with real outlines on 14.1 mm stock:
 Everything packs flat inside the top's footprint, in three layers, a stack about 47 mm tall (kotatsu/storage.py
 packs it by itself, flipping parts over where that helps).
 
+## The design space (`make optimize`, 2026-11)
+`kotatsu/optimize.py` samples 384 designs over 8 knobs (`[optimize.knobs]`: the deck's arm width, fillets and ring,
+the legs' lower width, haunch, taper and foot), keeps the ones that cut, box and ship free with the knees
+reaching under the top, then runs the FEA on the 48 most promising (plate A under the 200 N shove, plate B, the
+deck's hard hand cases). What it found:
+- **Price is flat:** every design costs $326.9–328.0. uMake prices each part's bounding box, and none of these
+  knobs moves a box. Weight barely moves either (11.1–11.7 kg).
+- **The real trade is leg room against stiffness and strength,** and the lower-leg width drives it: from 60 to 90 mm
+  it takes sway down 4.4 mm and the worst share of strength down 85 points, for 47 mm less room between the legs
+  where shins and thighs pass (`comfort.legroom`, new: the knee-height `shin_w` couldn't see it).
+- **The current design is on the front:** it has the most leg room (637 mm) of any design that passes the FEA.
+- Near-free gains: a wider foot (less taper) buys strength for almost no room; a higher haunch top buys room.
+  For the same money, about 595 mm of room gives 5.7 mm of sway and 72 % (now 7.1 mm, 80 %).
+
 ## Price: what's left to save
 Little: the design is at uMake's price floor (`docs/quote.md`, "What can still be saved"). About 40 % of the bill
 doesn't depend on the design, the remaining cut is all required, and wood inside a part's box is free. A solid

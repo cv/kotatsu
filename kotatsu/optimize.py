@@ -1,70 +1,233 @@
-"""Small design search: cheapest estimated uMake order (kotatsu/price.py) that still meets the limits.
+"""Design-space search: what each improvement costs, mapped as the best trade-offs (a Pareto front).
 
-Knobs are the things the owner left open (frame size, slim-leg concept and top are fixed):
-deck arm width and fillets, haunch height and slope. Limits: shipping weight (uMake-calibrated), sway,
-leg stress, knee reach and leg room, and every part still router-cuttable.
-Run: uv run python -m kotatsu.optimize
+Knobs and their ranges are in params.toml [optimize.knobs]; everything else stays as designed.
+  Stage 1 (cheap, every sample): the parts build as single router-cuttable outlines that fit the box; the
+          order's price (kotatsu/price.py), its uMake cart weight and free shipping; knee reach and the room
+          between the legs where shins and thighs pass (comfort.legroom). A scrambled Sobol sample of [optimize] samples designs.
+  Stage 2 (FEA, the most promising): plate A under fea.push_n (sway and worst share of strength), plate B's
+          share with the top's corner load, and the deck's three hard hand cases (wedges tight). Candidates are
+          stage 1's best non-dominated fronts on price, weight and leg room, up to [optimize] fea_budget.
+The result: every point, the front over (price, weight, sway, strength use, leg room), and a few picks
+next to the current design, in out/optimize/results.json and a picture, out/optimize/map.png.
+Run: uv run python -m kotatsu.optimize  (or make optimize). Worker processes run the checks in parallel.
 """
 from __future__ import annotations
 
-import itertools
+import json
+import math
+import os
+from concurrent.futures import ProcessPoolExecutor
+from pathlib import Path
 
-from . import comfort, frame, geom, params, price, stiffness, top
+import numpy as np
 
-SWAY_MAX = 2.5          # mm at 100 N sideways, either direction (v2: one wedge per leg, conservative model)
-LEG_MPA_MAX = 3.0
-UMAKE_KG = 20.4 / 20.85  # our weight model -> uMake's cart weight (calibrated)
+from . import comfort, frame, geom, params, price
 
-GRID = {
-    ("deck", "arm_w"): [25.0, 30.0, 40.0],
-    ("deck", "fillet_r"): [60.0, 90.0],
-    ("yagura", "leg_haunch_top"): [300.0, 320.0],
-    ("yagura", "leg_haunch_drop"): [20.0, 30.0, 45.0],
-}
+OUT = Path("out/optimize")
+UMAKE_KG = 20.4 / 20.85          # our weight model -> uMake's cart weight (calibrated, docs/quote.md)
+OBJECTIVES = ("price", "kg", "sway", "use", "neg_room")   # all minimised
+
+
+def knob_ranges(p) -> dict[str, tuple[float, float]]:
+    return {k: (float(v[0]), float(v[1])) for k, v in vars(p.optimize.knobs).items()}
+
+
+def current_knobs(p) -> dict[str, float]:
+    out = {}
+    for k in knob_ranges(p):
+        sec, name = k.split(".")
+        out[k] = float(getattr(getattr(p, sec), name))
+    return out
+
+
+def design(knobs: dict[str, float]):
+    """Fresh parameters with the knobs applied."""
+    p = params.tables(params.load())[0]
+    for k, v in knobs.items():
+        sec, name = k.split(".")
+        setattr(getattr(p, sec), name, float(v))
+    return p
 
 
 def weight_kg(p) -> float:
-    return a / 1e6 * p.material.t_nominal / 1000 * p.material.density_kg_m3 * UMAKE_KG
-    return a / 1e6 * 0.019 * p.material.density_kg_m3 * UMAKE_KG     # uMake's "19mm" sheet
+    """The order's weight as uMake's cart counts it (kg)."""
+    rho = p.material.density_kg_m3 * p.material.t_nominal / 1e9
+    return sum(g.area * rho * q for _, g, q in price.parts(p)) * UMAKE_KG
 
 
-def evaluate(p) -> dict:
-    parts = frame.parts(p)
-    ok = all(pt.shape.geom_type == "Polygon" and geom.router_cuttable(pt.shape, p.cnc.bit_d / 2) for pt in parts)
-    e = price.estimate(p)
-    c = comfort.summary(p)
-    s = stiffness.summary(p)
-    sway = max(s["x"]["sway_mm"]["100"], s["y"]["sway_mm"]["100"])
-    r = {"price": e["subtotal"], "cut_m": e["cut_m"], "kg": round(weight_kg(p), 2), "sway": sway,
-         "leg_MPa": float(s["stress"]["leg_MPa"]), "reach": c["reach"], "shin": c["shin_w"], "cuttable": ok}
-    r["feasible"] = (ok and r["kg"] <= p.shipping.free_kg and sway <= SWAY_MAX and r["leg_MPa"] <= LEG_MPA_MAX
-                     and c["reach"] >= p.comfort.knee_reach_min)
+def cheap(knobs: dict[str, float]) -> dict:
+    """Stage 1: the checks that take a fraction of a second."""
+    r = {"knobs": knobs}
+    try:
+        p = design(knobs)
+        if p.yagura.leg_foot_w > p.yagura.leg_narrow:
+            return {**r, "ok": False, "why": "the foot is wider than the leg"}
+        parts = frame.parts(p)
+        R = p.cnc.bit_d / 2
+        for pt in parts:
+            g = pt.shape
+            if g.geom_type != "Polygon" or not g.is_valid or not geom.router_cuttable(g, R):
+                return {**r, "ok": False, "why": f"{pt.name}: not one cuttable outline"}
+            x0, y0, x1, y1 = g.bounds
+            if max(x1 - x0, y1 - y0) + 50 > p.shipping.box_max:
+                return {**r, "ok": False, "why": f"{pt.name}: too big for the box"}
+        c = comfort.summary(p)
+        e = price.estimate(p)
+        kg = weight_kg(p)
+        r.update(price=e["subtotal"], cut_m=e["cut_m"], kg=round(kg, 3), reach=c["reach"], room=c["legroom"],
+                 neg_room=-c["legroom"])
+        why = []
+        if kg > p.shipping.free_kg:
+            why.append("too heavy for free shipping")
+        if c["reach"] < p.comfort.knee_reach_min:
+            why.append("knees don't reach under the top")
+        r.update(ok=not why, why="; ".join(why))
+    except Exception as ex:                    # a knob combination that breaks the geometry
+        r.update(ok=False, why=f"geometry: {str(ex)[:90]}")
     return r
 
 
-def search(grid=GRID) -> list[dict]:
-    keys = list(grid)
-    out = []
-    for vals in itertools.product(*grid.values()):
-        p = params.tables(params.load())[0]
-        for (sec, k), v in zip(keys, vals):
-            setattr(getattr(p, sec), k, v)
-        try:
-            r = evaluate(p)
-        except Exception as ex:          # a knob combination that breaks the geometry
-            r = {"feasible": False, "error": str(ex)[:80]}
-        r["knobs"] = {f"{s}.{k}": v for (s, k), v in zip(keys, vals)}
-        out.append(r)
-    return sorted(out, key=lambda r: (not r["feasible"], r.get("price", 1e9)))
+_TOP = None
 
 
-def main():
-    base = evaluate(params.tables(params.load())[0])
-    print("current:", base)
-    res = search()
-    for r in res[:8]:
-        print(r)
-    print("infeasible:", sum(not r["feasible"] for r in res), "of", len(res))
+def _init(top_load):
+    global _TOP
+    _TOP = top_load
+
+
+def heavy(knobs: dict[str, float]) -> dict:
+    """Stage 2: the FEA (about 20 s). Use of strength is Tsai-Hill, contact ends left out (local bearing)."""
+    from . import fea
+    p = design(knobs)
+    O = p.optimize
+    worst = lambda zones: max(v["tsai_hill"] for k, v in zones.items() if k != "contact edges")
+    a = fea.leg_case(p, "A", p.fea.push_n, None, h=O.fea_leg_h)
+    b = fea.leg_case(p, "B", p.fea.push_n, _TOP, h=O.fea_leg_h)
+    deck = {}
+    for name, ld in fea.deck_cases(p).items():
+        if "whole ring" in name:               # the spread hand never governs
+            continue
+        d = fea.deck_case(p, ld, h=O.fea_deck_h, wedges=True)
+        deck[name] = max(d[k]["tsai_hill"] for k in ("fillets", "arms", "ring", "pads"))
+    use = {"leg A": worst(a["zones"]), "leg B": worst(b["zones"]), "deck": max(deck.values())}
+    return {"sway": float(a["sway_mm"]), "use": max(use.values()), "use_by_part": {k: round(v, 3) for k, v in use.items()}}
+
+
+def nondominated(rows: list[dict], keys=OBJECTIVES) -> list[int]:
+    """Indices of rows no other row beats on every key (and strictly on one)."""
+    X = np.array([[r[k] for k in keys] for r in rows], dtype=float)
+    keep = []
+    for i in range(len(X)):
+        d = np.all(X <= X[i], axis=1) & np.any(X < X[i], axis=1)
+        if not d.any():
+            keep.append(i)
+    return keep
+
+
+def fronts(rows: list[dict], keys) -> list[list[int]]:
+    """Non-dominated sorting: front 0, then the front of what's left, and so on."""
+    left, out = list(range(len(rows))), []
+    while left:
+        f = [left[i] for i in nondominated([rows[i] for i in left], keys)]
+        out.append(f)
+        left = [i for i in left if i not in f]
+    return out
+
+
+def sample(p, n: int, seed: int) -> list[dict[str, float]]:
+    from scipy.stats import qmc
+    rng = knob_ranges(p)
+    s = qmc.Sobol(len(rng), scramble=True, seed=seed).random(2 ** math.ceil(math.log2(max(n, 2))))[:n]
+    lo = np.array([v[0] for v in rng.values()]); hi = np.array([v[1] for v in rng.values()])
+    pts = lo + s * (hi - lo)
+    return [{k: round(float(x), 1) for k, x in zip(rng, row)} for row in pts]
+
+
+def picks(rows: list[dict], cur: dict) -> dict:
+    """A few readable choices: each beats or matches the current design on strength and sway."""
+    safe = [r for r in rows if r["use"] <= cur["use"] + 1e-9 and r["sway"] <= cur["sway"] + 1e-9]
+    out = {}
+    if safe:
+        out["cheapest, at least as strong and stiff"] = min(safe, key=lambda r: r["price"])
+        out["lightest, at least as strong and stiff"] = min(safe, key=lambda r: r["kg"])
+    same = [r for r in rows if r["price"] <= cur["price"] + 0.5]
+    if same:
+        out["stiffest for the same money"] = min(same, key=lambda r: r["sway"])
+        out["strongest for the same money"] = min(same, key=lambda r: r["use"])
+    return out
+
+
+def run(samples: int | None = None, fea_budget: int | None = None, workers: int | None = None) -> dict:
+    p = params.tables(params.load())[0]
+    O = p.optimize
+    samples = O.samples if samples is None else samples
+    fea_budget = O.fea_budget if fea_budget is None else fea_budget
+    workers = workers or os.cpu_count() or 2
+    cur_k = current_knobs(p)
+    pts = [cur_k] + sample(p, samples, int(O.seed))
+    with ProcessPoolExecutor(workers) as ex:
+        stage1 = list(ex.map(cheap, pts, chunksize=8))
+    ok = [r for r in stage1 if r.get("ok")]
+    if not ok or ok[0]["knobs"] != cur_k:
+        raise RuntimeError("the current design fails the cheap checks: " + stage1[0].get("why", "?"))
+    order = [i for f in fronts(ok, ("price", "kg", "neg_room")) for i in f if i != 0]
+    chosen = [ok[0]] + [ok[i] for i in order][: max(fea_budget - 1, 0)]
+    from . import fea
+    top_load = fea.top_on_legs(p)
+    with ProcessPoolExecutor(workers, initializer=_init, initargs=(top_load,)) as ex:
+        for r, h in zip(chosen, ex.map(heavy, [r["knobs"] for r in chosen])):
+            r.update(h)
+            r["feasible"] = r["use"] <= O.use_max and r["sway"] <= O.sway_max
+    done = [r for r in chosen if r.get("feasible")]
+    cur = chosen[0]
+    front = [done[i] for i in nondominated(done)] if done else []
+    return {"knobs": knob_ranges(p), "current": cur, "stage1": {"tried": len(stage1), "ok": len(ok)},
+            "fea": chosen, "front": front, "picks": picks(done, cur) if cur.get("feasible") else {},
+            "limits": {"use_max": O.use_max, "sway_max": O.sway_max, "free_kg": p.shipping.free_kg}}
+
+
+def draw(res: dict, path: Path) -> Path:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    fig, axs = plt.subplots(1, 3, figsize=(16, 5))
+    pts = [r for r in res["fea"] if "use" in r]
+    fr = {json.dumps(r["knobs"], sort_keys=True) for r in res["front"]}
+    on = lambda r: json.dumps(r["knobs"], sort_keys=True) in fr
+    cur = res["current"]
+    for ax, (x, y, xl, yl) in zip(axs, (("price", "sway", "order before tax ($)", "sway at the push (mm)"),
+                                        ("kg", "use", "uMake cart weight (kg)", "worst share of strength"),
+                                        ("room", "price", "room between the legs, legs forward (mm)", "order before tax ($)"))):
+        for r in pts:
+            f = on(r)
+            ax.scatter(r[x], r[y], s=28 if f else 12, c="#c0392b" if f else "#b9b9b9",
+                       alpha=0.9 if r.get("feasible") else 0.35, marker="o" if r.get("feasible") else "x", zorder=3 if f else 2)
+        ax.scatter(cur[x], cur[y], s=160, marker="*", c="#1f4e79", zorder=5, label="the current design")
+        ax.set_xlabel(xl); ax.set_ylabel(yl); ax.grid(alpha=0.3)
+    axs[0].legend(loc="upper right")
+    fig.suptitle("Design space: red = best trade-offs (Pareto front), grey = beaten, x = fails a limit", x=0.01, ha="left")
+    fig.tight_layout()
+    fig.savefig(path, dpi=80)
+    plt.close(fig)
+    return path
+
+
+def main() -> None:
+    import argparse
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("--samples", type=int); ap.add_argument("--fea", type=int); ap.add_argument("--workers", type=int)
+    a = ap.parse_args()
+    res = run(a.samples, a.fea, a.workers)
+    OUT.mkdir(parents=True, exist_ok=True)
+    (OUT / "results.json").write_text(json.dumps(res, indent=1))
+    draw(res, OUT / "map.png")
+    f = lambda r: (f"${r['price']:.2f}  {r['kg']:.2f} kg  sway {r['sway']:.1f} mm  use {100 * r['use']:.0f} %  "
+                   f"legs {r['room']:.0f} mm apart  {r['knobs']}")
+    print(f"[optimize] {res['stage1']['ok']} of {res['stage1']['tried']} designs pass the cheap checks; "
+          f"{len(res['fea'])} through the FEA; {len(res['front'])} on the front")
+    print("  current:", f(res["current"]))
+    for k, r in res["picks"].items():
+        print(f"  {k}:", f(r))
 
 
 if __name__ == "__main__":

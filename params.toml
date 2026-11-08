@@ -111,6 +111,26 @@ grit = 240
 finish = "unfinished, sanded and ready for oil (I'll oil it myself: Osmo Polyx-Oil Clear Satin, both faces)"
 
 
+[optimize]            # kotatsu/optimize.py, the design-space search (make optimize; out/optimize/)
+samples = 384         # stage 1: cheap checks (geometry, cuttable, box, price, weight, knee room) on a Sobol sample
+fea_budget = 48       # stage 2: FEA on the most promising (leg A under the push, plate B, the deck's hand cases)
+seed = 7
+use_max = 0.90        # FEA: worst share of strength (Tsai-Hill) allowed in those hard cases
+sway_max = 10.0       # FEA: sway under fea.push_n (mm)
+fea_leg_h = 6.0       # coarser meshes than docs/fea.md's (same sway; peaks within a few %), for speed
+fea_deck_h = 10.0
+
+[optimize.knobs]      # [low, high] for each knob the search may move (the top's squircle stays the owner's)
+"deck.arm_w" = [28.0, 50.0]
+"deck.fillet_r" = [50.0, 130.0]
+"deck.ring_w" = [30.0, 60.0]
+"yagura.leg_narrow" = [60.0, 90.0]
+"yagura.leg_haunch_top" = [290.0, 330.0]
+"yagura.leg_haunch_drop" = [20.0, 60.0]
+"yagura.leg_taper_top" = [100.0, 220.0]
+"yagura.leg_foot_w" = [46.0, 70.0]
+
+
 [heater]               # PaletteLife 120V 400W (docs/heater.md). Owner measured 29 x 29 x 5 cm (2026-10-19, to the cm)
 model = "PaletteLife B0CKBS16YY"
 body_x = 290.0

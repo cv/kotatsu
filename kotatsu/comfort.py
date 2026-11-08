@@ -132,7 +132,8 @@ def summary(p) -> dict:
             "tip_inset": getattr(C, "tip_inset", 0.0), "tip_min_n": C.tip_min_n,
             "reach_min": C.knee_reach_min,
             "apron_clear": side_clear(p),
-            "shin_w": round(p.top.length - 2 * p.frame.overhang - 2 * low_footprint_leg_u(p, C.knee_h), 1)}
+            "shin_w": round(p.top.length - 2 * p.frame.overhang - 2 * low_footprint_leg_u(p, C.knee_h), 1),
+            "legroom": round(legroom(p), 1)}
 
 
 def legs_forward(p, seat: float) -> dict:
@@ -148,6 +149,15 @@ def legs_forward(p, seat: float) -> dict:
 def side_clear(p) -> float:
     """Clear height at the middle of each side: the deck's underside (no aprons)."""
     return frame.layout(p).z_deck_bot
+
+
+def legroom(p, step: float = 10.0) -> float:
+    """Narrowest room between two legs on a side (mm), from 20 mm off the floor up to the thighs' top when
+    sitting legs forward on the zaisu (seat + thigh + margin): where shins and thighs pass between the legs."""
+    C = p.comfort
+    z1 = C.chair_seat_h + C.thigh_h + C.leg_margin
+    zs = [20.0 + i * step for i in range(int((z1 - 20.0) // step) + 1)] + [z1]
+    return min(p.top.length - 2 * p.frame.overhang - 2 * low_footprint_leg_u(p, z) for z in zs)
 
 
 def low_footprint_leg_u(p, z: float) -> float:
