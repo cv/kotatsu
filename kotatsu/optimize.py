@@ -4,11 +4,12 @@ Knobs and their ranges are in params.toml [optimize.knobs]; everything else stay
   Stage 1 (cheap, every sample): the parts build as single router-cuttable outlines that fit the box; the
           order's price (kotatsu/price.py), its uMake cart weight and free shipping; knee reach and the room
           between the legs where shins and thighs pass (comfort.legroom). A scrambled Sobol sample of [optimize] samples designs.
-  Stage 2 (FEA, the most promising): plate A under fea.push_n (sway and worst share of strength), plate B's
-          share with the top's corner load, and the deck's three hard hand cases (wedges tight). Candidates are
-          stage 1's best non-dominated fronts on price, weight and leg room, up to [optimize] fea_budget.
-The result: every point, the front over (price, weight, sway, strength use, leg room), and a few picks
-next to the current design, in out/optimize/results.json and a picture, out/optimize/map.png.
+  Stage 2 (FEA): plate A under fea.push_n (sway and worst share of strength), plate B's share with the top's
+          corner load, and the deck's three hard hand cases (wedges tight). First on designs spread from slim to
+          sturdy, then on small changes around the best so far ([optimize] refine_*), up to fea_budget in all.
+Goals: price and the legs' visible width (looks.py), equally weighted; strength, sway, leg room, knee reach and
+free shipping are limits. The result: every point, the front over (price, look), three picks next to the
+current design, in out/optimize/results.json, map.png and legs.png (the picks' leg plates, to judge by eye).
 Run: uv run python -m kotatsu.optimize  (or make optimize). Worker processes run the checks in parallel.
 """
 from __future__ import annotations
@@ -21,11 +22,13 @@ from pathlib import Path
 
 import numpy as np
 
-from . import comfort, frame, geom, params, price
+from . import comfort, frame, geom, looks, params, price
 
 OUT = Path("out/optimize")
 UMAKE_KG = 20.4 / 20.85          # our weight model -> uMake's cart weight (calibrated, docs/quote.md)
-OBJECTIVES = ("price", "kg", "sway", "use", "neg_room")   # all minimised
+OBJECTIVES = ("price", "look")   # both minimised: the order's price and the legs' visible width (looks.py).
+# Strength, sway, leg room, knee reach and free shipping are limits, not goals (owner 2026-11: "functional aspects
+# taken care of, economics and looks are about as important"). The balanced pick weighs 1 % cheaper = 1 % slimmer.
 
 
 def knob_ranges(p) -> dict[str, tuple[float, float]]:
@@ -75,12 +78,14 @@ def cheap(knobs: dict[str, float]) -> dict:
         e = price.estimate(p)
         kg = weight_kg(p)
         r.update(price=e["subtotal"], cut_m=e["cut_m"], kg=round(kg, 3), reach=c["reach"], room=c["legroom"],
-                 neg_room=-c["legroom"])
+                 neg_room=-c["legroom"], look=round(looks.leg_width(p), 2))
         why = []
         if kg > p.shipping.free_kg:
             why.append("too heavy for free shipping")
         if c["reach"] < p.comfort.knee_reach_min:
             why.append("knees don't reach under the top")
+        if c["legroom"] < p.comfort.legroom_min:
+            why.append("too little room between the legs")
         r.update(ok=not why, why="; ".join(why))
     except Exception as ex:                    # a knob combination that breaks the geometry
         r.update(ok=False, why=f"geometry: {str(ex)[:90]}")
@@ -143,18 +148,45 @@ def sample(p, n: int, seed: int) -> list[dict[str, float]]:
     return [{k: round(float(x), 1) for k, x in zip(rng, row)} for row in pts]
 
 
+def score(r: dict, cur: dict) -> float:
+    """Equal weight to economics and looks: the relative change in price plus the relative change in leg width."""
+    return (r["price"] / cur["price"] - 1) + (r["look"] / cur["look"] - 1)
+
+
 def picks(rows: list[dict], cur: dict) -> dict:
-    """A few readable choices: each beats or matches the current design on strength and sway."""
-    safe = [r for r in rows if r["use"] <= cur["use"] + 1e-9 and r["sway"] <= cur["sway"] + 1e-9]
-    out = {}
-    if safe:
-        out["cheapest, at least as strong and stiff"] = min(safe, key=lambda r: r["price"])
-        out["lightest, at least as strong and stiff"] = min(safe, key=lambda r: r["kg"])
-    same = [r for r in rows if r["price"] <= cur["price"] + 0.5]
-    if same:
-        out["stiffest for the same money"] = min(same, key=lambda r: r["sway"])
-        out["strongest for the same money"] = min(same, key=lambda r: r["use"])
+    """Readable choices among the designs that pass every limit."""
+    if not rows:
+        return {}
+    return {"slimmest": min(rows, key=lambda r: (r["look"], r["price"])),
+            "cheapest": min(rows, key=lambda r: (r["price"], r["look"])),
+            "balanced (1 % cheaper = 1 % slimmer)": min(rows, key=lambda r: score(r, cur))}
+
+
+def spread(rows: list[dict], n: int) -> list[dict]:
+    """n designs spread evenly over the range of leg widths (cheaper first where they're close)."""
+    if n <= 0 or not rows:
+        return []
+    srt = sorted(rows, key=lambda r: (r["look"], r["price"]))
+    idx = sorted({round(i * (len(srt) - 1) / max(n - 1, 1)) for i in range(n)})
+    return [srt[i] for i in idx]
+
+
+def mutate(p, knobs: dict, k: int, step: float, rng) -> list[dict]:
+    ranges = knob_ranges(p)
+    out = []
+    for _ in range(k):
+        out.append({n: round(float(np.clip(knobs[n] + rng.normal(0, step * (hi - lo)), lo, hi)), 1)
+                    for n, (lo, hi) in ranges.items()})
     return out
+
+
+def _fea_all(rows: list[dict], workers: int, top_load, O) -> None:
+    if not rows:
+        return
+    with ProcessPoolExecutor(workers, initializer=_init, initargs=(top_load,)) as ex:
+        for r, h in zip(rows, ex.map(heavy, [r["knobs"] for r in rows])):
+            r.update(h)
+            r["feasible"] = r["use"] <= O.use_max and r["sway"] <= O.sway_max
 
 
 def run(samples: int | None = None, fea_budget: int | None = None, workers: int | None = None) -> dict:
@@ -170,20 +202,30 @@ def run(samples: int | None = None, fea_budget: int | None = None, workers: int 
     ok = [r for r in stage1 if r.get("ok")]
     if not ok or ok[0]["knobs"] != cur_k:
         raise RuntimeError("the current design fails the cheap checks: " + stage1[0].get("why", "?"))
-    order = [i for f in fronts(ok, ("price", "kg", "neg_room")) for i in f if i != 0]
-    chosen = [ok[0]] + [ok[i] for i in order][: max(fea_budget - 1, 0)]
     from . import fea
     top_load = fea.top_on_legs(p)
-    with ProcessPoolExecutor(workers, initializer=_init, initargs=(top_load,)) as ex:
-        for r, h in zip(chosen, ex.map(heavy, [r["knobs"] for r in chosen])):
-            r.update(h)
-            r["feasible"] = r["use"] <= O.use_max and r["sway"] <= O.sway_max
-    done = [r for r in chosen if r.get("feasible")]
+    n_ref = int(round(fea_budget * O.refine_share))
+    chosen = [ok[0]] + spread(ok[1:], fea_budget - 1 - n_ref)
+    _fea_all(chosen, workers, top_load, O)                      # explore: slim to sturdy
     cur = chosen[0]
+    rng = np.random.default_rng(int(O.seed))
+    seen = {json.dumps(r["knobs"], sort_keys=True) for r in chosen}
+    good = sorted([r for r in chosen if r.get("feasible")], key=lambda r: score(r, cur))
+    seeds = (good[: int(O.refine_seeds)] + [min(good, key=lambda r: r["look"])]) if good else []
+    if seeds and n_ref > 0:                                     # refine: around the best, and the slimmest that passes
+        cands = [m for s in seeds for m in mutate(p, s["knobs"], max(1, 3 * n_ref // len(seeds)), O.refine_step, rng)]
+        cands = [m for m in cands if json.dumps(m, sort_keys=True) not in seen]
+        with ProcessPoolExecutor(workers) as ex:
+            more = [r for r in ex.map(cheap, cands, chunksize=4) if r.get("ok")]
+        more = sorted(more, key=lambda r: score(r, cur))[:n_ref]
+        _fea_all(more, workers, top_load, O)
+        chosen += more
+    done = [r for r in chosen if r.get("feasible")]
     front = [done[i] for i in nondominated(done)] if done else []
     return {"knobs": knob_ranges(p), "current": cur, "stage1": {"tried": len(stage1), "ok": len(ok)},
-            "fea": chosen, "front": front, "picks": picks(done, cur) if cur.get("feasible") else {},
-            "limits": {"use_max": O.use_max, "sway_max": O.sway_max, "free_kg": p.shipping.free_kg}}
+            "fea": chosen, "front": front, "picks": picks(done, cur),
+            "limits": {"use_max": O.use_max, "sway_max": O.sway_max, "free_kg": p.shipping.free_kg,
+                       "legroom_min": p.comfort.legroom_min}}
 
 
 def draw(res: dict, path: Path) -> Path:
@@ -195,9 +237,9 @@ def draw(res: dict, path: Path) -> Path:
     fr = {json.dumps(r["knobs"], sort_keys=True) for r in res["front"]}
     on = lambda r: json.dumps(r["knobs"], sort_keys=True) in fr
     cur = res["current"]
-    for ax, (x, y, xl, yl) in zip(axs, (("price", "sway", "order before tax ($)", "sway at the push (mm)"),
-                                        ("kg", "use", "uMake cart weight (kg)", "worst share of strength"),
-                                        ("room", "price", "room between the legs, legs forward (mm)", "order before tax ($)"))):
+    for ax, (x, y, xl, yl) in zip(axs, (("look", "price", "legs' average visible width (mm): slimmer to the left", "order before tax ($)"),
+                                        ("look", "use", "legs' average visible width (mm)", "worst share of strength"),
+                                        ("look", "room", "legs' average visible width (mm)", "room between the legs (mm)"))):
         for r in pts:
             f = on(r)
             ax.scatter(r[x], r[y], s=28 if f else 12, c="#c0392b" if f else "#b9b9b9",
@@ -206,6 +248,35 @@ def draw(res: dict, path: Path) -> Path:
         ax.set_xlabel(xl); ax.set_ylabel(yl); ax.grid(alpha=0.3)
     axs[0].legend(loc="upper right")
     fig.suptitle("Design space: red = best trade-offs (Pareto front), grey = beaten, x = fails a limit", x=0.01, ha="left")
+    fig.tight_layout()
+    fig.savefig(path, dpi=80)
+    plt.close(fig)
+    return path
+
+
+def draw_legs(res: dict, path: Path) -> Path:
+    """Plates A and B of the current design and of each pick, side by side at one scale, to judge the looks."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    rows = [("current", res["current"])] + list(res["picks"].items())
+    fig, axs = plt.subplots(1, len(rows), figsize=(3.2 * len(rows), 5.2))
+    for ax, (name, r) in zip(np.atleast_1d(axs), rows):
+        p = design(r["knobs"])
+        zs = frame.layout(p).z_deck_bot
+        x = 0.0
+        for pt in [q for q in frame.parts(p) if q.name in ("leg plate A", "leg plate B")]:
+            g = pt.shape
+            gx = g.bounds[0]
+            for ring in [g.exterior, *g.interiors]:
+                xs, ys = ring.xy
+                ax.fill([a - gx + x for a in xs], ys, color="#e9dcc0" if ring is g.exterior else "white", ec="#6b4f2a", lw=0.8)
+            x += (g.bounds[2] - g.bounds[0]) + 25
+        ax.axhline(zs, color="#888", lw=0.6, ls="--")
+        ax.set_aspect("equal"); ax.axis("off")
+        ax.set_title(f"{name}\n{r['look']:.1f} mm wide, ${r['price']:.2f}\nsway {r.get('sway', float('nan')):.1f} mm, "
+                     f"{100 * r.get('use', float('nan')):.0f} % of strength", fontsize=9)
+    fig.suptitle("Leg plates A and B (dashed: the deck's underside; the legs show below it)", x=0.01, ha="left", fontsize=10)
     fig.tight_layout()
     fig.savefig(path, dpi=80)
     plt.close(fig)
@@ -221,8 +292,9 @@ def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "results.json").write_text(json.dumps(res, indent=1))
     draw(res, OUT / "map.png")
-    f = lambda r: (f"${r['price']:.2f}  {r['kg']:.2f} kg  sway {r['sway']:.1f} mm  use {100 * r['use']:.0f} %  "
-                   f"legs {r['room']:.0f} mm apart  {r['knobs']}")
+    draw_legs(res, OUT / "legs.png")
+    f = lambda r: (f"${r['price']:.2f}  legs {r['look']:.1f} mm wide  sway {r['sway']:.1f} mm  use {100 * r['use']:.0f} %  "
+                   f"room {r['room']:.0f} mm  {r['kg']:.2f} kg  {r['knobs']}")
     print(f"[optimize] {res['stage1']['ok']} of {res['stage1']['tried']} designs pass the cheap checks; "
           f"{len(res['fea'])} through the FEA; {len(res['front'])} on the front")
     print("  current:", f(res["current"]))

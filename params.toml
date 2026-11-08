@@ -119,6 +119,9 @@ use_max = 0.90        # FEA: worst share of strength (Tsai-Hill) allowed in thos
 sway_max = 10.0       # FEA: sway under fea.push_n (mm)
 fea_leg_h = 6.0       # coarser meshes than docs/fea.md's (same sway; peaks within a few %), for speed
 fea_deck_h = 10.0
+refine_share = 0.5    # share of fea_budget spent refining around the best designs (the rest spreads over the range)
+refine_step = 0.06    # refining moves each knob by about this share of its range
+refine_seeds = 6      # ... around this many of the best so far
 
 [optimize.knobs]      # [low, high] for each knob the search may move (the top's squircle stays the owner's)
 "deck.arm_w" = [28.0, 50.0]
@@ -178,6 +181,8 @@ foot_h = 220.0        # ... and the top of the toes, relaxed (TODO-verify: owner
 leg_margin = 15.0     # air left above thighs and feet
 chair_seat_h = 100.0  # a bought zaisu (owner 2026-11: the plywood ones are archived, tag zaisu-archive): its seat
                       # sat on, padding included, above the floor (TODO-verify: measure it when it comes)
+legroom_min = 560.0   # room between two legs where shins and thighs pass, legs forward (comfort.legroom). About
+                      # what v1 gives at knee height, which the owner finds fine (TODO-verify with the measurements)
 knee_reach_min = 35.0   # how far that knee zone must reach in under the top's edge (owner chose the 780 frame: 40)
 tip_inset = 50.0      # tipping load is computed EN 12521 / EN 1730-style: pushed down at mid-side, 50 mm in from the edge
 tip_min_n = 0.0       # no pass/fail limit until we have a real figure (EN 12521:2023 Table 2, or a bathroom-scale test); 0 = report only

@@ -173,6 +173,10 @@ deck's hard hand cases). What it found:
 - **The current design is on the front:** it has the most leg room (637 mm) of any design that passes the FEA.
 - Near-free gains: a wider foot (less taper) buys strength for almost no room; a higher haunch top buys room.
   For the same money, about 595 mm of room gives 5.7 mm of sway and 72 % (now 7.1 mm, 80 %).
+- **With economics and looks as the goals** (owner: equally important once the functional limits hold; looks
+  measured as the legs' average visible width below the deck, `looks.leg_width`): the current legs are 63.4 mm.
+  The slimmest that passes is 61.9 mm (−2 %), at 88 % of strength and $0.05 more; the cheapest saves $0.59 with legs
+  19 % wider. So on these knobs the design is already at the edge for looks, and economics can't be traded at all.
 
 ## Price: what's left to save
 Little: the design is at uMake's price floor (`docs/quote.md`, "What can still be saved"). About 40 % of the bill
