@@ -154,3 +154,22 @@ No shop found that cuts hinoki from a DXF with an instant price *and* ships abro
   and the heater warms one face, so finish both faces the same and keep it loose (it already is). Hinoki is soft
   and dents easily; it's prized for its scent and pale, fine grain. A corner radius stands in for the squircle,
   unless the corners are cut by hand from a printed template.
+
+### A solid hinoki top from Marutoku, delivered to Canada (2026-11, JPY 112 = CAD 1, TODO-verify at order time)
+Only the top would come from Japan; the frame stays uMake birch (it's under the futon).
+- **Strength (FEA, `fea.top_case` with rough solid-hinoki values: E 8.8 GPa along / 0.45 across, splits across
+  the grain at ~3 MPa; TODO-verify):** 20 mm: 41 % of strength, 9.5 mm sag; **25 mm: 26 %, 5.0 mm**; 30 mm: 19 %.
+  The limit is the stress across the grain (solid wood splits along it), not along it. 25 mm is the pick.
+- **Marutoku configurator** (hinoki knot-free, 860 × 860, R150 corners, 5R edges top and bottom, natural clear
+  oil both faces, tax in): 20 mm ¥39,610, **25 mm ¥40,390 (CAD ~361)**, 30 mm ¥44,270. Walnut and white oak at
+  20 mm: ¥57,170 / ¥54,200. Marutoku sells to Japanese addresses only and confirms the final total (with its
+  shipping) by email, in Japanese, so order through a proxy-buying service (e.g. Buyee) that handles that.
+- **Shipping:** Marutoku to the proxy's warehouse: not quoted (a large panel; TODO-verify, guess ¥2,000–5,000).
+  Proxy fees: guess ~¥1,500 (TODO-verify). **EMS to Canada** (Japan Post, the Oceania/Canada/Mexico/Middle
+  East/Europe column): up to 9 kg ¥21,400, 10 kg ¥23,500, about +¥2,100 a kg after. The top weighs ~7.8 kg,
+  ~10 kg packed. A 92 × 92 × 6 cm box is 2.88 m in length + girth, just under EMS's usual 3 m limit (TODO-verify
+  Canada's limits; a padded box over 95 cm wouldn't go).
+- **Into Canada:** CPTPP should make Japanese wood duty-free (TODO-verify the HS code and origin statement);
+  GST 5 %, BC PST 7 % if collected at the border, and Canada Post's handling fee (~$10).
+- **Total, the hinoki top delivered:** about ¥69,000 before import, **about CAD 660–705 landed**. The uMake order
+  without its top: about $271 (model), so the whole table ≈ CAD 965–1,010 against $368 all-birch.
