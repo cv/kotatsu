@@ -43,6 +43,24 @@ quoted instantly; nothing was flagged.
   weigh about 11.6 kg, well inside free shipping.
 - With the top on its own, the top line was $137.78: the fixed share again.
 
+## v2 as designed (November 2026, not ordered)
+The final v2 table (tapered legs, rounder corners, squircle n = 8 top). Every file: millimetres, Engineered Wood >
+Baltic Birch, **15mm**, CNC router, no extra processes. All quoted instantly; nothing flagged.
+
+| File | Size | Qty | Each | Line |
+|---|---|---|---|---|
+| top.dxf | 860 × 860 | 1 | $80.28 | $80.28 |
+| deck.dxf | 780 × 780 | 1 | $94.90 | $94.90 |
+| leg-plate-a.dxf | 110 × 385 | 4 | $16.21 | $64.84 |
+| leg-plate-b.dxf | 110 × 385 | 4 | $14.78 | $59.12 |
+| heater-cheek.dxf | 380 × 70 | 2 | $10.07 | $20.14 |
+| wedge.dxf | 60 × 17.4 | 6 | $1.52 | $9.12 |
+| **Subtotal** | | **18** | | **$328.40** |
+
+The cart: one 91 × 91 × 14 cm box, shipping **free**, tax (BC GST/PST) $39.41, **total $367.81**, lead time 2 days.
+`kotatsu/price.py` predicted $327.64 (0.2 % low). If uMake's finalization adds what it added to v1 ($52.50 on
+$353.33, about 15 %), expect about $378 + tax, about $423. TODO-verify when ordering.
+
 ## v2 full quote: table and both zaisu (November 2026, not ordered)
 Every file: millimetres, Engineered Wood > Baltic Birch, **15mm**, CNC router, no extra processes. All 28 parts
 quoted instantly; nothing was flagged.

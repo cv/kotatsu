@@ -149,11 +149,11 @@ three parts with real outlines on 14.1 mm stock:
 | Item | Cost |
 |---|---|
 | Heater (PaletteLife, amazon.ca, delivered) | $258 |
-| uMake: 18 parts at 15mm, **quoted $328.53 + $39.42 tax, free shipping** (one 91 × 91 × 14 cm box; 2026-11, not ordered, `docs/quote.md`) | $368 |
+| uMake: 18 parts at 15mm, **quoted $328.40 + $39.41 tax, free shipping** (one 91 × 91 × 14 cm box; the final design, 2026-11, not ordered, `docs/quote.md`). If finalization adds what it did for v1 (~15 %): about $423 | $368–423 |
 | Futon: 205 cm square from Etsy, or a queen duvet + cover from Douglas | $185–230 |
 | Sandpaper and finishing oil | $30–50 |
 | A zaisu (bought, adjustable: about $70, free shipping) + tax | $78 |
-| **Total** | **about $920–985** |
+| **Total** | **about $920–1040** |
 
 ## Off-season storage
 Everything packs flat inside the top's footprint, in three layers, a stack about 47 mm tall (kotatsu/storage.py
