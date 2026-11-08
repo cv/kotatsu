@@ -131,3 +131,26 @@ shipping to BC. Checked 2026-11; nothing ordered.
   America (solid hinoki boards come from specialty lumber dealers).
 - **Bamboo** (EZCNC, 3/4") is the only premium-looking sheet on an online quote found so far. It would mean a 19 mm
   version of the design (v1's thickness), or a bamboo top only, with the frame still from uMake.
+
+### Hinoki, walnut or white oak from Japan or China (2026-11)
+No shop found that cuts hinoki from a DXF with an instant price *and* ships abroad. The closest:
+
+- **Marutoku** (木材通販のマルトク, <https://shop.woodworks-marutoku.com/>, Japan): solid panels, edge-glued
+  (幅はぎ), "free cut" up to 1300 × 3800 mm, 10–50 mm thick, rectangle or circle, with corner radius (each
+  corner), edge profiles and finish. Online **automatic estimate** (自動見積もり); shipping and special machining
+  are added in a confirmation email after ordering (its guide). Ships within Japan only (Hokkaido/Okinawa quoted
+  separately), so Canada needs a forwarder (Buyee, Tenso). Lead time 7–17 working days.
+  Prices from its configurator for **860 × 860 × 20 mm, corners R150, edges 上下R面 5R + 磨き, natural oil both
+  faces** (自然塗料クリアー 両面), incl. Japanese consumption tax:
+  - **Hinoki, Japanese, knot-free (【国産材】桧（無節）): ¥39,610**
+  - White oak (ホワイトオーク): ¥54,200
+  - Walnut (ウォールナット): ¥57,170
+- **Getting it here** (estimates, TODO-verify): about 6 kg (hinoki) to 10 kg (walnut) plus packing; EMS takes
+  it (max 1.5 m long, length + girth 3 m: this is about 2.6 m). Japan-side shipping to the forwarder, the
+  forwarder's fee, EMS to Canada (very roughly $150–250 for 8–12 kg), then GST/PST and any duty and handling.
+- **Taobao / AliExpress / Alibaba** (China): hinoki (often Taiwanese 桧木) boards and "custom Japanese hinoki"
+  panels, CNC-cut to a drawing (来图来样加工), but priced by chat with the seller.
+- **Wood notes for a solid top:** solid wood moves across the grain with the seasons (an 86 cm panel a few mm),
+  and the heater warms one face, so finish both faces the same and keep it loose (it already is). Hinoki is soft
+  and dents easily; it's prized for its scent and pale, fine grain. A corner radius stands in for the squircle,
+  unless the corners are cut by hand from a printed template.
