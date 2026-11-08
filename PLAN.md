@@ -22,7 +22,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
 | Topic | Decision |
 |---|---|
 | Table | One **86 × 86 cm squircle** kotatsu. The top is one piece and sits loose on the frame, with the futon in between |
-| Show top | Optional (owner 2026-11): the top may come from a quote instead of uMake, for a show-stopping one. **Pale wood** (owner): rift- or quarter-sawn white oak or hard maple, 20 mm (10–11 kg), or hinoki, 25 mm, used carefully (no sitting, coasters). Full-length edge-glued boards, no finger joints, kiln-dried to 8–10 %, 240 grit, bought unfinished; I oil it myself (Osmo Polyx-Oil Clear Satin 3032, which I have: it warms pale wood a little, so try it under the top first; 2 thin coats, **both faces and the edges equally**, so it can't cup over the heater). Same squircle; `make quote` writes the DXF, a one-page drawing and the request (English, Chinese, Japanese). Stone researched too (`docs/research.md`)  Leads: Workers Wood (London, ON; sanded, unfinished; a 36" round, the same blank, is $530 in hard maple, $690 in white oak, + shipping; custom shapes by quote), West Contract Furniture (Hanover, ON; any shape, no minimum), Alibaba (Deqing Mengwang, Dongguan Dongxin), Marutoku for hinoki |
+| Show top | Researched and dropped (owner 2026-11): solid pale wood, stone, a copper skin and a ¼" low-iron glass sheet over the birch (previewed in 3-D: too glossy) were all priced or checked with the FEA (`docs/research.md`; the quote pack is at git tag `show-top-archive`). The pale birch look of v1 is what I want: the top stays uMake birch, finished by hand with a satin hardwax oil (owner: "the simple and honest look of the waxed satin birch still wins at the price point") |
 | Frame | A **yagura**: four "+"-shaped corner legs (8 plates) under an X-shaped deck. No aprons, so knees get the room |
 | Material | **15 mm Baltic birch for everything**, wedges included (v1: 18 mm). Joints accept 14.1–15.7 mm (TODO-verify the real tolerance, and which uMake menu entry, "15mm" or "16mm", it is) |
 | Heater | **PaletteLife 120 V 400 W**, 29 × 29 × 5 cm, the same unit as v1, screwed in at the sides (`docs/heater.md`). I drill its screw holes during assembly, so the files have none. Its top sits flush with the deck top; the manual sets no clearance above the unit |
@@ -181,28 +181,24 @@ $353.33 (TODO-verify what was added; if it repeats, v2's $328.53 becomes about $
    and me sitting legs forward on the bare floor (top of a thigh just above the knee, top of the toes).
 
 ## Finishing (by hand, after the first fit-up)
-**v2: make it look more expensive than it is (owner, 2026-11), all by hand, no cost:**
-- **Undercut the top's edge.** A bevel on the *underside* of the edge (sanded or routed), about 8 mm in and down
-  to 6–7 mm at the very edge: from the side the 15 mm top reads half as thick.
-- **A small roundover on every visible edge** (2–3 mm, sandpaper on a block), then oil: it brings out the birch's
-  striped ply edges. Crisp, even edges and a good finish matter more than shape.
-I'll make it look lighter by hand instead of in the cut files:
-- **Top corners:** v2 cuts the squircle in the file, so there's nothing to re-round.
-- **Top edge: 15° underside bevel, 35 mm wide, leaving a 9 mm rim.** At the corners the top rests on the
-  posts only 28 mm in from its edge, so narrow the bevel to about 20 mm there. The plies show as stripes about 5 mm wide,
-  like contour lines.
-- **Legs: round over every exposed vertical edge**, up to a full half-round (R7.5). Keep flat: the top edges
-  that carry the top and deck, the tenons and shoulders, the slot walls and the plate faces inside the
-  cross-laps, and the wedge holes. Only ease the floor edge (about 2 mm). The leg stress is 3.6 MPa against
-  roughly 35 MPa strength, so losing about 10% of the section costs nothing that matters.
-- **Pale and matte, like hinoki (白木, "plain wood").** Birch is already close in colour. The aim is to
-  keep it from yellowing and looking unfinished. Normal oils (linseed, tung, Danish) turn it
-  honey-coloured, so I'm skipping them. Candidates: a water-based flat clear coat, a "raw" hardwax oil
-  with a trace of white (e.g. Osmo Polyx-Oil Raw), or a Scandinavian soap finish. Try them on the 2 spare
-  wedges first. No essential oils (hinoki scent): the cat will sleep in the warm kotatsu, and many
-  essential oils are toxic to cats.
-- Before bevelling, pick the cleaner face of the top (fewest patches) and put it up.
-- Sand to 180, wipe with a damp cloth to raise the grain, let it dry, then sand 220 (320 on the top).
+The pale birch look of v1 is the goal (owner, 2026-11). All by hand, at no cost to the order:
+- **Pick the cleaner face of the top** (fewest patches) and put it up, before anything else.
+- **Undercut the top's edge:** a 15° bevel on the underside, about 35 mm wide, leaving a 9 mm rim, so from the
+  side the 15 mm top reads thinner and its plies show as stripes. At the corners the posts sit 20 mm in from
+  the edge, so narrow the bevel to about 15 mm there.
+- **Round every visible edge a little** (2–3 mm, sandpaper on a block). Crisp, even edges and a good finish
+  matter more than shape.
+- **Legs: ease the exposed vertical edges to about 3 mm, no more.** v2's legs work hard (the FEA puts the
+  bottom of plate A's slot at 80 % of its strength under a hard 200 N shove), so the full half-rounds once
+  planned for v1 would cost real strength. Keep sharp and flat: the top edges that carry the top and deck,
+  the tenons and shoulders, the slot walls and the faces inside the cross-laps, and the wedge holes. Ease
+  the floor edge about 2 mm.
+- **Sand** to 180, wipe with a damp cloth to raise the grain, let it dry, then 220 (320 on the top).
+- **Oil:** Osmo Polyx-Oil Clear Satin (3032), which I already have. It's a hardwax oil, so it warms birch only
+  a little (normal linseed, tung or Danish oils turn it honey-coloured). Try it on the 2 spare wedges first;
+  if it looks too warm, Osmo Polyx-Oil Raw (3044) keeps it paler. Two thin coats, wiping off the excess,
+  overnight between them, on **both faces and the edges equally**, so the top can't cup over the heater.
+- No essential oils (hinoki scent): the cat sleeps in the warm kotatsu, and many are toxic to cats.
 
 ## Earlier designs
 - **v1**, as ordered and built: 18 mm birch, the heater hung under the deck from wedged cheeks, R20
