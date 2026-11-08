@@ -146,3 +146,20 @@ def test_heater_leaves_shin_room(C):
     (sx, sy, sz), (cx, cy, cz) = frame.heater_box(P)
     assert cz - sz / 2 >= 300, "shins under the heater (v2: it rides in the deck, 309 mm up)"
     assert frame.cheek_z(P)[0] >= cz - sz / 2 - 0.01, "cheeks must not hang below the heater"
+
+
+def test_legs_forward_on_a_zaisu():
+    """On a zaisu the owner sits legs forward (2026-11; a bought one, comfort.chair_seat_h): thighs under the
+    deck, feet under the heater."""
+    from kotatsu import comfort
+    for P in TABLES:
+        room = comfort.legs_forward(P, P.comfort.chair_seat_h)
+        assert room["thigh_room"] >= 0 and room["feet_room"] >= 0
+
+
+def test_cross_legged_knees_need_room_under_the_top():
+    """Knees higher than the frame's top can't come in under the top's edge (the futon is squeezed there)."""
+    from kotatsu import comfort
+    for P in TABLES:
+        assert comfort.knee_reach(P, height=frame.layout(P).H + 1) == 0.0
+        assert comfort.knee_reach(P) >= P.comfort.knee_reach_min          # on the floor pillows it fits

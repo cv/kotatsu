@@ -226,7 +226,11 @@ against comfort (knee room), weight and the cut list before adopting it.
 - The strengths (f_m 35, f_m,cross 30, f_v 9 MPa) are rough characteristic values (TODO-verify). A typical sheet
   breaks well above them, which is why 160 % is a warning and not a prediction that the leg snaps.
 
-## The zaisu
+## The zaisu (archived)
+
+The plywood zaisu were dropped from the order (owner, 2026-11: a bought one is cheaper) and their code archived
+at the git tag `zaisu-archive`. This is the record of how they checked out.
+
 
 `kotatsu/fea_chair.py` checks the chairs with the same tools, thinnest stock, each part's grain the weaker way
 round (the nester may turn chair parts any way), next to `zaisu.py`'s lumped checks:

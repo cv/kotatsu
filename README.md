@@ -421,31 +421,36 @@ plates lean along.
 
 ### Summer
 
-In summer the table goes flat into a stack the size of its top, as v1 does: three layers, under 5 cm. The
-chairs can come too, flipped and turned to fit, in five layers and 8 cm. Or they can just stay out: a zaisu
-is a perfectly good chair without a kotatsu. And the heater question is settled: on high, its top reaches
-about 40 °C, warm to the hand, so the futon can lie right on it.
+In summer the table goes flat into a stack the size of its top, as v1 does: three layers, under 5 cm. And the
+heater question is settled: on high, its top reaches about 40 °C, warm to the hand, so the futon can lie right
+on it.
 
-![Summer storage: the top, then the deck with the leg plates and wedges in its openings, then the chairs' parts in three more layers, all inside the top's footprint](docs/img/v2-storage.png)
+![Summer storage: the top, then the deck with the leg plates and wedges in its openings, then the rest, all inside the top's footprint](docs/img/v2-storage.png)
 
 ### The quote
 
 The whole thing, table and both chairs, quoted at **$501.66**: 28 parts, all instant, shipping free in one
-91 × 91 × 20 cm box, $561.86 with tax. That's 6 % more than my price model expected, and part by part it was
-further off than that: the open X deck and the chairs' side frames were a quarter dearer than predicted, small
-solid parts cheaper. The pattern gave it away. uMake charges the wood by each part's **bounding box**, not by
-the wood actually in it. Fitted that way, every line matches within 2 %. So v1's lesson needs a correction: a
-window never saves money, only weight. It just adds cutting. (It still had to happen in v1, where weight
-was what stood between me and free shipping.)
+91 × 91 × 20 cm box. That was 6 % more than my price model expected, and part by part it was further off than
+that: the open X deck and the chairs' side frames were a quarter dearer than predicted, small solid parts
+cheaper. The pattern gave it away. uMake charges the wood by each part's **bounding box**, not by the wood
+actually in it. Fitted that way, every line matches within 2 %. So v1's lesson needs a correction: a window
+never saves money, only weight. It just adds cutting. (It still had to happen in v1, where weight was what
+stood between me and free shipping.)
+
+Then I took the chairs out of the quote. The table alone is **$328.53**, so the two zaisu were adding $173,
+and I'd found an adjustable zaisu online for about $70, delivered. That settled it: the plywood chairs
+went into the archive (the `zaisu-archive` tag has them, FEA and all), and I'm buying one. What they taught
+me stays: on a chair I sit with my legs out, and the comfort model now knows a knee can't go higher than the
+top.
 
 | | v1 | v2 so far |
 |---|---|---|
-| Parts | 26 | 18, plus 10 for the chairs |
-| Weight | 15.9 kg | 11.6 kg, plus 6.8 for the chairs |
+| Parts | 26 | 18 |
+| Weight | 15.9 kg | 11.6 kg |
 | Wedges | 14 | 6 (4 + 2 spares) |
 | Clear height under the heater | 286 mm | 309 mm |
 | A hard 200 N shove, finite elements | not checked | 87 % of the legs' strength, 7.2 mm of sway |
-| uMake | $353.33 (the order) | $501.66 for the table and both chairs (a quote, not an order; $561.86 with tax, shipping free) |
+| uMake | $353.33 (the order) | $328.53 (a quote, not an order; $367.95 with tax, shipping free) |
 
 Before I order it, I want to measure how I really sit (no tape to hand yet) and find out how thick
 uMake's 15 mm sheet really is. Then a
@@ -459,8 +464,8 @@ I placed the order in October 2026. One surprise: uMake's checkout ends with "a 
 out to confirm". So I still got one email. Next, the table comes apart again and goes to the garage
 for sanding, staining and wax.
 
-Version 2 is in the works: lighter, with the heater up in the deck, two floor chairs, and a finite-element
-check that found (and fixed) weak legs. See the Version 2 chapter.
+Version 2 is in the works: lighter, with the heater up in the deck, and a finite-element check that found
+(and fixed) weak legs. See the Version 2 chapter.
 
 I worked through all of this over about two days with an AI coding agent. I made the choices and drew
 the sketches. It wrote the geometry code and tests, ran the numbers and filled in the quote forms.

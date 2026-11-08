@@ -6,7 +6,7 @@ Material is charged by each part's **bounding box**, not the wood in it (v2 full
 all 10 lines within 2 %, true area only within 38 %). So cut-outs and windows save weight, not money: they
 only add cutting. The order total then follows a volume curve:
     total ~= K * raw_total ** B
-fitted on the two 15mm quotes ($328.70 for the table alone, $501.66 for table + zaisu). uMake's own share
+fitted on two 15mm quotes ($328.70 for the table alone, $501.66 with two plywood zaisu, since archived). uMake's own share
 of the total between the parts is proportional to raw. v1's 19mm order comes out 3 % low (thicker stock).
 Cutting is about half the raw cost of this design; one more metre of cutting costs about as much as
 0.09 m2 more bounding box.
@@ -37,8 +37,6 @@ def raw(g) -> float:
 def parts(p) -> list[tuple[str, object, int]]:
     out = [("top", top.build(p).outline, 1)]
     out += [(pt.name, pt.shape, pt.qty) for pt in frame.parts(p)]
-    from . import zaisu                              # the chairs are in the same order
-    out += [(pt.name, pt.shape, pt.qty) for pt in zaisu.parts(p)]
     return out
 
 

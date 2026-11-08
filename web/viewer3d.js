@@ -94,7 +94,7 @@ export class Viewer3D {
     this.grid = grid;
     this.root = new THREE.Group(); this.scene.add(this.root);
     this.state = { table: null, assembly: null, showTop: true, showFrame: true, showHeater: true,
-      showFuton: true, showRug: true, showChairs: true, showPillows: true, showAmbiance: true, light: "day",
+      showFuton: true, showRug: true, showPillows: true, showAmbiance: true, light: "day",
       fea: "off", feaBend: 0, feaPulse: true };
     new ResizeObserver(() => this.resize()).observe(container);
     this.caption = document.createElement("div"); this.caption.className = "asm-caption"; container.appendChild(this.caption);
@@ -118,8 +118,7 @@ export class Viewer3D {
       this.gui.add(this.state, "showFrame").name("frame").onChange(() => this.place());
       this.gui.add(this.state, "showHeater").name("heater").onChange(() => this.place());
       this.gui.add(this.state, "showFuton").name("futon").onChange(() => this.place());
-      this.gui.add(this.state, "showChairs").name("chairs").onChange(() => this.place());
-      this.gui.add(this.state, "showPillows").name("pillows").onChange(() => this.place()); // floor pillows and the chairs' cushions
+      this.gui.add(this.state, "showPillows").name("pillows").onChange(() => this.place());
       this.gui.add(this.state, "showRug").name("rug").onChange(() => this.place());
       this.gui.add(this.state, "showAmbiance").name("ambiance").onChange(() => this.place());
       this.gui.add(this.state, "light", Object.keys(LIGHT)).name("light").onChange(() => this.applyLight());
@@ -172,15 +171,11 @@ export class Viewer3D {
       let shape = part.shape;
       if (pl.mirror) shape = { ext: shape.ext.map(([u, v]) => [-u, v]).reverse(), holes: shape.holes.map((h) => h.map(([u, v]) => [-u, v]).reverse()) };
       const m = slab(shape, t, pl.kind, part.grain || "u");
-      if (pl.matrix) m.applyMatrix4(new THREE.Matrix4().set(...pl.matrix)); // Python's placement (the chairs)
-      else {
-        if (pl.axis !== "z") m.applyMatrix4(BASIS[pl.axis]);
-        m.position.set(...pl.origin);
-      }
-      const kind = pl.kind === "wedge" ? "wedge" : pl.kind === "chair" ? "chair" : "frame";
+      if (pl.axis !== "z") m.applyMatrix4(BASIS[pl.axis]);
+      m.position.set(...pl.origin);
+      const kind = pl.kind === "wedge" ? "wedge" : "frame";
       push(m, kind, pl.moves, pl.kind !== "frame"); // the legs are there from the start
-      const M = pl.matrix ? new THREE.Matrix4().set(...pl.matrix)
-        : (pl.axis !== "z" ? BASIS[pl.axis].clone() : new THREE.Matrix4()).premultiply(new THREE.Matrix4().makeTranslation(...pl.origin));
+      const M = (pl.axis !== "z" ? BASIS[pl.axis].clone() : new THREE.Matrix4()).premultiply(new THREE.Matrix4().makeTranslation(...pl.origin));
       (this.slots[pl.part] ??= []).push({ M: M.premultiply(new THREE.Matrix4().makeTranslation(off.x, off.y, off.z)), mirror: !!pl.mirror, it: this.items.at(-1) });
       this.itemPart.set(this.items.at(-1), pl.part);
     }
@@ -253,13 +248,12 @@ export class Viewer3D {
     const ease = (x) => x * x * (3 - 2 * x);
     for (const it of this.items || []) {
       const vis = { top: S.showTop, frame: S.showFrame, wedge: S.showFrame, heater: S.showHeater,
-        futon: S.showFuton, rug: S.showRug, seat: S.showPillows, chair: S.showChairs,
+        futon: S.showFuton, rug: S.showRug, seat: S.showPillows,
         ambTop: S.showAmbiance && S.showTop, amb: S.showAmbiance, ambFloor: S.showAmbiance }[it.kind];
       const started = !it.moves?.length || s > it.moves[0].step + it.moves[0].a;
       it.obj.visible = vis && (started || !it.hideBefore);
       if (fc) { // a heat map: just the frame (and the top, if it's the top's case); the analysed part is painted
-        const keep = it.kind === "frame" || it.kind === "wedge" || (it.kind === "heater" && fc.part !== "deck") || (it.kind === "top" && fc.part === "top")
-          || (it.kind === "chair" && fc.part.startsWith("zaisu"));
+        const keep = it.kind === "frame" || it.kind === "wedge" || (it.kind === "heater" && fc.part !== "deck") || (it.kind === "top" && fc.part === "top");
         it.obj.visible = keep && !this.feaHidden?.has(it);
       }
       it.obj.position.copy(it.base);
@@ -332,7 +326,7 @@ export class Viewer3D {
     }
     this.feaBendNow(1);
     const pct = (u) => `${Math.round(u * 100)} %`;
-    const extra = c.part === "zaisu side" ? `moves ${c.sag_mm} mm at most` : c.sag_mm != null ? `sags ${c.sag_mm} mm` : c.sway_mm != null ? `sways ${c.sway_mm} mm` : "";
+    const extra = c.sag_mm != null ? `sags ${c.sag_mm} mm` : c.sway_mm != null ? `sways ${c.sway_mm} mm` : "";
     this.legend.innerHTML = `<b>${c.label}</b><br>worst ${pct(c.worst)} of its strength${extra ? ", " + extra : ""}${c.on ? " (a push along x: the plates along x bend in their plane, the rest of the frame is carried along)" : ""}
       (deflection drawn × ${this.state.feaBend})
       <div style="height:10px;margin:6px 0 2px;border-radius:3px;background:${GRADIENT}"></div>
@@ -362,8 +356,6 @@ export class Viewer3D {
       it.obj.position.copy(it.base);
       it.obj.matrixAutoUpdate = true;
       if (carry[part] != null) it.obj.position.z += carry[part] * k;            // rides on the deck (deck cases)
-      const xyz = c?.carry_xyz?.[part]?.[(this.slots[part] || []).findIndex((sl) => sl.it === it)];
-      if (xyz) { it.obj.position.x += xyz[0] * k; it.obj.position.y += xyz[1] * k; it.obj.position.z += xyz[2] * k; }
       if (!sh) continue;
       const dx = sh.vec[0] * k, dy = sh.vec[1] * k;
       if (part?.startsWith("leg plate")) {                                       // feet fixed, tops with the deck

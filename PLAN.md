@@ -15,7 +15,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
 | Wedges | 12 + 2 spares | **4 + 2 spares** |
 | Top | square, R20 corners (re-rounded by hand) | **squircle** (n = 10), cut in the file; feet and deck rounder to match |
 | Parts, weight, cutting | 26, 15.9 kg, 25.5 m | **18, 11.6 kg, 22.7 m** |
-| Chairs | none | **two zaisu** (floor chairs), cut with the table: 10 parts, 6.8 kg, no wedges |
+| Chairs | none | a bought zaisu (owner, 2026-11). Two plywood ones were designed, checked and quoted (+$173), then archived (tag `zaisu-archive`) |
 
 ## Decisions
 
@@ -26,7 +26,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
 | Material | **15 mm Baltic birch for everything**, wedges included (v1: 18 mm). Joints accept 14.1–15.7 mm (TODO-verify the real tolerance, and which uMake menu entry, "15mm" or "16mm", it is) |
 | Heater | **PaletteLife 120 V 400 W**, 29 × 29 × 5 cm, the same unit as v1, screwed in at the sides (`docs/heater.md`). I drill its screw holes during assembly, so the files have none. Its top sits flush with the deck top; the manual sets no clearance above the unit |
 | Height | About 41 cm: 385 mm frame + 15 mm top + the futon |
-| Futon & seats | An 80 × 80 in (203 cm) square futon on an 8 ft round rug (`docs/futon.md`). Two sides get a **zaisu** with its own 10 cm cushion (owner, 2026-11: about 45 × 45 cm); the other two keep 25 × 25 in floor pillows. On a zaisu I sit **legs forward** (owner, 2026-11), so the cushion can squash to as much as 138 mm under me (about a 12 cm cushion); cross-legged on a chair, my knees wouldn't fit under the top with any cushion worth having. The 3-D view shows them all |
+| Futon & seats | An 80 × 80 in (203 cm) square futon on an 8 ft round rug (`docs/futon.md`), four 25 × 25 in floor pillows, and a bought, adjustable zaisu (about $70). On a zaisu I sit **legs forward**: cross-legged on a chair, my knees wouldn't fit under the top with any cushion worth having. The 3-D view shows the futon, rug and pillows |
 | Budget | Under CAD $1200 all in |
 
 ## The parts
@@ -70,32 +70,9 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
 - **Top (1, 860 × 860 mm), a squircle**: |x/a|¹⁰ + |y/a|¹⁰ = 1, a curve that fades into the edges instead of
   a radius that starts abruptly. The corner posts stay 28 mm inside its edge (v1: 40). The futon lies
   over the heater as in a traditional open frame (v1 had the deck in between).
-- **Zaisu (2 chairs, 5 parts each; `kotatsu/zaisu.py`).** No wedges: gravity and the sitter hold them.
-  - **Side frames (2 a chair, 611 × 449 mm):** a 60 × 560 mm floor runner and a 50 mm back post leaning
-    back 15°, with an R50 fillet between them. The post stops 15 mm past the back panel's top (owner,
-    2026-11: it was 60 mm wide and stood 130 mm higher, carrying nothing); 50 mm is the narrowest that
-    keeps 15 mm of wood beside its slots.
-  - **Seat board (440 × 400 mm between the sides):** two 40 mm tabs a side pass through holes in the
-    runners, 16 mm off the floor. The wood under each hole can't be thinner than the sheet (with its
-    dogbones), so the seat's top is at **31 mm**, the lowest it can go. Sitting on the board holds the
-    runners down, so the chair can't tip back. A cut-out under the thighs saves weight.
-  - **Front stretcher and back panel:** they hook into slots in the sides. Each goes in 8 mm high, then
-    drops, so a finger on each tab hangs behind the side frame; they stop the sides spreading. The back
-    (440 × 300 mm, up the incline) has a cut-out that is also a handle. Its 60 mm rails carry the lean
-    face-on; its sides are only 30 mm, since the bending is close to nothing at the posts.
-  - Checks (`tests/test_zaisu.py`): the hooks go in and lock, and the board's tabs fit, from 14.1 to
-    15.7 mm. A 60 kg sitter only tips back past a 540 N lean at 35 cm (1.8× a hard 300 N lean). On the
-    thinnest stock, across the grain (30 MPa, rough): a 450 N flop back puts 11 MPa (37 %) in the posts and
-    12 MPa (41 %, 4.4 mm of sag) in the back panel; a 1000 N sitter drop puts 14 MPa (46 %, 4.9 mm) in the
-    seat board, which stays off the floor. 3.4 kg a chair.
-  - Finite elements (`kotatsu/fea_chair.py`, docs/fea.md): seat board 38 %, back panel 49 % (the lean on
-    its top rail alone), side frame 68 %. The side frame's peak is the inside corner behind the post, which the
-    lumped post check missed: 85 % until its fillet grew from 40 to 80 mm on a runner 600 mm long (was 560). TODO-verify the check loads against EN 12520.
 
-That's **18 table parts, about 11.6 kg, 22.7 m of cutting**, plus **10 chair parts, 6.8 kg, 23.2 m**.
-With the chairs, my nester needs one 60 × 120" sheet (the table alone fit a 48 × 96"). uMake lays out
+That's **18 parts, about 11.6 kg, 22.7 m of cutting**. They fit on one 48 × 96" sheet. uMake lays out
 the sheets itself and prices per part, so this only matters for my estimate.
-Leg plates are laid with the grain running up the leg.
 
 ## Assembly (a mallet, plus a screwdriver for the heater)
 1. Sand the holding tabs off. Sand the crush ribs until each cross-lap slides together.
@@ -106,9 +83,6 @@ Leg plates are laid with the grain running up the leg.
 5. On the floor or a bench, screw the heater between the two cheeks (drill 2–2.5 mm pilot holes).
 6. Lower the heater and cheeks into the deck's well: the ears rest on the deck.
 7. Drape the futon over the frame and lay the top on it.
-8. Each zaisu: lay the seat board down and push one side frame onto its tabs. Put the stretcher's and
-   the back's tabs into that side's slots, held 8 mm high, push the other side frame on, and let the
-   stretcher and the back drop.
 
 ## How it measures up
 
@@ -117,9 +91,9 @@ Leg plates are laid with the grain running up the leg.
 | Clear height at the middle of each side (deck underside) | 344 mm |
 | Clear height under the heater | 309 mm (v1: 286) |
 | My 76 × 32 cm cross-legged knee zone (on the bare floor): how far it reaches under the top's edge | 40 mm |
-| On a zaisu, legs forward: room above my thighs under the deck / my feet under the heater (10 cm cushion, counted unsquashed) | 38 mm / 74 mm (a typical 160 mm thigh, TODO-verify; thighs up to about 200 mm fit) |
+| On a zaisu, legs forward: room above my thighs under the deck / my feet under the heater (seat 100 mm high when sat on, TODO-verify) | 69 mm / 74 mm (a typical 160 mm thigh, TODO-verify) |
 | My knee room on the floor pillows, against v1 (where it's fine, owner 2026-11) | the same or more: frame top 385 / 385 mm, deck underside 344 / 341, heater 309 / 286, reach 40 / 40, between the legs 570 / 568 |
-| Cross-legged on a zaisu: knee room under the top's edge (385 mm, the futon squeezed over the knees) | only 36 mm for the seat's cushion, so I sit legs forward |
+| Cross-legged on a zaisu: knee room under the top's edge (385 mm, the futon squeezed over the knees) | none to spare once the seat's height is added, so I sit legs forward |
 | Room between the legs at knee height | 568 mm |
 | Sway under a 100 N sideways push (wedges tight, gravity-held plates counted as nothing) | about 2.0 mm (0.8 at 50 N, 4.5 at 200 N; v1: 0.9) |
 | Play in each tenon, and extra wobble per 0.1 mm a wedge works loose | 0.4 mm, about 1 mm |
@@ -172,17 +146,15 @@ three parts with real outlines on 14.1 mm stock:
 | Item | Cost |
 |---|---|
 | Heater (PaletteLife, amazon.ca, delivered) | $258 |
-| uMake: 28 parts at 15mm, **quoted $501.66 + $60.20 tax, free shipping** (one 91 × 91 × 20 cm box; 2026-11, not ordered, `docs/quote.md`) | $562 |
+| uMake: 18 parts at 15mm, **quoted $328.53 + $39.42 tax, free shipping** (one 91 × 91 × 14 cm box; 2026-11, not ordered, `docs/quote.md`) | $368 |
 | Futon: 205 cm square from Etsy, or a queen duvet + cover from Douglas | $185–230 |
 | Sandpaper and finishing oil | $30–50 |
-| Zaisu cushions (2, 10 cm thick, about 45 × 45 cm) | TODO-verify the price |
-| **Total** | **about $1035–1100 + cushions** |
+| A zaisu (bought, adjustable: about $70, free shipping) + tax | $78 |
+| **Total** | **about $920–985** |
 
 ## Off-season storage
-Everything packs flat inside the top's footprint (kotatsu/storage.py packs it by itself, flipping parts over where
-that helps). The table alone is 3 layers, a stack about 47 mm tall. With both zaisu it's 5 layers, about 78 mm: the
-side frames' L-shapes leave one of them on a layer of its own. But the zaisu are ordinary floor chairs, so they
-can stay out all summer.
+Everything packs flat inside the top's footprint, in three layers, a stack about 47 mm tall (kotatsu/storage.py
+packs it by itself, flipping parts over where that helps).
 
 ## Still open
 1. **The 15 mm sheet.** Order uMake's "15mm" Baltic birch (its "16mm" is probably 5/8", too thick). Its
@@ -194,11 +166,8 @@ can stay out all summer.
    the crush ribs should hold them snug.
 4. **A tipping limit.** If I want one: EN 12521's force table, or a bathroom-scale test on the finished table.
 5. **Fit-up.** v1's wedges went in by hand. Watch whether 15 mm tenons and wedges hold as well.
-6. **Zaisu fit.** The cushions are 10 cm (owner, 2026-11). Counted as not squashing at all, they leave
-   38 mm above a typical 160 mm thigh under the deck, so thighs up to about 200 mm fit. TODO-verify by
-   measuring me sitting legs forward on the bare floor (top of a thigh just above the knee, top of the toes)
-   when there's a tape to hand. The feet clear
-   the heater by 74 mm whatever the cushion, because the heels stay on the floor.
+6. **Zaisu fit.** Measure the bought zaisu's seat (sat on, padding included: assumed 100 mm, `comfort.chair_seat_h`)
+   and me sitting legs forward on the bare floor (top of a thigh just above the knee, top of the toes).
 
 ## Finishing (by hand, after the first fit-up)
 I'll make it look lighter by hand instead of in the cut files:

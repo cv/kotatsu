@@ -28,4 +28,4 @@ def test_top_cases_data():
 def test_key_tracks_the_sources():
     assert len(fea_view.key()) == 12
     assert "room" in fea_view.IGNORED             # the rug doesn't make the heat maps stale
-    assert not any(s in fea_view.IGNORED for s in ("material", "loads", "fea", "frame", "yagura", "deck", "top", "zaisu"))
+    assert not any(s in fea_view.IGNORED for s in ("material", "loads", "fea", "frame", "yagura", "deck", "top"))

@@ -78,6 +78,21 @@ fitted on the two 15mm quotes. It predicts this one at $502.24, and v1's 19mm or
 What it means for the design: **a cut-out or window saves weight, never money.** It only adds cutting, which is
 about half the raw cost. One more metre of cutting costs about as much as 0.09 m² more bounding box.
 
+### Without the chairs
+Removing the four zaisu files from the same quote: **$328.53 for the 18 table parts**, one 91 × 91 × 14 cm box,
+shipping free, tax $39.42, **total $367.95** (not ordered). So the two zaisu added $173.13 to the order. The
+owner chose a bought, adjustable zaisu (about $70, free shipping) instead, and the plywood chairs were archived
+(tag `zaisu-archive`). The bounding-box model predicts the table alone at $328.40.
+
+| File | Each | Qty |
+|---|---|---|
+| top.dxf | $80.47 | 1 |
+| deck.dxf | $94.56 | 1 |
+| leg-plate-a.dxf | $16.24 | 4 |
+| leg-plate-b.dxf | $14.84 | 4 |
+| heater-cheek.dxf | $10.06 | 2 |
+| wedge.dxf | $1.51 | 6 |
+
 ## How each change moved the price
 
 | Design | Box, weight | Shipping | Total with tax |

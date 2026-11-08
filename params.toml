@@ -83,50 +83,6 @@ wedge_head = 18.0     # (1:8 taper -> 10.5 mm foot)
 ear_len = 40.0        # each ear's bearing on the deck top, past the well
 ear_h = 20.0          # cheek height above the deck top (the ears' depth); stays under the futon plane
 
-[zaisu]               # v2 (owner 2026-11): legless floor chairs, cut with the table (kotatsu/zaisu.py). No wedges:
-                      # the stretcher and back hook in and drop, the seat board's tabs hold the runners down
-count = 2
-seat_w = 440.0        # between the side frames (for a ~45 cm cushion: TODO-verify once one is chosen)
-seat_d = 400.0        # seat board, front to back
-board_lift = 16.0     # board underside above the floor: the wood under the runners' holes (dogbones too) can't
-                      # be thinner than the sheet (shop rule), so the seat's top is at 31 mm, the lowest it can be
-board_tab_w = 40.0    # the board's tabs (2 a side) ...
-board_tab_out = 10.0  # ... and how far past the side frame they stick out
-board_frame = 60.0    # wood round the board's cut-out (under the thighs: weight)
-board_cut_depth = 0.55  # the cut-out runs back to this fraction of the seat
-runner_h = 60.0       # side frame: floor runner height ...
-runner_len = 600.0    # ... and length (sets how hard a lean tips it back; 600, was 560: room for the back fillet, FEA)
-front_gap = 50.0      # runner front to the board's front edge (the stretcher sits in it, 17 mm of wood each side)
-post_w = 50.0         # back post width (v2b, owner 2026-11: from 60; 15 mm of wood beside its slots, dogbones too)
-post_cap = 15.0       # the post ends this far past the back panel's top edge (was 130 mm of post above it)
-recline = 15.0        # posts and back lean back from vertical, degrees
-back_z0 = 140.0       # back panel's lower edge above the floor
-back_h = 300.0        # back panel height, up the incline
-back_frame = 60.0     # the back's top and bottom rails: they carry the lean, face-on
-back_stile = 30.0     # ... and its sides (bending is ~0 there, at the posts)
-tab_w = 20.0          # hook tabs: height (20 + 6 leaves 15 mm of wood round the slot in a 60 mm runner) ...
-tab_out = 20.0        # ... reach past the side frame ...
-hook_drop = 6.0       # ... and the drop that locks them (the finger behind the side frame)
-corner_n = 4.0        # squircle corners everywhere (owner 2026-11): superellipse exponent (2 = a radius)
-fillet_r = 120.0      # ... the sweep where the post meets the runner, in front
-fillet_back_r = 80.0  # ... and behind it (80, was 40: the side frame's FEA peak, 85 % -> 68 %, docs/fea.md)
-post_end_r = 24.0     # ... the post's top (50 wide: almost a round end)
-runner_end_r = 14.0   # ... the runner's front end (the stretcher's slot is close)
-runner_tail_r = 25.0  # ... and its back end
-board_corner_r = 40.0
-back_corner_r = 12.0  # (its hook tabs are close to the corners)
-cutout_n = 5.0        # the seat's and back's cut-outs are squircles, like the top
-lean_n = 300.0        # checks: a hard lean back, lean_z above the floor ...
-lean_z = 350.0
-sitter_n = 600.0      # ... with a 60 kg sitter on the seat
-back_check_n = 450.0  # strength checks: a flop back (1.5 x the lean) ...
-seat_check_n = 1000.0 # ... and a heavy sitter dropping onto the seat (TODO-verify against EN 12520's loads)
-cushion = [450.0, 450.0]  # the chairs' cushions (owner hasn't bought them: TODO pick one, then set these)
-cushion_h = 100.0     # ... thickness as sold (owner 2026-11: 10 cm cushions)
-cushion_squashed = 100.0  # ... and sat on: counted as not squashing at all, the worst case. Legs forward (owner
-                      # 2026-11), it must leave the thighs room under the deck: kotatsu/zaisu.py cushion_max
-
-
 [heater]               # PaletteLife 120V 400W (docs/heater.md). Owner measured 29 x 29 x 5 cm (2026-10-19, to the cm)
 model = "PaletteLife B0CKBS16YY"
 body_x = 290.0
@@ -172,6 +128,8 @@ thigh_h = 160.0       # legs out forward on the bare floor (the zaisu posture, o
                       # cushions there's room for thighs up to about 200 mm)
 foot_h = 220.0        # ... and the top of the toes, relaxed (TODO-verify: owner to measure)
 leg_margin = 15.0     # air left above thighs and feet
+chair_seat_h = 100.0  # a bought zaisu (owner 2026-11: the plywood ones are archived, tag zaisu-archive): its seat
+                      # sat on, padding included, above the floor (TODO-verify: measure it when it comes)
 knee_reach_min = 35.0   # how far that knee zone must reach in under the top's edge (owner chose the 780 frame: 40)
 tip_inset = 50.0      # tipping load is computed EN 12521 / EN 1730-style: pushed down at mid-side, 50 mm in from the edge
 tip_min_n = 0.0       # no pass/fail limit until we have a real figure (EN 12521:2023 Table 2, or a bathroom-scale test); 0 = report only

@@ -20,7 +20,7 @@ from . import fea, params
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "out" / "fea.json"
-SRC = ["kotatsu/params.py", "kotatsu/fea.py", "kotatsu/fea_chair.py", "kotatsu/zaisu.py", "kotatsu/fea_view.py", "kotatsu/yagura.py",
+SRC = ["kotatsu/params.py", "kotatsu/fea.py", "kotatsu/fea_view.py", "kotatsu/yagura.py",
        "kotatsu/frame.py", "kotatsu/top.py", "kotatsu/geom.py", "kotatsu/comfort.py", "kotatsu/loads.py",
        "kotatsu/stiffness.py"]
 VIEW_H = {"top": 28.0, "deck": 12.0, "leg": 4.0}     # element sizes for the view (coarser than the checks)
@@ -189,44 +189,11 @@ def leg_cases(p) -> list[dict]:
     return out
 
 
-def chair_cases(p) -> list[dict]:
-    """The zaisu (kotatsu/fea_chair.py): the seat board, the back panel and a side frame. Both chairs are
-    loaded alike, so each case is drawn on every placement of its part. For the side frame, `carry_xyz`
-    moves the back panel and the seat board with it (world mm per placement, true scale)."""
-    from . import fea_chair, zaisu
-    from skfem import Basis, ElementTriP2, ElementVector
-    Z, out = p.zaisu, []
-    for label, r in ((f"zaisu seat board: a {Z.seat_check_n:g} N sitter", fea_chair.seat_case(p)),
-                     (f"zaisu back: a {Z.back_check_n:g} N lean on the top rail", fea_chair.back_case(p))):
-        res = r["result"]
-        util = tsai_hill(p, res.sy, res.sx, res.txy)                 # grain along y: x spans across it
-        out.append({"part": r["part"], "label": label, "kind": "plate", "worst": _worst(util, r["local"]),
-                    "sag_mm": round(r["sag_mm"], 1), "loads": _rings(r["loads"]), "loads_w": _sink(res.m, res.w, r["loads"]),
-                    **_pack(res.m, util, r["local"], [res.w])})
-    r = fea_chair.side_case(p, Z.back_check_n, Z.sitter_n)
-    x = r["result"]
-    b = Basis(x.m, ElementVector(ElementTriP2()))
-    U, V = x.u[b.nodal_dofs[0]], x.u[b.nodal_dofs[1]]
-    util = tsai_hill(p, x.su, x.sv, x.tuv)                            # grain along the runner (u)
-    zs = fea_chair.side_zones(p)
-    at = lambda zones: fea.in_any(x.m, zones, at="vertices")
-    move = lambda msk: (0.0, float(U[msk].mean()), float(V[msk].mean()))   # chair (X, Y, Z): the side's u = Y, v = Z
-    carry_local = {"zaisu back": move(at(zs["slots"])), "zaisu seat board": move(at(zs["holes"]))}
-    frames = zaisu.chair_frames(p)
-    carry = {part: [[round(W[0] * dx + W[1] * dy + W[2] * dz, 3), round(W[4] * dx + W[5] * dy + W[6] * dz, 3),
-                     round(W[8] * dx + W[9] * dy + W[10] * dz, 3)] for W in frames]
-             for part, (dx, dy, dz) in carry_local.items()}
-    out.append({"part": "zaisu side", "label": f"zaisu side: a {Z.back_check_n:g} N flop back with a {Z.sitter_n:g} N sitter",
-                "kind": "plane", "worst": _worst(util, r["local"]), "sway_mm": None,
-                "sag_mm": round(float(np.hypot(U, V).max()), 1), "carry_xyz": carry, **_pack(x.m, util, r["local"], [U, V])})
-    return out
-
-
 def build(p=None) -> dict:
     p = p or params.tables(params.load())[0]
     t0 = time.time()
     MESHES.clear()
-    cases = top_cases(p) + deck_cases(p) + leg_cases(p) + chair_cases(p)
+    cases = top_cases(p) + deck_cases(p) + leg_cases(p)
     return {"key": key(), "built": time.strftime("%Y-%m-%dT%H:%M:%S"), "seconds": round(time.time() - t0),
             "thickness": p.material.t_min, "meshes": dict(MESHES), "cases": cases}
 

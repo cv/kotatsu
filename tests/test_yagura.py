@@ -253,12 +253,10 @@ def test_foot_relief(Y):
 
 
 def test_storage_layout_fits(Y):
-    """Off-season: every part, the two zaisu's too, packs flat inside the top's footprint, nothing touching:
-    the table in 3 layers, table and chairs in 5 (a stack under 80 mm)."""
+    """Off-season: every part packs flat inside the top's footprint in 3 layers, nothing touching."""
     from kotatsu import storage
     assert storage.check(Y[0]) == []
-    assert len(storage.layout(Y[0], chairs=False)) == 3
-    assert len(storage.layout(Y[0])) <= 5 and storage.stack_mm(Y[0]) < 80
+    assert len(storage.layout(Y[0])) == 3 and storage.stack_mm(Y[0]) < 50
 
 
 

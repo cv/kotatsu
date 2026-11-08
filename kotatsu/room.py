@@ -132,17 +132,6 @@ def room3d(p, n: int = 81) -> dict:
     c = seat_offset(p)                                         # pillow centre distance from the table centre
     seats = [{"center": [cx + ux * c, cy + uy * c, h / 2], "size": [w if uy else d, d if uy else w, h]}
              for ux, uy in ((1, 0), (-1, 0), (0, 1), (0, -1))]
-    Z = getattr(p, "zaisu", None)
-    if Z is not None and int(getattr(Z, "count", 0)) > 0:      # the chairs' cushions sit on their seat boards
-        front = c - d / 2                                   # each chair's front: the pillow's inner edge
-        cw, cd = Z.cushion
-        ch = Z.cushion_h
-        zc = Z.board_lift + p.material.t_nominal + ch / 2
-        mid = front + Z.front_gap + Z.seat_d / 2
-        sides = [(0, -1), (0, 1), (-1, 0), (1, 0)][:int(Z.count)]
-        seats = [st for st, (ux, uy) in zip(seats, ((1, 0), (-1, 0), (0, 1), (0, -1))) if (ux, uy) not in sides]
-        seats += [{"center": [cx + ux * mid, cy + uy * mid, zc], "size": [cw if uy else cd, cd if uy else cw, ch]}
-                  for ux, uy in sides]
     ramp = getattr(R, "zabuton_ramp", 80.0)
 
     def over_seats(x: float, y: float) -> float:

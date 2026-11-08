@@ -136,7 +136,7 @@ def summary(p) -> dict:
 
 
 def legs_forward(p, seat: float) -> dict:
-    """Sitting with the legs out under the table (on a zaisu), the sitting surface `seat` mm off the floor:
+    """Sitting with the legs out under the table (on a zaisu: comfort.chair_seat_h), the sitting surface `seat` mm off the floor:
     room (mm, after leg_margin) above the thighs, which pass under the deck at mid-side, and above the feet,
     under the heater. Heels stay on the floor, so the seat raises the thighs but not the feet."""
     C = p.comfort

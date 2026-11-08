@@ -1,7 +1,7 @@
 """Off-season storage (owner idea 8): everything packs flat inside the top's footprint.
 
 Layer 1: the top. Layer 2: the deck, with whatever fits in its openings. Then as many loose layers as the
-rest needs (v2: the two zaisu come too, and small parts can go in their cut-outs).
+rest needs.
 Packed greedily on a 3 mm grid (largest part first), then checked exactly.
 One sheet thick per layer, 860 x 860. Centred plan coordinates (mm).
 Run: uv run python -m kotatsu.storage  (writes out/preview/storage.png)
@@ -83,15 +83,14 @@ def _pack(items, layers, side, res=3.0, order=None):
     return out
 
 
-def layout(p, chairs: bool = True) -> dict[str, list]:
+def layout(p) -> dict[str, list]:
     """{layer name: placed parts}: the top, the deck with parts in its openings, then layer 3, 4...
     (spares included: they're kept too)."""
-    from . import zaisu
     parts = {pt.name: pt for pt in frame.parts(p)}
     deck = _centred(parts["deck"].shape)
     side = p.top.length / 2
     items = []
-    for name, pt in list(parts.items()) + ([(pt.name, pt) for pt in zaisu.parts(p)] if chairs else []):
+    for name, pt in parts.items():
         if name == "deck":
             continue
         g = translate(pt.shape, -pt.shape.bounds[0], -pt.shape.bounds[1])
@@ -100,9 +99,9 @@ def layout(p, chairs: bool = True) -> dict[str, list]:
     return {"top": [_centred(top.build(p).outline)], **packed}
 
 
-def stack_mm(p, chairs: bool = True) -> float:
+def stack_mm(p) -> float:
     """How tall the stack is: a sheet per layer (thickest stock)."""
-    return len(layout(p, chairs)) * p.material.t_max
+    return len(layout(p)) * p.material.t_max
 
 
 def check(p) -> list[str]:
@@ -136,7 +135,7 @@ def main():
             for h in g.interiors:
                 x, y = h.xy; ax.fill(x, y, fc="white", ec="#2b2118", lw=0.5)
         ax.set_xlim(-s - 10, s + 10); ax.set_ylim(-s - 10, s + 10); ax.set_aspect("equal"); ax.axis("off"); ax.set_title(name)
-    fig.suptitle(f"Off-season storage: {len(L)} flat layers inside the top's 860 × 860 footprint, table and both zaisu "
+    fig.suptitle(f"Off-season storage: {len(L)} flat layers inside the top's 860 × 860 footprint "
                  f"(a stack about {stack_mm(p):.0f} mm tall)")
     fig.tight_layout()
     out = ROOT / "out" / "preview" / "storage.png"

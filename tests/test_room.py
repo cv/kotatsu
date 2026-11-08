@@ -28,18 +28,11 @@ def test_room3d_layers():
     zs = d["futon"]["pts"][2::3]
     assert min(zs) >= 4.0 - 1e-9 and max(zs) <= frame.layout(p).H + 10
     L = frame.layout(p)
-    Z = p.zaisu
-    seat_top = Z.board_lift + p.material.t_nominal
-    on_chairs = 0
-    for s in d["seats"]:                                     # pillows sit outside the frame: on the floor ...
+    for s in d["seats"]:                                     # pillows sit outside the frame, on the floor
         (x, y, z), (w, dd, h) = s["center"], s["size"]
+        assert abs(z - h / 2) < 1e-6
         assert max(abs(x - L.cx) - w / 2, abs(y - L.cy) - dd / 2) > L.Lf / 2
-        if abs(z - h / 2) < 1e-6:
-            assert (w, dd) == tuple(p.room.zabuton)
-        else:                                                # ... or on a zaisu's seat board
-            assert abs(z - (seat_top + h / 2)) < 1e-6 and sorted((w, dd)) == sorted(Z.cushion)
-            on_chairs += 1
-    assert on_chairs == int(Z.count)
+        assert (w, dd) == tuple(p.room.zabuton)
 
 
 def test_pillows_fit_inside_the_rug_and_tuck_under_the_futon():

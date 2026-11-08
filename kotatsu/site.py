@@ -46,8 +46,7 @@ def frame_data(p) -> dict:
     L = frame.layout(p)
     t, kg_m3 = p.material.t_nominal, p.material.density_kg_m3
     plist, placed = [], []
-    from . import zaisu
-    for pt in frame.parts(p) + zaisu.parts(p):
+    for pt in frame.parts(p):
         g = pt.shape
         x0, y0, x1, y1 = g.bounds
         plist.append({"name": pt.name, "kind": pt.kind, "qty": pt.qty, "spares": pt.spares, "grain": pt.grain,
@@ -62,19 +61,13 @@ def frame_data(p) -> dict:
                 c = (ox + sm * (x0 + x1) / 2, oy + t / 2, oz + (y0 + y1) / 2)
             elif pl.axis == "y":
                 c = (ox + t / 2, oy + sm * (x0 + x1) / 2, oz + (y0 + y1) / 2)
-            elif pl.axis == "m":                         # a full matrix (the chairs)
-                M = pl.matrix
-                u, v, w = (x0 + x1) / 2, (y0 + y1) / 2, t / 2
-                c = tuple(M[4 * i] * u + M[4 * i + 1] * v + M[4 * i + 2] * w + M[4 * i + 3] for i in range(3))
             else:
                 c = ((x0 + x1) / 2, (y0 + y1) / 2, oz)
             placed.append({"part": pt.name, "kind": pt.kind, "axis": pl.axis, "origin": [ox, oy, oz],
-                           "mirror": pl.mirror_u, "moves": assembly.part_moves(p, pt, pl, c, k),
-                           **({"matrix": [round(x, 4) for x in pl.matrix]} if pl.matrix else {})})
+                           "mirror": pl.mirror_u, "moves": assembly.part_moves(p, pt, pl, c, k)})
     size, centre = frame.heater_box(p)
-    total_kg = sum(x["kg"] * x["qty"] for x in plist if x["kind"] != "chair")
-    chairs_kg = sum(x["kg"] * x["qty"] for x in plist if x["kind"] == "chair")
-    return {"thickness": t, "height": L.H, "futon_gap": 12.0, "parts": plist, "placed": placed, "chairs_kg": round(chairs_kg, 1),
+    total_kg = sum(x["kg"] * x["qty"] for x in plist)
+    return {"thickness": t, "height": L.H, "futon_gap": 12.0, "parts": plist, "placed": placed,
             "heater": {"size": list(size), "center": list(centre)}, "total_kg": round(total_kg, 1),
             "assembly": assembly.extras(p),
             "draft": False}

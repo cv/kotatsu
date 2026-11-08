@@ -232,7 +232,7 @@ async function partFea(p, svg, top) {
     el("path", { d, fill: col, stroke: col, "stroke-width": 0.3, "vector-effect": "non-scaling-stroke" }, g);
   }
   el("path", { d: polyD(p.shape, top), class: "part", fill: "none" }, svg);   // the outline on top
-  const extra = c.sag_mm != null ? `, ${c.part === "zaisu side" ? "moves" : "sags"} ${c.sag_mm} mm` : c.sway_mm != null ? `, sways ${c.sway_mm} mm` : "";
+  const extra = c.sag_mm != null ? `, sags ${c.sag_mm} mm` : c.sway_mm != null ? `, sways ${c.sway_mm} mm` : "";
   leg.innerHTML = `worst <b>${Math.round(c.worst * 100)} %</b>${extra}
     <span class="bar" style="background:${GRADIENT}"></span><span class="ticks">0 · 50 · 100 · 150 %</span>
     ${state.data.fea.stale ? '<b style="color:#b00">stale (make fea)</b>' : ""}`;

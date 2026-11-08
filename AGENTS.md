@@ -28,7 +28,7 @@ What this repo produces:
   CSA listed. Never plan around a 100 V Japanese heater without a transformer. The heater maker's clearances
   and instructions override this design.
 - **Focus.** Keep only the design being built in the code. Archive alternatives with a git tag first, then
-  delete them. (So far: `seams-archive`, `frame-variants-archive` and `options-archive`.)
+  delete them. (So far: `seams-archive`, `frame-variants-archive`, `options-archive` and `zaisu-archive`.)
 - **Indigenous designs.** Don't imitate them. Use them only if they come from, or are licensed by, an
   Indigenous artist.
 

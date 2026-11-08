@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from shapely.affinity import translate
 from shapely.geometry import Polygon
 
-from . import frame, params, top, zaisu
+from . import frame, params, top
 
 
 @dataclass
@@ -15,7 +15,7 @@ class CutPart:
     shape: Polygon          # normalised: bounds start at (0, 0)
     qty: int
     rotations: tuple[int, ...] = (0, 90, 180, 270)   # degrees allowed on the sheet
-    group: str = "frame"    # top | frame | wedge | chair
+    group: str = "frame"    # top | frame | wedge
     note: str = ""
 
 
@@ -46,8 +46,6 @@ def cut_list(p, copies: int = 1, frame_grain: str | None = None) -> list[CutPart
         grp = "wedge" if pt.kind == "wedge" else "frame"
         out.append(CutPart(pt.name, _norm(pt.shape), pt.qty, rot, grp,
                            f"{pt.spares} spare" if pt.spares else ""))
-    for pt in zaisu.parts(p):                       # the floor chairs, cut with the table
-        out.append(CutPart(pt.name, _norm(pt.shape), pt.qty, ANY, "chair", ""))
     for c in out:
         c.qty *= copies
     return out
