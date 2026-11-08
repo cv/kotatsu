@@ -18,7 +18,8 @@ What this repo produces:
 - **No glue, nails, screws, bolts, dowels, inserts or other hardware.** Joints are plywood only: cross-laps,
   wedged through-tenons, tabs and slots. The one exception is the heater and the screws that come with it.
 - **Online ordering only.** Every part must quote instantly in app.umake.ca. Nothing that needs a manual
-  quote, freight or a pallet. In practice:
+  quote, freight or a pallet. One exception (owner, 2026-11): **the top** may be bought by quote, from any
+  supplier, for a show top in stone or solid wood (`make quote` writes the request pack). In practice:
   - free shipping needs the whole order to pack into **one box of 91 cm or less** and weigh **under about
     20 kg** (that's what the cart does; see `docs/quote.md`);
   - bigger boxes ship as oversize parcels, priced automatically at checkout. That's allowed, but costs about $200;

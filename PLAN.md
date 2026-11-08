@@ -22,6 +22,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
 | Topic | Decision |
 |---|---|
 | Table | One **86 × 86 cm squircle** kotatsu. The top is one piece and sits loose on the frame, with the futon in between |
+| Show top | Optional (owner 2026-11): the top may come from a quote instead of uMake, for a show-stopping one: 12 mm sintered stone or porcelain (21 kg), or 25 mm solid walnut, white oak, ash or hinoki (8–12 kg). Same squircle; `make quote` writes the DXF, a one-page drawing and the request (English, Chinese, Japanese). Not marble, limestone, travertine or 6 mm slabs: too weak on the corner posts (`docs/research.md`) |
 | Frame | A **yagura**: four "+"-shaped corner legs (8 plates) under an X-shaped deck. No aprons, so knees get the room |
 | Material | **15 mm Baltic birch for everything**, wedges included (v1: 18 mm). Joints accept 14.1–15.7 mm (TODO-verify the real tolerance, and which uMake menu entry, "15mm" or "16mm", it is) |
 | Heater | **PaletteLife 120 V 400 W**, 29 × 29 × 5 cm, the same unit as v1, screwed in at the sides (`docs/heater.md`). I drill its screw holes during assembly, so the files have none. Its top sits flush with the deck top; the manual sets no clearance above the unit |

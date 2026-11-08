@@ -93,6 +93,20 @@ ear_r = 8.0           # ... and the ears' undersides, which rest on the deck
 ear_len = 40.0        # each ear's bearing on the deck top, past the well
 ear_h = 20.0          # cheek height above the deck top (the ears' depth); stays under the futon plane
 
+[top_quote]           # v2 (owner 2026-11): the top may be bought by quote, for a show top (stone or solid wood);
+                      # kotatsu/quote_pack.py writes the drawing, the DXF and the request text (make quote)
+edge_r = 2.0          # eased edges, top and bottom faces
+undercut = 6.0        # optional: a bevel under the edge, leaving this much visible edge (mm): it reads thinner
+tolerance = 1.0       # outline, +/- mm
+flatness = 1.0        # mm, over the whole top
+options = [            # thickness from the top FEA on the corner posts (docs/research.md); weights for 860 x 860
+  { name = "Sintered stone / porcelain slab (Dekton, Neolith, Laminam or similar)", t = 12.0, density = 2450, note = "matte or honed face; not 6 mm (it breaks on the posts)" },
+  { name = "Engineered quartz", t = 12.0, density = 2400, note = "matte or honed face" },
+  { name = "Solid hardwood: walnut, white oak or ash", t = 25.0, density = 650, note = "edge-glued full-length boards, no finger joints; oil both faces" },
+  { name = "Solid hinoki (Japanese cypress), knot-free", t = 25.0, density = 430, note = "edge-glued full-length boards, no finger joints; oil both faces" },
+]
+
+
 [heater]               # PaletteLife 120V 400W (docs/heater.md). Owner measured 29 x 29 x 5 cm (2026-10-19, to the cm)
 model = "PaletteLife B0CKBS16YY"
 body_x = 290.0
