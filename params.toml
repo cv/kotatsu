@@ -73,6 +73,10 @@ leg_narrow = 70.0     # below the haunch the leg keeps this much width (v2, owne
 leg_haunch_top = 320.0  # haunch meets the full-width inner edge here (just under the 341 shoulders)
 leg_haunch_drop = 30.0  # ... and reaches the narrow line this much lower (a ~31° slope)
 leg_haunch_r = 30.0   # inside-corner fillet where the haunch meets the narrow leg
+leg_taper_top = 150.0 # v2 (owner 2026-11: "a soft taper"): full leg_narrow down to here, below the joints ...
+leg_foot_w = 56.0     # ... then the inner edge bends in to this at the floor (B keeps 18 mm beside its slot; FEA:
+                      # plate A 81 % under the 200 N push, was 89, the lower leg a little softer)
+leg_taper_r = 70.0    # ... with a long squircle bend where the taper starts
 foot_relief = 1.5     # shallow arc under plate A's foot: each plate stands on its two ends
 foot_relief_margin = 20.0  # past the foot rounding: each end stands on a flat ~8 mm pad
 wedge_len = 60.0      # the leg wedges (v2: the only wedges; the heater cradle hangs by gravity)

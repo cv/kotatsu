@@ -93,6 +93,20 @@ owner chose a bought, adjustable zaisu (about $70, free shipping) instead, and t
 | heater-cheek.dxf | $10.06 | 2 |
 | wedge.dxf | $1.51 | 6 |
 
+### What can still be saved (tried 2026-11, not adopted)
+With material priced by bounding box, a change only saves money if it shrinks a part's box or its cut. At this
+order size 1 m of cutting is worth about $4.66 and 0.1 m² of bounding box about $5.12; about 40 % of the total
+doesn't depend on the design at all. Tried on the price model and the deck FEA (`kotatsu.tryVariants`-style
+runs, in memory):
+- Rounder or bigger fillets and corners (deck, legs, top), no crush ribs, no foot relief: each under ±$0.25.
+- **Squircle corners on the X deck instead of its round fillets: worse.** +$1.4–1.6, 0.3 m more cutting, the
+  FEA peak up to 67–73 %, and the pads' short edges turn into curves the bit can't cut.
+- Corner pads as smooth convex blobs: no change (they're nearly convex already).
+- **A solid deck** (no X openings): −$4.26, deck FEA 60 % and a third of the sag, but +3.8 kg, and no knee room
+  in the openings. Rejected by the owner: the X's openings give the knees a few more cm.
+- The top at squircle n = 8: −$0.20 (the posts 20 mm inside the edge instead of 28). Not taken.
+The cut that's left is required: outlines, cross-lap slots, wedge holes, mortises, the heater well.
+
 ## How each change moved the price
 
 | Design | Box, weight | Shipping | Total with tax |

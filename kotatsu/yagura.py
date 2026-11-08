@@ -99,7 +99,7 @@ def foot_relief(p) -> Polygon:
     sag = getattr(Y, "foot_relief", 0.0)
     if sag <= 0:
         return Polygon()
-    wn = getattr(Y, "leg_narrow", 0.0) or p.frame.leg_width
+    wn = foot_w(p)
     a, b = Y.foot_relief_margin, wn - Y.foot_relief_margin
     c = (b - a) / 2
     R = (c * c + sag * sag) / (2 * sag)
@@ -249,6 +249,14 @@ def deck(p) -> Polygon:
     return g
 
 
+def foot_w(p) -> float:
+    """The leg's width at the floor: leg_foot_w if set (v2, owner 2026-11: a soft taper, the inner edge
+    bending in from leg_narrow at leg_taper_top down to this), else straight at leg_narrow."""
+    Y = p.yagura
+    wn = getattr(Y, "leg_narrow", 0.0) or p.frame.leg_width
+    return getattr(Y, "leg_foot_w", None) or wn
+
+
 def leg_outline(p) -> Polygon:
     """A leg plate's outline before its joints, in (u from the frame edge inward, v = z), with squircle
     corners (geom.squircle_corners). Owner's haunched leg (2026-10-20): below the deck it keeps only
@@ -261,15 +269,23 @@ def leg_outline(p) -> Polygon:
     wn = getattr(Y, "leg_narrow", 0.0)
     if wn and wn < wt:
         zt = Y.leg_haunch_top
-        g = Polygon([(0, 0), (wn, 0), (wn, zt - Y.leg_haunch_drop), (wt, zt), (wt, zs), (0, zs)])
+        wf, ztp = foot_w(p), getattr(Y, "leg_taper_top", 0.0)
+        if wf < wn and ztp > 0:      # full width down to leg_taper_top, then a soft taper to the foot
+            g = Polygon([(0, 0), (wf, 0), (wn, ztp), (wn, zt - Y.leg_haunch_drop), (wt, zt), (wt, zs), (0, zs)])
+        else:
+            g = Polygon([(0, 0), (wf, 0), (wn, zt - Y.leg_haunch_drop), (wt, zt), (wt, zs), (0, zs)])
     else:
         g = box(0, 0, wt, zs)
+
+    ztp = getattr(Y, "leg_taper_top", 0.0)
 
     def size(c, convex):
         if c[1] < 1:
             return F.foot_r
         if c[1] > zs - 1:
             return F.shoulder_r
+        if ztp and abs(c[1] - ztp) < 1:
+            return getattr(Y, "leg_taper_r", 60.0)        # where the taper starts: a long, soft bend
         return Y.leg_haunch_r
     return geom.squircle_corners(g, size, F.corner_n)
 

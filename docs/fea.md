@@ -10,6 +10,9 @@ outlines (`top.build`, `yagura.deck`, `frame.parts`), so it follows `params.toml
 became an S-curve of squircle corners). Under the 200 N push, plate A now peaks at the wedge hole (87 %), with
 the haunch at 81 %, the slot root at 77 % and sway 7.2 mm. `tests/test_fea.py::test_leg_plates_hold_the_push`
 is now a plain test, no longer an expected failure. The tables below are the 60 mm study that found it.
+Then a soft taper below the joints (full 70 mm down to 150 mm, then in to 56 mm at the floor, owner 2026-11)
+moved plate A's peak to 81 % (haunch), slot root 80 %, wedge hole 73 %, sway unchanged at 7.2 mm; plate B 70 %.
+A straight taper from the haunch failed instead (102 % at 58 mm): it narrows the leg at A's slot root.
 
 
 | Part | Lumped model says | FEA says | Verdict |

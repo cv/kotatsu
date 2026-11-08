@@ -95,7 +95,7 @@ def test_plane_stress_cantilever_matches_timoshenko():
 
 @pytest.fixture(scope="module")
 def leg_push(p):
-    return fea.leg_case(p, "A", p.fea.push_n, None, h=6)
+    return fea.leg_case(p, "A", p.fea.push_n, None, h=4)   # converged (6 mm overstates the wedge hole with the taper)
 
 
 def test_leg_pair_takes_the_push_and_the_wedge_its_preload(p, leg_push):

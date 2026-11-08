@@ -395,7 +395,8 @@ worked on its own branch while the chairs took shape, and reported back:
 
 My first fix, a shallow slot in one plate and a deep one in the other, made it worse: the peak just moved
 to the new slot's bottom. The plain fix worked: the narrow part of the legs went from 60 to 70 mm. The
-same shove now uses 87 % at worst and sways the frame 7.2 mm. It costs 0.25 kg and 2 cm of room between
+same shove now uses 87 % at worst and sways the frame 7.2 mm. (Later, a soft taper below the joints,
+for looks, brought that down to 81 %: the lower leg gives a little, so the joint at the top takes less.) It costs 0.25 kg and 2 cm of room between
 the legs at shin height, and none at the knees.
 
 Then the chairs got the same treatment. The seat and the back hold comfortably (38 % and 49 %), but

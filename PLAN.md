@@ -37,7 +37,8 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
   - Under the deck, each plate is 110 mm wide: a 22 mm outer finger, the 16 mm slot, a 10 mm shoulder,
     a 50 mm tenon, and a 12 mm inner shoulder. Below a sloped haunch (my sketch), the leg narrows to
     70 mm (v2, owner 2026-11; was 60): a 22 mm outer finger and a 32 mm inner one either side of the slot.
-    The haunch is one S-curve of squircle corners.
+    The haunch is one S-curve of squircle corners. Below the joints, from 150 mm down, the inner edge tapers
+    softly to 56 mm at the floor (owner, 2026-11: for looks; it also brings plate A's FEA peak from 89 to 81 %).
   - Only the A plate has a tenon (v2): it rises through the deck and takes the corner's one wedge. The B
     plate's top edge is all shoulder, under the deck. On both, the outer finger rises all the way to the
     top, so the top rests on the frame's four corners (the "corner posts").
@@ -155,6 +156,13 @@ three parts with real outlines on 14.1 mm stock:
 ## Off-season storage
 Everything packs flat inside the top's footprint, in three layers, a stack about 47 mm tall (kotatsu/storage.py
 packs it by itself, flipping parts over where that helps).
+
+## Price: what's left to save
+Little: the design is at uMake's price floor (`docs/quote.md`, "What can still be saved"). About 40 % of the bill
+doesn't depend on the design, the remaining cut is all required, and wood inside a part's box is free. A solid
+deck would save about $4 but costs 3.8 kg and the knee room in the X's openings, so the X stays. The bigger
+unknown is uMake's finalization: v1's receipt was **$405.83 + tax = $454.53**, $52.50 more than the cart's
+$353.33 (TODO-verify what was added; if it repeats, v2's $328.53 becomes about $378 + tax).
 
 ## Still open
 1. **The 15 mm sheet.** Order uMake's "15mm" Baltic birch (its "16mm" is probably 5/8", too thick). Its

@@ -137,17 +137,27 @@ def _haunch_bottom(P):
 
 
 def test_legs_are_straight(Y):
-    """Plumb plates: the outer edge is straight; below the haunch the inner edge is too (leg_narrow wide),
-    and the plate is full width just under the deck (shoulders + tenon)."""
+    """Plumb plates: the outer edge is straight; the inner edge is straight at leg_narrow from below the haunch
+    down to the taper's start, then narrows steadily to leg_foot_w at the floor (v2's soft taper); the plate is
+    full width just under the deck (shoulders + tenon)."""
     P, L, parts = Y
-    wn = getattr(P.yagura, "leg_narrow", 0.0) or P.frame.leg_width
+    Yg = P.yagura
+    wn = getattr(Yg, "leg_narrow", 0.0) or P.frame.leg_width
+    wf = yagura.foot_w(P)
+    ztp = getattr(Yg, "leg_taper_top", 0.0) if wf < wn else 0.0
+    width = lambda g, z: g.intersection(box(-50, z, 400, z + 1)).bounds
     for name in ("leg plate A", "leg plate B"):
         g = parts[name].shape
-        z_hi = _haunch_bottom(P) - 2 if getattr(P.yagura, "leg_narrow", 0) else L.z_deck_bot - 20
-        for z in (z_hi, 10, 100):
-            b = g.intersection(box(-50, z, 400, z + 1)).bounds
+        z_hi = _haunch_bottom(P) - 2 if getattr(Yg, "leg_narrow", 0) else L.z_deck_bot - 20
+        for z in (z_hi, (z_hi + ztp) / 2 + 40, ztp + getattr(Yg, "leg_taper_r", 0.0) + 5):
+            b = width(g, z)
             assert b[0] == pytest.approx(0, abs=0.5) and b[2] == pytest.approx(wn, abs=0.5), (name, z, b)
-        hi = g.intersection(box(-50, L.z_deck_bot - 12, 400, L.z_deck_bot - 11)).bounds
+        prev = wn + 1
+        for z in (ztp - 10, ztp / 2, 20):                      # below the taper's start: narrowing to the foot
+            b = width(g, z)
+            assert b[0] == pytest.approx(0, abs=0.5) and wf - 0.5 <= b[2] < prev, (name, z, b)
+            prev = b[2]
+        hi = width(g, L.z_deck_bot - 12)
         assert hi[2] == pytest.approx(P.frame.leg_width, abs=0.5)
 
 
@@ -163,6 +173,7 @@ def test_haunched_leg_fingers(Y):
     if not wn:
         pytest.skip("straight full-width legs")
     assert wn - (P.frame.ear + frame.slot_w(P) / 2) >= P.material.t_max - 0.5
+    assert yagura.foot_w(P) - (P.frame.ear + frame.slot_w(P) / 2) >= P.material.t_max     # at the tapered foot too
     assert P.yagura.leg_haunch_top < frame.layout(P).z_deck_bot - 10
 
 
@@ -247,7 +258,7 @@ def test_foot_relief(Y):
     g = parts["leg plate A"].shape
     touch = g.intersection(box(-1, -1, 500, 0.2))
     assert len(getattr(touch, "geoms", [touch])) == 2
-    wn = P.yagura.leg_narrow
+    wn = yagura.foot_w(P)                     # the foot's width (v2: tapered)
     mid = g.intersection(box(wn / 2 - 1, -1, wn / 2 + 1, sag + 2)).bounds
     assert mid[1] == pytest.approx(sag, abs=0.1)
 
