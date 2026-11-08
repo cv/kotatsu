@@ -91,7 +91,8 @@ def test_cradle_stays_below_futon_plane(C):
     P, L = C.P, C.L
     zb, zt = frame.cheek_z(P)
     ck, _ = frame.cheek(P)
-    assert zb + ck.bounds[3] == pytest.approx(zt) and zt <= L.H - 5
+    assert zb + ck.bounds[3] == pytest.approx(zt)
+    assert zt + (P.material.t_max - P.material.t_nominal) <= L.H - 1, "a thick deck lifts the cheeks: never proud of the tenons"
     assert L.z_deck_top + P.yagura.wedge_head <= L.H - 3
 
 

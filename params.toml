@@ -91,7 +91,8 @@ top_r = 12.0          # ... the top, under the futon ...
 ear_r = 8.0           # ... and the ears' undersides, which rest on the deck
                       # the deck's heater well; an ear at each end rests on the deck top. Gravity holds it: no wedges
 ear_len = 40.0        # each ear's bearing on the deck top, past the well
-ear_h = 20.0          # cheek height above the deck top (the ears' depth); stays under the futon plane
+ear_h = 24.0          # cheek height above the deck top (the ears' depth). v2 (owner 2026-11: 24, was 20): the cheek tops
+                      # sit 2 mm under the tenon tops, so even on the thickest deck they never stand proud and carry the top
 
 [top_quote]           # v2 (owner 2026-11): the top may be bought by quote, for a show top (stone or solid wood);
                       # kotatsu/quote_pack.py writes the drawing, the DXF and the request text (make quote)
@@ -140,9 +141,9 @@ body_x = 290.0
 body_y = 290.0
 body_h = 50.0
 cheek_clearance = 4.0  # cheek inner faces = body width + this; 4 mm covers a 290-293 mm body (measured to the cm)
-top_rise = 0.0         # v2: heater top above the deck top (0 = flush, so its top is deck.drop below the futon plane).
-                       #   The manual sets no clearance above the unit (owner 2026-10); the futon lies over it as in
-                       #   a traditional open frame. TODO-verify the unit's top stays cool to the touch
+top_rise = 4.0         # v2: heater top above the deck top (owner 2026-11: 4, was 0 = flush), raised with the cheeks so
+                       #   they keep 20 mm of air above it. The manual sets no clearance above the unit (owner 2026-10);
+                       #   the futon lies over it as in a traditional open frame; on high its top reaches 40 °C (owner)
 end_clearance = 10.0   # heater well length = body_y + this (a 290-293 body; TODO-verify nothing sticks out at the ends)
 holes = []             # not cut: the owner drills the heater's screw holes on assembly
 
