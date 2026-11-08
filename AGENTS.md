@@ -18,8 +18,7 @@ What this repo produces:
 - **No glue, nails, screws, bolts, dowels, inserts or other hardware.** Joints are plywood only: cross-laps,
   wedged through-tenons, tabs and slots. The one exception is the heater and the screws that come with it.
 - **Online ordering only.** Every part must quote instantly in app.umake.ca. Nothing that needs a manual
-  quote, freight or a pallet. One exception (owner, 2026-11): **the top** may be bought by quote, from any
-  supplier, for a show top in stone or solid wood (`make quote` writes the request pack). In practice:
+  quote, freight or a pallet. In practice:
   - free shipping needs the whole order to pack into **one box of 91 cm or less** and weigh **under about
     20 kg** (that's what the cart does; see `docs/quote.md`);
   - bigger boxes ship as oversize parcels, priced automatically at checkout. That's allowed, but costs about $200;
@@ -29,7 +28,7 @@ What this repo produces:
   CSA listed. Never plan around a 100 V Japanese heater without a transformer. The heater maker's clearances
   and instructions override this design.
 - **Focus.** Keep only the design being built in the code. Archive alternatives with a git tag first, then
-  delete them. (So far: `seams-archive`, `frame-variants-archive`, `options-archive` and `zaisu-archive`.)
+  delete them. (So far: `seams-archive`, `frame-variants-archive`, `options-archive`, `zaisu-archive` and `show-top-archive`.)
 - **Indigenous designs.** Don't imitate them. Use them only if they come from, or are licensed by, an
   Indigenous artist.
 
