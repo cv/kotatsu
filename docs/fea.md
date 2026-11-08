@@ -13,6 +13,10 @@ is now a plain test, no longer an expected failure. The tables below are the 60 
 Then a soft taper below the joints (full 70 mm down to 150 mm, then in to 56 mm at the floor, owner 2026-11)
 moved plate A's peak to 81 % (haunch), slot root 80 %, wedge hole 73 %, sway unchanged at 7.2 mm; plate B 70 %.
 A straight taper from the haunch failed instead (102 % at 58 mm): it narrows the leg at A's slot root.
+Then rounder corners (the haunch's S-curve 60 mm, the taper's bend 110: one continuous inner edge): plate A's
+worst is the slot root at 80 % (86 % at 2 mm elements), the haunch 57–70 %, the wedge hole 73 %. The wedge's
+bearing peak used to leak past the 3 mm "contact edges" band into the wedge-hole zone, so that zone read anything
+from 73 to 104 % depending on the mesh; `leg_case` now treats 6 mm round the wedge's bearing as local crushing.
 
 
 | Part | Lumped model says | FEA says | Verdict |

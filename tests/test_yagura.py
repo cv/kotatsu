@@ -148,10 +148,12 @@ def test_legs_are_straight(Y):
     width = lambda g, z: g.intersection(box(-50, z, 400, z + 1)).bounds
     for name in ("leg plate A", "leg plate B"):
         g = parts[name].shape
-        z_hi = _haunch_bottom(P) - 2 if getattr(Yg, "leg_narrow", 0) else L.z_deck_bot - 20
-        for z in (z_hi, (z_hi + ztp) / 2 + 40, ztp + getattr(Yg, "leg_taper_r", 0.0) + 5):
-            b = width(g, z)
-            assert b[0] == pytest.approx(0, abs=0.5) and b[2] == pytest.approx(wn, abs=0.5), (name, z, b)
+        z_hn = Yg.leg_haunch_top - Yg.leg_haunch_drop                  # the haunch's lower corner ...
+        z_mid = (z_hn + ztp) / 2 if ztp else z_hn - 40                # ... and the taper's start: the inner edge
+        b = width(g, z_mid)                                            # is leg_narrow between them (the two bends
+        assert b[0] == pytest.approx(0, abs=0.5) and b[2] == pytest.approx(wn, abs=0.5), (name, z_mid, b)   # meet)
+        for z in (z_mid, (z_mid + z_hn) / 2, (z_mid + ztp) / 2):       # and never narrower than it there
+            assert width(g, z)[2] >= wn - 0.5, (name, z)
         prev = wn + 1
         for z in (ztp - 10, ztp / 2, 20):                      # below the taper's start: narrowing to the foot
             b = width(g, z)
@@ -273,14 +275,14 @@ def test_storage_layout_fits(Y):
 
 
 def test_squircle_top_covers_the_posts(Y):
-    """The top rests on the corner posts: they stay at least 25 mm inside its edge (squircle corners)."""
+    """The top rests on the corner posts: they stay at least 18 mm inside its edge (n = 8: 20) (squircle corners)."""
     from kotatsu import comfort, top
     P, L, parts = Y
     posts = comfort.low_footprint(P, L.H, L.z_deck_top + 1)
     tp = translate(top.build(P).outline, -P.top.length / 2, -P.top.width / 2)
     if posts.bounds[0] >= 0:
         tp = top.build(P).outline
-    assert tp.contains(posts) and tp.exterior.distance(posts) >= 25.0
+    assert tp.contains(posts) and tp.exterior.distance(posts) >= 18.0
 
 
 def test_inner_shoulder_bears_on_the_deck(Y):

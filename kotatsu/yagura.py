@@ -51,10 +51,10 @@ def leg_plate(p, slotted_from_top: bool) -> Polygon:
     g = leg_outline(p)
     ta, tb = _tenon_u(p)
     if slotted_from_top:
-        g = g.union(fr._round_outer(box(ta, zs - 10, tb, H), 3.0))
+        g = g.union(fr._round_outer(box(ta, zs - 10, tb, H), getattr(F, "top_r", 3.0)))
     pu = post_u(p)
     if pu > 0:                                           # corner post: the ear arm rises to the top too
-        g = g.union(fr._round_outer(box(0, zs - 10, pu, H), 3.0).intersection(box(0, 0, pu, H)))
+        g = g.union(fr._round_outer(box(0, zs - 10, pu, H), getattr(F, "top_r", 3.0)).intersection(box(0, 0, pu, H)))
         if not slotted_from_top:                         # B: shoulder runs on from the post -> root relief
             g = g.difference(fr.dogbone((pu, zs), (1, 1), r))
     if slotted_from_top:                                 # A's tenon: root reliefs (the shoulders seat flat), wedge hole
@@ -297,9 +297,15 @@ def wedge_dims(p, which: str = "leg") -> tuple[float, float]:
 
 
 def wedge_shape(p, which: str = "leg") -> Polygon:
+    """The tapered wedge: its two long faces stay straight (they clamp); v2 (owner 2026-11) squircles its
+    struck head (wedge_head_r) and softens the tip."""
     n, h = wedge_dims(p)
     taper = p.fit.wedge_taper
     w = Polygon([(0, 0), (n, 0), (n, h), (0, h - n * taper)])
+    hr = getattr(p.yagura, "wedge_head_r", 0.0)
+    if hr > 0:
+        w = geom.squircle_corners(w, lambda c, cv: hr if c[0] > n - 1 else 3.0, p.frame.corner_n)
+        return w
     return fr._round_outer(w, 3.0)
 
 

@@ -38,7 +38,9 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
     a 50 mm tenon, and a 12 mm inner shoulder. Below a sloped haunch (my sketch), the leg narrows to
     70 mm (v2, owner 2026-11; was 60): a 22 mm outer finger and a 32 mm inner one either side of the slot.
     The haunch is one S-curve of squircle corners. Below the joints, from 150 mm down, the inner edge tapers
-    softly to 56 mm at the floor (owner, 2026-11: for looks; it also brings plate A's FEA peak from 89 to 81 %).
+    softly to 56 mm at the floor (owner, 2026-11: for looks), on a long squircle bend that runs into the
+    haunch's 60 mm S-curve: the inner edge is one continuous curve from the shoulder to the foot. FEA: plate A's
+    worst is now the slot root at 80 % (the haunch 57 %; it was 81 % at the haunch with straight legs).
   - Only the A plate has a tenon (v2): it rises through the deck and takes the corner's one wedge. The B
     plate's top edge is all shoulder, under the deck. On both, the outer finger rises all the way to the
     top, so the top rests on the frame's four corners (the "corner posts").
@@ -178,6 +180,11 @@ $353.33 (TODO-verify what was added; if it repeats, v2's $328.53 becomes about $
    and me sitting legs forward on the bare floor (top of a thigh just above the knee, top of the toes).
 
 ## Finishing (by hand, after the first fit-up)
+**v2: make it look more expensive than it is (owner, 2026-11), all by hand, no cost:**
+- **Undercut the top's edge.** A bevel on the *underside* of the edge (sanded or routed), about 8 mm in and down
+  to 6–7 mm at the very edge: from the side the 15 mm top reads half as thick.
+- **A small roundover on every visible edge** (2–3 mm, sandpaper on a block), then oil: it brings out the birch's
+  striped ply edges. Crisp, even edges and a good finish matter more than shape.
 I'll make it look lighter by hand instead of in the cut files:
 - **Top corners:** v2 cuts the squircle in the file, so there's nothing to re-round.
 - **Top edge: 15° underside bevel, 35 mm wide, leaving a 9 mm rim.** At the corners the top rests on the

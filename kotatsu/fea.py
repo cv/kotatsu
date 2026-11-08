@@ -577,6 +577,8 @@ def leg_case(p, which: str, H: float, top: dict | None = None, N_deck: float | N
     zones = leg_zones(p, which)
     c = m.p[:, m.t].mean(axis=1)
     loaded = unary_union([z for z, _ in trac] + [x.zone for x in cs]).buffer(3.0)
+    if wedge is not None:          # the wedge's bearing spreads further into the bridge: its peak 3-6 mm down is still
+        loaded = loaded.union(wedge.zone.buffer(6.0))   # local crushing, and mesh-dependent (73-104 % at 2-4 mm)
     rest = ~contains_xy(unary_union(list(zones.values())).union(loaded), c[0], c[1])
     args = (M.f_m, Ld.f_m_cross, Ld.f_v_plate)
     clear = ~contains_xy(loaded, c[0], c[1])                          # contact ends: local bearing peaks

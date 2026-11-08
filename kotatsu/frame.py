@@ -151,7 +151,21 @@ def cheek(p) -> tuple[Polygon, float]:
     n, v_deck, top = y1 - y0, L.z_deck_top - zb, zt - zb
     b0, b1 = w0 - y0 + p.fit.tight, w1 - y0 - p.fit.tight
     g = box(b0, 0, b1, top).union(box(0, v_deck, n, top))
-    g = _round_outer(g, 6.0)
+    rb, rt, re = getattr(C, "bottom_r", 0.0), getattr(C, "top_r", 0.0), getattr(C, "ear_r", 0.0)
+    if rb or rt or re:                      # v2 (owner 2026-11): squircle corners, each sized for its job
+        from . import geom
+
+        def size(c, convex):
+            if not convex:
+                return 0.0                  # the ears' roots: dogbones go there
+            if c[1] < 1:
+                return rb                   # the bottom, hanging in the well
+            if c[1] > top - 1:
+                return rt                   # the top, under the futon
+            return re                       # the ears' undersides rest on the deck: keep most of the bearing
+        g = geom.squircle_corners(g, size, p.frame.corner_n)
+    else:
+        g = _round_outer(g, 6.0)
     g = g.difference(dogbone((b0, v_deck), (-1, -1), r)).difference(dogbone((b1, v_deck), (1, -1), r))
     return g, y0
 

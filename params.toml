@@ -29,7 +29,7 @@ wedge_taper = 0.125       # 1:8
                       # futons are hard to get). 860 packs in uMake's 91 cm box = free shipping (docs/quote.md).
 length = 860.0
 width = 860.0
-squircle_n = 10.0     # v2 (owner): a squircle, |x/a|^n + |y/a|^n = 1. n = 10 keeps the corner posts 28 mm inside
+squircle_n = 8.0      # v2 (owner): a squircle, |x/a|^n + |y/a|^n = 1. n = 8 (owner 2026-11, softer; was 10) keeps the corner posts 20 mm inside
                       # the edge (n = 8: 20 mm; v1's R20 corners: 40 mm). Saves 111 g
 
 [frame]               # yagura: 4 straight "+" corner legs (2 crossed plates each) under a deck; no aprons
@@ -42,6 +42,8 @@ leg_width = 110.0     # full width under the deck: 20 ear arm | slot | 10 should
 corner_n = 4.0        # v2 (owner 2026-11): leg corners are squircles (geom.squircle_corners), this exponent
 foot_r = 12.0         # rounding of the plates' foot corners (v2: 12, was 6, to go with the squircle top)
 shoulder_r = 6.0      # ... and of their top corners: keep it small, the 12 mm inner shoulder bears on the deck
+top_r = 3.0           # the post and tenon tops: the top rests on them, hidden under it (6 tried 2026-11: no visible gain, and the
+                      # top's FEA turned jumpy: its few working pads shift)
 lap_extra = 0.5       # each cross-lap slot is (leg height)/2 + this, so slot bottoms never bottom out; the floor sets height
 
 [deck]                # horizontal plate on the legs' shoulders; v2: the heater cradle drops into a well in its middle
@@ -72,17 +74,21 @@ leg_narrow = 70.0     # below the haunch the leg keeps this much width (v2, owne
                       # 20.4 outer finger | 19.2 slot | 20.4 inner finger
 leg_haunch_top = 320.0  # haunch meets the full-width inner edge here (just under the 341 shoulders)
 leg_haunch_drop = 30.0  # ... and reaches the narrow line this much lower (a ~31° slope)
-leg_haunch_r = 30.0   # inside-corner fillet where the haunch meets the narrow leg
+leg_haunch_r = 60.0   # the haunch's S-curve: each bend takes up to this along its edges (owner 2026-11: 60, was 30)
 leg_taper_top = 150.0 # v2 (owner 2026-11: "a soft taper"): full leg_narrow down to here, below the joints ...
 leg_foot_w = 56.0     # ... then the inner edge bends in to this at the floor (B keeps 18 mm beside its slot; FEA:
                       # plate A 81 % under the 200 N push, was 89, the lower leg a little softer)
-leg_taper_r = 70.0    # ... with a long squircle bend where the taper starts
+leg_taper_r = 110.0   # ... with a long squircle bend where the taper starts (110, was 70)
 foot_relief = 1.5     # shallow arc under plate A's foot: each plate stands on its two ends
 foot_relief_margin = 20.0  # past the foot rounding: each end stands on a flat ~8 mm pad
 wedge_len = 60.0      # the leg wedges (v2: the only wedges; the heater cradle hangs by gravity)
 wedge_head = 18.0     # (1:8 taper -> 10.5 mm foot)
+wedge_head_r = 8.0    # v2 (owner 2026-11): the struck head squircled (the long faces stay straight: they clamp)
 
 [cheek]               # v2 "cradle": 2 on-edge plates the heater screws in between (on the bench). The pair drops into
+bottom_r = 20.0       # v2 (owner 2026-11): squircle corners. The bottom, hanging in the well ...
+top_r = 12.0          # ... the top, under the futon ...
+ear_r = 8.0           # ... and the ears' undersides, which rest on the deck
                       # the deck's heater well; an ear at each end rests on the deck top. Gravity holds it: no wedges
 ear_len = 40.0        # each ear's bearing on the deck top, past the well
 ear_h = 20.0          # cheek height above the deck top (the ears' depth); stays under the futon plane

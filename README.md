@@ -349,6 +349,11 @@ The top is a squircle, a curve that eases into its straight edges instead of sta
 radius. I liked it so much that every other corner got the same treatment: the legs' haunch is now one
 smooth S-curve instead of a slope with two small fillets, and the feet and shoulders are squircles too,
 as round as their jobs allow. (The feet stand on just 8 mm at each end, so they can't get much rounder.)
+Later, once the price model showed that wood inside a part's outline is free, I went after looks for nothing:
+a soft taper on the legs below the joints, so each leg's inner edge is one long curve from the shoulder to the
+foot; rounder squircle corners on the heater cheeks and the wedges' heads; and softer corners on the top. The
+taper even made the legs a little stronger. The rest is handwork: an undercut under the top's edge, so it reads
+half as thick, and a small roundover and oil on every edge.
 
 ![v1's cut parts above v2's, to the same scale: the square top becomes a squircle, the H deck an X with the heater's hole in the middle, the B leg plates lose their tenons, the cheeks lose their tabs, and the wedges go from 14 to 6](docs/img/v2-parts.png)
 
