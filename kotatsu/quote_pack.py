@@ -34,6 +34,16 @@ def options(p) -> list[dict]:
     return out
 
 
+def spec_lines(p) -> list[str]:
+    Q = p.top_quote
+    return [Q.grade,
+            f"edge-glued from full-length boards {Q.staves[0]:g}-{Q.staves[1]:g} mm wide, no finger joints; colour and grain matched so it reads as one board",
+            f"kiln-dried to {Q.moisture[0]:g}-{Q.moisture[1]:g} % moisture",
+            f"sanded to {Q.grit} grit, edges routed as drawn",
+            Q.finish,
+            "packed flat: edge and corner protectors, foam, double-wall box"]
+
+
 def write_dxf(p, path: Path) -> Path:
     g = top.build(p).outline
     x0, y0, _, _ = g.bounds
@@ -82,7 +92,10 @@ def write_pdf(p, path: Path) -> Path:
         lines += textwrap.wrap(f"- {o['name']}", 58, subsequent_indent="  ")
         lines += textwrap.wrap(f"{o['t']:g} mm thick, about {o['kg']} kg; {o['note']}", 58,
                                initial_indent="    ", subsequent_indent="    ")
-    lines += ["", "Not suitable: marble, limestone, travertine, 6 mm slabs", "(too weak where it rests on small supports)."]
+    lines += ["", "Wood quality and finish:"]
+    for item in spec_lines(p):
+        lines += textwrap.wrap(f"- {item}", 58, subsequent_indent="  ")
+    lines += ["", "Before shipping, please send photos of both faces, the edges", "and a moisture-meter reading."]
     tx.text(0, 1, "\n".join(lines), va="top", family="monospace", fontsize=8.6)
     fig.savefig(path)
     plt.close(fig)
@@ -96,22 +109,30 @@ def request_text(p) -> str:
     en = "\n".join([
         "Hello,", "",
         f"I'd like a quote for one table top, {L:.0f} x {W:.0f} mm, cut to a squircle outline (a square with very",
-        "rounded corners). The DXF and a one-page drawing are attached. Please quote any of these you offer:", ""]
-        + [f"- {o['name']}, {o['t']:g} mm ({o['note']})" for o in opts] + ["",
-        f"Eased edges (about {p.top_quote.edge_r:g} mm) on both faces; please also price an optional bevel under the edge.",
-        "Both faces finished. No holes. Quantity 1.",
-        "Please include delivery (or pickup), the lead time, and how it will be packed. Thank you!"])
+        "rounded corners), in solid pale wood. The DXF and a one-page drawing are attached. Please quote any of",
+        "these you offer:", ""]
+        + [f"- {o['name']}, {o['t']:g} mm thick" for o in opts] + ["", "Quality and finish:"]
+        + [f"- {x}" for x in spec_lines(p)] + [
+        f"- eased edges (about {p.top_quote.edge_r:g} mm) on both faces; please also price an optional bevel under the edge",
+        "", "Before shipping, please send photos of both faces, the edges and a moisture-meter reading.",
+        "No holes. Quantity 1. Please include shipping to Canada (courier), the lead time and the packing. Thank you!"])
     zh = "\n".join([
         "您好，", "",
         f"我想询价一块桌面：{L:.0f} x {W:.0f} mm，按附件 DXF 的方圆形（超椭圆）轮廓切割，附一页图纸。",
-        "请报价您能提供的材料：实木（胡桃木、白橡木或白蜡木，整根木条拼板，不要指接板），厚 25 mm；",
-        "或岩板（烧结石），厚 12 mm。两面都要处理（木材两面上油），边缘倒圆约 2 mm。数量 1 件，无孔。",
-        "请包含运到加拿大的运费（DHL/FedEx 等快递）、交期和包装方式。谢谢！"])
+        "材料（请报价您能提供的）：白橡木实木 20 mm（径切/半径切，美国白橡 Quercus alba 或欧洲橡木，不要柞木），",
+        "硬枫木实木 20 mm（Acer saccharum），或日本扁柏（桧木）无节 25 mm。",
+        f"要求：FAS/精选级，无节、无边材、无裂、无补腻子；整根长木条直拼（宽 {p.top_quote.staves[0]:g}-{p.top_quote.staves[1]:g} mm），不要指接板，颜色和纹理匹配；",
+        f"窑干，含水率 {p.top_quote.moisture[0]:g}-{p.top_quote.moisture[1]:g}%；砂光至 {p.top_quote.grit} 目；边缘倒圆约 {p.top_quote.edge_r:g} mm（另请报价底面斜边）；",
+        "两面木蜡油 2 遍，不染色，用原木色/白色系（如 Osmo 3044 Raw 或 Rubio Monocoat Pure），保持浅色。",
+        "发货前请发两面、边缘和含水率读数的照片。包装：护角、泡沫、双层瓦楞纸箱。数量 1 件，无孔。",
+        "请包含运到加拿大的快递运费（DHL/FedEx）、交期。谢谢！"])
     ja = "\n".join([
         "お世話になります。", "",
         f"天板 1 枚の見積もりをお願いします：{L:.0f} x {W:.0f} mm、添付の DXF の形（スーパー楕円、角の大きく丸い正方形）に",
-        "切り抜き。材料：ヒノキ無節、または ウォールナット・ホワイトオーク（幅はぎ、フィンガージョイント無し）、厚み 25 mm。",
-        "両面 自然塗料クリアー、上下の角は 2R 程度。穴なし、数量 1。送料と納期も教えてください。よろしくお願いします。"])
+        "切り抜き。材料：ヒノキ無節 25 mm、または ホワイトオーク（柾目・追柾）・ハードメープル 20 mm。",
+        f"幅はぎ（通し材、幅 {p.top_quote.staves[0]:g}〜{p.top_quote.staves[1]:g} mm、フィンガージョイント無し、色・木目を揃えて）、含水率 {p.top_quote.moisture[0]:g}〜{p.top_quote.moisture[1]:g}%、",
+        f"#{p.top_quote.grit} 仕上げ、上下の角は {p.top_quote.edge_r:g}R 程度（裏面の面取りも別途お見積もりください）。",
+        "両面 自然塗料クリアー（色の変わりにくいもの）。穴なし、数量 1。送料と納期も教えてください。よろしくお願いします。"])
     return f"# Request for quote: kotatsu top\n\n## English\n\n{en}\n\n## 中文 (Alibaba)\n\n{zh}\n\n## 日本語 (Marutoku)\n\n{ja}\n"
 
 

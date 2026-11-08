@@ -173,3 +173,22 @@ Only the top would come from Japan; the frame stays uMake birch (it's under the 
   GST 5 %, BC PST 7 % if collected at the border, and Canada Post's handling fee (~$10).
 - **Total, the hinoki top delivered:** about ¥69,000 before import, **about CAD 660–705 landed**. The uMake order
   without its top: about $271 (model), so the whole table ≈ CAD 965–1,010 against $368 all-birch.
+
+### Show-top materials on the corner posts (FEA, 2026-11; rough handbook strengths, TODO-verify)
+`fea.top_case`, worst everyday case vs the "adult sits hard on an edge" case, Tsai-Hill share of strength:
+
+| Top | kg | Everyday worst | Adult on the edge |
+|---|---|---|---|
+| White oak 20 mm (E 12.3 / 0.8 GPa, splits across at ~5.5 MPa) | 10.9 | 23 %, 5.8 mm sag | 25 % |
+| Hard maple 20 mm (~7 MPa across) | 10.2 | 18 % | 20 % |
+| Ash 20 mm | 9.7 | 21 % | 23 % |
+| Hinoki 20 / 25 mm (~3 MPa across) | 6.2 / 7.8 | 40 % / 26 % | 43 % / 28 % |
+| Sintered stone 6 / 9 / 12 mm (~45 MPa) | 10.6 / 16 / 21 | 59 / 27 / 16 % | 121 / 54 / 31 % |
+| Quartzite 20 mm (~20 MPa) | 38 | 14 % | 26 % |
+| Marble 20 mm (~9 MPa) | 39 | 30 % | 58 % |
+| Limestone / travertine 20 mm (~7 MPa) | 35 | 38 % | 74 % |
+
+For wood the everyday loads govern, about as much as edge-sitting. Stone is brittle and natural stone has hidden
+flaws, so it wants everyday use under about a third of its strength. Owner's choice (2026-11): **pale wood**, used
+carefully (no sitting, coasters): white oak or hard maple at 20 mm, hinoki at 25. Ash is held back until Canada's
+ash import rules (emerald ash borer, CFIA) are checked. Hinoki dents about three times as easily as oak.

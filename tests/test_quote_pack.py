@@ -28,4 +28,5 @@ def test_pack_writes_everything(tmp_path, monkeypatch):
     text = (tmp_path / "request.md").read_text()
     assert f"{P.top.length:.0f} x {P.top.width:.0f} mm" in text
     for o in quote_pack.options(P):
-        assert o["name"] in text and 5 <= o["kg"] <= 25         # every option stays a one-person lift
+        assert o["name"] in text and 5 <= o["kg"] <= 45         # the frame takes it (under 10 kg more a corner)
+    assert "finger joints" in text and f"{P.top_quote.grit} grit" in text
