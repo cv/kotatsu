@@ -115,6 +115,9 @@ owner chose a bought, adjustable zaisu (about $70, free shipping) instead, and t
 Rebuilt from fresh DXFs (`make dxf`) and **saved to the owner's uMake account** (the quote ID stays out of this
 public repo): the same 6 files, 15mm Baltic birch, CNC router, quantities 1 / 1 / 4 / 4 / 2 / 6, **$328.40** before
 tax, matching the 2026-11 quote. Not ordered: the owner will confirm it later.
+**Before confirming: replace `heater-cheek.dxf`** in that saved quote. The cheeks changed after it was saved (2026-11-08:
+4 mm deeper ears, the heater raised 4 mm). Same blank, so the same price; uMake's login failed with a server error
+when I tried to swap it.
 
 ### What can still be saved (tried 2026-11, not adopted)
 With material priced by bounding box, a change only saves money if it shrinks a part's box or its cut. At this
