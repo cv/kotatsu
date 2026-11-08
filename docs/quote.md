@@ -111,6 +111,11 @@ owner chose a bought, adjustable zaisu (about $70, free shipping) instead, and t
 | heater-cheek.dxf | $10.06 | 2 |
 | wedge.dxf | $1.51 | 6 |
 
+### Ready to order (2026-11-08)
+Rebuilt from fresh DXFs (`make dxf`) and **saved to the owner's uMake account** (the quote ID stays out of this
+public repo): the same 6 files, 15mm Baltic birch, CNC router, quantities 1 / 1 / 4 / 4 / 2 / 6, **$328.40** before
+tax, matching the 2026-11 quote. Not ordered: the owner will confirm it later.
+
 ### What can still be saved (tried 2026-11, not adopted)
 With material priced by bounding box, a change only saves money if it shrinks a part's box or its cut. At this
 order size 1 m of cutting is worth about $4.66 and 0.1 m² of bounding box about $5.12; about 40 % of the total
