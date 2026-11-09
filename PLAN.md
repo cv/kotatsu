@@ -9,7 +9,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
 |---|---|---|
 | Plywood | 18 mm (uMake's "19mm") | **15 mm throughout** |
 | Heater | hangs under the deck from 2 cheeks, 4 cheek wedges | **sits in a well in the deck**, in a cradle that hangs by gravity |
-| Clear height under the heater | 286 mm | **323 mm** |
+| Clear height under the heater | 286 mm | **304 mm** |
 | Deck | H-shaped (four notches) | **X-shaped**: corner pads, a ring round the heater, 45° arms |
 | Legs | 8 plates in four "+" legs, 8 tenons, a wedge in each | **four diagonal legs**: one plate a corner on its diagonal, a crosspiece in its head, one tenon and wedge each |
 | Wedges | 12 + 2 spares | **4 + 2 spares** |
@@ -25,7 +25,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
 | Show top | Researched and dropped (owner 2026-11): solid pale wood, stone, a copper skin and a ¼" low-iron glass sheet over the birch (previewed in 3-D: too glossy) were all priced or checked with the FEA (`docs/research.md`; the quote pack is at git tag `show-top-archive`). The pale birch look of v1 is what I want: the top stays uMake birch, finished by hand with a satin hardwax oil (owner: "the simple and honest look of the waxed satin birch still wins at the price point") |
 | Frame | A **yagura**: four diagonal legs (one plate a corner, on the diagonal, owner 2026-11; the "+" legs are tag `plus-legs-archive`) under an X-shaped deck. No aprons, so knees get the room |
 | Material | **15 mm Baltic birch for everything**, wedges included (v1: 18 mm). Joints accept 14.1–15.7 mm (TODO-verify the real tolerance, and which uMake menu entry, "15mm" or "16mm", it is) |
-| Heater | **PaletteLife 120 V 400 W**, 29 × 29 × 5 cm, the same unit as v1, screwed in at the sides (`docs/heater.md`). I drill its screw holes during assembly, so the files have none. Its top sits 14 mm above the deck top, 12 mm under the tenon tops; the manual sets no clearance above the unit |
+| Heater | **PaletteLife 120 V 400 W**, 29 × 29 × 5 cm, the same unit as v1, screwed in at the sides (`docs/heater.md`). I drill its screw holes during assembly, so the files have none. Its control panel (power inlet, switch, knob) is on one end, near the grille: the heater sits low enough that the panel clears the deck's underside by 5 mm, so the knob and the plug stick out under the deck's ring (owner 2026-11; the panel's height read off a photo, TODO-verify). Its screws are 10-15 mm from its top, so the cheeks are short |
 | Height | About 41 cm: 385 mm frame + 15 mm top + the futon |
 | Futon & seats | An 80 × 80 in (203 cm) square futon on an 8 ft round rug (`docs/futon.md`), four 25 × 25 in floor pillows, and a bought, adjustable zaisu (about $70). On a zaisu I sit **legs forward**: cross-legged on a chair, my knees wouldn't fit under the top with any cushion worth having. The 3-D view shows the futon, rug and pillows |
 | Budget | Under CAD $1200 all in |
@@ -73,10 +73,11 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
 - **Heater cradle: 2 cheeks (380 × 70 mm).** The heater screws between their inner faces, 294 mm apart (a
   290 mm heater gets 4 mm of play). The pair drops into the deck's well, and a 40 mm ear at each cheek end
   rests on the deck top: gravity holds it up, and it lifts out for summer. The cheeks cover the heater's
-  whole side and rise 24 mm above the deck, 2 mm under the tenon tops, so even on the thickest deck they never
-  stand proud and carry the top. The heater's top sits 14 mm above the deck, with 10 mm of air above it (owner 2026-11:
-  raised 14 mm, was flush, "10 mm just to be safe": the futon sags a little between the cheeks). The cheeks are
-  60 mm tall: from the heater's underside to their tops.
+  heater's screw line and 12.5 mm of wood below it, and rise 16 mm above the deck (the ears stay a sheet thick),
+  under the futon: 46 mm tall (owner 2026-11: the screws sit 10-15 mm from the heater's top; the cheeks were 60). The
+  heater hangs with its top 5 mm under the deck top, low enough that its control panel, on one end, clears the
+  deck's underside by 5 mm: the knob and the plug stick out under the deck's ring, and the cord runs out under it.
+  21 mm of air above the heater, under the cheek tops.
 - **Top (1, 860 × 860 mm), a squircle**: |x/a|¹⁰ + |y/a|¹⁰ = 1, a curve that fades into the edges instead of
   a radius that starts abruptly. The corner posts stay 28 mm inside its edge (v1: 40). The futon lies
   over the heater as in a traditional open frame (v1 had the deck in between).
@@ -99,10 +100,10 @@ the sheets itself and prices per part, so this only matters for my estimate.
 | Measure | Value |
 |---|---|
 | Clear height at the middle of each side (deck underside) | 344 mm |
-| Clear height under the heater | 323 mm (v1: 286) |
+| Clear height under the heater | 304 mm (v1: 286) |
 | My 76 × 32 cm cross-legged knee zone (on the bare floor): how far it reaches under the top's edge | 40 mm |
-| On a zaisu, legs forward: room above my thighs under the deck / my feet under the heater (seat 100 mm high when sat on, TODO-verify) | 69 mm / 74 mm (a typical 160 mm thigh, TODO-verify) |
-| My knee room on the floor pillows, against v1 (where it's fine, owner 2026-11) | the same or more: frame top 385 / 385 mm, deck underside 344 / 341, heater 323 / 286, reach 40 / 40, between the legs 570 / 568 |
+| On a zaisu, legs forward: room above my thighs under the deck / my feet under the heater (seat 100 mm high when sat on, TODO-verify) | 69 mm / 69 mm (a typical 160 mm thigh, TODO-verify) |
+| My knee room on the floor pillows, against v1 (where it's fine, owner 2026-11) | the same or more: frame top 385 / 385 mm, deck underside 344 / 341, heater 304 / 286, reach 40 / 40, between the legs 570 / 568 |
 | Cross-legged on a zaisu: knee room under the top's edge (385 mm, the futon squeezed over the knees) | none to spare once the seat's height is added, so I sit legs forward |
 | Room between the legs at knee height / legs forward (to 275 mm) | 571 / 656 mm ("+" legs: 568 / 637) |
 | Sway under a sideways push (spring model; FEA at 200 N: 6.1 mm, "+" legs 7.1) | 0.75 mm at 50 N, 1.5 at 100 N, 3.5 at 200 N |

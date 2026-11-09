@@ -43,9 +43,14 @@ two heater cheeks hanging under the deck.
   the cheek's 60 mm height (v2). The cheeks' only other features are the ears at their top corners, out of the screws' way.
 - **TODO-verify:** the exact width across the screw tabs. If there's a gap, the tabs bend slightly as the
   screws tighten. A thin shim fixes that (uMake sends only the parts, so no offcuts).
-- **TODO-verify (before ordering v2):** where the knob and the cord's socket are, and how far they stick out. The
-  well is only 5 mm longer than the body at each end, and the cheeks take both sides, so anything on an end or a
-  side won't fit (on the bottom it's fine).
+- **The control panel (owner, 2026-11, from the listing's photos):** on one end, recessed into the grille side: an IEC
+  power inlet, a rocker switch and the HI/LOW knob. The grille faces down, so the panel is on the end's lower part.
+  The well has only 5 mm to spare at each end and the cheeks take both sides, so the heater hangs low enough that
+  the panel's top (`[heater] panel_h`, 35 mm up from the grille side, read off the photo: **TODO-verify**) clears the
+  deck's underside by 5 mm. The knob and the plug then stick out under the deck's ring, in open air, and the cord
+  runs out under the deck. Reach the knob by lifting the futon, as on v1.
+- **The screws (owner, 2026-11):** the side holes are 10-15 mm from the heater's top (`[heater] screw_from_top`
+  12.5), so the cheeks only cover that band and 12.5 mm below it: 46 mm tall.
 - **Checked (owner, 2026-11):** the screws supplied with the heater suit the 15 mm cheeks (they must not poke out:
   at most about 13 mm into the wood). Drill 2–2.5 mm pilot holes. I'll drill the holes myself during assembly, so the cut
   files don't have any.

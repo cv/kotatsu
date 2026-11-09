@@ -319,7 +319,9 @@ taking shape on its own branch. It isn't ordered yet. This chapter grows as it d
 The deck now has a hole in the middle, and the two heater cheeks became a cradle. I screw the heater
 between them on the floor, then lower the whole thing into the hole. An ear at each end of the cheeks
 rests on the deck, so gravity holds it up, and in summer it lifts straight out. The heater's top sits
-just above the deck: 323 mm off the floor instead of 286, and four fewer wedges.
+in the deck: 304 mm off the floor instead of 286, and four fewer wedges. (It started higher, 323 mm, until the
+heater's control panel turned out to sit on one end: the heater now hangs just low enough for the knob and plug
+to clear the deck, and since its screws are near the top, the cheeks became short, 46 mm.)
 
 ### Thinner plywood
 
@@ -484,7 +486,7 @@ until the deck sits on it and on the plate's shoulders together. (The "+" legs a
 | Parts | 26 | 18 |
 | Weight | 15.9 kg | 10.6 kg |
 | Wedges | 14 | 6 (4 + 2 spares) |
-| Clear height under the heater | 286 mm | 323 mm |
+| Clear height under the heater | 286 mm | 304 mm |
 | A hard 200 N shove, finite elements | not checked | 75 % of the legs' strength, 6.1 mm of sway |
 | uMake | $353.33 in the cart ($405.83 once uMake finalized it) | $304.77 (a quote, not an order; about $343 with tax; the "+" legs quoted $328.02) |
 
