@@ -60,11 +60,12 @@ drop = 26.0           # deck top below the futon plane (room for the leg wedges 
 # uMake ships free up to a 91 cm box AND ~20 kg; the less deck, the less wood (cutting stays about the same).
 arm_w = 36.0          # the diagonal arms (owner 2026-11: 36, was 30, for margin in kotatsu/loads.py deck_arms)
 hand_n = 300.0        # the arms' check load: a hand pressing hard on the heater ring (+ the heater)
-fillet_r = 90.0       # inside corners where the arms meet the pads and the ring
+fillet_r = 150.0      # inside corners where the arms meet the ring (owner 2026-11: 150, was 90: smoother, and the deck
+                      #   FEA drops from 65 to 60 % with tight wedges, 127 to 97 % slack)
 edge_r = 12.0         # outside corners (must stay under arm_w / 2)
 pad_margin = 20.0     # wood round every mortise (a hole)
 bearing_margin = 5.0  # ... and past each lying wedge and each plate's top edge (owner: nothing more at the corners)
-pad_fillet_r = 40.0   # where the pads meet the arms
+pad_fillet_r = 80.0   # where the pads meet the arms (owner 2026-11: 80, was 40)
 ring_w = 40.0         # the ring beside the cheeks (x). It holds the futon up at mid-side, where the knees go:
                       # 40 keeps the opening there as deep as the H deck's (188 mm from the edge)
 ear_margin = 15.0     # ... and past the cheek ears (y)
@@ -78,6 +79,8 @@ cross_w = 90.0        # crosspiece length, across the plate (the joint's base ag
 cross_proud = 0.5     # the crosspiece is cut this much taller than its slot: sand its top edge at the fit-up
                       #   until the deck sits on it and on the plate's shoulders together (TODO-verify at fit-up)
 cross_r = 8.0         # the crosspiece's lower corners (the top ones stay 3: they bear on the deck)
+cross_end_h = 14.0    # its underside arches up to this at the ends (owner 2026-11: shave and smooth): each half is a
+                      #   little cantilever loaded at its end (about 22 % of the rough strength at its root)
 tenon_gap = 10.0      # each plate's tenon starts this far past the head slot (the shoulder on that side)
 tenon_w = 50.4        # tenon width (>= wedge hole + 2 x 15 mm); leg width beyond it is an inner shoulder
 hole_h = 14.0         # wedge hole above the deck
@@ -91,7 +94,8 @@ leg_haunch_top = 305.0  # the plate is full width from here up, past the head sl
                       #   leaves a thin finger beside it ("+" legs: 320). Room between the legs 656 mm ("+": 638)
 leg_haunch_drop = 30.0  # ... and reaches the narrow line this much lower (a ~31° slope)
 leg_haunch_r = 60.0   # the haunch's S-curve: each bend takes up to this along its edges (owner 2026-11: 60, was 30)
-leg_taper_top = 150.0 # v2 (owner 2026-11: "a soft taper"): full leg_narrow down to here, below the joints ...
+leg_taper_top = 220.0 # full leg_narrow down to here, then a soft taper (owner 2026-11: from 220, was 150: one long line from the
+                      # haunch to the foot; leg FEA 74 %, 3 mm more room between the legs) ...
 leg_foot_w = 56.0     # ... then the inner edge bends in to this at the floor (B keeps 18 mm beside its slot; FEA:
                       # plate A 81 % under the 200 N push, was 89, the lower leg a little softer)
 leg_taper_r = 110.0   # ... with a long squircle bend where the taper starts (110, was 70)
@@ -142,12 +146,12 @@ refine_seeds = 6      # ... around this many of the best so far
 
 [optimize.knobs]      # [low, high] for each knob the search may move (the top's squircle stays the owner's)
 "deck.arm_w" = [28.0, 50.0]
-"deck.fillet_r" = [50.0, 130.0]
+"deck.fillet_r" = [50.0, 180.0]
 "deck.ring_w" = [30.0, 60.0]
 "yagura.leg_narrow" = [60.0, 90.0]
 "yagura.leg_haunch_top" = [290.0, 330.0]
 "yagura.leg_haunch_drop" = [20.0, 60.0]
-"yagura.leg_taper_top" = [100.0, 220.0]
+"yagura.leg_taper_top" = [100.0, 270.0]
 "yagura.leg_foot_w" = [46.0, 70.0]
 
 

@@ -125,10 +125,24 @@ def sweep_cut(p) -> Polygon:
 
 def crosspiece(p) -> Polygon:
     """In its own (u across the plate, v = z from the head slot's bottom) plane: cross_w long, the slot's depth +
-    cross_proud tall (sanded to fit). Its top edge bears on the deck."""
+    cross_proud tall (sanded to fit). Its top edge bears on the deck. With cross_end_h set, its underside arches up
+    from the plate (full depth where it sits in the slot) to cross_end_h at each end: each half is a little
+    cantilever, loaded at its end as the joint resists twisting, so it can be shallow there."""
     Y = p.yagura
-    g = box(0, 0, Y.cross_w, Y.head_slot + Y.cross_proud)
-    return geom.squircle_corners(g, lambda c, cv: Y.cross_r if c[1] < 1 else 3.0, p.frame.corner_n)
+    h = Y.head_slot + Y.cross_proud
+    he = getattr(Y, "cross_end_h", 0.0) or h
+    if he >= h - 0.01:
+        g = box(0, 0, Y.cross_w, h)
+        return geom.squircle_corners(g, lambda c, cv: Y.cross_r if c[1] < 1 else 3.0, p.frame.corner_n)
+    c, a = Y.cross_w / 2, p.material.t_max / 2 + 2.0          # full depth over the plate (and 2 mm either side)
+    n = 40
+    under = []
+    for k in range(n + 1):                                    # the underside, left end to right end
+        u = Y.cross_w * k / n
+        x = max(0.0, (abs(u - c) - a) / (c - a))
+        under.append((u, (h - he) * x * x))
+    g = Polygon(under + [(Y.cross_w, h), (0, h)])
+    return geom.squircle_corners(g, lambda c_, cv: 3.0 if c_[1] > h - 1 else Y.cross_r, p.frame.corner_n)
 
 
 def crush_ribs(p, u0: float, u1: float, z0: float, z1: float) -> Polygon:
