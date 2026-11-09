@@ -35,11 +35,12 @@ with free shipping from Douglas. It works on a kotatsu, with a few things to kno
 - **Loft.** A bed duvet is puffier than a quilted kotatsu futon. The top rests on the corner posts *through*
   the duvet, so it sits about 1–2 cm higher and may rock a little until the fill settles. A lightweight
   duvet works better than an all-season one.
-- **Heat.** Polyester fill is fine. The heater hangs under the solid deck, and the duvet drapes outside the
-  frame.
+- **Heat.** Polyester fill is fine. In v1 the heater hangs under the solid deck; in v2 the futon lies over the
+  heater's top (about 40 °C on high, `docs/heater.md`), as on a traditional open frame.
 - **Cover.** Pick a tightly woven cotton or linen cover with a zip, so it can go in the wash. Kotatsu futons
   meet feet, crumbs and tea. Some amazon.ca covers said "cannot ship to your location", so check at checkout.
 
 ## Safety
-Nothing but the heater's guard should be near the futon. The heater hangs under the solid deck and the futon
-drapes outside the frame, so they never touch. Don't tuck the futon *inside* the frame, under the heater.
+Keep the futon away from the heater's grille and fan, which face down. In v1 the heater hangs under the solid
+deck, so they never touch; in v2 the futon rests on the heater's top, the face away from the grille (check the
+heater's manual allows it: TODO-verify). Either way, don't tuck the futon *inside* the frame, under the heater.

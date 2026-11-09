@@ -35,12 +35,13 @@ Sources: amazon.ca/dp/B0CKBS16YY, amazon.ca/dp/B0HF7DW7YD, and forkinthe.net/kot
 ## How it mounts
 The listing's installation photo shows the heater between **two parallel crossbars**, held by **4 screws,
 2 a side, driven sideways into the bars' inner faces** near the corners. In this table those bars are the
-two heater cheeks hanging under the deck.
+two heater cheeks (v1: hanging under the deck; v2: hanging in a well in the deck).
 
 - I measured the body at 29 × 29 × 5 cm (to the nearest cm). The cheeks sit 294 mm apart, which leaves
   about 2 mm a side once it's centred.
-- The cheeks run 41 mm past the heater at each end, so the corner screws go into solid wood at about half
-  the cheek's 60 mm height (v2). The cheeks' only other features are the ears at their top corners, out of the screws' way.
+- In v2 the cheeks are 380 mm long, 45 mm past the heater at each end, and 46 mm tall: they reach 12.5 mm below
+  the heater's screw line (below), so the corner screws go into solid wood. The cheeks' only other features are
+  the ears at their top corners, out of the screws' way.
 - **TODO-verify:** the exact width across the screw tabs. If there's a gap, the tabs bend slightly as the
   screws tighten. A thin shim fixes that (uMake sends only the parts, so no offcuts).
 - **The control panel (owner, 2026-11, from the listing's photos):** on one end, recessed into the grille side: an IEC
@@ -61,10 +62,12 @@ two heater cheeks hanging under the deck.
 - **Certification.** Neither listing mentions a cUL, cETL or CSA mark. When it arrives, look for one on the
   rating label. If there isn't one, think about returning it within the 30 days, since it can matter for
   home insurance.
-- **Airflow.** Don't block the fan or grille. Keep the futon and blankets off the unit, and follow the
-  clearances in its manual. They override anything in this design.
+- **Airflow.** Don't block the fan or grille. Follow the clearances in its manual: they override anything in
+  this design. v2 lets the futon lie on the heater's top, the face away from the grille (about 40 °C on high,
+  below); check that the manual allows that (TODO-verify).
 
 ## Measured in use
 
 - **Top of the unit, on high: about 40 °C** (owner, 2026-11, on v1). That's the face v2 puts right under the
-  futon (the heater sits 14 mm proud of the deck in its well, the cheeks 10 mm higher still), so it's fine to cover.
+  futon (the heater's top sits 5 mm below the deck's top in its well, the cheeks rise 16 mm above the deck),
+  so it should be fine to cover, if the manual agrees (above).
