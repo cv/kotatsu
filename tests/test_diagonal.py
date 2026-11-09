@@ -1,6 +1,6 @@
-"""Diagonal legs (leg_style = "diagonal", kotatsu/yagura.py): one plate per corner on its diagonal, a crosspiece
-in its head. Every joint must fit across the stock-thickness range; the deck bears on what it should."""
+"""The legs (kotatsu/yagura.py): one plate per corner on its diagonal, a crosspiece in its head. Every joint must fit across the stock-thickness range; the deck bears on what it should."""
 import math
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -10,10 +10,9 @@ from shapely.ops import unary_union
 from kotatsu import comfort, frame, params, stiffness, yagura
 
 P = params.tables(params.load())[0]
-pytestmark = pytest.mark.skipif(not yagura.diagonal(P), reason="diagonal legs only")
 L = frame.layout(P)
-D = P.diagonal
-Q = yagura._dp(P) if yagura.diagonal(P) else P
+D = SimpleNamespace(**{**vars(P.frame), **vars(P.yagura)})   # ear, head_slot, cross_w ... in one place
+Q = P
 PARTS = {pt.name: pt for pt in frame.parts(P)}
 T_RANGE = (P.material.t_min, P.material.t_nominal, P.material.t_max)
 
@@ -43,7 +42,7 @@ def test_crosspiece_fits_the_head_slot(t):
 def test_tenons_fit_the_mortises(t):
     """In each corner's own frame: the mortise takes the tenon + fit.tight each way, and any sheet across."""
     ta, tb = yagura._tenon_u(Q)
-    for (*_, C, d, n), m in zip(yagura.corners(P), yagura.diag_mortise_boxes(P)):
+    for (*_, C, d, n), m in zip(yagura.corners(P), yagura.mortise_boxes(P)):
         us = [(x - C[0]) * d[0] + (y - C[1]) * d[1] for x, y in m.exterior.coords]
         vs = [(x - C[0]) * n[0] + (y - C[1]) * n[1] for x, y in m.exterior.coords]
         assert min(us) <= ta - P.fit.tight + 1e-6 and max(us) >= tb + P.fit.tight - 1e-6
@@ -54,12 +53,12 @@ def test_deck_bears_on_the_plates_and_crosspieces():
     """The deck covers each plate's top edge (but for its tenon, which goes up through the mortise) and each
     crosspiece's whole top edge (but for a few mm2 at its rounded corners)."""
     d = PARTS["deck"].shape
-    holes = unary_union(yagura.diag_mortise_boxes(P))
-    for s in yagura.diag_plate_tops(P):
+    holes = unary_union(yagura.mortise_boxes(P))
+    for s in yagura.plate_tops(P):
         assert s.difference(holes).difference(d).area < 15.0, "(the mortise's 4 dogbones nibble ~3 mm2 each)"
-    for s in yagura.diag_cross_tops(P):
+    for s in yagura.cross_tops(P):
         assert s.difference(d).area < 8.0
-    for w in yagura.diag_wedge_footprints(P):
+    for w in yagura.wedge_footprints(P):
         assert w.difference(holes).difference(d).area < 1.0, "each wedge lies on wood"
 
 
@@ -73,7 +72,7 @@ def test_posts_rise_clear_of_the_deck():
 
 def test_crosspieces_stay_inside_the_frame():
     sq = box(L.O, L.O, L.O + L.Lf, L.O + L.Wf).buffer(-3.0)
-    for s in yagura.diag_cross_tops(P):
+    for s in yagura.cross_tops(P):
         assert sq.contains(s)
 
 
@@ -90,8 +89,8 @@ def test_wood_beside_the_head_slot():
 def test_corners_are_the_same_rotated():
     from shapely.affinity import rotate
     q = box(L.O - 50, L.O - 50, L.cx, L.cy)
-    for gs in (yagura.diag_mortise_boxes(P), yagura.diag_wedge_footprints(P), yagura.diag_plate_tops(P),
-               yagura.diag_cross_tops(P), yagura.pads(P)):
+    for gs in (yagura.mortise_boxes(P), yagura.wedge_footprints(P), yagura.plate_tops(P),
+               yagura.cross_tops(P), yagura.pads(P)):
         g = unary_union(gs)
         ref = g.intersection(q)
         for ang in (90, 180, 270):

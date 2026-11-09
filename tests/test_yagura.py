@@ -1,5 +1,5 @@
-"""Yagura frame: "+" corner legs under a deck, no aprons. Every joint must fit across the
-stock-thickness range."""
+"""Yagura frame: diagonal legs under an X deck, no aprons (the leg joints themselves: tests/test_diagonal.py).
+Every joint must fit across the stock-thickness range."""
 import numpy as np
 import pytest
 from shapely.affinity import translate
@@ -11,7 +11,6 @@ from kotatsu import frame, params, yagura
 BASE = params.load()
 YT = params.tables(BASE)
 T_RANGE = (BASE.material.t_min, BASE.material.t_nominal, BASE.material.t_max)
-plus_only = pytest.mark.skipif(yagura.diagonal(YT[0]), reason='"+" legs only (diagonal legs: tests/test_diagonal.py)')
 
 
 @pytest.fixture(params=YT, ids=[t.table_name for t in YT])
@@ -23,63 +22,6 @@ def Y(request):
 
 def empty(shape, rect, tol=0.01):
     return shape.intersection(rect).area <= tol
-
-
-@pytest.mark.parametrize("t", T_RANGE)
-@plus_only
-def test_corner_cross_laps(Y, t):
-    P, L, parts = Y
-    A, B = parts["leg plate A"].shape, parts["leg plate B"].shape
-    d, u, zs = yagura.lap_depth(P), P.frame.ear, L.z_deck_bot
-    assert zs <= 2 * d <= zs + 2
-    w = frame.slot_w(P)
-    ribs_A = yagura.crush_ribs(P, u - w / 2, u + w / 2, zs - d, zs)     # the bumps are meant to squeeze / be sanded
-    ribs_B = yagura.crush_ribs(P, u - w / 2, u + w / 2, 0, d)
-    assert empty(A.difference(ribs_A), box(u - t / 2, zs - d + 0.01, u + t / 2, zs))     # B's upper half passes A
-    assert empty(B.difference(ribs_B), box(u - t / 2, 0, u + t / 2, d - 0.01))           # A's lower half passes B
-    if t <= w - 2 * getattr(P.fit, "crush_rib", 0.0):                   # stock up to the rib gap: no squeeze at all
-        assert empty(A, box(u - t / 2, zs - d + 0.01, u + t / 2, zs)) and empty(B, box(u - t / 2, 0, u + t / 2, d - 0.01))
-
-
-@pytest.mark.parametrize("t", T_RANGE)
-@plus_only
-def test_tenons_fit_deck_mortises(Y, t):
-    P, L, parts = Y
-    dk = parts["deck"].shape
-    ta, tb = yagura._tenon_u(P)
-    for x0, y0, x1, y1 in yagura.mortises(P):
-        xc, yc = (x0 + x1) / 2, (y0 + y1) / 2
-        if x1 - x0 > y1 - y0:
-            sec = box(xc - (tb - ta) / 2, yc - t / 2, xc + (tb - ta) / 2, yc + t / 2)
-            snug = box(x0 - 0.3, yc - t / 2, x0, yc + t / 2)
-        else:
-            sec = box(xc - t / 2, yc - (tb - ta) / 2, xc + t / 2, yc + (tb - ta) / 2)
-            snug = box(xc - t / 2, y0 - 0.3, xc + t / 2, y0)
-        assert empty(dk, sec), "tenon must pass through the deck"
-        assert not empty(dk, snug), "in-plane fit must be tight"
-
-
-@plus_only
-def test_plates_shoulder_under_the_deck_and_tenons_reach_the_top(Y):
-    """Posts (both plates) and A's tenon reach the top; B (v2) has no tenon: nothing past its post rises
-    above its shoulder, so its whole top edge bears on the deck."""
-    P, L, parts = Y
-    ta, tb = yagura._tenon_u(P)
-    zs = L.z_deck_bot
-    for name in ("leg plate A", "leg plate B"):
-        g = parts[name].shape
-        assert g.bounds[3] == pytest.approx(L.H), "post (and A's tenon) tops carry the futon + top"
-        pu = yagura.post_u(P)
-        assert empty(g, box(pu + 5, zs + 0.5, ta - 5, L.H + 5)) and empty(g, box(tb + 5, zs + 0.5, 400, L.H + 5))
-        if pu:
-            assert g.intersection(box(1, L.H - 2, pu - 1, L.H)).area > 0.9 * (pu - 2) * 2, "corner post reaches the top"
-        tenon = g.intersection(box(ta + 1, zs - 1, tb - 1, L.H - 1)).area
-        if name == "leg plate A":
-            assert tenon > 0.8 * (tb - ta - 2) * (L.H - zs) * 0.6
-        else:
-            assert empty(g, box(pu + 5, zs + 0.5, 400, L.H + 5)), "B: no tenon"
-            assert g.intersection(box(pu + 5, zs - 0.6, P.frame.leg_width - 7, zs - 0.1)).area > \
-                0.99 * 0.5 * (P.frame.leg_width - 12 - pu - 5), "B: flat shoulder all along"
 
 
 @pytest.mark.parametrize("t_deck", T_RANGE)
@@ -112,92 +54,14 @@ def test_wedges_do_not_collide(Y):
             assert rects[i].distance(rects[j]) > 2, (i, j)
 
 
-@plus_only
-def test_quantities(Y):
-    P, L, parts = Y
-    q = {n: pt.qty for n, pt in parts.items()}
-    assert q["leg plate A"] == 4 and q["leg plate B"] == 4 and q["deck"] == 1 and q["heater cheek"] == 2
-    assert q["wedge"] == 4 + 2, "v2: one wedge per leg (+2 spares), none for the heater"
-
-
-@plus_only
-def test_one_wedged_plate_per_leg_alternating(Y):
-    """Each corner has one A plate (slotted from the top, so the B plate hangs on it) and it takes the
-    corner's only wedge; A runs along x at two diagonal corners and along y at the others, so each push
-    direction meets two wedged plates, one at each end (mirror images)."""
-    P, L, parts = Y
-    A, B, W = parts["leg plate A"], parts["leg plate B"], parts["wedge"]
-    for d in ("x", "y"):
-        pa = [pl for pl in A.placements if pl.axis == d]
-        assert len(pa) == 2 and sorted(pl.mirror_u for pl in pa) == [False, True]
-    ca = {(1 if (pl.origin[0] > L.cx) else -1, 1 if (pl.origin[1] > L.cy) else -1) for pl in A.placements}
-    cb = {(1 if (pl.origin[0] > L.cx) else -1, 1 if (pl.origin[1] > L.cy) else -1) for pl in B.placements}
-    assert len(ca) == 4 and len(cb) == 4, "one A and one B plate at every corner"
-    wm = yagura.mortises(P)
-    assert len(wm) == 4 and len({(1 if m[0] > L.cx else -1, 1 if m[1] > L.cy else -1) for m in wm}) == 4
-
-
 def _haunch_bottom(P):
     Y = P.yagura
     return Y.leg_haunch_top - Y.leg_haunch_drop - Y.leg_haunch_r
 
 
-@plus_only
-def test_legs_are_straight(Y):
-    """Plumb plates: the outer edge is straight; the inner edge is straight at leg_narrow from below the haunch
-    down to the taper's start, then narrows steadily to leg_foot_w at the floor (v2's soft taper); the plate is
-    full width just under the deck (shoulders + tenon)."""
-    P, L, parts = Y
-    Yg = P.yagura
-    wn = getattr(Yg, "leg_narrow", 0.0) or P.frame.leg_width
-    wf = yagura.foot_w(P)
-    ztp = getattr(Yg, "leg_taper_top", 0.0) if wf < wn else 0.0
-    width = lambda g, z: g.intersection(box(-50, z, 400, z + 1)).bounds
-    for name in ("leg plate A", "leg plate B"):
-        g = parts[name].shape
-        z_hn = Yg.leg_haunch_top - Yg.leg_haunch_drop                  # the haunch's lower corner ...
-        z_mid = (z_hn + ztp) / 2 if ztp else z_hn - 40                # ... and the taper's start: the inner edge
-        b = width(g, z_mid)                                            # is leg_narrow between them (the two bends
-        assert b[0] == pytest.approx(0, abs=0.5) and b[2] == pytest.approx(wn, abs=0.5), (name, z_mid, b)   # meet)
-        for z in (z_mid, (z_mid + z_hn) / 2, (z_mid + ztp) / 2):       # and never narrower than it there
-            assert width(g, z)[2] >= wn - 0.5, (name, z)
-        prev = wn + 1
-        for z in (ztp - 10, ztp / 2, 20):                      # below the taper's start: narrowing to the foot
-            b = width(g, z)
-            assert b[0] == pytest.approx(0, abs=0.5) and wf - 0.5 <= b[2] < prev, (name, z, b)
-            prev = b[2]
-        hi = width(g, L.z_deck_bot - 12)
-        assert hi[2] == pytest.approx(P.frame.leg_width, abs=0.5)
-
-
 def lap_depth_a(P):
     from kotatsu import yagura
     return yagura.lap_depth(P)
-
-
-def test_haunched_leg_fingers(Y):
-    """Beside the cross-lap slot the narrow leg keeps at least the stock thickness of wood."""
-    P = Y[0]
-    wn = getattr(P.yagura, "leg_narrow", 0.0)
-    if not wn:
-        pytest.skip("straight full-width legs")
-    assert wn - (P.frame.ear + frame.slot_w(P) / 2) >= P.material.t_max - 0.5
-    assert yagura.foot_w(P) - (P.frame.ear + frame.slot_w(P) / 2) >= P.material.t_max     # at the tapered foot too
-    assert P.yagura.leg_haunch_top < frame.layout(P).z_deck_bot - 10
-
-
-@plus_only
-def test_corner_posts_clear_the_deck(Y):
-    """The posts (ear arms) rise past the deck: the deck's corner cut-outs must clear them for any stock."""
-    from kotatsu import comfort
-    P, L, parts = Y
-    if not yagura.post_u(P):
-        pytest.skip("no corner posts")
-    above = comfort.low_footprint(P, L.H, L.z_deck_bot + 0.5)          # frame material beside the deck
-    d = translate(parts["deck"].shape, -L.cx, -L.cy)
-    tenons = unary_union([translate(box(*m), -L.cx, -L.cy) for m in yagura.mortises(P)])
-    assert d.intersection(above.difference(tenons.buffer(0.01))).area < 1e-6
-    assert d.is_valid and d.geom_type == "Polygon"
 
 
 def test_posts_carry_the_top_further_out(Y):
@@ -209,26 +73,6 @@ def test_posts_carry_the_top_further_out(Y):
     assert with_posts > 1.5 * comfort.top_lift(P2)[0]
 
 
-@plus_only
-def test_x_deck(Y):
-    """v2's X deck: one piece; pad_margin of wood round every mortise and under every lying wedge (except
-    where the deck's own edge or the post cut-outs come first); the arms at least arm_w wide."""
-    P, L, parts = Y
-    d, r = parts["deck"].shape, frame._rd(P)
-    assert d.geom_type == "Polygon"
-    blank = yagura.deck_blank(P)
-    holes = unary_union([frame.hole(*m, r) for m in yagura.mortises(P)] + [frame.hole(*frame.well(P), r)])
-    for m in yagura.mortises(P):
-        around = box(*m).buffer(P.deck.pad_margin - 0.5).intersection(blank)          # within pad_margin
-        assert around.difference(d).difference(holes).area < 1.0, f"wood round mortise {m}"
-    for sh in yagura.plate_tops(P, "A") + yagura.plate_tops(P, "B"):
-        assert sh.difference(d).difference(holes).area < 5.0, "every plate's top edge bears on the deck (a dogbone nibbles ~3 mm2)"
-    for w in yagura.wedge_footprints(P):
-        assert w.intersection(blank).difference(d).difference(holes).area < 1.0, "a wedge lies on wood"
-    core = d.buffer(-(P.deck.arm_w / 2 - 1.0))
-    assert core.geom_type == "Polygon", "the arms are at least arm_w wide (the deck stays one piece)"
-
-
 def test_x_deck_arms_carry_a_hand(Y):
     """A hand pressing on the heater ring (deck.hand_n) plus the heater, on the four arms as cantilevers at
     45 deg to the grain, thinnest stock: under half the rough strength, a few mm of give."""
@@ -236,44 +80,6 @@ def test_x_deck_arms_carry_a_hand(Y):
     P, L, parts = Y
     a = loads.deck_arms(P)
     assert a["free_mm"] > 0 and a["use_of_strength_%"] < 50 and a["sag_mm"] < 5
-
-
-@plus_only
-def test_crush_ribs_narrow_the_slots(Y):
-    """Each cross-lap slot has bumps on both walls: the gap there is slot_w - 2 x crush_rib; elsewhere the
-    full slot width (so a thick sheet still goes in after a little sanding)."""
-    P, L, parts = Y
-    h = getattr(P.fit, "crush_rib", 0.0)
-    if not h:
-        pytest.skip("no crush ribs")
-    w, u = frame.slot_w(P), P.frame.ear
-    d = yagura.lap_depth(P)
-    for name, (z0, z1) in (("leg plate A", (L.z_deck_bot - d, L.z_deck_bot)), ("leg plate B", (0.0, d))):
-        g = parts[name].shape
-        gaps = []
-        for f in np.linspace(0.05, 0.95, 181):
-            z = z0 + f * (z1 - z0)
-            cut = box(u - w, z - 0.05, u + w, z + 0.05).difference(g)
-            seg = [c for c in getattr(cut, "geoms", [cut]) if c.bounds[0] < u < c.bounds[2]]
-            gaps.append(seg[0].bounds[2] - seg[0].bounds[0])
-        assert min(gaps) == pytest.approx(w - 2 * h, abs=0.05)
-        assert max(gaps) == pytest.approx(w, abs=0.05)
-        assert min(gaps) >= P.material.t_min, "even the thinnest sheet is gripped, never jammed shut"
-
-
-@plus_only
-def test_foot_relief(Y):
-    """Plate A stands on its two ends; the middle of its foot is lifted by foot_relief."""
-    P, L, parts = Y
-    sag = getattr(P.yagura, "foot_relief", 0.0)
-    if not sag:
-        pytest.skip("no foot relief")
-    g = parts["leg plate A"].shape
-    touch = g.intersection(box(-1, -1, 500, 0.2))
-    assert len(getattr(touch, "geoms", [touch])) == 2
-    wn = yagura.foot_w(P)                     # the foot's width (v2: tapered)
-    mid = g.intersection(box(wn / 2 - 1, -1, wn / 2 + 1, sag + 2)).bounds
-    assert mid[1] == pytest.approx(sag, abs=0.1)
 
 
 def test_storage_layout_fits(Y):
@@ -284,66 +90,3 @@ def test_storage_layout_fits(Y):
 
 
 
-
-@plus_only
-def test_squircle_top_covers_the_posts(Y):
-    """The top rests on the corner posts: they stay at least 18 mm inside its edge (n = 8: 20) (squircle corners)."""
-    from kotatsu import comfort, top
-    P, L, parts = Y
-    posts = comfort.low_footprint(P, L.H, L.z_deck_top + 1)
-    tp = translate(top.build(P).outline, -P.top.length / 2, -P.top.width / 2)
-    if posts.bounds[0] >= 0:
-        tp = top.build(P).outline
-    assert tp.contains(posts) and tp.exterior.distance(posts) >= 18.0
-
-
-@plus_only
-def test_inner_shoulder_bears_on_the_deck(Y):
-    """The feet are rounded generously, the top corners not: the inner shoulder keeps a flat top."""
-    P, L, parts = Y
-    _, tb = yagura._tenon_u(P)
-    for n in ("leg plate A", "leg plate B"):
-        g = parts[n].shape
-        flat = g.intersection(box(tb + 2.0, L.z_deck_bot - 0.6, P.frame.leg_width, L.z_deck_bot - 0.1))
-        assert flat.area >= 0.5 * (P.frame.leg_width - tb - 2.0 - P.frame.shoulder_r) * 0.5
-
-
-
-@plus_only
-def test_corners_are_the_same_rotated(Y):
-    """The four corner pads (and what they're built round) are one shape, turned 90 deg each time."""
-    from shapely.affinity import rotate
-    P, L, parts = Y
-    q = box(L.O - 50, L.O - 50, L.cx, L.cy)
-    feats = [[box(*m) for m in yagura.mortises(P)], yagura.wedge_footprints(P), yagura.plate_tops(P, "A"),
-             yagura.plate_tops(P, "B"), yagura.pads(P)]
-    for gs in feats:
-        g = unary_union(gs)
-        ref = g.intersection(q)
-        for ang in (90, 180, 270):
-            assert rotate(g, ang, origin=(L.cx, L.cy)).intersection(q).symmetric_difference(ref).area < 1.0
-
-
-@plus_only
-def test_plate_tops_sit_on_the_plates(Y):
-    """Each plate-top footprint the deck is built round lies along a real plate: its centre line runs
-    inside one of that plate's placements, in plan."""
-    from shapely.geometry import LineString
-    P, L, parts = Y
-    t, n = L.t, P.frame.leg_width
-    for which in ("A", "B"):
-        pt = parts[f"leg plate {which}"]
-        plans = []
-        for pl in pt.placements:
-            ox, oy, _ = pl.origin
-            u0, u1 = (ox - n, ox) if pl.mirror_u else (ox, ox + n)
-            if pl.axis == "x":
-                plans.append(box(u0, oy, u1, oy + t))
-            else:
-                v0, v1 = (oy - n, oy) if pl.mirror_u else (oy, oy + n)
-                plans.append(box(ox, v0, ox + t, v1))
-        for top in yagura.plate_tops(P, which):
-            x0, y0, x1, y1 = top.bounds
-            mid = LineString([(x0, (y0 + y1) / 2), (x1, (y0 + y1) / 2)]) if x1 - x0 > y1 - y0 else \
-                LineString([((x0 + x1) / 2, y0), ((x0 + x1) / 2, y1)])
-            assert any(pl.buffer(0.01).contains(mid) for pl in plans), f"{which} top {top.bounds} isn't on a plate"

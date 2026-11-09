@@ -14,7 +14,7 @@ from . import frame as fr
 from . import yagura
 
 STEPS = [
-    "Cross each pair of plates into a \"+\" leg",
+    "Drop a crosspiece into the head of each leg plate",
     "Stand the four legs up",
     "Lower the deck over the 4 tenons",
     "Push a wedge through one tenon at each corner",
@@ -25,12 +25,8 @@ STEPS = [
     "Tea time",
 ]
 LEGS, STAND, DECK, LEG_WEDGES, CRADLE, LOWER, FUTON, TOP, TEA = range(len(STEPS))
-DIAGONAL_FIRST = "Drop a crosspiece into the head of each leg plate"
-
-
 def steps(p) -> list[str]:
-    """STEPS, worded for the frame's leg style."""
-    return [DIAGONAL_FIRST] + STEPS[1:] if yagura.diagonal(p) else list(STEPS)
+    return list(STEPS)
 
 
 CLEAR = 40.0     # mm of daylight between a waiting part and whatever it goes into
@@ -59,7 +55,7 @@ def part_moves(p, pt, pl, c, k: int) -> list[dict]:
         sx, sy, i = corner(L, c)
         spread = L.Lf * 0.3                      # the legs wait out beyond their corners
         out = [move(STAND, (sx * spread / math.sqrt(2), sy * spread / math.sqrt(2), 0), stagger(i, 4))]
-        if pt.name in ("leg plate B", "leg crosspiece"):   # slotted from the floor up / plain: drops in from above
+        if pt.name == "leg crosspiece":          # drops into the plate's head slot from above
             out.insert(0, move(LEGS, (0, 0, yagura.lap_depth(p) + CLEAR), stagger(i, 4)))
         return out
     if pt.kind == "deck":                        # comes down over the tenons

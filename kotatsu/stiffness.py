@@ -1,11 +1,10 @@
 """Wobble (racking) check for the yagura frame: a lumped spring model, no FEA.
 
 How the frame resists a sideways push H at the top
-  The deck is a stiff plate; each "+" leg hangs from it and stands on the floor. A push in x is taken by
-  the plates in the x-z plane bending in their own plane (the others bend the weak way and are ignored),
-  a push in y by those in the y-z plane. v2 wedges one plate per leg (the A plate, kotatsu/yagura.py),
-  alternating, so each direction has two wedged plates. The two unwedged ones, held only by gravity
-  between the floor and the deck, are counted as nothing: conservative. Each plate deflects at the floor by
+  The deck is a stiff plate; each leg (one plate on its corner's diagonal, kotatsu/yagura.py) hangs from it
+  and stands on the floor. A push in x reaches every plate at 45 degrees: each takes its cosine's part in its
+  own plane (bending the weak way, across it, is counted as nothing: conservative). Twisting the frame is the
+  one thing only that weak way resists: see twist(). Each plate deflects at the floor by
       delta = theta * L + H_i L^3 / (3 E I)          (joint rotation + plate bending; L = leg height)
   and the joint rotation theta comes from the leg <-> deck joint:
     * shoulders: the plate's top edge presses up on the deck's underside. Modelled as a row of
@@ -247,20 +246,14 @@ def plate_curve(p, shape, N: float, Hmax: float = 300.0, n: int = 121) -> PlateC
 
 
 def leg(p):
-    """(the parameters the wedged plates see, their shape): plate A, or the diagonal plate ([diagonal]'s sizes)."""
-    if yagura.diagonal(p):
-        return yagura._dp(p), yagura.diag_plate(p)
-    return p, {pt.name: pt for pt in fr.parts(p)}["leg plate A"].shape
+    """(the parameters, the wedged plate's shape)."""
+    return p, yagura.leg_plate(p)
 
 
 def _cosines(p, direction: str) -> list[float]:
-    """For each wedged plate taking a push in `direction`: the push's cosine onto the plate's +u (inwards).
-    "+" legs: the two A plates in that direction's plane, +1 at the near end, -1 (mirrored) at the far end.
-    Diagonal legs: all four plates, +-1/sqrt(2). Out-of-plane stiffness is counted as nothing (conservative)."""
-    if yagura.diagonal(p):
-        return [d[0] if direction == "x" else d[1] for *_, d, _ in yagura.corners(p)]
-    pl = {pt.name: pt for pt in fr.parts(p)}["leg plate A"].placements
-    return [(-1.0 if q.mirror_u else 1.0) for q in pl if q.axis == direction]
+    """For each plate taking a push in `direction`: the push's cosine onto the plate's +u (inwards), +-1/sqrt(2).
+    Out-of-plane stiffness is counted as nothing (conservative)."""
+    return [d[0] if direction == "x" else d[1] for *_, d, _ in yagura.corners(p)]
 
 
 def frame_sway(p, H_total: float, direction: str = "x") -> dict:
@@ -324,9 +317,7 @@ def stresses(p, H_total: float = 200.0, F_edge: float = 1000.0) -> dict:
     r = frame_sway(p, H_total, "x")
     Hmax = max(abs(h) for h in r.get("per_plate_N", [H_total / 4])) if np.isfinite(r["sway_mm"]) else H_total
     legs = 0.0                                                  # moment H z at height z over the real section there
-    names = ("leg plate",) if yagura.diagonal(p) else ("leg plate A", "leg plate B")
-    for name in names:
-        g = {pt.name: pt for pt in fr.parts(p)}[name].shape
+    for g in (yagura.leg_plate(p),):
         for z in np.linspace(5.0, L.z_deck_bot - 2.0, 80):
             W = section(g, z, t)[1]
             if W > 0:
@@ -335,12 +326,8 @@ def stresses(p, H_total: float = 200.0, F_edge: float = 1000.0) -> dict:
     R = p.top.length / 2
     q, shape = leg(p)
     ta, tb = yagura._tenon_u(q)
-    if yagura.diagonal(p):                                      # tenons on the diagonals, uc/sqrt(2) in from each edge
-        e = (ta + tb) / 2 / np.sqrt(2)
-        support_y, span = L.Wf / 2 - e, L.Lf - 2 * e
-    else:
-        support_y = L.yL[1] - L.cy                              # the A-plate tenons along this side carry the top
-        span = L.Lf - 2 * (ta + tb) / 2                         # between those two tenons
+    e = (ta + tb) / 2 / np.sqrt(2)                              # tenons on the diagonals, uc/sqrt(2) in from each edge
+    support_y, span = L.Wf / 2 - e, L.Lf - 2 * e
     a = R - p.comfort.tip_inset - support_y
     top = 6 * F_edge * a / (span * t * t)
     z0, z1 = yagura.leg_hole_z(p)
@@ -373,8 +360,7 @@ def summary(p) -> dict:
     out["tenon_play_mm"] = round(2 * p.fit.tight, 2)
     out["loose_wedge_mm_per_0.1"] = round(wedge_slack_wobble(p, 0.1), 2)
     out["stress"] = stresses(p)
-    if yagura.diagonal(p):
-        out["twist"] = twist(p)
+    out["twist"] = twist(p)
     out["assumptions"] = {"E_par": p.material.E_par, "E_perp": S.E_perp, "wedge_preload_N": S.wedge_preload,
                           "leg_L_mm": L.z_deck_bot}
     return out
@@ -396,14 +382,14 @@ def out_of_plane_k(p) -> float:
 
 
 def twist(p, F_corner: float | None = None) -> dict:
-    """Diagonal legs: twisting the frame about the vertical (a sideways push at a top corner, along the
+    """Twisting the frame about the vertical (a sideways push at a top corner, along the
     edge) bends every plate the weak way. Each crosspiece rocks open on the deck once its plate's push
     across reaches preload x (cross_w / 2) / leg length; until then the joint is taken as rigid.
     Returns the corner's twist (mm) under F_corner and the corner push at which the joints open."""
-    S, L, D = p.stiffness, fr.layout(p), p.diagonal
+    S, L, D = p.stiffness, fr.layout(p), p.yagura
     F = S.twist_n if F_corner is None else F_corner
     k = out_of_plane_k(p)
-    R_f = L.Lf / 2 * np.sqrt(2) - yagura.foot_w(yagura._dp(p)) / 2      # centre -> each foot, along the diagonal
+    R_f = L.Lf / 2 * np.sqrt(2) - yagura.foot_w(p) / 2                 # centre -> each foot, along the diagonal
     r_top = p.top.length / 2                                            # the push's lever: half the top's side
     theta = F * r_top / (4 * k * R_f ** 2)
     f_open = S.wedge_preload * (D.cross_w / 2) / L.z_deck_bot          # across each plate, at its foot

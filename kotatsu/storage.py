@@ -100,8 +100,8 @@ def layout(p) -> dict[str, list]:
 
 
 def stack_mm(p) -> float:
-    """How tall the stack is: a sheet per layer (thickest stock)."""
-    return len(layout(p)) * p.material.t_max
+    """How tall the stack is: a sheet per layer that has parts in it (thickest stock)."""
+    return sum(1 for v in layout(p).values() if v) * p.material.t_max
 
 
 def check(p) -> list[str]:
@@ -125,7 +125,7 @@ def main():
     import matplotlib.pyplot as plt
     from . import params
     p = params.tables(params.load())[0]
-    L = layout(p)
+    L = {k: v for k, v in layout(p).items() if v}     # (empty layers left out of the picture)
     fig, axs = plt.subplots(1, len(L), figsize=(5 * len(L), 5.4))
     for ax, (name, gs) in zip(axs, L.items()):
         s = p.top.length / 2

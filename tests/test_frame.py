@@ -47,14 +47,6 @@ def _fits(P, shape):
                for s in P.cnc.sheets)
 
 
-# ------------------------------------------------------------------ cross-laps
-def test_crossings_agree(C):
-    """Slot positions in each panel coincide with the other panel's centre plane."""
-    P, L = C.P, C.L
-    assert L.xS[0] - L.O == pytest.approx(P.frame.ear) and L.Lf - (L.xS[1] - L.O) == pytest.approx(P.frame.ear)
-    assert L.yL[0] - L.O == pytest.approx(P.frame.ear) and L.Wf - (L.yL[1] - L.O) == pytest.approx(P.frame.ear)
-
-
 # ------------------------------------------------------------------ heater cradle (cheeks in the deck well)
 @pytest.mark.parametrize("t", T_RANGE)
 def test_cradle_drops_into_the_well(C, t):
@@ -114,11 +106,12 @@ def test_total_height_in_owner_range(C):
     assert 390 <= total <= 415                               # owner OK'd ~41 cm for the leg room
 
 
-def test_ear_fingers_are_sturdy(C):
-    """Ear fingers outside the cross-lap slots: at least the stock thickness (uMake's minimum feature).
-    In the yagura they're braced by the crossing plate in the slot (owner chose 20.4 mm, = inner finger)."""
+def test_posts_are_sturdy(C):
+    """Each corner post (outside the head slot, post_inset in from the plate's end) is at least the stock
+    thickness wide: uMake's minimum feature, and it carries a corner of the top."""
+    from kotatsu import yagura
     P = C.P
-    assert P.frame.ear - frame.slot_w(P) / 2 >= P.material.t_max
+    assert yagura.post_u(P) - P.frame.post_inset >= P.material.t_max
 
 
 def test_cross_legged_clearance(C):

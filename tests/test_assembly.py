@@ -38,7 +38,7 @@ def test_steps_follow_the_real_order():
 def test_parts_start_clear():
     deck = first_from("deck")[0][0]["from"]
     assert L.z_deck_bot + deck[2] > L.H, "the deck starts above the tenon tops"
-    for moves in first_from("leg crosspiece" if yagura.diagonal(P) else "leg plate B"):
+    for moves in first_from("leg crosspiece"):
         assert moves[0]["step"] == assembly.LEGS and moves[0]["from"][2] >= yagura.lap_depth(P)
     lift = assembly.cradle_lift(P)
     for moves in first_from("heater cheek"):                  # put together above the table, then lowered in

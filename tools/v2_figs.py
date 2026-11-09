@@ -52,15 +52,15 @@ def main():
     for ax, (label, D) in zip(axs, rows):
         P = {k: (wkt.loads(s), q) for k, (s, q) in D["parts"].items()}
         x = 0
-        for name in ("top", "deck", "leg plate A", "leg plate B", "heater cheek", "wedge", "cheek wedge", "leg wedge"):
+        for name in ("top", "deck", "leg plate", "leg crosspiece", "leg plate A", "leg plate B", "heater cheek", "wedge", "cheek wedge", "leg wedge"):
             if name not in P:
                 continue
             g, q = P[name]
             b = draw(ax, g, x, 0)
-            tag = name.replace("leg plate ", "leg plate\n").replace("heater cheek", "heater\ncheek")
+            tag = name.replace("leg plate ", "leg plate\n").replace("leg crosspiece", "leg\ncrosspiece").replace("leg plate", "leg\nplate").replace("heater cheek", "heater\ncheek")
             ax.text((b[0] + b[2]) / 2, -30, tag + (f" ×{q}" if q > 1 else ""), ha="center", va="top", fontsize=9,
                     color="#6e6256", linespacing=1.1)
-            x = b[2] + 70
+            x = b[2] + (70 if b[2] - b[0] > 300 else 125)      # small parts: room for their labels
         n = sum(q for _, q in P.values())
         ax.set_title(f"{label}: {D['t']:.0f} mm birch, {n} parts, about {D['kg']} kg", loc="left", fontsize=12, color="#2b2118")
         ax.set_aspect("equal"); ax.axis("off"); ax.set_ylim(-150, 900)

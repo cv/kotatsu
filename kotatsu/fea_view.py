@@ -155,9 +155,8 @@ def leg_cases(p) -> list[dict]:
     pls = {pt.name: pt.placements for pt in fr.parts(p)}
     runs = [(f"leg A: {H:g} N sideways push", "A", H, None), (f"leg A: {H:g} N push + the top's worst corner load", "A", H, top),
             ("leg A: the top's worst corner load only", "A", 0.0, top), (f"leg B: its share of {H:g} N, top clamped", "B", H, top)]
-    diag = yagura.diagonal(p)
-    if diag:                                     # one plate a corner: all four bend in their own planes
-        runs = [(lab.replace("leg A: ", "leg plate: "), w, hh, tp) for lab, w, hh, tp in runs if w == "A"]
+    diag = True                                  # one plate a corner: all four bend in their own planes
+    runs = [(lab.replace("leg A: ", "leg plate: "), w, hh, tp) for lab, w, hh, tp in runs if w == "A"]
     out = []
     for label, which, hh, tp in runs:
         r = fea.leg_case(p, which, hh, tp, h=VIEW_H["leg"])

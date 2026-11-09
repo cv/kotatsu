@@ -82,8 +82,6 @@ def _round_outer(poly: Polygon, r: float) -> Polygon:
 class Layout:
     t: float; t_min: float; t_max: float; H: float
     O: float; Lf: float; Wf: float
-    yL: tuple[float, float]        # long panel centre planes
-    xS: tuple[float, float]        # short panel centre planes
     z_deck_bot: float; z_deck_top: float
     cx: float; cy: float
 
@@ -94,7 +92,6 @@ def layout(p) -> Layout:
     Lf, Wf = p.top.length - 2 * O, p.top.width - 2 * O
     zt = F.height - p.deck.drop
     return Layout(t=M.t_nominal, t_min=M.t_min, t_max=M.t_max, H=F.height, O=O, Lf=Lf, Wf=Wf,
-                  yL=(O + F.ear, O + Wf - F.ear), xS=(O + F.ear, O + Lf - F.ear),
                   z_deck_bot=zt - M.t_nominal, z_deck_top=zt, cx=p.top.length / 2, cy=p.top.width / 2)
 
 

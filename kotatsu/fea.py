@@ -274,7 +274,7 @@ def deck_case(p, loads_, h: float | None = None, t: float | None = None, wedges:
     h = F.deck_h if h is None else h
     t = M.t_min if t is None else t
     g = yagura.deck(p)
-    below = [x.intersection(g) for x in yagura.plate_tops(p, "A") + yagura.plate_tops(p, "B")]
+    below = [x.intersection(g) for x in yagura.plate_tops(p) + yagura.cross_tops(p)]
     above = [x.intersection(g) for x in yagura.wedge_footprints(p)]
     below, above = [x for x in below if x.area > 0], [x for x in above if x.area > 0]
     m = mesh(g, h, extra=below + above, h_edge=h / 3)
@@ -436,29 +436,15 @@ def top_on_legs(p, case: str | None = None) -> dict:
             best = (name, r, v, k)
     name, r, _, k = best
     sx, sy = (1 if k[0] == "+" else -1), (1 if k[1] == "+" else -1)
-    if yagura.diagonal(p):                       # one plate on the diagonal: its post, then its tenon
-        out = {"case": name, "corner": k, "A post": 0.0, "A tenon": 0.0, "B post": 0.0}
-        pu = yagura.post_u(yagura._dp(p))
-        cx, cy = sx * L.Lf / 2, sy * L.Wf / 2    # the corner, centred coords
-        for g, R in zip(r["pads"], r["pad_N"]):
-            c = g.centroid
-            if (c.x > 0) != (sx > 0) or (c.y > 0) != (sy > 0):
-                continue
-            u = (abs(c.x - cx) + abs(c.y - cy)) / 2 ** 0.5         # along the diagonal from the corner
-            out["A post" if u < pu + 5 else "A tenon"] += R
-        return out
-    ax = yagura.a_runs_along_x(sx, sy)
-    line = sy * (L.cy - L.yL[0]) if ax else sx * (L.cx - L.xS[0])     # A plate's plane, centred coords
-    out = {"case": name, "corner": k, "A post": 0.0, "A tenon": 0.0, "B post": 0.0}
+    out = {"case": name, "corner": k, "A post": 0.0, "A tenon": 0.0, "B post": 0.0}   # (B: none since the "+" legs)
+    pu = yagura.post_u(p)
+    cx, cy = sx * L.Lf / 2, sy * L.Wf / 2        # the corner, centred coords
     for g, R in zip(r["pads"], r["pad_N"]):
         c = g.centroid
         if (c.x > 0) != (sx > 0) or (c.y > 0) != (sy > 0):
             continue
-        across, along = (c.y, abs(c.x)) if ax else (c.x, abs(c.y))
-        if abs(across - line) < L.t:
-            out["A tenon" if along < L.Lf / 2 - 2 * yagura.post_u(p) else "A post"] += R
-        else:
-            out["B post"] += R
+        u = (abs(c.x - cx) + abs(c.y - cy)) / 2 ** 0.5             # along the diagonal from the corner
+        out["A post" if u < pu + 5 else "A tenon"] += R
     return out
 
 
@@ -548,18 +534,12 @@ def leg_case(p, which: str, H: float, top: dict | None = None, N_deck: float | N
     t = M.t_min if t is None else t
     top = {} if top is None else top
     H_in = H
-    if yagura.diagonal(p):            # diagonal legs: each plate takes its cosine's share of the push in its own
-        if which != "A":              # plane; the pair below (two plates, opposite senses) then totals this
-            raise ValueError("diagonal legs have one plate a corner: which = 'A'")
-        c = stiffness._cosines(p, "x")
-        H = H * 2 * max(abs(x) for x in c) / sum(x * x for x in c)
-        N_deck = deck_weight_n(p) / 4 if N_deck is None else N_deck
-        p = yagura._dp(p)
-        shape = yagura.diag_plate(p)
-        L = fr.layout(p)
-    else:
-        shape = {pt.name: pt for pt in fr.parts(p)}[f"leg plate {which}"].shape
-        N_deck = deck_weight_n(p) / 8 if N_deck is None else N_deck
+    if which != "A":                  # one plate a corner (named A, as the wedged plate of the old "+" legs)
+        raise ValueError("the legs have one plate a corner: which = 'A'")
+    c = stiffness._cosines(p, "x")    # each plate takes its cosine's share of the push in its own plane; the pair
+    H = H * 2 * max(abs(x) for x in c) / sum(x * x for x in c)    # below (opposite senses) then totals this
+    N_deck = deck_weight_n(p) / 4 if N_deck is None else N_deck
+    shape = yagura.leg_plate(p)
     pu, (ta, tb) = yagura.post_u(p), yagura._tenon_u(p)
     on_post, on_tenon = top.get(f"{which} post", 0.0), top.get("A tenon", 0.0) if which == "A" else 0.0
     edge = lambda a, b, v: box(a, v - 0.3, b, v + 0.3)
@@ -640,8 +620,7 @@ def leg_report(p, h: float | None = None) -> dict:
     runs = {f"A, {H:g} N push": ("A", H, None), f"A, {H:g} N push + top load": ("A", H, top),
             "A, top load only": ("A", 0.0, top), f"B, its share of {H:g} N, top edge clamped": ("B", H, top),
             f"A, {H:g} N push, nominal stock, crossing plate on the crush ribs": ("A", H, None)}
-    if yagura.diagonal(p):                       # one plate a corner (called A here); the crosspiece is the crossing plate
-        runs = {k.replace("crossing plate", "crosspiece"): v for k, v in runs.items() if v[0] == "A"}
+    runs = {k.replace("crossing plate", "crosspiece"): v for k, v in runs.items() if v[0] == "A"}   # one plate a corner
     for name, (w, hh, tp) in runs.items():
         nom = "nominal" in name
         r = leg_case(p, w, hh, tp, h=h, t=p.material.t_nominal if nom else None, ribs=nom)
