@@ -159,7 +159,7 @@ senses together takes 0.71 × the push); the top's load goes on its post and ten
 | 200 N push + the top's worst corner load | 51 % (the load from above steadies the joint) | |
 | The top's worst corner load only (an adult on an edge) | 28 % | |
 | 200 N push, nominal 15 mm stock, the crosspiece on the crush ribs | 62 % | |
-| Deck (300 N hand), wedges tight / slack | 60 / 97 % with R150/R80 fillets (R90/R40: 65 / 127; "+" legs: 68 / 155) | |
+| Deck (300 N hand), wedges tight / slack | 60 / 104 % with R150/R80 fillets, convex pads and R10 far corners (square far corners: 60 / 90; R90/R40: 65 / 127; "+" legs: 68 / 155) | |
 | Top, everyday / an adult on an edge | 15 / 37 % ("+": 18 / 42) | |
 
 How the head got its shape: a 36 mm crosspiece put the slot's bottom in the haunch (183 %); 25 mm with the haunch
