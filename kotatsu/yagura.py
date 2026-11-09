@@ -74,7 +74,13 @@ def leg_plate(p, slotted_from_top: bool) -> Polygon:
     w, d = fr.slot_w(p), lap_depth(p)
     u = F.ear
     if slotted_from_top:
-        g = g.difference(fr.notch(u - w / 2, u + w / 2, zs, zs - d, r))
+        if getattr(F, "round_slot", False):              # diagonal legs: a round-bottomed head slot, no dogbones: the
+            R = w / 2                                    #   crosspiece's square edges sit on the arc (a gentle root)
+            seat = R - math.sqrt(R * R - (p.material.t_nominal / 2) ** 2)
+            zb = zs - d - seat                           # deeper by the seat, so its top still comes out flush
+            g = g.difference(box(u - R, zb + R, u + R, zs + 1).union(Point(u, zb + R).buffer(R, quad_segs=32)))
+        else:
+            g = g.difference(fr.notch(u - w / 2, u + w / 2, zs, zs - d, r))
         g = g.union(crush_ribs(p, u - w / 2, u + w / 2, zs - d, zs))
         g = g.difference(foot_relief(p))
     else:
@@ -346,7 +352,7 @@ def _dp(p):
     from types import SimpleNamespace as NS
     D = p.diagonal
     q = NS(**vars(p))
-    q.frame = NS(**{**vars(p.frame), "ear": D.ear, "leg_width": D.leg_width, "post_inset": D.post_inset})
+    q.frame = NS(**{**vars(p.frame), "ear": D.ear, "leg_width": D.leg_width, "post_inset": D.post_inset, "round_slot": True})
     q.yagura = NS(**{**vars(p.yagura), "leg_haunch_top": D.leg_haunch_top})
     q.fit = NS(**{**vars(p.fit), "crush_rib_at": [0.6]})   # the head slot is short: one pair of ribs, clear of its bottom
     return q

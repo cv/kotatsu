@@ -29,7 +29,7 @@ def test_crosspiece_fits_the_head_slot(t):
     deep + cross_proud (sanded to fit), and long enough to stand out cross_w / 2 each side."""
     g, w = PARTS["leg plate"].shape, frame.slot_w(P)
     zb = L.z_deck_bot - D.head_slot
-    for z in np.linspace(zb + 1, L.z_deck_bot - 1, 40):
+    for z in np.linspace(zb + 1.5, L.z_deck_bot - 1, 40):        # (below: the round bottom it sits on)
         cut = g.intersection(LineString([(D.ear - w, z), (D.ear + w, z)]))
         pieces = sorted((q.bounds[0], q.bounds[2]) for q in getattr(cut, "geoms", [cut]) if not q.is_empty)
         gap = pieces[1][0] - pieces[0][1]
