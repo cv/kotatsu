@@ -463,8 +463,8 @@ pushed at a corner. Then the FEA shaped the head. A tall crosspiece needed a dee
 bottom landed in the leg's haunch, where it used 183 % of the plate's strength under a hard shove. A short
 one (25 mm) and a higher haunch brought it to 84-95 %, and a round-bottomed slot, with no dogbones at all
 since the crosspiece's edges can sit on the curve, brought it to 75 %. The posts also had to end 14 mm in from
-the corner, since on the diagonal the squircle top's edge comes closest; each post's outer edge sweeps in to
-there in one smooth curve.
+the corner, since on the diagonal the squircle top's edge comes closest; each leg's outer edge sweeps in to
+there in one long curve, starting well below the deck, so it reads as part of the leg.
 
 ![The diagonal legs in the 3-D view, with the top, futon and rug hidden: one plate on each corner's diagonal, a crosspiece under each corner of the X deck, a wedge across each arm](docs/img/v2-diagonal.jpg)
 
