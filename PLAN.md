@@ -181,6 +181,32 @@ deck's hard hand cases). What it found:
   The slimmest that passes is 61.9 mm (−2 %), at 88 % of strength and $0.05 more; the cheapest saves $0.59 with legs
   19 % wider. So on these knobs the design is already at the edge for looks, and economics can't be traded at all.
 
+## Prototype on branch `diagonal-legs`: one plate per corner, on the diagonal (2026-11, not decided)
+`leg_style = "diagonal"` (`[diagonal]` in params.toml). Each corner is one plate standing on the corner's diagonal,
+its outer end at the frame corner, with a **crosspiece** (90 × 25 mm) dropped into a short round-bottomed slot in its
+head, across it. The deck bears on the crosspiece's top edge, which gives the joint a 90 mm base against twisting
+(one plate alone would rock open at about 32 N). One tenon and one wedge per plate, the wedge across the arm. Above
+the deck the post starts 14 mm in from the plate's end, so it stays 18+ mm inside the squircle top.
+- **Fit-up:** the crosspiece is cut 0.5 mm proud: sand its top edge until the deck sits on it and on the plate's
+  shoulders together (TODO-verify at the first fit-up).
+- **How the head got its shape (leg FEA, 200 N push):** a 60 mm crosspiece needed the haunch at 270 mm and cost
+  ~90 mm of room at thigh height; at 36 mm the slot's bottom landed in the haunch (183 %); 25 mm with the haunch
+  from 305: 84-95 % with dogbones in the slot, **74-75 %** with a round-bottomed slot (the crosspiece's edges sit on
+  the arc, its top still flush).
+
+| | Today ("+" legs) | Diagonal |
+|---|---|---|
+| Price (model) / cutting / weight | $327.06 / 22.5 m / 11.38 kg | **$293.71 / 16.9 m / 10.61 kg** |
+| Room between the legs (legs forward) | 637 mm | **656 mm** |
+| Legs, 200 N shove (FEA) / sway | 80 % / 7.1 mm | **74 % / 6.1 mm** |
+| Twist: 115 N pushed along an edge at a corner | (not modelled) | 1.4 mm; the crosspiece joints open at ~191 N |
+| Deck, wedges tight / slack (FEA) | 68 / 155 % | 65 / 127 % |
+| Top: everyday / an adult on an edge | 17.9 / 42.5 % | 15.2 / 37.2 % (on 4 posts + 4 tenons) |
+| Push at the edge that lifts the loose top | 703 N | 635 N |
+
+Open before choosing it: a fit-up of one corner (the crosspiece's sanding, how the joint feels when twisted by
+hand); the twist model is lumped (plate bending + a rigid closed joint), not FEA.
+
 ## Tried and rejected: the heater turned 45° (2026-11, prototype)
 Turning the heater, cradle and ring 45° (a diamond well, the arms meeting the ring mid-side) was tried in memory
 against today's deck, with the same loads turned with it (deck FEA at h = 10, wedges tight):
