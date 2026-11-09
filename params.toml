@@ -141,9 +141,9 @@ body_x = 290.0
 body_y = 290.0
 body_h = 50.0
 cheek_clearance = 4.0  # cheek inner faces = body width + this; 4 mm covers a 290-293 mm body (measured to the cm)
-top_rise = 4.0         # v2: heater top above the deck top (owner 2026-11: 4, was 0 = flush), raised with the cheeks so
-                       #   they keep 20 mm of air above it. The manual sets no clearance above the unit (owner 2026-10);
-                       #   the futon lies over it as in a traditional open frame; on high its top reaches 40 °C (owner)
+top_rise = 14.0        # v2: heater top above the deck top (owner 2026-11: 14, was 0 = flush), leaving 10 mm of air under
+                       #   the cheek tops "just to be safe": the futon sags a little across the 294 mm between them. The
+                       #   manual sets no clearance above the unit; on high its top reaches 40 °C (owner). The cheeks shrink with it
 end_clearance = 10.0   # heater well length = body_y + this (a 290-293 body; TODO-verify nothing sticks out at the ends)
 holes = []             # not cut: the owner drills the heater's screw holes on assembly
 
