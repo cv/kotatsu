@@ -61,10 +61,14 @@ def frame_data(p) -> dict:
                 c = (ox + sm * (x0 + x1) / 2, oy + t / 2, oz + (y0 + y1) / 2)
             elif pl.axis == "y":
                 c = (ox + t / 2, oy + sm * (x0 + x1) / 2, oz + (y0 + y1) / 2)
+            elif pl.axis == "m":                         # a full matrix (the diagonal legs)
+                M, (u, v, w) = pl.matrix, ((x0 + x1) / 2, (y0 + y1) / 2, t / 2)
+                c = tuple(M[4 * i] * u + M[4 * i + 1] * v + M[4 * i + 2] * w + M[4 * i + 3] for i in range(3))
             else:
                 c = ((x0 + x1) / 2, (y0 + y1) / 2, oz)
             placed.append({"part": pt.name, "kind": pt.kind, "axis": pl.axis, "origin": [ox, oy, oz],
-                           "mirror": pl.mirror_u, "moves": assembly.part_moves(p, pt, pl, c, k)})
+                           "mirror": pl.mirror_u, "moves": assembly.part_moves(p, pt, pl, c, k),
+                           **({"matrix": [round(x, 5) for x in pl.matrix]} if pl.matrix else {})})
     size, centre = frame.heater_box(p)
     total_kg = sum(x["kg"] * x["qty"] for x in plist)
     return {"thickness": t, "height": L.H, "futon_gap": 12.0, "parts": plist, "placed": placed,

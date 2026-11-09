@@ -246,22 +246,39 @@ def plate_curve(p, shape, N: float, Hmax: float = 300.0, n: int = 121) -> PlateC
     return PlateCurve(H_, D_, tuple(soft), tilt)
 
 
+def leg(p):
+    """(the parameters the wedged plates see, their shape): plate A, or the diagonal plate ([diagonal]'s sizes)."""
+    if yagura.diagonal(p):
+        return yagura._dp(p), yagura.diag_plate(p)
+    return p, {pt.name: pt for pt in fr.parts(p)}["leg plate A"].shape
+
+
+def _cosines(p, direction: str) -> list[float]:
+    """For each wedged plate taking a push in `direction`: the push's cosine onto the plate's +u (inwards).
+    "+" legs: the two A plates in that direction's plane, +1 at the near end, -1 (mirrored) at the far end.
+    Diagonal legs: all four plates, +-1/sqrt(2). Out-of-plane stiffness is counted as nothing (conservative)."""
+    if yagura.diagonal(p):
+        return [d[0] if direction == "x" else d[1] for *_, d, _ in yagura.corners(p)]
+    pl = {pt.name: pt for pt in fr.parts(p)}["leg plate A"].placements
+    return [(-1.0 if q.mirror_u else 1.0) for q in pl if q.axis == direction]
+
+
 def frame_sway(p, H_total: float, direction: str = "x") -> dict:
     """Sway of the deck relative to the floor under a sideways push H_total (N) in x or y."""
     parts = {pt.name: pt for pt in fr.parts(p)}
-    plate = parts["leg plate A"]                                # the wedged plates, in this direction's plane
-    placements = [pl for pl in plate.placements if pl.axis == direction]
+    q, shape = leg(p)
     deck_w = sum(pt.shape.area * pt.qty for pt in parts.values() if pt.kind in ("deck", "cheek", "wedge"))
     deck_n = (deck_w / 1e6 * p.material.t_nominal / 1000 * p.material.density_kg_m3 + p.comfort.heater_kg) * 9.81
-    N = deck_n / 8                                              # each plate's share of deck + heater
-    cur = plate_curve(p, plate.shape, N)
+    n_plates = sum(pt.qty for pt in parts.values() if pt.kind == "frame" and "crosspiece" not in pt.name)
+    N = deck_n / n_plates                                       # each plate's share of deck + heater
+    cur = plate_curve(q, shape, N)
     ok = np.isfinite(cur.delta)
     if ok.sum() < 3:
         return {"sway_mm": float("inf"), "H": H_total, "gap_H_plate": cur.gap_H, "N_plate": N}
     H, d = cur.H[ok], cur.delta[ok]
     order = np.argsort(d)
     H, d = H[order], d[order]
-    signs = [(-1 if pl.mirror_u else 1) for pl in placements]
+    signs = _cosines(p, direction)
 
     def total(D):
         return sum(np.interp(s * D, d, H) * s for s in signs)
@@ -280,21 +297,20 @@ def frame_sway(p, H_total: float, direction: str = "x") -> dict:
 
 def wobble_onset(p, direction: str = "x") -> float:
     """Total sideways push at which the first leg joint starts to open (N)."""
-    parts = {pt.name: pt for pt in fr.parts(p)}
-    n = sum(pl.axis == direction for pl in parts["leg plate A"].placements)
+    c = _cosines(p, direction)
     r = frame_sway(p, 1.0, direction)
     gaps = [g for g in r["gap_H_plate"] if g is not None]
     if not gaps:
         return float("inf")
     g = min(abs(x) for x in gaps)
-    return g * n                                                # the wedged plates share while every joint is tight
+    return g * sum(x * x for x in c) / max(abs(x) for x in c)   # the wedged plates share while every joint is tight
 
 
 def wedge_slack_wobble(p, slack: float = 0.1) -> float:
     """Free floor movement (mm) of one leg if its wedge has worked loose by `slack` mm: the plate can
     rock about its shoulder until the tenon jams diagonally in the mortise (or the slack is taken up)."""
     L = fr.layout(p)
-    J = joint(p, {pt.name: pt for pt in fr.parts(p)}["leg plate A"].shape)
+    J = joint(*leg(p))
     lever = J.uw - J.u[~J.is_wedge].min()                       # wedge to the far end of the shoulders
     rock = min(slack / lever, 2 * p.fit.tight / L.t)            # ... or the tenon's diagonal jam
     return rock * L.z_deck_bot
@@ -307,22 +323,29 @@ def stresses(p, H_total: float = 200.0, F_edge: float = 1000.0) -> dict:
     t = M.t_nominal
     r = frame_sway(p, H_total, "x")
     Hmax = max(abs(h) for h in r.get("per_plate_N", [H_total / 4])) if np.isfinite(r["sway_mm"]) else H_total
-    leg = 0.0                                                   # moment H z at height z over the real section there
-    for name in ("leg plate A", "leg plate B"):
+    legs = 0.0                                                  # moment H z at height z over the real section there
+    names = ("leg plate",) if yagura.diagonal(p) else ("leg plate A", "leg plate B")
+    for name in names:
         g = {pt.name: pt for pt in fr.parts(p)}[name].shape
         for z in np.linspace(5.0, L.z_deck_bot - 2.0, 80):
             W = section(g, z, t)[1]
             if W > 0:
-                leg = max(leg, Hmax * z / W)
+                legs = max(legs, Hmax * z / W)
+    leg_ = legs
     R = p.top.length / 2
-    ta, tb = yagura._tenon_u(p)
-    support_y = L.yL[1] - L.cy                                  # the A-plate tenons along this side carry the top
-    span = L.Lf - 2 * (ta + tb) / 2                             # between those two tenons
+    q, shape = leg(p)
+    ta, tb = yagura._tenon_u(q)
+    if yagura.diagonal(p):                                      # tenons on the diagonals, uc/sqrt(2) in from each edge
+        e = (ta + tb) / 2 / np.sqrt(2)
+        support_y, span = L.Wf / 2 - e, L.Lf - 2 * e
+    else:
+        support_y = L.yL[1] - L.cy                              # the A-plate tenons along this side carry the top
+        span = L.Lf - 2 * (ta + tb) / 2                         # between those two tenons
     a = R - p.comfort.tip_inset - support_y
     top = 6 * F_edge * a / (span * t * t)
     z0, z1 = yagura.leg_hole_z(p)
     bridge = L.H - z1
-    J = joint(p, {pt.name: pt for pt in fr.parts(p)}["leg plate A"].shape)
+    J = joint(q, shape)
     Fw = 0.0
     for h in (0.0, Hmax, -Hmax):                                # wedge pull at rest and under the push
         x, _ = solve_joint(J, r.get("N_plate", 10.0), h, L.z_deck_bot)
@@ -330,7 +353,7 @@ def stresses(p, H_total: float = 200.0, F_edge: float = 1000.0) -> dict:
             Fv, _, _ = _forces(J, x)
             Fw = max(Fw, Fv[-1])
     tau = Fw / (2 * bridge * t)                                 # two shear planes above the wedge hole
-    return {"H_N": H_total, "leg_MPa": round(leg, 1), "top_MPa_at_1000N": round(top, 1),
+    return {"H_N": H_total, "leg_MPa": round(leg_, 1), "top_MPa_at_1000N": round(top, 1),
             "wedge_bridge_shear_MPa": round(tau, 1), "f_m": M.f_m}
 
 
@@ -342,8 +365,7 @@ def summary(p) -> dict:
         for H in S.report_loads:
             r = frame_sway(p, H, dirn)
             rows[str(int(H))] = round(r["sway_mm"], 2)
-        parts = {pt.name: pt for pt in fr.parts(p)}
-        cur = plate_curve(p, parts["leg plate A"].shape, 10.0)
+        cur = plate_curve(*leg(p), 10.0)
         on = wobble_onset(p, dirn)
         out[dirn] = {"sway_mm": rows, "onset_N": round(on) if np.isfinite(on) else None,
                      "rest_tilt_mm": round(cur.rest_tilt, 1)}
@@ -351,6 +373,39 @@ def summary(p) -> dict:
     out["tenon_play_mm"] = round(2 * p.fit.tight, 2)
     out["loose_wedge_mm_per_0.1"] = round(wedge_slack_wobble(p, 0.1), 2)
     out["stress"] = stresses(p)
+    if yagura.diagonal(p):
+        out["twist"] = twist(p)
     out["assumptions"] = {"E_par": p.material.E_par, "E_perp": S.E_perp, "wedge_preload_N": S.wedge_preload,
                           "leg_L_mm": L.z_deck_bot}
     return out
+
+
+def out_of_plane_k(p) -> float:
+    """A diagonal plate's stiffness (N/mm at the foot) bending the weak way, its head held by the crosspiece
+    joint (taken as rigid while it's closed) and its foot free to slide: integral of z^2 / (E I(z))."""
+    q, shape = leg(p)
+    L, M = fr.layout(p), p.material
+    zs = np.linspace(0.5, L.z_deck_bot - 0.5, 300)
+    dz = zs[1] - zs[0]
+    def width(z):                                               # solid width of the plate at z
+        cut = shape.intersection(box(-1e4, z - 0.25, 1e4, z + 0.25))
+        return sum(g.bounds[2] - g.bounds[0] for g in getattr(cut, "geoms", [cut]) if not g.is_empty)
+    w = np.array([width(z) for z in zs])
+    I = w * M.t_min ** 3 / 12
+    return 1 / float(np.sum(zs ** 2 / (M.E_par * I)) * dz)
+
+
+def twist(p, F_corner: float | None = None) -> dict:
+    """Diagonal legs: twisting the frame about the vertical (a sideways push at a top corner, along the
+    edge) bends every plate the weak way. Each crosspiece rocks open on the deck once its plate's push
+    across reaches preload x (cross_w / 2) / leg length; until then the joint is taken as rigid.
+    Returns the corner's twist (mm) under F_corner and the corner push at which the joints open."""
+    S, L, D = p.stiffness, fr.layout(p), p.diagonal
+    F = S.twist_n if F_corner is None else F_corner
+    k = out_of_plane_k(p)
+    R_f = L.Lf / 2 * np.sqrt(2) - yagura.foot_w(yagura._dp(p)) / 2      # centre -> each foot, along the diagonal
+    r_top = p.top.length / 2                                            # the push's lever: half the top's side
+    theta = F * r_top / (4 * k * R_f ** 2)
+    f_open = S.wedge_preload * (D.cross_w / 2) / L.z_deck_bot          # across each plate, at its foot
+    return {"F_N": F, "corner_mm": round(float(theta * r_top), 2), "k_out_N_per_mm": round(k, 2),
+            "opens_at_corner_N": round(4 * f_open * R_f / r_top)}

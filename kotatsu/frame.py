@@ -27,6 +27,7 @@ class Placement:
     axis: str                       # "x" | "y" | "z"
     origin: tuple[float, float, float]
     mirror_u: bool = False          # informational: shape already mirrored for this placement
+    matrix: tuple[float, ...] | None = None   # axis "m": row-major 4x4, part (u, v, w = thickness) -> world
 
 
 @dataclass

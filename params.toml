@@ -46,6 +46,22 @@ top_r = 3.0           # the post and tenon tops: the top rests on them, hidden u
                       # top's FEA turned jumpy: its few working pads shift)
 lap_extra = 0.5       # each cross-lap slot is (leg height)/2 + this, so slot bottoms never bottom out; the floor sets height
 
+[diagonal]            # leg_style = "diagonal" (branch diagonal-legs, owner 2026-11): each corner one plate standing on
+                      # the corner's diagonal, its outer end at the frame corner. A crosspiece drops into a short
+                      # slot in its head, across it; the deck bears on the crosspiece's top edge, which gives the
+                      # joint a cross_w-wide base against twisting (one plate alone rocks open at ~32 N)
+ear = 60.0            # corner -> the crosspiece's slot centre, along the diagonal (the post is outside it). 60 keeps
+                      #   the crosspiece's ends 5 mm inside the frame's edges, so the deck covers them
+leg_width = 140.0     # plate width under the deck, along the diagonal: post | slot | 10 | 50 tenon | 10
+head_slot = 36.0      # the plate's slot, from the shoulders down: the crosspiece's whole height. Short, so the
+                      #   haunch can stay above the thighs (legs-forward sitting needs the room up to 275 mm)
+cross_w = 90.0        # crosspiece length, across the plate
+cross_proud = 0.5     # the crosspiece is cut this much taller than its slot: sand its top edge at the fit-up
+                      #   until the deck sits on it and on the plate's shoulders together (TODO-verify at fit-up)
+cross_r = 8.0         # the crosspiece's lower corners (the top ones stay 3: they bear on the deck)
+leg_haunch_top = 320.0  # as the "+" legs: the plate is full width down past the head slot's bottom (305), so
+                      #   the slot never leaves a thin finger beside it
+
 [deck]                # horizontal plate on the legs' shoulders; v2: the heater cradle drops into a well in its middle
 drop = 26.0           # deck top below the futon plane (room for the leg wedges above it)
 # v2 (owner): an X-shaped deck. A pad round each corner's mortises and lying wedge, a ring round the heater well,
@@ -63,6 +79,8 @@ ring_w = 40.0         # the ring beside the cheeks (x). It holds the futon up at
 ear_margin = 15.0     # ... and past the cheek ears (y)
 
 [yagura]              # leg <-> deck joints
+leg_style = "diagonal"  # branch diagonal-legs: "plus" (two crossed plates a corner, v2 as ordered) or "diagonal"
+                      #   (one plate along each corner's diagonal, a crosspiece in its head: [diagonal])
 tenon_gap = 10.0      # each plate's tenon starts this far past the cross-lap slot (the shoulder on that side)
 tenon_w = 50.4        # tenon width (>= wedge hole + 2 x 15 mm); leg width beyond it is an inner shoulder
 hole_h = 14.0         # wedge hole above the deck
@@ -148,6 +166,7 @@ end_clearance = 10.0   # heater well length = body_y + this (a 290-293 body; TOD
 holes = []             # not cut: the owner drills the heater's screw holes on assembly
 
 [stiffness]           # wobble check (kotatsu/stiffness.py): estimates, TODO-verify the material values
+twist_n = 115.0       # diagonal legs: the twist check, a sideways push along the edge at a top corner (N)
 E_perp = 500.0        # plywood stiffness through its thickness (shoulder/wedge bearing on the deck), MPa: rough, 300-800
 wedge_preload = 300.0 # clamp force a tapped-in leg wedge gives (N): rough guess
 bearing_len = 20.0    # length over which in-plane bearing (tenon face on mortise end) spreads, mm: rough

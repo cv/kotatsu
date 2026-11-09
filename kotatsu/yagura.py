@@ -21,6 +21,9 @@ tap in the 4 wedges; screw the heater between the cheeks and lower the cradle in
 """
 from __future__ import annotations
 
+import math
+
+from shapely.affinity import affine_transform
 from shapely.geometry import LineString, Point, Polygon, box
 from shapely.ops import unary_union
 
@@ -121,7 +124,10 @@ def corner_cut(p) -> float:
 
 
 def lap_depth(p) -> float:
-    """Cross-laps share the leg height below the deck (+ lap_extra each, so the floor sets the height)."""
+    """Cross-laps share the leg height below the deck (+ lap_extra each, so the floor sets the height).
+    Diagonal legs: the plate's head slot, the crosspiece's height."""
+    if diagonal(p):
+        return p.diagonal.head_slot
     return fr.layout(p).z_deck_bot / 2 + p.frame.lap_extra
 
 
@@ -149,8 +155,11 @@ def mortise_info(p) -> list[tuple[tuple[float, float, float, float], str, int, i
     return out
 
 
-def mortises(p) -> list[tuple[float, float, float, float]]:
-    """World (x0, y0, x1, y1) of the 4 deck mortises, each with a wedge through its tenon."""
+def mortises(p) -> list:
+    """World (x0, y0, x1, y1) of the 4 deck mortises, each with a wedge through its tenon (diagonal legs:
+    the mortise outlines, turned 45 degrees, as polygons)."""
+    if diagonal(p):
+        return diag_mortises(p)
     return [m for m, *_ in mortise_info(p)]
 
 
@@ -177,6 +186,8 @@ def deck_blank(p) -> Polygon:
 
 def wedge_footprints(p) -> list[Polygon]:
     """Plan (world x-y) of each wedge lying on the deck, across its tenon (thickest stock)."""
+    if diagonal(p):
+        return diag_wedge_footprints(p)
     wl, _ = wedge_dims(p)
     t = p.material.t_max
     out = []
@@ -190,7 +201,10 @@ def wedge_footprints(p) -> list[Polygon]:
 def plate_tops(p, which: str) -> list[Polygon]:
     """Plan (world x-y) of each `which` ("A" or "B") plate's top edge under the deck, from past its post's
     root relief to its inner end: it bears on the deck (A: the shoulders either side of the tenon; B: all
-    of it, which keeps the plate trapped against the floor)."""
+    of it, which keeps the plate trapped against the floor). Diagonal legs: "A" the plates, "B" the
+    crosspieces' top edges."""
+    if diagonal(p):
+        return diag_plate_tops(p) if which == "A" else diag_cross_tops(p)
     L, t = fr.layout(p), p.material.t_max
     u0, u1 = post_u(p) + 2 * fr._rd(p), p.frame.leg_width          # along the plate, from the frame edge
     out = []
@@ -210,6 +224,10 @@ def pads(p) -> list[Polygon]:
     """The wood the corners need, and no more (owner 2026-11): pad_margin round each mortise (a hole),
     bearing_margin past each lying wedge and each plate's top edge. Nothing outside the B plates."""
     D = p.deck
+    if diagonal(p):
+        keep = [m.buffer(D.pad_margin, join_style="mitre") for m in diag_mortise_boxes(p)]
+        return keep + [k.buffer(D.bearing_margin, join_style="mitre")
+                       for k in diag_wedge_footprints(p) + diag_plate_tops(p) + diag_cross_tops(p)]
     keep = [box(*m).buffer(D.pad_margin, join_style="mitre") for m in mortises(p)]
     keep += [k.buffer(D.bearing_margin, join_style="mitre")
              for k in wedge_footprints(p) + plate_tops(p, "A") + plate_tops(p, "B")]
@@ -243,6 +261,11 @@ def deck(p) -> Polygon:
     g = geom.closing(unary_union(pads(p) + [core]), D.pad_fillet_r)
     g = g.buffer(-D.edge_r, quad_segs=geom.Q).buffer(D.edge_r, quad_segs=geom.Q)   # before the post cut-outs,
     g = g.intersection(blank)                                                      # which stay as in v1
+    if diagonal(p):
+        for m in diag_mortises(p):
+            g = g.difference(m)
+        g = g.intersection(diag_corner_trim(p))
+        return g.difference(fr.hole(*fr.well(p), r))
     for x0, y0, x1, y1 in mortises(p):
         g = g.difference(fr.hole(x0, y0, x1, y1, r))
     g = g.difference(fr.hole(*fr.well(p), r))           # the heater well: the cradle drops in
@@ -309,7 +332,138 @@ def wedge_shape(p, which: str = "leg") -> Polygon:
     return fr._round_outer(w, 3.0)
 
 
+# ----------------------------------------------------------------------------- diagonal legs
+def diagonal(p) -> bool:
+    return getattr(p.yagura, "leg_style", "plus") == "diagonal"
+
+
+def _dp(p):
+    """p as a diagonal plate sees it: [diagonal]'s ear, leg_width and haunch in place of the "+" legs'."""
+    from types import SimpleNamespace as NS
+    D = p.diagonal
+    q = NS(**vars(p))
+    q.frame = NS(**{**vars(p.frame), "ear": D.ear, "leg_width": D.leg_width})
+    q.yagura = NS(**{**vars(p.yagura), "leg_haunch_top": D.leg_haunch_top})
+    return q
+
+
+def corners(p) -> list[tuple[int, int, tuple[float, float], tuple[float, float], tuple[float, float]]]:
+    """(sx, sy, C, d, n) for each corner, round the table: C the frame corner (world x, y), d the unit vector
+    along its diagonal inwards, n = d turned +90 degrees (across the plate)."""
+    L = fr.layout(p)
+    if abs(L.Lf - L.Wf) > 1e-6:
+        raise ValueError("diagonal legs need a square frame")
+    k = 1 / math.sqrt(2)
+    out = []
+    for sx, sy in ((-1, -1), (1, -1), (1, 1), (-1, 1)):
+        d = (-sx * k, -sy * k)
+        out.append((sx, sy, (L.cx + sx * L.Lf / 2, L.cy + sy * L.Wf / 2), d, (-d[1], d[0])))
+    return out
+
+
+def _plan(g, C, d, n):
+    """Plan-local (u along d from the corner, v along n) -> world x-y."""
+    return affine_transform(g, [d[0], n[0], d[1], n[1], C[0], C[1]])
+
+
+def diag_plate(p) -> Polygon:
+    """The diagonal plate: plate A's shape at [diagonal]'s sizes, its slot only head_slot deep."""
+    return leg_plate(_dp(p), True)
+
+
+def crosspiece(p) -> Polygon:
+    """In its own (u across the plate, v = z from the head slot's bottom) plane: cross_w long, the slot's
+    depth + cross_proud tall (sanded to fit). Its top edge bears on the deck."""
+    D = p.diagonal
+    g = box(0, 0, D.cross_w, D.head_slot + D.cross_proud)
+    return geom.squircle_corners(g, lambda c, cv: D.cross_r if c[1] < 1 else 3.0, p.frame.corner_n)
+
+
+def diag_mortise_boxes(p) -> list[Polygon]:
+    """Each mortise's rectangle (world), without its dogbones: the tenon + clearance, thickest stock."""
+    q = _dp(p)
+    ta, tb = _tenon_u(q)
+    c, h = p.fit.tight, fr.thick_slot(p) / 2
+    return [_plan(box(ta - c, -h, tb + c, h), C, d, n) for *_, C, d, n in corners(p)]
+
+
+def diag_mortises(p) -> list[Polygon]:
+    q, r = _dp(p), fr._rd(p)
+    ta, tb = _tenon_u(q)
+    c, h = p.fit.tight, fr.thick_slot(p) / 2
+    return [_plan(fr.hole(ta - c, -h, tb + c, h, r), C, d, n) for *_, C, d, n in corners(p)]
+
+
+def diag_tenon_mid(p) -> float:
+    ta, tb = _tenon_u(_dp(p))
+    return (ta + tb) / 2
+
+
+def diag_wedge_footprints(p) -> list[Polygon]:
+    wl, _ = wedge_dims(p)
+    uc, t = diag_tenon_mid(p), p.material.t_max
+    return [_plan(box(uc - t / 2, -wl / 2, uc + t / 2, wl / 2), C, d, n) for *_, C, d, n in corners(p)]
+
+
+def diag_plate_tops(p) -> list[Polygon]:
+    """Each plate's top edge under the deck (both shoulders, the tenon between them), past the post's relief."""
+    q, t = _dp(p), p.material.t_max
+    u0 = post_u(q) + 2 * fr._rd(p)
+    return [_plan(box(u0, -t / 2, p.diagonal.leg_width, t / 2), C, d, n) for *_, C, d, n in corners(p)]
+
+
+def diag_cross_tops(p) -> list[Polygon]:
+    D, t = p.diagonal, p.material.t_max
+    return [_plan(box(D.ear - t / 2, -D.cross_w / 2, D.ear + t / 2, D.cross_w / 2), C, d, n)
+            for *_, C, d, n in corners(p)]
+
+
+def diag_corner_trim(p) -> Polygon:
+    """The deck stops square across each diagonal just inside the post (fit.tight past it): the posts rise
+    outside it, and no thin wood is left beside them."""
+    q = _dp(p)
+    u = post_u(q) + p.fit.tight
+    g = box(-1e4, -1e4, 1e4, 1e4)
+    for *_, C, d, n in corners(p):
+        g = g.difference(_plan(box(-1e3, -1e3, u, 1e3), C, d, n))
+    return g
+
+
+def _vmat(udir, origin) -> tuple[float, ...]:
+    """Row-major 4x4 for a vertical plate: u along udir (horizontal), v up, w = u x z (its thickness)."""
+    wx, wy = udir[1], -udir[0]
+    return (udir[0], 0.0, wx, origin[0],
+            udir[1], 0.0, wy, origin[1],
+            0.0, 1.0, 0.0, origin[2],
+            0.0, 0.0, 0.0, 1.0)
+
+
+def diag_parts(p) -> list[Part]:
+    L, t, D = fr.layout(p), fr.layout(p).t, p.diagonal
+    wl, _ = wedge_dims(p)
+    uc = diag_tenon_mid(p)
+    plates, crosses, wedges = [], [], []
+    for *_, C, d, n in corners(p):
+        w = (d[1], -d[0])                                  # the plate's thickness direction (d x z)
+        plates.append(Placement("m", (C[0], C[1], 0.0), matrix=_vmat(d, (C[0] - w[0] * t / 2, C[1] - w[1] * t / 2, 0.0))))
+        o = (C[0] + d[0] * (D.ear - t / 2) - n[0] * D.cross_w / 2, C[1] + d[1] * (D.ear - t / 2) - n[1] * D.cross_w / 2)
+        crosses.append(Placement("m", (o[0], o[1], 0.0), matrix=_vmat(n, (o[0], o[1], L.z_deck_bot - D.head_slot))))
+        o = (C[0] + d[0] * (uc - t / 2) - n[0] * wl / 2, C[1] + d[1] * (uc - t / 2) - n[1] * wl / 2)
+        wedges.append(Placement("m", (o[0], o[1], 0.0), matrix=_vmat(n, (o[0], o[1], L.z_deck_top))))
+    out = [Part("leg plate", diag_plate(p), plates, grain="v"),
+           Part("leg crosspiece", crosspiece(p), crosses, grain="u"),
+           Part("deck", deck(p), [Placement("z", (0, 0, L.z_deck_bot))], kind="deck")]
+    cs, y0 = fr.cheek(p)
+    zb, _ = fr.cheek_z(p)
+    out.append(Part("heater cheek", cs, [Placement("y", (xi - (t if s < 0 else 0), y0, zb))
+                                         for xi, s in zip(fr.cheek_xs(p), (-1, 1))], kind="cheek"))
+    out.append(Part("wedge", wedge_shape(p), wedges, spares=2, kind="wedge"))
+    return out
+
+
 def parts(p) -> list[Part]:
+    if diagonal(p):
+        return diag_parts(p)
     L, t = fr.layout(p), fr.layout(p).t
     out: list[Part] = []
     xp = [(Placement("x", (L.O, y - t / 2, 0)), -1, sy) for y, sy in zip(L.yL, (-1, 1))] + \

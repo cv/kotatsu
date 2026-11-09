@@ -171,11 +171,15 @@ export class Viewer3D {
       let shape = part.shape;
       if (pl.mirror) shape = { ext: shape.ext.map(([u, v]) => [-u, v]).reverse(), holes: shape.holes.map((h) => h.map(([u, v]) => [-u, v]).reverse()) };
       const m = slab(shape, t, pl.kind, part.grain || "u");
-      if (pl.axis !== "z") m.applyMatrix4(BASIS[pl.axis]);
-      m.position.set(...pl.origin);
+      if (pl.matrix) m.applyMatrix4(new THREE.Matrix4().set(...pl.matrix)); // Python's placement (diagonal legs)
+      else {
+        if (pl.axis !== "z") m.applyMatrix4(BASIS[pl.axis]);
+        m.position.set(...pl.origin);
+      }
       const kind = pl.kind === "wedge" ? "wedge" : "frame";
       push(m, kind, pl.moves, pl.kind !== "frame"); // the legs are there from the start
-      const M = (pl.axis !== "z" ? BASIS[pl.axis].clone() : new THREE.Matrix4()).premultiply(new THREE.Matrix4().makeTranslation(...pl.origin));
+      const M = pl.matrix ? new THREE.Matrix4().set(...pl.matrix)
+        : (pl.axis !== "z" ? BASIS[pl.axis].clone() : new THREE.Matrix4()).premultiply(new THREE.Matrix4().makeTranslation(...pl.origin));
       (this.slots[pl.part] ??= []).push({ M: M.premultiply(new THREE.Matrix4().makeTranslation(off.x, off.y, off.z)), mirror: !!pl.mirror, it: this.items.at(-1) });
       this.itemPart.set(this.items.at(-1), pl.part);
     }

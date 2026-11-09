@@ -25,6 +25,14 @@ STEPS = [
     "Tea time",
 ]
 LEGS, STAND, DECK, LEG_WEDGES, CRADLE, LOWER, FUTON, TOP, TEA = range(len(STEPS))
+DIAGONAL_FIRST = "Drop a crosspiece into the head of each leg plate"
+
+
+def steps(p) -> list[str]:
+    """STEPS, worded for the frame's leg style."""
+    return [DIAGONAL_FIRST] + STEPS[1:] if yagura.diagonal(p) else list(STEPS)
+
+
 CLEAR = 40.0     # mm of daylight between a waiting part and whatever it goes into
 
 
@@ -51,7 +59,7 @@ def part_moves(p, pt, pl, c, k: int) -> list[dict]:
         sx, sy, i = corner(L, c)
         spread = L.Lf * 0.3                      # the legs wait out beyond their corners
         out = [move(STAND, (sx * spread / math.sqrt(2), sy * spread / math.sqrt(2), 0), stagger(i, 4))]
-        if pt.name == "leg plate B":             # slotted from the floor up: drops onto plate A
+        if pt.name in ("leg plate B", "leg crosspiece"):   # slotted from the floor up / plain: drops in from above
             out.insert(0, move(LEGS, (0, 0, yagura.lap_depth(p) + CLEAR), stagger(i, 4)))
         return out
     if pt.kind == "deck":                        # comes down over the tenons
@@ -61,7 +69,7 @@ def part_moves(p, pt, pl, c, k: int) -> list[dict]:
         return [move(CRADLE, (side * 80.0, 0, 0), stagger(k, 2, 0.7)), move(LOWER, (0, 0, cradle_lift(p)))]
     if pt.kind == "wedge":                       # slides in tip first (tip at u = 0, head at u = length)
         n, _ = yagura.wedge_dims(p)
-        ux, uy = (1, 0) if pl.axis == "x" else (0, 1)
+        ux, uy = (pl.matrix[0], pl.matrix[4]) if pl.axis == "m" else ((1, 0) if pl.axis == "x" else (0, 1))
         d = n * 0.6 + t                          # starts mostly out of its hole, beside the tenon
         return [move(LEG_WEDGES, (ux * d, uy * d, 0), stagger(k, len(yagura.mortises(p))))]
     raise ValueError(f"no assembly moves for part kind {pt.kind!r}")
@@ -77,7 +85,7 @@ def extras(p) -> dict:
     """Moves for the things the 3-D view adds itself: the heater, the futon, the top and the tea things."""
     L = fr.layout(p)
     return {
-        "steps": STEPS,
+        "steps": steps(p),
         "heater": [move(CRADLE, (0, 0, 0), (0.0, 0.2)),                       # turns up above the table ...
                    move(LOWER, (0, 0, cradle_lift(p)))],                         # ... and drops in with the cheeks
         "futon": [move(FUTON, (0, 0, 120.0))],                                 # settles and fades in

@@ -8,30 +8,36 @@ from __future__ import annotations
 
 import math
 
-from shapely.geometry import box
+from shapely.geometry import Polygon, box
 from shapely.ops import unary_union
 
 from . import frame
 
 
 def low_footprint(p, z: float, z_lo: float = -10.0):
-    """Plan footprint of side-panel material between heights z_lo and z (the legs, mostly)."""
+    """Plan footprint (centred) of leg material between heights z_lo and z: the legs, mostly."""
     L, t = frame.layout(p), p.material.t_max
     c = L.cx
+    h = (L.t - t) / 2                                   # thickest stock, centred on the plate's plane
     out = []
     for pt in frame.parts(p):
         if pt.kind != "frame":
             continue
-        low = pt.shape.intersection(box(-1e3, z_lo, 1e4, z))
-        for g in getattr(low, "geoms", [low]):
-            if g.is_empty:
-                continue
-            u0, _, u1, _ = g.bounds
-            for pl in pt.placements:
+        for pl in pt.placements:
+            z0 = pl.matrix[11] if pl.axis == "m" else 0.0  # matrix-placed parts can start above the floor
+            low = pt.shape.intersection(box(-1e3, z_lo - z0, 1e4, z - z0))
+            for g in getattr(low, "geoms", [low]):
+                if g.is_empty:
+                    continue
+                u0, _, u1, _ = g.bounds
                 ox, oy, _ = pl.origin
                 a, b = (-u1, -u0) if pl.mirror_u else (u0, u1)
-                h = (L.t - t) / 2                     # thickest stock, centred on the plate's plane
-                if pl.axis == "x":
+                if pl.axis == "m":                      # a vertical plate placed by matrix (diagonal legs)
+                    M = pl.matrix
+                    pts = [(M[0] * uu + M[2] * ww + M[3] - L.cx, M[4] * uu + M[6] * ww + M[7] - L.cy)
+                           for uu, ww in ((u0, h), (u1, h), (u1, L.t - h), (u0, L.t - h))]
+                    out.append(Polygon(pts))
+                elif pl.axis == "x":
                     out.append(box(ox + a - c, oy + h - c, ox + b - c, oy + L.t - h - c))
                 elif pl.axis == "y":
                     out.append(box(ox + h - c, oy + a - c, ox + L.t - h - c, oy + b - c))
@@ -161,8 +167,9 @@ def legroom(p, step: float = 10.0) -> float:
 
 
 def low_footprint_leg_u(p, z: float) -> float:
-    """Leg width (from the panel end) at height z, including the opening's top fillet."""
-    sp = next(pt.shape for pt in frame.parts(p) if pt.kind == "frame")
-    low = sp.intersection(box(-1e3, z - 0.5, 1e4, z))
-    half = frame.layout(p).Lf / 2                       # pieces at the near end: ear finger, inner leg
-    return max(g.bounds[2] for g in getattr(low, "geoms", [low]) if g.bounds[2] < half)
+    """How far (mm) the legs at a corner reach along a side from the frame's corner at height z: the frame
+    material between z - 0.5 and z at the (-, -) corner, measured along x (any leg style)."""
+    half = frame.layout(p).Lf / 2
+    fp = low_footprint(p, z, z - 0.5)
+    near = [g for g in getattr(fp, "geoms", [fp]) if not g.is_empty and g.centroid.x < 0 and g.centroid.y < 0]
+    return max(g.bounds[2] for g in near) + half
