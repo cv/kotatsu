@@ -5,7 +5,7 @@ top (dropped for shipping and futon reasons, docs/quote.md) and v1's R20 square 
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from shapely.geometry import Polygon
 
@@ -14,13 +14,11 @@ from .geom import squircle
 
 @dataclass
 class TopParts:
-    name: str
-    boards: list[Polygon]          # one piece -> [outline]
-    outline: Polygon | None = None
-    keys: list[Polygon] = field(default_factory=list)
+    boards: list[Polygon]          # one piece -> [outline] (the site draws the top from this list)
+    outline: Polygon
 
 
 def build(p) -> TopParts:
     T = p.top
     outline = squircle(0, 0, T.length, T.width, T.squircle_n)
-    return TopParts("rect", [outline], outline)
+    return TopParts([outline], outline)
