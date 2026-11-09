@@ -467,9 +467,9 @@ the corner, since on the diagonal the squircle top's edge comes closest; each le
 there in one long curve, starting well below the deck, so it reads as part of the leg.
 A last pass shaved and smoothed every curve that didn't have a job: the legs taper in one long line, the
 crosspieces arch underneath, and the deck's arms flare into the ring and the pads with much bigger fillets.
-Each corner pad became one smooth convex outline with rounded far corners: nothing left to fight with
-sandpaper. The bigger fillets made the deck stronger, too: with the wedges slack it now works at about its
-strength (104 %) instead of well past it (127 %).
+Each corner pad became one smooth outline flaring out of its arm like a trumpet, with rounded far corners:
+nothing left to fight with sandpaper. The bigger fillets made the deck stronger, too: with the wedges slack it
+now stays under its strength (97 %, was 127 %).
 
 ![The diagonal legs in the 3-D view, with the top, futon and rug hidden: one plate on each corner's diagonal, a crosspiece under each corner of the X deck, a wedge across each arm](docs/img/v2-diagonal.jpg)
 

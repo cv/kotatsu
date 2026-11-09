@@ -58,9 +58,9 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
   0.2 mm each side), 5 mm past the lying wedge, the plate's top edge and the crosspiece's (owner, 2026-11), so the
   pads are small crosses at the ends of the arms; the deck stops square across the diagonal beside each post. A ring round the **heater well** (326 × 300 mm: the heater plus
   both cheeks) is 40 mm wide beside the cheeks and runs 15 mm past their ears. Four 36 mm arms along the
-  diagonals join them, with R150 fillets at the ring and R80 at the pads (owner 2026-11: smoother, and stronger), and R12 corners outside.
-  Each corner pad is one convex outline round what needs wood (no wiggles to sand), and its far corners, beside
-  the post, are rounded R10 (owner 2026-11). 1.33 kg,
+  diagonals join them, with R150 fillets at the ring (owner 2026-11: smoother, and stronger) and R12 corners outside. Each corner pad is
+  one convex outline round what needs wood, flaring out of its arm on an R300 fillet (only there), and its far
+  corners, beside the post, are rounded R10 (owner 2026-11: nothing left to fight with sandpaper). 1.33 kg,
   against 2.1 kg for the H.
   - The deck holds the futon up across the middle. Its openings are as big as the H's were (188 mm deep
     at mid-side, where the knees go); the extra open area is near the corners.
@@ -143,8 +143,7 @@ three parts with real outlines on 14.1 mm stock:
 - **Top.** The grillage above is confirmed within 10 %: everyday at most 15 %, an adult on an edge 37 %.
 - **X deck.** Under a 300 N hand the deck uses up to about 60 % of its strength at the arm fillets with the
   wedges tight, not the cantilever estimate's 27 % (the 45° arms are softer and weaker than assumed). With
-  slack wedges about 104 % (127 % before the bigger fillets, 155 % under the "+" legs; 90 % with the pads' far corners
-  left square: rounding them shortens what the deck rests on when the wedges are slack). Keep them tight.
+  slack wedges 97 % (127 % before the bigger fillets, 155 % under the "+" legs). Keep them tight.
 - **Legs.** A 200 N sideways shove at table height, 14.1 mm stock: the worst spot is the head slot's root at
   74-75 % (mesh-stable), the wedge hole about 50 %; the sway is 6.1 mm along x. With the top's worst corner load
   as well (an adult on an edge) it drops to 51 %; that load alone uses 28 %. (The "+" legs' plate A: 80 %, sway 7.1 mm, after it first failed
