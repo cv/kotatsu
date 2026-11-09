@@ -6,7 +6,17 @@ outlines (`top.build`, `yagura.deck`, `frame.parts`), so it follows `params.toml
 
 ## In short
 
-**Update (v2, owner 2026-11): the legs are fixed.** `yagura.leg_narrow` went from 60 to 70 mm (and the haunch
+**Where it stands: the diagonal legs (owner 2026-11), on the thinnest 14.1 mm stock.**
+- **Legs:** a hard 200 N shove uses 74–75 % of a plate's strength, at the root of its head slot, and sways the
+  frame 6.1 mm.
+- **Deck:** a 300 N hand on the ring uses 60 % of its strength with the wedges tight, 97 % with them slack.
+- **Top:** everyday loads use at most 15 %, an adult sitting hard on an edge 37 %. The simple grillage model
+  agrees within 10 %.
+
+The details are under "The diagonal legs", below. The rest of this section, and most tables after it, are the
+history: v2's first, "+"-shaped legs (tag `plus-legs-archive`), where the FEA found a real problem.
+
+**Update (v2, owner 2026-11): the "+" legs are fixed.** `yagura.leg_narrow` went from 60 to 70 mm (and the haunch
 became an S-curve of squircle corners). Under the 200 N push, plate A now peaks at the wedge hole (87 %), with
 the haunch at 81 %, the slot root at 77 % and sway 7.2 mm. `tests/test_fea.py::test_leg_plates_hold_the_push`
 is now a plain test, no longer an expected failure. The tables below are the 60 mm study that found it.
@@ -27,8 +37,8 @@ from 73 to 104 % depending on the mesh; `leg_case` now treats 6 mm round the wed
 
 The 200 N push is `stiffness.stresses`' check load, a hard shove at table height. On the thinnest stock the FE
 model puts A's first failure at about 125 N (if you scale linearly; contact makes it only roughly linear). That is
-a v2 design issue. See [Recommended changes](#recommended-changes-v2-not-made-here). The tests keep it visible as
-a strict `xfail` (`tests/test_fea.py::test_leg_plates_hold_the_push`).
+a v2 design issue. See [Recommended changes](#recommended-changes-v2-not-made-here). The tests kept it visible as
+a strict `xfail` (`tests/test_fea.py::test_leg_plates_hold_the_push`) until the fix; it's a plain test now.
 
 ## Method
 
