@@ -106,10 +106,9 @@ def test_leg_pair_takes_the_push_and_the_wedge_its_preload(p, leg_push):
     assert max(z["tsai_hill"] for z in rest["zones"].values()) < 0.5   # a sitter's load alone is fine
 
 
-def test_leg_fingers_bend_alone(p, leg_push):
-    """The lumped model bends the slotted part of A as one section; FE finds the fingers either side of the
-    open slot bending each on its own, the peak at a finger's root (the haunch fillet, or the slot's root since
-    the haunch became an S-curve), many times stiffness.stresses' value."""
+def test_lumped_leg_stress_understates_the_fe_peak(p, leg_push):
+    """stiffness.stresses bends the leg as whole sections; FE puts the peak at the haunch fillet or the head
+    slot's root, many times that value. (A reminder that the lumped leg stress is no strength check.)"""
     from kotatsu import stiffness
     z = leg_push["zones"]
     finger = max(z["haunch fillet"]["sx"], z["slot root"]["sx"])        # at 70 mm the wedge hole can be worse still

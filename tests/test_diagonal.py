@@ -12,7 +12,6 @@ from kotatsu import comfort, frame, params, stiffness, yagura
 P = params.tables(params.load())[0]
 L = frame.layout(P)
 D = SimpleNamespace(**{**vars(P.frame), **vars(P.yagura)})   # ear, head_slot, cross_w ... in one place
-Q = P
 PARTS = {pt.name: pt for pt in frame.parts(P)}
 T_RANGE = (P.material.t_min, P.material.t_nominal, P.material.t_max)
 
@@ -41,7 +40,7 @@ def test_crosspiece_fits_the_head_slot(t):
 @pytest.mark.parametrize("t", T_RANGE)
 def test_tenons_fit_the_mortises(t):
     """In each corner's own frame: the mortise takes the tenon + fit.tight each way, and any sheet across."""
-    ta, tb = yagura._tenon_u(Q)
+    ta, tb = yagura._tenon_u(P)
     for (*_, C, d, n), m in zip(yagura.corners(P), yagura.mortise_boxes(P)):
         us = [(x - C[0]) * d[0] + (y - C[1]) * d[1] for x, y in m.exterior.coords]
         vs = [(x - C[0]) * n[0] + (y - C[1]) * n[1] for x, y in m.exterior.coords]
@@ -64,7 +63,7 @@ def test_deck_bears_on_the_plates_and_crosspieces():
 
 def test_posts_rise_clear_of_the_deck():
     d = PARTS["deck"].shape
-    pu, t = yagura.post_u(Q), P.material.t_max
+    pu, t = yagura.post_u(P), P.material.t_max
     for *_, C, dd, n in yagura.corners(P):
         post = yagura._plan(box(D.post_inset, -t / 2, pu, t / 2), C, dd, n)
         assert post.intersection(d).area == 0.0

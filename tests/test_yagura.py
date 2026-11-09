@@ -2,9 +2,7 @@
 Every joint must fit across the stock-thickness range."""
 import numpy as np
 import pytest
-from shapely.affinity import translate
-from shapely.geometry import Point, box
-from shapely.ops import unary_union
+from shapely.geometry import MultiPoint, Polygon
 
 from kotatsu import frame, params, yagura
 
@@ -39,29 +37,29 @@ def test_leg_wedges_clamp_the_deck(Y, t_deck):
     assert L.H - z1 >= 10, "wood above the wedge hole"
 
 
-def test_wedges_do_not_collide(Y):
+def _plan_footprint(pt, pl, t):
+    """A placed part's plan (world x-y): its outline at w = 0 and w = t, through the placement's matrix."""
+    M = np.array(pl.matrix, float).reshape(4, 4)
+    uv = np.array(pt.shape.exterior.coords)
+    pts = [M @ np.array([u, v, w, 1.0]) for u, v in uv for w in (0.0, t)]
+    return MultiPoint([(q[0], q[1]) for q in pts]).convex_hull
+
+
+def test_wedges_lie_on_the_deck_apart(Y):
+    """Each placed wedge, as placed (thickest stock), lies on the deck and clear of the others."""
     P, L, parts = Y
     t = P.material.t_max
-    rects = []
-    for name in [n for n in ("leg wedge", "cheek wedge", "wedge") if n in parts]:
-        pt = parts[name]
-        x0, y0, x1, y1 = pt.shape.bounds
-        for pl in pt.placements:
-            ox, oy, _ = pl.origin
-            rects.append(box(ox, oy, ox + t, oy + x1) if pl.axis == "y" else box(ox, oy, ox + x1, oy + t))
-    for i in range(len(rects)):
-        for j in range(i + 1, len(rects)):
-            assert rects[i].distance(rects[j]) > 2, (i, j)
-
-
-def _haunch_bottom(P):
-    Y = P.yagura
-    return Y.leg_haunch_top - Y.leg_haunch_drop - Y.leg_haunch_r
-
-
-def lap_depth_a(P):
-    from kotatsu import yagura
-    return yagura.lap_depth(P)
+    pt = parts["wedge"]
+    assert all(pl.axis == "m" for pl in pt.placements)
+    feet = [_plan_footprint(pt, pl, t) for pl in pt.placements]
+    assert len(feet) == len(yagura.corners(P))
+    deck = Polygon(yagura.deck(P).exterior)
+    for i, f in enumerate(feet):
+        assert f.difference(deck).area < 1.0, f"wedge {i} hangs off the deck"
+        for j in range(i + 1, len(feet)):
+            assert f.distance(feet[j]) > 2, (i, j)
+    for f, g in zip(feet, yagura.wedge_footprints(P)):
+        assert f.intersection(g).area > 0.5 * g.area, "placements and the deck's bearing pads agree"
 
 
 def test_posts_carry_the_top_further_out(Y):
