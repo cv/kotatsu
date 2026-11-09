@@ -181,6 +181,16 @@ deck's hard hand cases). What it found:
   The slimmest that passes is 61.9 mm (−2 %), at 88 % of strength and $0.05 more; the cheapest saves $0.59 with legs
   19 % wider. So on these knobs the design is already at the edge for looks, and economics can't be traded at all.
 
+## Tried and rejected: the heater turned 45° (2026-11, prototype)
+Turning the heater, cradle and ring 45° (a diamond well, the arms meeting the ring mid-side) was tried in memory
+against today's deck, with the same loads turned with it (deck FEA at h = 10, wedges tight):
+- the ring's corners point at the sitters with nothing under them: a hand there uses **146–233 %** of the ring's
+  strength (today 51–64 %); fillets 62–95 % (today 49–67 %); sag 10.7–10.9 mm (today 7.3–9.9);
+- the deck-free opening in front of each sitter shrinks from 187 to 107 mm; the deck gets 0.24 kg heavier and the
+  order $1.37 dearer; the cheeks' ends overhang the rounded diamond.
+Today's orientation is the natural one for an X deck: each arm lands on a ring corner, so every ring side spans
+between two supported corners.
+
 ## Price: what's left to save
 Little: the design is at uMake's price floor (`docs/quote.md`, "What can still be saved"). About 40 % of the bill
 doesn't depend on the design, the remaining cut is all required, and wood inside a part's box is free. A solid
