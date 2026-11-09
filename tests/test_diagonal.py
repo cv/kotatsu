@@ -57,7 +57,7 @@ def test_deck_bears_on_the_plates_and_crosspieces():
     for s in yagura.plate_tops(P):
         assert s.difference(holes).difference(d).area < 15.0, "(the mortise's 4 dogbones nibble ~3 mm2 each)"
     for s in yagura.cross_tops(P):
-        assert s.difference(d).area < 8.0
+        assert s.difference(d).area < 10.0, "(a sliver at the tips, under the pads' rounded far corners)"
     for w in yagura.wedge_footprints(P):
         assert w.difference(holes).difference(d).area < 1.0, "each wedge lies on wood"
 

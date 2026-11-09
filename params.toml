@@ -66,6 +66,9 @@ edge_r = 12.0         # outside corners (must stay under arm_w / 2)
 pad_margin = 20.0     # wood round every mortise (a hole)
 bearing_margin = 5.0  # ... and past each lying wedge and each plate's top edge (owner: nothing more at the corners)
 pad_fillet_r = 80.0   # where the pads meet the arms (owner 2026-11: 80, was 40)
+pad_hull = true       # each corner pad is one convex outline round what needs wood (owner 2026-11: no wiggles to sand)
+trim_r = 10.0         # ... and its far corners, where the deck stops beside each post, rounded (owner 2026-11). 10 leaves the
+                      #   crosspieces' top edges covered but for ~9 mm2 at their tips (14 would bare 23)
 ring_w = 40.0         # the ring beside the cheeks (x). It holds the futon up at mid-side, where the knees go:
                       # 40 keeps the opening there as deep as the H deck's (188 mm from the edge)
 ear_margin = 15.0     # ... and past the cheek ears (y)

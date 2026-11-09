@@ -294,12 +294,14 @@ def deck_blank(p) -> Polygon:
 
 
 def pads(p) -> list[Polygon]:
-    """The wood the corners need, and no more (owner 2026-11): pad_margin round each mortise (a hole),
-    bearing_margin past each lying wedge, each plate's top edge and each crosspiece's."""
+    """The wood the corners need (owner 2026-11): pad_margin round each mortise (a hole), bearing_margin past each lying
+    wedge, each plate's top edge and each crosspiece's; with deck.pad_hull, one convex outline round them per corner."""
     D = p.deck
     keep = [m.buffer(D.pad_margin, join_style="mitre") for m in mortise_boxes(p)]
-    return keep + [k.buffer(D.bearing_margin, join_style="mitre")
-                   for k in wedge_footprints(p) + plate_tops(p) + cross_tops(p)]
+    bits = [keep] + [[k.buffer(D.bearing_margin, join_style="mitre") for k in f(p)] for f in (wedge_footprints, plate_tops, cross_tops)]
+    if getattr(D, "pad_hull", False):                  # owner 2026-11: each corner's pad one convex outline round its
+        return [unary_union(c).convex_hull for c in zip(*bits)]   # bits: straight sides, no wiggles to sand
+    return [g for b in bits for g in b]
 
 
 def ring(p) -> Polygon:
@@ -328,6 +330,10 @@ def deck(p) -> Polygon:
     g = geom.closing(unary_union(pads(p) + [core]), D.pad_fillet_r)
     g = g.buffer(-D.edge_r, quad_segs=geom.Q).buffer(D.edge_r, quad_segs=geom.Q)
     g = g.intersection(deck_blank(p)).intersection(corner_trim(p))
+    tr = getattr(D, "trim_r", 0.0)
+    if tr > 0:                                         # owner 2026-11: round the pads' far corners, where the deck stops
+        g = g.buffer(-tr, quad_segs=geom.Q).buffer(tr, quad_segs=geom.Q)   # beside each post. With convex pads these
+                                                       # are the deck's only convex corners left, so nothing else changes
     for m in mortises(p):
         g = g.difference(m)
     return g.difference(fr.hole(*fr.well(p), r))       # the heater well: the cradle drops in
