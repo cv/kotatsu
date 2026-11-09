@@ -64,7 +64,7 @@ two heater cheeks (v1: hanging under the deck; v2: hanging in a well in the deck
   home insurance.
 - **Airflow.** Don't block the fan or grille. Follow the clearances in its manual: they override anything in
   this design. v2 lets the futon lie on the heater's top, the face away from the grille (about 40 °C on high,
-  below); check that the manual allows that (TODO-verify).
+  below): checked against the manual, the placement is fine (owner, 2026-11).
 
 ## Measured in use
 

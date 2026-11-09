@@ -205,7 +205,7 @@ futon_kg = 2.0
 
 [room]                # for the Futon & rug page (docs/futons.toml has the candidates)
 rug_d = 2440.0        # 8 ft round rug
-futon_d = 2032.0      # owner 2026-10-20: an 80 x 80 in square futon (sellers' rule: top + 110-130 cm -> 196-216 for 86)
+futon_d = 3048.0      # owner 2026-11: an oversized king quilt, 120 x 120 in, "works really well" (planned: an 80 x 80 in futon)
 drape_k = 0.7         # footprint radius ~ futon radius - drape_k * (frame height + top): rough, futons slope out
 zabuton = [635.0, 635.0]  # owner 2026-10-20: square floor pillows, 25 x 25 in
 zabuton_h = 90.0      # pillow thickness (3-D view)

@@ -299,9 +299,9 @@ spent looking for the right drill bit.
 
 ## In use
 
-For now, a fleece blanket I had at hand went over the frame, with the top sitting on it. A proper kotatsu
-futon should be arriving in the next week. Until then, it's tea, crosswords, and the cats keeping an eye
-on things. The heater is incredibly warm and comfortable. I cranked it for a couple of hours to get rid of
+At first a fleece blanket I had at hand went over the frame, with the top sitting on it. The futon I ended up
+with is an oversized king quilt, 120 × 120 in, and it works really well. It's tea, crosswords, and the cats
+keeping an eye on things. The heater is incredibly warm and comfortable. I cranked it for a couple of hours to get rid of
 the factory smell, then lowered it to medium.
 
 [![From above: a crossword and a phone on the birch top, with the plaid blanket draped all round](docs/img/use-crossword.jpg)](docs/img/use-crossword.jpg)
