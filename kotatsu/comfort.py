@@ -137,7 +137,7 @@ def summary(p) -> dict:
             "top_lift_n": _n(top_lift(p)[0]), "top_lift_edge_n": _n(top_lift(p, 0.0)[0]),
             "tip_inset": getattr(C, "tip_inset", 0.0), "tip_min_n": C.tip_min_n,
             "reach_min": C.knee_reach_min,
-            "apron_clear": side_clear(p),
+            "side_clear": side_clear(p),
             "shin_w": round(p.top.length - 2 * p.frame.overhang - 2 * low_footprint_leg_u(p, C.knee_h), 1),
             "legroom": round(legroom(p), 1)}
 

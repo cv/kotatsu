@@ -213,6 +213,7 @@ zabuton_tuck = 150.0  # each pillow's inner edge sits at least this far under th
 rug_margin = 20.0     # ...and further in if needed, so every pillow (corners too) stays this far inside the rug
 zabuton_ramp = 80.0   # 3-D view: the futon eases from the floor onto a pillow over this distance
 rug_t = 10.0          # rug thickness (3-D view)
+futon_gap = 12.0      # 3-D view: the top sits this far above the frame, on the futon
 
 [layout]              # sheet nesting choices (kotatsu/cutlist.py, kotatsu/nest.py)
 frame_grain = "horizontal"  # frame parts keep their grain where it looks right (legs: up the leg); "free" = any rotation
