@@ -121,11 +121,17 @@ def well(p) -> tuple[float, float, float, float]:
 
 
 def cheek_z(p) -> tuple[float, float]:
-    """(bottom, top) z of the cheeks: from the heater's underside (they cover its whole side) to ear_h above the
-    nominal deck top."""
-    L, C = layout(p), p.cheek
+    """(bottom, top) z of the cheeks: from below_screw under the heater's screw line (screw_from_top below its top;
+    owner 2026-11: the screws are near the top, so the cheeks needn't cover the whole side), or the heater's
+    underside if that's higher, to ear_h above the nominal deck top. The bottom stays under the deck's underside,
+    so the cheeks locate in the well's whole depth."""
+    L, C, h = layout(p), p.cheek, p.heater
     (_, _, sz), (_, _, hz) = heater_box(p)
-    zb, zt = hz - sz / 2, L.z_deck_top + C.ear_h
+    zb = hz - sz / 2
+    if getattr(C, "below_screw", None) is not None and getattr(h, "screw_from_top", None) is not None:
+        zb = max(zb, hz + sz / 2 - h.screw_from_top - C.below_screw)
+    zb = min(zb, L.z_deck_bot - 2.0)
+    zt = L.z_deck_top + C.ear_h
     if zt < hz + sz / 2:
         raise ValueError("[cheek] ear_h must reach the heater top ([heater] top_rise)")
     return zb, zt
@@ -179,4 +185,6 @@ def heater_box(p) -> tuple[tuple[float, float, float], tuple[float, float, float
     """(size, centre) of the heater body, screwed between the cheeks; its top is top_rise above the deck top."""
     L, h = layout(p), p.heater
     ztop = L.z_deck_top + h.top_rise
+    if getattr(h, "panel_h", None) is not None:       # owner 2026-11: the control panel on one end must clear the deck
+        ztop = min(ztop, L.z_deck_bot - h.panel_clear - h.panel_h + h.body_h)
     return (h.body_x, h.body_y, h.body_h), (L.cx, L.cy, ztop - h.body_h / 2)

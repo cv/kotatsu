@@ -88,18 +88,22 @@ def test_cradle_stays_below_futon_plane(C):
     assert L.z_deck_top + P.yagura.wedge_head <= L.H - 3
 
 
-def test_cheeks_hug_the_heater(C):
-    P = C.P
-    a, b = frame.cheek_xs(P)
-    assert b - a == pytest.approx(P.heater.body_x + P.heater.cheek_clearance)
-    c0, c1 = frame.cheek_ys(P)
-    assert c1 - c0 >= P.heater.body_y + 40
-    (_, _, sz), (_, _, hz) = frame.heater_box(P)
+def test_cheeks_hold_the_heater_by_its_screws(C):
+    """The cheeks hug the heater's sides (cheek_clearance), reach below_screw under its screw line (screw_from_top
+    below its top) and rise above its top; their bottom stays under the deck's underside (they locate in the well).
+    The heater's control panel, on one end, stays panel_clear under the deck's underside, so the knob and the plug
+    stick out under the deck's ring, not into the well's end wall (owner 2026-11)."""
+    P, L = C.P, C.L
+    h, ch = P.heater, P.cheek
+    (sx, sy, sz), (_, _, hz) = frame.heater_box(P)
     zb, zt = frame.cheek_z(P)
-    assert zb <= hz - sz / 2 + 0.01 and zt >= hz + sz / 2, "the cheeks cover the heater's whole side"
+    top, bottom = hz + sz / 2, hz - sz / 2
+    x0, x1 = frame.cheek_xs(P)
+    assert x1 - x0 - sx == pytest.approx(h.cheek_clearance)
+    assert zb <= top - h.screw_from_top - ch.below_screw + 1e-6 and zt > top
+    assert zb < L.z_deck_bot
+    assert bottom + h.panel_h <= L.z_deck_bot - h.panel_clear + 1e-6
 
-
-# ------------------------------------------------------------------ comfort & safety
 def test_total_height_in_owner_range(C):
     P = C.P
     total = P.frame.height + P.material.t_nominal + 10      # ~10 mm compressed futon

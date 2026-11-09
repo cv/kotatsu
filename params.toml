@@ -115,8 +115,10 @@ top_r = 12.0          # ... the top, under the futon ...
 ear_r = 8.0           # ... and the ears' undersides, which rest on the deck
                       # the deck's heater well; an ear at each end rests on the deck top. Gravity holds it: no wedges
 ear_len = 40.0        # each ear's bearing on the deck top, past the well
-ear_h = 24.0          # cheek height above the deck top (the ears' depth). v2 (owner 2026-11: 24, was 20): the cheek tops
-                      # sit 2 mm under the tenon tops, so even on the thickest deck they never stand proud and carry the top
+ear_h = 16.0          # cheek height above the deck top (the ears' depth: kept a sheet's thickness), under the futon
+                      # (owner 2026-11: 16, was 24; the heater moved down below its panel's clearance)
+below_screw = 12.5    # the cheeks reach this far below the heater's screw line (wood round the screws), no further
+                      # (owner 2026-11: the screws are near the heater's top, so the cheeks can be short)
 
 [top_quote]           # v2 (owner 2026-11): the top may be bought by quote, for a show top (stone or solid wood);
                       # kotatsu/quote_pack.py writes the drawing, the DXF and the request text (make quote)
@@ -165,9 +167,12 @@ body_x = 290.0
 body_y = 290.0
 body_h = 50.0
 cheek_clearance = 4.0  # cheek inner faces = body width + this; 4 mm covers a 290-293 mm body (measured to the cm)
-top_rise = 14.0        # v2: heater top above the deck top (owner 2026-11: 14, was 0 = flush), leaving 10 mm of air under
-                       #   the cheek tops "just to be safe": the futon sags a little across the 294 mm between them. The
-                       #   manual sets no clearance above the unit; on high its top reaches 40 °C (owner). The cheeks shrink with it
+top_rise = 14.0        # the heater's top above the deck top at most (owner 2026-11: 10 mm of air under the cheek tops) ...
+panel_h = 35.0         # ... but its control panel (power inlet, switch, knob) is on one end, from the grille side up: this
+                       #   high above the heater's bottom face (TODO-verify: read off the listing's photo; measure it)
+panel_clear = 5.0      # ... and the panel's top stays this far below the deck's underside, so the knob and the plug stick
+                       #   out under the deck's ring, not into the well's end wall (owner 2026-11)
+screw_from_top = 12.5  # the side screw holes, below the heater's top (owner 2026-11: 10-15 mm)
 end_clearance = 10.0   # heater well length = body_y + this (a 290-293 body; TODO-verify nothing sticks out at the ends)
 holes = []             # not cut: the owner drills the heater's screw holes on assembly
 
