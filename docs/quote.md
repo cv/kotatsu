@@ -4,6 +4,26 @@ The final order came to **CAD $395.73: $353.33 for 26 parts plus $42.40 tax, wit
 there took eight quotes over two days, and the cart taught me more about pricing than the published rules
 did.
 
+## The diagonal legs, quoted (2026-11, saved in my account as quote 2926, not ordered)
+Baltic birch, 15mm, CNC router, millimetres; the old deck and leg plates A and B removed from the saved quote,
+the new deck, leg plate and crosspiece uploaded (top, cheeks and wedges unchanged).
+
+| Part | Size | Qty | Each | Line |
+|---|---|---|---|---|
+| top | 860 × 860 mm | 1 | $87.59 | $87.59 |
+| deck | 776 × 776 mm | 1 | $103.70 | $103.70 |
+| leg plate | 140 × 385 mm | 4 | $17.40 | $69.60 |
+| leg crosspiece | 90 × 25.5 mm | 4 | $2.87 | $11.48 |
+| heater cheek | 380 × 60 mm | 2 | $11.50 | $23.00 |
+| wedge | 60 × 17 mm | 6 | $1.85 | $11.10 |
+| **Subtotal** | | **18** | | **$306.47** |
+
+With 12 % tax about **$343.25**; shipping should stay free (the same 91 cm box, 10.6 kg: not re-checked at the
+cart). That's $21.55 less than the "+" legs' $328.02. My price model said $293.71, 4 % low this time: a smaller
+order gets less of uMake's volume discount on every part (the top went from $80.36 to $87.59), which the model's
+curve, fitted on bigger orders, underrates (TODO: refit with this quote). If uMake's finalization adds what it
+did to v1 (+15 %), about $395 with tax.
+
 ## What I ordered (October 2026)
 Every file: units in millimetres, Engineered Wood > Baltic Birch, **19mm**, CNC router, no extra processes.
 The thickness menu offers 3, 6, 9, 12, 15, 16, 19 and 25 mm, with no 18. The "19mm" is uMake's 3/4" birch.
