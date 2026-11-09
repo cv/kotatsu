@@ -14,9 +14,9 @@ How the frame resists a sideways push H at the top
       bearing on the deck in series with the wood above the wedge hole;
     * preload: tapping the wedge in clamps the deck between shoulder and wedge with force P0.
   With the wedge tight every spring works and the joint is stiff. Past some moment one side of the
-  joint unloads (a gap opens) and the stiffness drops: that's where wobble starts. The two wedged plates
-  for either push direction are mirror images (one at each end), so one works in its strong sense and one
-  in its weak sense.
+  joint unloads (a gap opens) and the stiffness drops: that's where wobble starts. A push in x takes the
+  four plates at 45 degrees, two leaning inwards and two outwards (mirror images, one at each end), so two
+  work their joints in the strong sense and two in the weak sense.
 
 All material values are TODO-verify (params [material] / [stiffness]); results are estimates for
 comparing options and spotting weak links, not certification.
@@ -105,7 +105,7 @@ def preload(J: Joint, P0: float, N: float = 0.0) -> None:
     for _ in range(50):
         m = (lo + hi) / 2
         J.c0[-1] = m
-        x, c = solve_joint(J, N, 0.0, 341.0)
+        x, c = solve_joint(J, N, 0.0, 0.0)          # at rest: no push, so the leg's length doesn't matter
         fw = J.k[-1] * max(c[-1], 0.0) if x is not None else 0.0
         lo, hi = (m, hi) if fw < P0 else (lo, m)
     J.c0[-1] = (lo + hi) / 2
@@ -256,14 +256,18 @@ def _cosines(p, direction: str) -> list[float]:
     return [d[0] if direction == "x" else d[1] for *_, d, _ in yagura.corners(p)]
 
 
+def deck_weight_n(p) -> float:
+    """What the legs carry from the deck up (N): deck, cheeks, wedges and heater. (Counts the spare wedges too,
+    with pt.qty: a few grams, kept so the numbers stay as ordered.)"""
+    a = sum(pt.shape.area * pt.qty for pt in fr.parts(p) if pt.kind in ("deck", "cheek", "wedge"))
+    return (a / 1e6 * p.material.t_nominal / 1000 * p.material.density_kg_m3 + p.comfort.heater_kg) * 9.81
+
+
 def frame_sway(p, H_total: float, direction: str = "x") -> dict:
     """Sway of the deck relative to the floor under a sideways push H_total (N) in x or y."""
-    parts = {pt.name: pt for pt in fr.parts(p)}
     q, shape = leg(p)
-    deck_w = sum(pt.shape.area * pt.qty for pt in parts.values() if pt.kind in ("deck", "cheek", "wedge"))
-    deck_n = (deck_w / 1e6 * p.material.t_nominal / 1000 * p.material.density_kg_m3 + p.comfort.heater_kg) * 9.81
-    n_plates = sum(pt.qty for pt in parts.values() if pt.kind == "frame" and "crosspiece" not in pt.name)
-    N = deck_n / n_plates                                       # each plate's share of deck + heater
+    n_plates = len(yagura.corners(p))                           # one leg plate a corner
+    N = deck_weight_n(p) / n_plates                             # each plate's share of deck + heater
     cur = plate_curve(q, shape, N)
     ok = np.isfinite(cur.delta)
     if ok.sum() < 3:
@@ -316,13 +320,12 @@ def stresses(p, H_total: float = 200.0, F_edge: float = 1000.0) -> dict:
     t = M.t_nominal
     r = frame_sway(p, H_total, "x")
     Hmax = max(abs(h) for h in r.get("per_plate_N", [H_total / 4])) if np.isfinite(r["sway_mm"]) else H_total
-    legs = 0.0                                                  # moment H z at height z over the real section there
-    for g in (yagura.leg_plate(p),):
-        for z in np.linspace(5.0, L.z_deck_bot - 2.0, 80):
-            W = section(g, z, t)[1]
-            if W > 0:
-                legs = max(legs, Hmax * z / W)
-    leg_ = legs
+    leg_ = 0.0                                                  # moment H z at height z over the real section there
+    g = yagura.leg_plate(p)
+    for z in np.linspace(5.0, L.z_deck_bot - 2.0, 80):
+        W = section(g, z, t)[1]
+        if W > 0:
+            leg_ = max(leg_, Hmax * z / W)
     R = p.top.length / 2
     q, shape = leg(p)
     ta, tb = yagura._tenon_u(q)

@@ -528,7 +528,7 @@ def leg_case(p, which: str, H: float, top: dict | None = None, N_deck: float | N
         raise ValueError("the legs have one plate a corner: which = 'A'")
     c = stiffness._cosines(p, "x")    # each plate takes its cosine's share of the push in its own plane; the pair
     H = H * 2 * max(abs(x) for x in c) / sum(x * x for x in c)    # below (opposite senses) then totals this
-    N_deck = deck_weight_n(p) / 4 if N_deck is None else N_deck
+    N_deck = stiffness.deck_weight_n(p) / 4 if N_deck is None else N_deck
     shape = yagura.leg_plate(p)
     pu, (ta, tb) = yagura.post_u(p), yagura._tenon_u(p)
     on_post, on_tenon = top.get("A post", 0.0), top.get("A tenon", 0.0)
@@ -581,14 +581,6 @@ def leg_case(p, which: str, H: float, top: dict | None = None, N_deck: float | N
             "local": ~clear,                                                   # contact ends: bearing peaks
             "forces": [{k: round(v, 1) for k, v in x.forces.items()} for x in res],
             "open": [{k: round(v, 2) for k, v in x.open_.items()} for x in res], "result": res}
-
-
-def deck_weight_n(p) -> float:
-    """Deck + cheeks + wedges + heater (N), as stiffness.frame_sway counts it."""
-    from . import frame as fr
-    parts = fr.parts(p)
-    a = sum(pt.shape.area * pt.qty for pt in parts if pt.kind in ("deck", "cheek", "wedge"))
-    return (a / 1e6 * p.material.t_nominal / 1000 * p.material.density_kg_m3 + p.comfort.heater_kg) * 9.81
 
 
 def leg_report(p, h: float | None = None) -> dict:
