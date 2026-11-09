@@ -18,15 +18,15 @@ sheets = [[1524, 1524], [1524, 3048], [1219, 2438]]  # 60x60, 60x120, 48x96 in
 
 [fit]
 slot_clearance = 0.3      # added to t_max for slots that take a plate's thickness
-crush_rib = 0.5           # owner 2026-10-20: bumps on each cross-lap slot wall, proud by this (gap 18.2 at the bumps
-crush_rib_r = 10.0        #   for "19mm" birch that's really ~18.0-18.5); sand them if a joint is too tight
+crush_rib = 0.5           # owner 2026-10-20: bumps on each head slot wall, proud by this: the slot is t_max + 0.3 = 16.0,
+crush_rib_r = 10.0        #   15.0 at the bumps (snug from 15.0 mm stock up, 0.9 play at t_min); sand them if too tight
 crush_rib_at = [0.6]      # the head slot is short (25 mm): one pair of bumps, clear of its round bottom
 tight = 0.2               # in-plane tenon/mortise clearance
 mortise_height_extra = 0.5
 wedge_taper = 0.125       # 1:8
 
-[top]                 # owner, 2026-10-20: square 860 x 860, ONE piece (was Ø 900 round: +$199 shipping, and round
-                      # futons are hard to get). 860 packs in uMake's 91 cm box = free shipping (docs/quote.md).
+[top]                 # owner, 2026-10-20: 860 x 860, ONE piece (was Ø 900 round: +$199 shipping, and round futons are
+                      # hard to get). 860 packs in uMake's 91 cm box = free shipping (docs/quote.md). v2: a squircle
 length = 860.0
 width = 860.0
 squircle_n = 8.0      # v2 (owner): a squircle, |x/a|^n + |y/a|^n = 1. n = 8 (owner 2026-11, softer; was 10) keeps the corner posts 20 mm inside
@@ -36,17 +36,17 @@ squircle_n = 8.0      # v2 (owner): a squircle, |x/a|^n + |y/a|^n = 1. n = 8 (ow
                       # one plate stands on the corner's diagonal, its outer end at the frame corner. A crosspiece drops
                       # into a short slot in its head, across it; the deck bears on the crosspiece's top edge, which
                       # gives the joint a cross_w-wide base against twisting (one plate alone rocks open at ~32 N)
-height = 385.0        # floor to the tenon tops (futon plane); + 18 top + ~10 futon ≈ 41 cm total
+height = 385.0        # floor to the tenon tops (futon plane); + 15 top + ~10 futon ≈ 41 cm total
 overhang = 40.0       # owner 2026-10-20: legs as far apart as reasonable -> frame 780 x 780 under the 860 top
                       # (more room between the legs, much steadier; knees reach 40 mm under the edge)
 ear = 60.0            # frame corner -> the crosspiece's slot centre, along the diagonal (the post is outside it). 60
                       #   keeps the crosspiece's ends 5 mm inside the frame's edges, so the deck covers them
 leg_width = 140.0     # plate width under the deck, along the diagonal: post | slot | 10 | 50 tenon | 10
 post_inset = 14.0     # above the deck the post starts this far in from the plate's outer end (below the deck the
-post_sweep_from = 240.0  # the post's outer edge sweeps in from the plate's outer edge this high up (owner 2026-11: a long,
-                      #   gentle curve, 7 mm in at the deck's underside, post_inset at the top; was a short one from 341)
                       #   plate still reaches the corner): on the diagonal the squircle top's edge comes closest, and
                       #   this keeps the post 18+ mm inside it
+post_sweep_from = 240.0  # the post's outer edge sweeps in from the plate's outer edge this high up (owner 2026-11: a long,
+                      #   gentle curve, 7 mm in at the deck's underside, post_inset at the top; was a short one from 341)
 corner_n = 4.0        # v2 (owner 2026-11): leg corners are squircles (geom.squircle_corners), this exponent
 foot_r = 12.0         # rounding of the plates' foot corners (v2: 12, was 6, to go with the squircle top)
 shoulder_r = 6.0      # ... and of their top corners: keep it small, the 12 mm inner shoulder bears on the deck
@@ -89,58 +89,41 @@ tenon_gap = 10.0      # each plate's tenon starts this far past the head slot (t
 tenon_w = 50.4        # tenon width (>= wedge hole + 2 x 15 mm); leg width beyond it is an inner shoulder
 hole_h = 14.0         # wedge hole above the deck
 hole_drop = 1.0       # hole bottom below the thinnest deck's top face, so the wedge bears on the deck
-corner_posts = true   # each plate's ear arm rises past the deck to the top: the top rests at the frame corners
-                      # (deck corners cut away around them); loose top lifts at ~363 N vs ~205 N without
-leg_narrow = 70.0     # below the haunch the leg keeps this much width (v2, owner 2026-11: 70, was 60; FEA found the
-                      # slotted upper half of plate A bends as two fingers: docs/fea.md)
-                      # 20.4 outer finger | 19.2 slot | 20.4 inner finger
+corner_posts = true   # each plate's outer end rises past the deck to the top as a post: the top rests at the frame
+                      # corners (deck corners cut away around them); loose top lifts at ~363 N vs ~205 N without
+leg_narrow = 70.0     # below the haunch the leg keeps this much width (v2, owner 2026-11: 70, was 60; the FEA found the
+                      # "+" legs' slotted plate bending as two fingers: docs/fea.md)
 leg_haunch_top = 305.0  # the plate is full width from here up, past the head slot's bottom (~312): the slot never
                       #   leaves a thin finger beside it ("+" legs: 320). Room between the legs 656 mm ("+": 638)
 leg_haunch_drop = 30.0  # ... and reaches the narrow line this much lower (a ~31° slope)
 leg_haunch_r = 60.0   # the haunch's S-curve: each bend takes up to this along its edges (owner 2026-11: 60, was 30)
 leg_taper_top = 220.0 # full leg_narrow down to here, then a soft taper (owner 2026-11: from 220, was 150: one long line from the
                       # haunch to the foot; leg FEA 74 %, 3 mm more room between the legs) ...
-leg_foot_w = 56.0     # ... then the inner edge bends in to this at the floor (B keeps 18 mm beside its slot; FEA:
-                      # plate A 81 % under the 200 N push, was 89, the lower leg a little softer)
+leg_foot_w = 56.0     # ... then the inner edge bends in to this at the floor (FEA: the leg plate at 81 % under the
+                      # 200 N push, was 89, the lower leg a little softer)
 leg_taper_r = 110.0   # ... with a long squircle bend where the taper starts (110, was 70)
-foot_relief = 1.5     # shallow arc under plate A's foot: each plate stands on its two ends
+foot_relief = 1.5     # shallow arc under each plate's foot: it stands on its two ends
 foot_relief_margin = 20.0  # past the foot rounding: each end stands on a flat ~8 mm pad
 wedge_len = 60.0      # the leg wedges (v2: the only wedges; the heater cradle hangs by gravity)
 wedge_head = 18.0     # (1:8 taper -> 10.5 mm foot)
 wedge_head_r = 8.0    # v2 (owner 2026-11): the struck head squircled (the long faces stay straight: they clamp)
 
 [cheek]               # v2 "cradle": 2 on-edge plates the heater screws in between (on the bench). The pair drops into
+                      # the deck's heater well; an ear at each end rests on the deck top. Gravity holds it: no wedges
 bottom_r = 20.0       # v2 (owner 2026-11): squircle corners. The bottom, hanging in the well ...
 top_r = 12.0          # ... the top, under the futon ...
 ear_r = 8.0           # ... and the ears' undersides, which rest on the deck
-                      # the deck's heater well; an ear at each end rests on the deck top. Gravity holds it: no wedges
 ear_len = 40.0        # each ear's bearing on the deck top, past the well
 ear_h = 16.0          # cheek height above the deck top (the ears' depth: kept a sheet's thickness), under the futon
                       # (owner 2026-11: 16, was 24; the heater moved down below its panel's clearance)
 below_screw = 12.5    # the cheeks reach this far below the heater's screw line (wood round the screws), no further
                       # (owner 2026-11: the screws are near the heater's top, so the cheeks can be short)
 
-[top_quote]           # v2 (owner 2026-11): the top may be bought by quote, for a show top (stone or solid wood);
-                      # kotatsu/quote_pack.py writes the drawing, the DXF and the request text (make quote)
-edge_r = 2.0          # eased edges, top and bottom faces
-undercut = 6.0        # optional: a bevel under the edge, leaving this much visible edge (mm): it reads thinner
-tolerance = 1.0       # outline, +/- mm
-flatness = 1.0        # mm, over the whole top
-options = [            # pale wood (owner 2026-11: careful use, no sitting); thickness from the top FEA (docs/research.md)
-  { name = "Solid white oak, rift- or quarter-sawn if you can (Quercus alba or Q. robur / petraea; not Mongolian oak)", t = 20.0, density = 750, note = "first choice" },
-  { name = "Solid hard maple (Acer saccharum)", t = 20.0, density = 705, note = "palest, hardest" },
-  { name = "Solid hinoki (Chamaecyparis obtusa), knot-free", t = 25.0, density = 430, note = "softer, so 25 mm" },
-]
-grade = "select / FAS: no knots, no sapwood, no cracks, no filler"
-staves = [80.0, 120.0]  # board widths (mm): full length, edge-glued, no finger joints, colour and grain matched
-moisture = [8.0, 10.0]  # kiln-dried, % (a heated room in winter: wetter wood cups and cracks)
-grit = 240
-finish = "unfinished, sanded and ready for oil (I'll oil it myself: Osmo Polyx-Oil Clear Satin, both faces)"
-
 
 [optimize]            # kotatsu/optimize.py, the design-space search (make optimize; out/optimize/)
 samples = 384         # stage 1: cheap checks (geometry, cuttable, box, price, weight, knee room) on a Sobol sample
-fea_budget = 48       # stage 2: FEA on the most promising (leg A under the push, plate B, the deck's hand cases)
+fea_budget = 48       # stage 2: FEA on the most promising (the leg plate under the push, alone and with the top's
+                      # corner load; the deck's hand cases)
 seed = 7
 use_max = 0.90        # FEA: worst share of strength (Tsai-Hill) allowed in those hard cases
 sway_max = 10.0       # FEA: sway under fea.push_n (mm)
