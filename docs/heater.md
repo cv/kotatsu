@@ -40,9 +40,12 @@ two heater cheeks hanging under the deck.
 - I measured the body at 29 × 29 × 5 cm (to the nearest cm). The cheeks sit 294 mm apart, which leaves
   about 2 mm a side once it's centred.
 - The cheeks run 41 mm past the heater at each end, so the corner screws go into solid wood at about half
-  the cheek's 60 mm height (v2). The tabs and wedges are on the top edge, out of the screws' way.
+  the cheek's 60 mm height (v2). The cheeks' only other features are the ears at their top corners, out of the screws' way.
 - **TODO-verify:** the exact width across the screw tabs. If there's a gap, the tabs bend slightly as the
   screws tighten. A thin shim fixes that (uMake sends only the parts, so no offcuts).
+- **TODO-verify (before ordering v2):** where the knob and the cord's socket are, and how far they stick out. The
+  well is only 5 mm longer than the body at each end, and the cheeks take both sides, so anything on an end or a
+  side won't fit (on the bottom it's fine).
 - **TODO-verify:** the screws must be short enough not to poke out of the 15 mm cheek (v2): at most about 13 mm plus the
   tab's thickness, so the tips stay 2 mm inside the wood. Drill 2–2.5 mm pilot holes. I'll drill the holes myself during assembly, so the cut
   files don't have any.

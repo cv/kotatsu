@@ -234,5 +234,6 @@ confirm and finalize your order." → **Ok** places the order. You don't pay at 
 uMake confirms. So the order goes in online, but uMake gets in touch once.
 
 ## Still to check
-**The thickness.** The joints accept 17.0–18.9 mm. If the sheet really measures 19.0 mm or more, the
-19.2 mm cross-lap slots will be tight. The crush ribs and wedges absorb some of that, and sanding does the rest.
+**The thickness (v2).** The joints accept 14.1–15.7 mm of uMake's "15mm" Baltic birch (TODO-verify when it arrives;
+Windsor Plywood's 15 mm measures 15.0 ± 0.1). Over 15.7 mm the 16 mm head slots and mortises get tight: the crush
+ribs and wedges absorb some of that, and sanding does the rest. (v1, "19mm": 17.0–18.9 mm.)
