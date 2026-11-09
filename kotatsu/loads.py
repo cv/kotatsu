@@ -1,6 +1,6 @@
 """Loads on the loose top: a grillage (beam-grid) plate model, no FEA library needed.
 
-The top is a free square plate resting on the frame's full-height pads (tenon tops and ear fingers at the
+The top is a free square plate resting on the frame's full-height pads (the posts and tenon tops at the
 four corners; comfort.top_supports). Supports are compression-only: if a pad would have to pull the top
 down, it lets go (the top lifts there). Loads are patches (forearms, a curled cat, paws, a laptop).
 

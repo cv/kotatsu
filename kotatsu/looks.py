@@ -1,7 +1,7 @@
 """Looks, as numbers the design search can weigh (kotatsu/optimize.py).
 
-leg_width: the legs' visual weight, as the average visible width (mm) of a leg plate below the deck,
-averaged over plates A and B: their area under the deck's underside divided by that height. The haunch,
+leg_width: the legs' visual weight, as the average visible width (mm) of the leg plate below the deck:
+its area under the deck's underside divided by that height. The haunch,
 the narrow part and the taper all show up in it; lower is slimmer. (In winter the futon hides the legs;
 in summer, or with the futon up, they're what you see.)
 """
@@ -13,7 +13,7 @@ from . import frame
 
 
 def leg_plates(p) -> list:
-    """The leg plates' shapes: A and B ("+" legs) or the diagonal plate (the crosspieces hide under the deck)."""
+    """The leg plates' shapes (one per corner, all the same; the crosspieces hide under the deck)."""
     return [pt.shape for pt in frame.parts(p) if pt.kind == "frame" and pt.name.startswith("leg plate")]
 
 

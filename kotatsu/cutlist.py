@@ -32,7 +32,7 @@ ANY = (0, 90, 180, 270)
 def cut_list(p, copies: int = 1, frame_grain: str | None = None) -> list[CutPart]:
     """All parts for `copies` complete tables (names stay per-part; quantities multiply).
 
-    frame_grain: "horizontal" = side panels' length along the grain; "free" = any rotation
+    frame_grain: "horizontal" = frame parts keep their grain where it looks right (legs: up the leg); "free" = any rotation
     (default from params [layout])."""
     frame_grain = frame_grain or getattr(getattr(p, "layout", None), "frame_grain", "horizontal")
     tp = top.build(p)

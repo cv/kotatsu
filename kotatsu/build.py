@@ -1,8 +1,8 @@
 """Entry point: generate all cut files into out/.
 
-out/dxf/parts/<part>.dxf             one file per distinct part (qty in BOM.md)
-out/dxf/sheets/<size>/sheet-N.dxf    nested sheet layouts, ready to upload
-out/preview/sheets/<size>-N.png      quick look at each layout
+out/dxf/parts/<part>.dxf                               one file per distinct part (qty in BOM.md)
+out/dxf/sheets/<N>-set/<layout>/sheet-K-<size>.dxf     nested sheet layouts, ready to upload
+out/preview/sheets/<N>-set-<layout>-K.png              quick look at each layout
 out/BOM.md                           parts list, weights, sheet comparison
 """
 from __future__ import annotations
@@ -115,10 +115,10 @@ Frame grain: **{p.layout.frame_grain}**.
 |---|---|---|---|---|---|
 {chr(10).join(sheet_rows)}
 
-"Set" = one of each table. The "best mix" row is the least plywood found. TODO-verify how uMake prices
-(per sheet, or per part area + cut time) before choosing.
+"Set" = one of each table. The "best mix" row is the least plywood found. uMake prices each part's bounding
+box and the metres cut, not sheets (kotatsu/price.py, docs/quote.md).
 
-Files: `out/dxf/sheets/<N>-set/<layout>/sheet-K-<size>.dxf` (upload) and `out/dxf/parts/<table>-*.dxf`
+Files: `out/dxf/sheets/<N>-set/<layout>/sheet-K-<size>.dxf` (upload) and `out/dxf/parts/<part>.dxf`
 (one per part; quantities above are for one set).
 """
 

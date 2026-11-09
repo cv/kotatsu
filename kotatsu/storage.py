@@ -3,7 +3,7 @@
 Layer 1: the top. Layer 2: the deck, with whatever fits in its openings. Then as many loose layers as the
 rest needs.
 Packed greedily on a 3 mm grid (largest part first), then checked exactly.
-One sheet thick per layer, 860 x 860. Centred plan coordinates (mm).
+One sheet thick per layer, inside the top's footprint. Centred plan coordinates (mm).
 Run: uv run python -m kotatsu.storage  (writes out/preview/storage.png)
 """
 from __future__ import annotations
@@ -135,7 +135,7 @@ def main():
             for h in g.interiors:
                 x, y = h.xy; ax.fill(x, y, fc="white", ec="#2b2118", lw=0.5)
         ax.set_xlim(-s - 10, s + 10); ax.set_ylim(-s - 10, s + 10); ax.set_aspect("equal"); ax.axis("off"); ax.set_title(name)
-    fig.suptitle(f"Off-season storage: {len(L)} flat layers inside the top's 860 × 860 footprint "
+    fig.suptitle(f"Off-season storage: {len(L)} flat layers inside the top's {p.top.length:.0f} × {p.top.width:.0f} footprint "
                  f"(a stack about {stack_mm(p):.0f} mm tall)")
     fig.tight_layout()
     out = ROOT / "out" / "preview" / "storage.png"
