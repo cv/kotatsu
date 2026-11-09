@@ -10,16 +10,17 @@ the new deck, leg plate and crosspiece uploaded (top, cheeks and wedges unchange
 
 | Part | Size | Qty | Each | Line |
 |---|---|---|---|---|
-| top | 860 × 860 mm | 1 | $87.62 | $87.62 |
-| deck | 776 × 776 mm | 1 | $103.74 | $103.74 |
-| leg plate (with the posts' smooth sweep, owner 2026-11) | 140 × 385 mm | 4 | $17.35 | $69.40 |
+| top | 860 × 860 mm | 1 | $87.63 | $87.63 |
+| deck | 776 × 776 mm | 1 | $103.77 | $103.77 |
+| leg plate (the posts' long sweep, owner 2026-11) | 140 × 385 mm | 4 | $17.32 | $69.28 |
 | leg crosspiece | 90 × 25.5 mm | 4 | $2.87 | $11.48 |
-| heater cheek | 380 × 60 mm | 2 | $11.51 | $23.02 |
+| heater cheek | 380 × 60 mm | 2 | $11.52 | $23.04 |
 | wedge | 60 × 17 mm | 6 | $1.86 | $11.16 |
-| **Subtotal** | | **18** | | **$306.42** |
+| **Subtotal** | | **18** | | **$306.36** |
 
-(First quoted at $306.47; the leg plate was swapped for the smoother-post version the same day.) With 12 % tax about **$343.19**; shipping should stay free (the same 91 cm box, 10.6 kg: not re-checked at the
-cart). That's $21.60 less than the "+" legs' $328.02. My price model said $293.71, 4 % low this time: a smaller
+(First quoted at $306.47; the leg plate was swapped twice the same day as the posts got smoother: $306.42, then
+$306.36.) With 12 % tax about **$343.12**; shipping should stay free (the same 91 cm box, 10.6 kg: not re-checked at the
+cart). That's $21.66 less than the "+" legs' $328.02. My price model said $293.71, 4 % low this time: a smaller
 order gets less of uMake's volume discount on every part (the top went from $80.36 to $87.59), which the model's
 curve, fitted on bigger orders, underrates (TODO: refit with this quote). If uMake's finalization adds what it
 did to v1 (+15 %), about $395 with tax.

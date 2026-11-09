@@ -481,7 +481,7 @@ until the deck sits on it and on the plate's shoulders together. (The "+" legs a
 | Wedges | 14 | 6 (4 + 2 spares) |
 | Clear height under the heater | 286 mm | 323 mm |
 | A hard 200 N shove, finite elements | not checked | 75 % of the legs' strength, 6.1 mm of sway |
-| uMake | $353.33 in the cart ($405.83 once uMake finalized it) | $306.42 (a quote, not an order; about $343 with tax; the "+" legs quoted $328.02) |
+| uMake | $353.33 in the cart ($405.83 once uMake finalized it) | $306.36 (a quote, not an order; about $343 with tax; the "+" legs quoted $328.02) |
 
 Before I order it, I want to measure how I really sit (no tape to hand yet). The
 sheet question has a local answer too: Windsor Plywood in Vernon measures its 15 mm Baltic birch at
