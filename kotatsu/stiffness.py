@@ -50,7 +50,7 @@ def _shoulders(p, shape) -> list[tuple[float, float]]:
     L = fr.layout(p)
     ta, tb = yagura._tenon_u(p)
     strip = shape.intersection(box(-1e3, L.z_deck_bot - 0.6, 1e4, L.z_deck_bot - 0.1))
-    u_deck = L.Lf / 2 - yagura.corner_cut(p) if yagura.post_u(p) else -1e3   # deck starts here (corner cut-outs)
+    u_deck = yagura.deck_start_u(p) if yagura.post_u(p) else -1e3              # deck starts here (corner cut-outs)
     segs = []
     for g in getattr(strip, "geoms", [strip]):
         a, _, b, _ = g.bounds

@@ -53,9 +53,9 @@ def post_u(p) -> float:
     return p.frame.ear - fr.slot_w(p) / 2
 
 
-def corner_cut(p) -> float:
-    """Kept for the joint model: the deck starts at post_u + fit.tight along the plate (Lf / 2 minus this)."""
-    return fr.layout(p).Lf / 2 - post_u(p) - p.fit.tight
+def deck_start_u(p) -> float:
+    """Where the deck starts along each plate, from its outer end: fit.tight past the post (corner_trim)."""
+    return post_u(p) + p.fit.tight
 
 
 def lap_depth(p) -> float:
@@ -279,7 +279,7 @@ def cross_tops(p) -> list[Polygon]:
 def corner_trim(p) -> Polygon:
     """The deck stops square across each diagonal just inside the post (fit.tight past it): the posts rise outside
     it, and no thin wood is left beside them."""
-    u = post_u(p) + p.fit.tight
+    u = deck_start_u(p)
     g = box(-1e4, -1e4, 1e4, 1e4)
     for *_, C, d, n in corners(p):
         g = g.difference(_plan(box(-1e3, -1e3, u, 1e3), C, d, n))
@@ -313,14 +313,7 @@ def ring(p) -> Polygon:
 
 
 def arms(p) -> list[Polygon]:
-    """The four arms, arm_w wide, along the diagonals from the middle to the corners."""
-    L, h = fr.layout(p), fr.layout(p).Lf / 2
-    return [LineString([(L.cx, L.cy), (L.cx + sx * h, L.cy + sy * h)]).buffer(p.deck.arm_w / 2, cap_style="flat")
-            for sx in (-1, 1) for sy in (-1, 1)]
-
-
-def arms_by_corner(p) -> list[Polygon]:
-    """The arms in corners() order."""
+    """The four arms, arm_w wide, along the diagonals from the middle to the corners, in corners() order."""
     L, h = fr.layout(p), fr.layout(p).Lf / 2
     return [LineString([(L.cx, L.cy), (L.cx + sx * h, L.cy + sy * h)]).buffer(p.deck.arm_w / 2, cap_style="flat")
             for sx, sy, *_ in corners(p)]
@@ -338,7 +331,7 @@ def deck(p) -> Polygon:
     if reach > 0:                                      # owner 2026-11: each pad flares out of its own arm like a trumpet,
         pads_ = pads(p)                                #   a long fillet between the two only (nowhere else on the deck)
         local = []
-        for (*_, C, d, n), pad, arm in zip(corners(p), pads_, arms_by_corner(p)):
+        for (*_, C, d, n), pad, arm in zip(corners(p), pads_, arms(p)):
             near = _plan(box(-1e3, -1e3, reach, 1e3), C, d, n)
             local.append(geom.closing(unary_union([pad, arm.intersection(near)]), D.pad_fillet_r))
         g = unary_union([core] + local)
