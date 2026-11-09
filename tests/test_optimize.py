@@ -71,3 +71,25 @@ def test_mutate_stays_in_range():
     for m in optimize.mutate(P, optimize.current_knobs(P), 20, 0.5, np.random.default_rng(1)):
         for k, (lo, hi) in optimize.knob_ranges(P).items():
             assert lo <= m[k] <= hi
+
+
+def test_heavy_runs_the_cases_that_exist(monkeypatch):
+    """Stage 2's plumbing, with the FEA stubbed out: it only asks for cases fea.py has (one plate a corner: a
+    stage 2 that still asked for the "+" legs' plate B crashed every run), and takes the worst of them."""
+    from kotatsu import fea
+    calls = []
+
+    def leg_case(p, which, H, top=None, **kw):
+        calls.append((which, top is not None))
+        if which != "A":
+            raise ValueError(which)
+        return {"sway_mm": 2.0, "zones": {"slot root": {"tsai_hill": 0.7 if top else 0.6},
+                                          "contact edges": {"tsai_hill": 9.0}}}
+
+    monkeypatch.setattr(fea, "leg_case", leg_case)
+    monkeypatch.setattr(fea, "deck_case", lambda p, ld, **kw: {k: {"tsai_hill": 0.5} for k in ("fillets", "arms", "ring", "pads")})
+    monkeypatch.setattr(optimize, "_TOP", {"A post": 100.0, "A tenon": 50.0})
+    r = optimize.heavy(optimize.current_knobs(P))
+    assert sorted(calls) == [("A", False), ("A", True)]
+    assert r["sway"] == 2.0 and r["use"] == 0.7, "contact edges (local bearing) stay out of the worst"
+    assert set(r["use_by_part"]) == {"leg", "leg + top load", "deck"}

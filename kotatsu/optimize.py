@@ -4,8 +4,8 @@ Knobs and their ranges are in params.toml [optimize.knobs]; everything else stay
   Stage 1 (cheap, every sample): the parts build as single router-cuttable outlines that fit the box; the
           order's price (kotatsu/price.py), its uMake cart weight and free shipping; knee reach and the room
           between the legs where shins and thighs pass (comfort.legroom). A scrambled Sobol sample of [optimize] samples designs.
-  Stage 2 (FEA): plate A under fea.push_n (sway and worst share of strength), plate B's share with the top's
-          corner load, and the deck's three hard hand cases (wedges tight). First on designs spread from slim to
+  Stage 2 (FEA): the leg plate under fea.push_n (sway and worst share of strength), again with the top's worst
+          corner load on it, and the deck's three hard hand cases (wedges tight). First on designs spread from slim to
           sturdy, then on small changes around the best so far ([optimize] refine_*), up to fea_budget in all.
 Goals: price and the legs' visible width (looks.py), equally weighted; strength, sway, leg room, knee reach and
 free shipping are limits. The result: every point, the front over (price, look), three picks next to the
@@ -106,15 +106,15 @@ def heavy(knobs: dict[str, float]) -> dict:
     p = design(knobs)
     O = p.optimize
     worst = lambda zones: max(v["tsai_hill"] for k, v in zones.items() if k != "contact edges")
-    a = fea.leg_case(p, "A", p.fea.push_n, None, h=O.fea_leg_h)
-    b = fea.leg_case(p, "B", p.fea.push_n, _TOP, h=O.fea_leg_h)
+    a = fea.leg_case(p, "A", p.fea.push_n, None, h=O.fea_leg_h)             # one plate a corner (fea.leg_case)
+    b = fea.leg_case(p, "A", p.fea.push_n, _TOP, h=O.fea_leg_h)             # ... with the top's corner load on it
     deck = {}
     for name, ld in fea.deck_cases(p).items():
         if "whole ring" in name:               # the spread hand never governs
             continue
         d = fea.deck_case(p, ld, h=O.fea_deck_h, wedges=True)
         deck[name] = max(d[k]["tsai_hill"] for k in ("fillets", "arms", "ring", "pads"))
-    use = {"leg A": worst(a["zones"]), "leg B": worst(b["zones"]), "deck": max(deck.values())}
+    use = {"leg": worst(a["zones"]), "leg + top load": worst(b["zones"]), "deck": max(deck.values())}
     return {"sway": float(a["sway_mm"]), "use": max(use.values()), "use_by_part": {k: round(v, 3) for k, v in use.items()}}
 
 
@@ -255,7 +255,7 @@ def draw(res: dict, path: Path) -> Path:
 
 
 def draw_legs(res: dict, path: Path) -> Path:
-    """Plates A and B of the current design and of each pick, side by side at one scale, to judge the looks."""
+    """The leg plate of the current design and of each pick, side by side at one scale, to judge the looks."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -276,7 +276,7 @@ def draw_legs(res: dict, path: Path) -> Path:
         ax.set_aspect("equal"); ax.axis("off")
         ax.set_title(f"{name}\n{r['look']:.1f} mm wide, ${r['price']:.2f}\nsway {r.get('sway', float('nan')):.1f} mm, "
                      f"{100 * r.get('use', float('nan')):.0f} % of strength", fontsize=9)
-    fig.suptitle("Leg plates A and B (dashed: the deck's underside; the legs show below it)", x=0.01, ha="left", fontsize=10)
+    fig.suptitle("Leg plates (dashed: the deck's underside; the legs show below it)", x=0.01, ha="left", fontsize=10)
     fig.tight_layout()
     fig.savefig(path, dpi=80)
     plt.close(fig)
