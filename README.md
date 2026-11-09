@@ -86,8 +86,8 @@ sloped shoulder (a *haunch*) down to a 60 mm leg. It needs no windows.
 Cutting holes in the deck made the table more expensive. A few test uploads seemed to show why: most of
 uMake's price was the router's path, not the wood, and a window is nothing but cutting. Opening each window
 out to the edge took the same wood away with a metre less cutting, and about $20 off. Rounding the new
-corners (the *fillets*) came last. Version 2's quote later showed the real reason, and it's simpler: uMake
-charges the wood by the rectangle round each part, so a window never saved any.
+corners (the *fillets*) came last. The notches were the right call, but for a reason I only found in
+Version 2.
 
 ![The deck: windows, then notches open to the edge, then rounded notches](docs/img/evolution-deck.png)
 
@@ -193,8 +193,8 @@ wedge in would have twisted each leg about 9 mm at the foot. A 10 mm shoulder on
 ### Will the top break?
 
 The top is a loose board resting on the tops of the legs. The model treats it as a grid of little
-beams that bend and twist like a plate. The posts can hold the top up but can't hold it down, so the
-solver works it out in rounds: solve, find any post that would have to pull, let it go, and solve
+beams that bend and twist like a plate. The legs can hold the top up but can't hold it down, so the
+solver works it out in rounds: solve, find any leg that would have to pull, let it go, and solve
 again.
 
 ```python
@@ -249,8 +249,8 @@ money (see The quote, in Version 2).
 ### Will it fit on the sheet?
 
 All of v1's 26 parts went on one 48 × 96" sheet, and v2's 18 do too. uMake lays out its own sheets, so
-this is for anyone cutting it on their own router, and for summer. The packer draws each part on a grid of 4 mm squares, then
-uses a Fourier transform to test every position on the sheet at once, the way image software finds a
+this is for anyone cutting it on their own router, and for summer. The packer draws each part on a grid
+of 4 mm squares, then uses a Fourier transform to test every position on the sheet at once, the way image software finds a
 pattern in a photo:
 
 ```python
