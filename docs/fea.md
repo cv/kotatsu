@@ -148,7 +148,26 @@ then pushes up on each wedge with up to about 0.8–0.9 kN (±15 % between meshe
 leg's plate A balances this inside its own joint (A's shoulders take at least the wedge's pull, within 8 N),
 so the joint doesn't need the floor to hold the plate down.
 
-### The leg plates, 14.1 mm, grain up the leg
+### The diagonal legs (current, owner 2026-11), 14.1 mm, grain up the leg
+One plate per corner on its diagonal, a crosspiece in a short slot in its head (`kotatsu/yagura.py`). A push along
+x reaches each plate at 45°, so `fea.leg_case` gives the plate its cosine's share in its own plane (the pair of
+senses together takes 0.71 × the push); the top's load goes on its post and tenon (`top_on_legs`).
+
+| Case | Worst (Tsai-Hill) | Sway along x |
+|---|---|---|
+| 200 N sideways push | **74-75 %** at the head slot's root (mesh h = 3-5 mm); the wedge hole ~50 % | 6.1 mm ("+" legs: 7.1) |
+| 200 N push + the top's worst corner load | 51 % (the load from above steadies the joint) | |
+| The top's worst corner load only (an adult on an edge) | 28 % | |
+| 200 N push, nominal 15 mm stock, the crosspiece on the crush ribs | 62 % | |
+| Deck (300 N hand), wedges tight / slack | 65 / 127 % ("+" legs: 68 / 155) | |
+| Top, everyday / an adult on an edge | 15 / 37 % ("+": 18 / 42) | |
+
+How the head got its shape: a 36 mm crosspiece put the slot's bottom in the haunch (183 %); 25 mm with the haunch
+from 305 mm gave 84-95 % (dogbones in the slot's corners); a round-bottomed slot, no dogbones, gave 74-75 %.
+Twisting (a push along an edge at a top corner) is checked by `stiffness.twist`, a spring model, not FE:
+1.4 mm at 115 N, the crosspiece joints opening at about 191 N.
+
+### The "+" legs' plates (tag `plus-legs-archive`), 14.1 mm, grain up the leg
 
 `stiffness.stresses` (200 N): legs **3.6 MPa**, wedge-bridge shear 3.0 MPa. `frame_sway`: 4.5 mm.
 

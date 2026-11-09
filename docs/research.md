@@ -148,6 +148,25 @@ each shop's own pages, nothing ordered, everything **TODO-verify** (thickness, l
 Also seen: Laser Studio (Japan) quotes a DXF in 30 s, but for laser cutting (thickness not checked; lasers seldom
 cut 15 mm plywood cleanly); Laseo (Québec) stocks Baltic birch only in 9–12 mm.
 
+
+## Local route: plywood from Windsor Plywood (Vernon) and a makerspace router (2026-11)
+Windsor Plywood's Vernon store answered my price request by email (2026-11; prices before tax, all in stock):
+
+| Sheet | Price | Notes |
+|---|---|---|
+| Baltic birch, 15 mm (5/8"), B/B, 5 × 5 ft | $115.99 | **measured 15 mm ± 0.1 mm** (our joints take 14.1–15.7) |
+| Baltic birch, 18 mm, B/B, 5 × 5 ft | $123.99 | |
+| Maple cabinet plywood, ¾", 4 × 8 ft | $189.99 | veneer core, "likely poplar core and import plywood, not the nicest lay-up"; far more plies than Baltic birch, the count varies |
+| ... a 4 × 4 ft piece of it | $96.49 | they sell 4 × 4 pieces |
+| Maple plywood, 5/8" | none | only with a particleboard core |
+
+What it means for this table (`kotatsu/nest.py`, the diagonal legs): the frame fits one 5 × 5 ft sheet (or a 4 × 4 ft
+piece), but the top and the deck can't share a 5 × 5, so the whole table takes **two 5 × 5 sheets of 15 mm Baltic
+birch: $231.98 + 12 % tax = $259.82**, with a lot left over. The maple's poplar core would show at the rounded edge;
+Baltic birch's even stripes are the look I want. Cutting it means a CNC router: the Shuswap Makerspace has a
+medium-to-large one (<https://shuswapmakerspace.ca/equipment-2/>) and a CNC 101 course; membership and router time
+are not counted above (TODO-verify).
+
 ## Nicer woods: who cuts them online (owner question, 2026-11)
 Looking for walnut, white oak, "real" birch or hinoki, CNC-routed from a DXF with an instant online price and
 shipping to BC. Checked 2026-11; nothing ordered.

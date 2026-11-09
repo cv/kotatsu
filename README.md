@@ -330,7 +330,7 @@ not money.
 
 ### One wedge per leg
 
-Could gravity hold the legs as well? Not on its own: the wobble model says the frame would sway about
+(These were the "+" legs, later replaced by diagonal ones, further down.) Could gravity hold the legs as well? Not on its own: the wobble model says the frame would sway about
 9 mm under a light push. But one wedge per leg is enough, if the wedges alternate. Each leg's other
 plate is trapped between the floor and the wedged-down deck, and hangs on its partner when I lift the
 frame. That plate doesn't even need a tenon any more, so the deck has 4 mortises instead of 8. The
@@ -355,7 +355,7 @@ foot; rounder squircle corners on the heater cheeks and the wedges' heads; and s
 taper even made the legs a little stronger. The rest is handwork: an undercut under the top's edge, so it reads
 half as thick, and a small roundover and oil on every edge.
 
-![v1's cut parts above v2's, to the same scale: the square top becomes a squircle, the H deck an X with the heater's hole in the middle, the B leg plates lose their tenons, the cheeks lose their tabs, and the wedges go from 14 to 6](docs/img/v2-parts.png)
+![v1's cut parts above v2's, to the same scale: the square top becomes a squircle, the H deck an X with the heater's hole in the middle, the eight leg plates become four diagonal ones with a small crosspiece each, the cheeks lose their tabs, and the wedges go from 14 to 6](docs/img/v2-parts.png)
 
 ### Two zaisu
 
@@ -427,11 +427,11 @@ plates lean along.
 
 ### Summer
 
-In summer the table goes flat into a stack the size of its top, as v1 does: three layers, under 5 cm. And the
+In summer the table goes flat into a stack the size of its top, as v1 does: two layers, about 3 cm. And the
 heater question is settled: on high, its top reaches about 40 °C, warm to the hand, so the futon can lie right
 on it.
 
-![Summer storage: the top, then the deck with the leg plates and wedges in its openings, then the rest, all inside the top's footprint](docs/img/v2-storage.png)
+![Summer storage: the top, then the deck with the leg plates, crosspieces, cheeks and wedges laid round it, all inside the top's footprint](docs/img/v2-storage.png)
 
 ### The quote
 
@@ -449,18 +449,42 @@ went into the archive (the `zaisu-archive` tag has them, FEA and all), and I'm b
 me stays: on a chair I sit with my legs out, and the comfort model now knows a knee can't go higher than the
 top.
 
+### Diagonal legs
+
+With the design settled I kept poking at it, and asked what the legs could be if they didn't have to be two
+crossed plates. The idea I liked best was the simplest: one plate per corner, standing on the diagonal. Half
+the leg plates, less cutting, and from every side you'd see a single thin edge. The catch showed up in the
+numbers straight away. Twist the frame, and a single plate has nothing to resist with but its own thin edge
+on the deck: the joint rocks open at about 32 N.
+
+The rescue is a **crosspiece**: a small board that drops into a slot in the plate's head, across it. The deck
+bears on its top edge, so the joint now has a 90 mm base against twisting, and stays shut up to about 190 N
+pushed at a corner. Then the FEA shaped the head. A tall crosspiece needed a deep slot, and the slot's
+bottom landed in the leg's haunch, where it used 183 % of the plate's strength under a hard shove. A short
+one (25 mm) and a higher haunch brought it to 84-95 %, and a round-bottomed slot, with no dogbones at all
+since the crosspiece's edges can sit on the curve, brought it to 75 %. The posts also had to step 14 mm in
+from the corner: on the diagonal, the squircle top's edge comes closest.
+
+![The diagonal legs in the 3-D view, with the top, futon and rug hidden: one plate on each corner's diagonal, a crosspiece under each corner of the X deck, a wedge across each arm](docs/img/v2-diagonal.jpg)
+
+Against the "+" legs it's better nearly everywhere: $33 cheaper by the price model (the cutting drops from
+22.5 to 16.9 m), 0.8 kg lighter, 19 mm more room between the legs, and a little stronger and stiffer in the
+FEA. The one new job is at the fit-up: each crosspiece is cut half a millimetre tall, and I sand its top edge
+until the deck sits on it and on the plate's shoulders together. (The "+" legs are in the archive, tag
+`plus-legs-archive`.)
+
 | | v1 | v2 so far |
 |---|---|---|
 | Parts | 26 | 18 |
-| Weight | 15.9 kg | 11.6 kg |
+| Weight | 15.9 kg | 10.6 kg |
 | Wedges | 14 | 6 (4 + 2 spares) |
 | Clear height under the heater | 286 mm | 323 mm |
-| A hard 200 N shove, finite elements | not checked | 87 % of the legs' strength, 7.2 mm of sway |
-| uMake | $353.33 in the cart ($405.83 once uMake finalized it) | $328.02 (a quote, not an order; about $367.38 with tax, shipping free) |
+| A hard 200 N shove, finite elements | not checked | 75 % of the legs' strength, 6.1 mm of sway |
+| uMake | $353.33 in the cart ($405.83 once uMake finalized it) | about $294 by the price model (the "+" legs quoted $328.02); a fresh quote to come |
 
-Before I order it, I want to measure how I really sit (no tape to hand yet) and find out how thick
-uMake's 15 mm sheet really is. Then a
-fresh quote.
+Before I order it, I want to measure how I really sit (no tape to hand yet) and get that fresh quote. The
+sheet question has a local answer too: Windsor Plywood in Vernon measures its 15 mm Baltic birch at
+15.0 ± 0.1 mm, right in the middle of what the joints take.
 
 <!-- page: overview -->
 
