@@ -83,8 +83,8 @@ def leg_plate(p) -> Polygon:
     ta, tb = _tenon_u(p)
     g = g.union(fr._round_outer(box(ta, zs - 10, tb, H), tr))
     pu = post_u(p)
-    if pu > 0:                                           # the post rises to the top, post_inset in from the end
-        g = g.union(post(p))
+    if pu > 0:                                           # the post rises to the top; its outer edge sweeps in
+        g = g.union(post(p)).difference(sweep_cut(p))
     g = g.difference(fr.dogbone((ta, zs), (-1, 1), r))   # the tenon's root reliefs (the shoulders seat flat)
     if tb < wt - 0.01:
         g = g.difference(fr.dogbone((tb, zs), (1, 1), r))
@@ -97,18 +97,30 @@ def leg_plate(p) -> Polygon:
     return g.difference(foot_relief(p))
 
 
-def post(p) -> Polygon:
-    """The corner post above the deck, in the plate's (u, v = z) plane: its inner edge straight up at post_u, its
-    outer edge one smooth sweep (owner 2026-11) from the plate's outer edge at the deck's underside, carrying straight
-    on from it, to post_inset in at the top: u = post_inset * s^2, s from 0 at the underside to 1 at the top. The top
-    rests on the flat end, post_inset to post_u."""
+def _sweep(p) -> list[tuple[float, float]]:
+    """The post's outer edge, bottom to top: u = post_inset * s^2, s from 0 at post_sweep_from (tangent to the plate's
+    outer edge) to 1 at the top."""
     F, L = p.frame, fr.layout(p)
-    zs, H, pu = L.z_deck_bot, L.H, post_u(p)
-    pi = getattr(F, "post_inset", 0.0)
-    n = 48
-    sweep = [(pi * (k / n) ** 2, zs + (H - zs) * k / n) for k in range(n + 1)]
-    g = Polygon([(0, zs - 10)] + sweep + [(pu, H), (pu, zs - 10)])
-    return fr._round_outer(g, getattr(F, "top_r", 3.0)).union(box(0, zs - 10, pu, zs))
+    pi, H = getattr(F, "post_inset", 0.0), L.H
+    z0 = min(getattr(F, "post_sweep_from", L.z_deck_bot), L.z_deck_bot)
+    n = 96
+    return [(pi * (k / n) ** 2, z0 + (H - z0) * k / n) for k in range(n + 1)]
+
+
+def post(p) -> Polygon:
+    """The corner post, in the plate's (u, v = z) plane: its inner edge straight up at post_u, its outer edge one long,
+    gentle sweep (owner 2026-11, _sweep) from the plate's outer edge, post_sweep_from up, to post_inset in at the top.
+    The top rests on the flat end, post_inset to post_u."""
+    F, L = p.frame, fr.layout(p)
+    sw, pu = _sweep(p), post_u(p)
+    g = Polygon(sw + [(pu, L.H), (pu, sw[0][1])])
+    return fr._round_outer(g, getattr(F, "top_r", 3.0))
+
+
+def sweep_cut(p) -> Polygon:
+    """What the sweep takes off the plate's outer edge below the post (left of the curve)."""
+    sw, H = _sweep(p), fr.layout(p).H
+    return Polygon([(-5, sw[0][1])] + sw + [(sw[-1][0], H + 5), (-5, H + 5)])
 
 
 def crosspiece(p) -> Polygon:

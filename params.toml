@@ -43,6 +43,8 @@ ear = 60.0            # frame corner -> the crosspiece's slot centre, along the 
                       #   keeps the crosspiece's ends 5 mm inside the frame's edges, so the deck covers them
 leg_width = 140.0     # plate width under the deck, along the diagonal: post | slot | 10 | 50 tenon | 10
 post_inset = 14.0     # above the deck the post starts this far in from the plate's outer end (below the deck the
+post_sweep_from = 240.0  # the post's outer edge sweeps in from the plate's outer edge this high up (owner 2026-11: a long,
+                      #   gentle curve, 7 mm in at the deck's underside, post_inset at the top; was a short one from 341)
                       #   plate still reaches the corner): on the diagonal the squircle top's edge comes closest, and
                       #   this keeps the post 18+ mm inside it
 corner_n = 4.0        # v2 (owner 2026-11): leg corners are squircles (geom.squircle_corners), this exponent
