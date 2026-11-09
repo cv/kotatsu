@@ -100,7 +100,7 @@ def leg_push(p):
 
 def test_leg_pair_takes_the_push_and_the_wedge_its_preload(p, leg_push):
     a, b = leg_push["forces"]                                   # the plate, and its mirror image
-    assert a["floor (grip)"] - b["floor (grip)"] == pytest.approx(p.fea.push_n, abs=1.0)
+    assert a["floor (grip)"] - b["floor (grip)"] == pytest.approx(leg_push["H_plate_pair"], abs=1.0)   # diagonal: their share
     rest = fea.leg_case(p, "A", 0.0, {"A tenon": 600.0}, h=6)
     assert rest["forces"][0]["wedge"] == pytest.approx(p.stiffness.wedge_preload, abs=2.0)
     assert max(z["tsai_hill"] for z in rest["zones"].values()) < 0.5   # a sitter's load alone is fine

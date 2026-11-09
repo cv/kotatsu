@@ -265,7 +265,7 @@ def draw_legs(res: dict, path: Path) -> Path:
         p = design(r["knobs"])
         zs = frame.layout(p).z_deck_bot
         x = 0.0
-        for pt in [q for q in frame.parts(p) if q.name in ("leg plate A", "leg plate B")]:
+        for pt in [q for q in frame.parts(p) if q.kind == "frame" and q.name.startswith("leg plate")]:
             g = pt.shape
             gx = g.bounds[0]
             for ring in [g.exterior, *g.interiors]:

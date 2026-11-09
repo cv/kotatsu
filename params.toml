@@ -53,14 +53,18 @@ lap_extra = 0.5       # each cross-lap slot is (leg height)/2 + this, so slot bo
 ear = 60.0            # corner -> the crosspiece's slot centre, along the diagonal (the post is outside it). 60 keeps
                       #   the crosspiece's ends 5 mm inside the frame's edges, so the deck covers them
 leg_width = 140.0     # plate width under the deck, along the diagonal: post | slot | 10 | 50 tenon | 10
-head_slot = 36.0      # the plate's slot, from the shoulders down: the crosspiece's whole height. Short, so the
-                      #   haunch can stay above the thighs (legs-forward sitting needs the room up to 275 mm)
+head_slot = 25.0      # the plate's slot, from the shoulders down: the crosspiece's whole height. Short, so the
+                      #   haunch can stay high, over the thighs (legs-forward sitting needs the room up to 275 mm):
+                      #   leg FEA under the 200 N push, slot root 84 % (36 mm: 183 %, the slot's bottom in the haunch)
 cross_w = 90.0        # crosspiece length, across the plate
+post_inset = 14.0     # above the deck the post starts this far in from the plate's outer end (below the deck the
+                      #   plate still reaches the corner): on the diagonal the squircle top's edge comes closest, and
+                      #   this keeps the post 18+ mm inside it, as the "+" legs' posts are
 cross_proud = 0.5     # the crosspiece is cut this much taller than its slot: sand its top edge at the fit-up
                       #   until the deck sits on it and on the plate's shoulders together (TODO-verify at fit-up)
 cross_r = 8.0         # the crosspiece's lower corners (the top ones stay 3: they bear on the deck)
-leg_haunch_top = 320.0  # as the "+" legs: the plate is full width down past the head slot's bottom (305), so
-                      #   the slot never leaves a thin finger beside it
+leg_haunch_top = 305.0  # the plate is full width from here up, past the head slot's bottom (316): the slot never
+                      #   leaves a thin finger beside it ("+" legs: 320). Room between the legs 656 mm ("+": 638)
 
 [deck]                # horizontal plate on the legs' shoulders; v2: the heater cradle drops into a well in its middle
 drop = 26.0           # deck top below the futon plane (room for the leg wedges above it)

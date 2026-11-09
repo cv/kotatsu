@@ -38,7 +38,7 @@ def test_steps_follow_the_real_order():
 def test_parts_start_clear():
     deck = first_from("deck")[0][0]["from"]
     assert L.z_deck_bot + deck[2] > L.H, "the deck starts above the tenon tops"
-    for moves in first_from("leg plate B"):
+    for moves in first_from("leg crosspiece" if yagura.diagonal(P) else "leg plate B"):
         assert moves[0]["step"] == assembly.LEGS and moves[0]["from"][2] >= yagura.lap_depth(P)
     lift = assembly.cradle_lift(P)
     for moves in first_from("heater cheek"):                  # put together above the table, then lowered in
@@ -53,6 +53,11 @@ def test_parts_start_clear():
 def test_wedges_slide_in_tip_first_along_their_length(pl):
     (m,) = pl["moves"]
     fx, fy, fz = m["from"]
-    along = fx if pl["axis"] == "x" else fy
-    across = fy if pl["axis"] == "x" else fx
+    if pl["axis"] == "m":                           # matrix-placed: its own u (length) and w (thickness) axes
+        M = pl["matrix"]
+        along, across = fx * M[0] + fy * M[4], fx * M[2] + fy * M[6]
+        across = round(across, 6)
+    else:
+        along = fx if pl["axis"] == "x" else fy
+        across = fy if pl["axis"] == "x" else fx
     assert along > 0 and across == 0 and fz == 0     # tip at u = 0 leads, so it starts toward the head (+u)

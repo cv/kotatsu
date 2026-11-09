@@ -57,7 +57,11 @@ def leg_plate(p, slotted_from_top: bool) -> Polygon:
         g = g.union(fr._round_outer(box(ta, zs - 10, tb, H), getattr(F, "top_r", 3.0)))
     pu = post_u(p)
     if pu > 0:                                           # corner post: the ear arm rises to the top too
-        g = g.union(fr._round_outer(box(0, zs - 10, pu, H), getattr(F, "top_r", 3.0)).intersection(box(0, 0, pu, H)))
+        pi = getattr(F, "post_inset", 0.0)                # diagonal legs: the post starts in from the plate's end
+        g = g.union(fr._round_outer(box(pi, zs - 10, pu, H), getattr(F, "top_r", 3.0)).intersection(box(0, 0, pu, H)))
+        if pi > 0:                                       # a fillet where the post meets the plate's top edge
+            rf = 6.0
+            g = g.union(box(pi - rf, zs - 0.1, pi + 0.1, zs + rf).difference(Point(pi - rf, zs + rf).buffer(rf, quad_segs=32)))
         if not slotted_from_top:                         # B: shoulder runs on from the post -> root relief
             g = g.difference(fr.dogbone((pu, zs), (1, 1), r))
     if slotted_from_top:                                 # A's tenon: root reliefs (the shoulders seat flat), wedge hole
@@ -342,8 +346,9 @@ def _dp(p):
     from types import SimpleNamespace as NS
     D = p.diagonal
     q = NS(**vars(p))
-    q.frame = NS(**{**vars(p.frame), "ear": D.ear, "leg_width": D.leg_width})
+    q.frame = NS(**{**vars(p.frame), "ear": D.ear, "leg_width": D.leg_width, "post_inset": D.post_inset})
     q.yagura = NS(**{**vars(p.yagura), "leg_haunch_top": D.leg_haunch_top})
+    q.fit = NS(**{**vars(p.fit), "crush_rib_at": [0.6]})   # the head slot is short: one pair of ribs, clear of its bottom
     return q
 
 

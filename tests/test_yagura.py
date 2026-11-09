@@ -11,6 +11,7 @@ from kotatsu import frame, params, yagura
 BASE = params.load()
 YT = params.tables(BASE)
 T_RANGE = (BASE.material.t_min, BASE.material.t_nominal, BASE.material.t_max)
+plus_only = pytest.mark.skipif(yagura.diagonal(YT[0]), reason='"+" legs only (diagonal legs: tests/test_diagonal.py)')
 
 
 @pytest.fixture(params=YT, ids=[t.table_name for t in YT])
@@ -25,6 +26,7 @@ def empty(shape, rect, tol=0.01):
 
 
 @pytest.mark.parametrize("t", T_RANGE)
+@plus_only
 def test_corner_cross_laps(Y, t):
     P, L, parts = Y
     A, B = parts["leg plate A"].shape, parts["leg plate B"].shape
@@ -40,6 +42,7 @@ def test_corner_cross_laps(Y, t):
 
 
 @pytest.mark.parametrize("t", T_RANGE)
+@plus_only
 def test_tenons_fit_deck_mortises(Y, t):
     P, L, parts = Y
     dk = parts["deck"].shape
@@ -56,6 +59,7 @@ def test_tenons_fit_deck_mortises(Y, t):
         assert not empty(dk, snug), "in-plane fit must be tight"
 
 
+@plus_only
 def test_plates_shoulder_under_the_deck_and_tenons_reach_the_top(Y):
     """Posts (both plates) and A's tenon reach the top; B (v2) has no tenon: nothing past its post rises
     above its shoulder, so its whole top edge bears on the deck."""
@@ -108,6 +112,7 @@ def test_wedges_do_not_collide(Y):
             assert rects[i].distance(rects[j]) > 2, (i, j)
 
 
+@plus_only
 def test_quantities(Y):
     P, L, parts = Y
     q = {n: pt.qty for n, pt in parts.items()}
@@ -115,6 +120,7 @@ def test_quantities(Y):
     assert q["wedge"] == 4 + 2, "v2: one wedge per leg (+2 spares), none for the heater"
 
 
+@plus_only
 def test_one_wedged_plate_per_leg_alternating(Y):
     """Each corner has one A plate (slotted from the top, so the B plate hangs on it) and it takes the
     corner's only wedge; A runs along x at two diagonal corners and along y at the others, so each push
@@ -136,6 +142,7 @@ def _haunch_bottom(P):
     return Y.leg_haunch_top - Y.leg_haunch_drop - Y.leg_haunch_r
 
 
+@plus_only
 def test_legs_are_straight(Y):
     """Plumb plates: the outer edge is straight; the inner edge is straight at leg_narrow from below the haunch
     down to the taper's start, then narrows steadily to leg_foot_w at the floor (v2's soft taper); the plate is
@@ -179,6 +186,7 @@ def test_haunched_leg_fingers(Y):
     assert P.yagura.leg_haunch_top < frame.layout(P).z_deck_bot - 10
 
 
+@plus_only
 def test_corner_posts_clear_the_deck(Y):
     """The posts (ear arms) rise past the deck: the deck's corner cut-outs must clear them for any stock."""
     from kotatsu import comfort
@@ -201,6 +209,7 @@ def test_posts_carry_the_top_further_out(Y):
     assert with_posts > 1.5 * comfort.top_lift(P2)[0]
 
 
+@plus_only
 def test_x_deck(Y):
     """v2's X deck: one piece; pad_margin of wood round every mortise and under every lying wedge (except
     where the deck's own edge or the post cut-outs come first); the arms at least arm_w wide."""
@@ -229,6 +238,7 @@ def test_x_deck_arms_carry_a_hand(Y):
     assert a["free_mm"] > 0 and a["use_of_strength_%"] < 50 and a["sag_mm"] < 5
 
 
+@plus_only
 def test_crush_ribs_narrow_the_slots(Y):
     """Each cross-lap slot has bumps on both walls: the gap there is slot_w - 2 x crush_rib; elsewhere the
     full slot width (so a thick sheet still goes in after a little sanding)."""
@@ -251,6 +261,7 @@ def test_crush_ribs_narrow_the_slots(Y):
         assert min(gaps) >= P.material.t_min, "even the thinnest sheet is gripped, never jammed shut"
 
 
+@plus_only
 def test_foot_relief(Y):
     """Plate A stands on its two ends; the middle of its foot is lifted by foot_relief."""
     P, L, parts = Y
@@ -274,6 +285,7 @@ def test_storage_layout_fits(Y):
 
 
 
+@plus_only
 def test_squircle_top_covers_the_posts(Y):
     """The top rests on the corner posts: they stay at least 18 mm inside its edge (n = 8: 20) (squircle corners)."""
     from kotatsu import comfort, top
@@ -285,6 +297,7 @@ def test_squircle_top_covers_the_posts(Y):
     assert tp.contains(posts) and tp.exterior.distance(posts) >= 18.0
 
 
+@plus_only
 def test_inner_shoulder_bears_on_the_deck(Y):
     """The feet are rounded generously, the top corners not: the inner shoulder keeps a flat top."""
     P, L, parts = Y
@@ -296,6 +309,7 @@ def test_inner_shoulder_bears_on_the_deck(Y):
 
 
 
+@plus_only
 def test_corners_are_the_same_rotated(Y):
     """The four corner pads (and what they're built round) are one shape, turned 90 deg each time."""
     from shapely.affinity import rotate
@@ -310,6 +324,7 @@ def test_corners_are_the_same_rotated(Y):
             assert rotate(g, ang, origin=(L.cx, L.cy)).intersection(q).symmetric_difference(ref).area < 1.0
 
 
+@plus_only
 def test_plate_tops_sit_on_the_plates(Y):
     """Each plate-top footprint the deck is built round lies along a real plate: its centre line runs
     inside one of that plate's placements, in plan."""

@@ -436,6 +436,17 @@ def top_on_legs(p, case: str | None = None) -> dict:
             best = (name, r, v, k)
     name, r, _, k = best
     sx, sy = (1 if k[0] == "+" else -1), (1 if k[1] == "+" else -1)
+    if yagura.diagonal(p):                       # one plate on the diagonal: its post, then its tenon
+        out = {"case": name, "corner": k, "A post": 0.0, "A tenon": 0.0, "B post": 0.0}
+        pu = yagura.post_u(yagura._dp(p))
+        cx, cy = sx * L.Lf / 2, sy * L.Wf / 2    # the corner, centred coords
+        for g, R in zip(r["pads"], r["pad_N"]):
+            c = g.centroid
+            if (c.x > 0) != (sx > 0) or (c.y > 0) != (sy > 0):
+                continue
+            u = (abs(c.x - cx) + abs(c.y - cy)) / 2 ** 0.5         # along the diagonal from the corner
+            out["A post" if u < pu + 5 else "A tenon"] += R
+        return out
     ax = yagura.a_runs_along_x(sx, sy)
     line = sy * (L.cy - L.yL[0]) if ax else sx * (L.cx - L.xS[0])     # A plate's plane, centred coords
     out = {"case": name, "corner": k, "A post": 0.0, "A tenon": 0.0, "B post": 0.0}
@@ -536,8 +547,19 @@ def leg_case(p, which: str, H: float, top: dict | None = None, N_deck: float | N
     h = F.leg_h if h is None else h
     t = M.t_min if t is None else t
     top = {} if top is None else top
-    shape = {pt.name: pt for pt in fr.parts(p)}[f"leg plate {which}"].shape
-    N_deck = deck_weight_n(p) / 8 if N_deck is None else N_deck
+    H_in = H
+    if yagura.diagonal(p):            # diagonal legs: each plate takes its cosine's share of the push in its own
+        if which != "A":              # plane; the pair below (two plates, opposite senses) then totals this
+            raise ValueError("diagonal legs have one plate a corner: which = 'A'")
+        c = stiffness._cosines(p, "x")
+        H = H * 2 * max(abs(x) for x in c) / sum(x * x for x in c)
+        N_deck = deck_weight_n(p) / 4 if N_deck is None else N_deck
+        p = yagura._dp(p)
+        shape = yagura.diag_plate(p)
+        L = fr.layout(p)
+    else:
+        shape = {pt.name: pt for pt in fr.parts(p)}[f"leg plate {which}"].shape
+        N_deck = deck_weight_n(p) / 8 if N_deck is None else N_deck
     pu, (ta, tb) = yagura.post_u(p), yagura._tenon_u(p)
     on_post, on_tenon = top.get(f"{which} post", 0.0), top.get("A tenon", 0.0) if which == "A" else 0.0
     edge = lambda a, b, v: box(a, v - 0.3, b, v + 0.3)
@@ -590,7 +612,7 @@ def leg_case(p, which: str, H: float, top: dict | None = None, N_deck: float | N
         out[k] = max(pk, key=lambda d: d["tsai_hill"])
     for x in res:
         x.forces.pop("body")
-    return {"which": which, "H": H, "t": t, "h": h, "elements": m.t.shape[1], "zones": out, "sway_mm": delta,
+    return {"which": which, "H": H_in, "H_plate_pair": H, "t": t, "h": h, "elements": m.t.shape[1], "zones": out, "sway_mm": delta,
             "local": ~clear,                                                   # contact ends: bearing peaks
             "forces": [{k: round(v, 1) for k, v in x.forces.items()} for x in res],
             "open": [{k: round(v, 2) for k, v in x.open_.items()} for x in res], "result": res}
@@ -607,7 +629,7 @@ def deck_weight_n(p) -> float:
 def leg_report(p, h: float | None = None) -> dict:
     """The leg plates: A under fea.push_n (alone, and with the top's worst corner load on it), A with that
     load alone, B's upper bound; next to stiffness.stresses / frame_sway. Use of strength is Tsai-Hill."""
-    from . import stiffness
+    from . import stiffness, yagura
     H = p.fea.push_n
     top = top_on_legs(p)
     lump = stiffness.stresses(p, H)
@@ -618,6 +640,8 @@ def leg_report(p, h: float | None = None) -> dict:
     runs = {f"A, {H:g} N push": ("A", H, None), f"A, {H:g} N push + top load": ("A", H, top),
             "A, top load only": ("A", 0.0, top), f"B, its share of {H:g} N, top edge clamped": ("B", H, top),
             f"A, {H:g} N push, nominal stock, crossing plate on the crush ribs": ("A", H, None)}
+    if yagura.diagonal(p):                       # one plate a corner (called A here); the crosspiece is the crossing plate
+        runs = {k.replace("crossing plate", "crosspiece"): v for k, v in runs.items() if v[0] == "A"}
     for name, (w, hh, tp) in runs.items():
         nom = "nominal" in name
         r = leg_case(p, w, hh, tp, h=h, t=p.material.t_nominal if nom else None, ribs=nom)

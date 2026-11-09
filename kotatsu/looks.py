@@ -12,10 +12,15 @@ from shapely.geometry import box
 from . import frame
 
 
+def leg_plates(p) -> list:
+    """The leg plates' shapes: A and B ("+" legs) or the diagonal plate (the crosspieces hide under the deck)."""
+    return [pt.shape for pt in frame.parts(p) if pt.kind == "frame" and pt.name.startswith("leg plate")]
+
+
 def leg_width(p) -> float:
     zs = frame.layout(p).z_deck_bot
-    plates = [pt.shape for pt in frame.parts(p) if pt.name in ("leg plate A", "leg plate B")]
-    if len(plates) != 2:
-        raise ValueError("expected leg plates A and B")
+    plates = leg_plates(p)
+    if not plates:
+        raise ValueError("no leg plates")
     under = box(-1e4, 0.0, 1e4, zs)
-    return sum(g.intersection(under).area for g in plates) / (2 * zs)
+    return sum(g.intersection(under).area for g in plates) / (len(plates) * zs)
