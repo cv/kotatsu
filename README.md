@@ -6,8 +6,9 @@
 
 I designed a kotatsu, the low Japanese table with a heater underneath and a quilt draped over it. A CNC
 shop cuts every part from birch plywood. It all ships to my door in **one box, for free**, and it goes
-together with **no glue and no screws**: wooden wedges, tapped in with a mallet, hold it tight. The 26 parts cost me **CAD $396 with
-tax**. The only metal in it is the heater.
+together with **no glue and no screws**: wooden wedges, tapped in with a mallet, hold it tight. The 26 parts came to
+**CAD $396 with tax** in uMake's cart, and $455 once uMake had finalized the order. The only metal in it is the
+heater.
 
 Three things got me there:
 
@@ -30,6 +31,8 @@ three rules:
 <!-- page: design Design -->
 
 ## How the limits shaped it
+
+This chapter is v1, the table I built and use every evening. Version 2 has its own chapter.
 
 Most of this table was decided by things other than me: a cardboard box, my knees, a bathroom scale and
 uMake's price list. Here are the four fights, and who won each one.
@@ -71,22 +74,20 @@ legs hold up a flat deck, the heater hangs under the deck, and the middle of eac
 
 ### The legs: the scale decides
 
-The first yagura legs were plain strips, with wood on only one side of each joint. Tapping a wedge in
-would have twisted each leg about 9 mm at the foot. A 10 mm shoulder on the other side stopped that.
-
-Then the weight crept up. Free shipping stops at about 20 kg, and the order came to 20.4 kg, which put
-shipping at $195. Windows came out of the legs and the deck to get it back under. Then I sketched my own
-leg shape, twice: full width under the deck, where the joints are, then a sloped haunch down to a 60 mm
-leg. It needs no windows.
+The first yagura legs were plain strips, and the weight crept up. Free shipping stops at about 20 kg, and
+the order came to 20.4 kg, which put shipping at $195. Cutting windows in the legs and the deck got it back
+under. Then I sketched my own leg shape, twice: full width under the deck, where the joints are, then a
+sloped shoulder (a *haunch*) down to a 60 mm leg. It needs no windows.
 
 ![The legs: plates with windows, then my first sketch, then my second, slimmer sketch](docs/img/evolution-legs.png)
 
 ### The deck: the price list decides
 
-Cutting holes in the deck made the table more expensive. A few test uploads showed why: about
-three-quarters of uMake's price is the router's path, not the wood, and a window is nothing but cutting.
-Opening each window out to the edge took the same wood away with a metre less cutting, and about $20 off.
-Rounding the new corners came last.
+Cutting holes in the deck made the table more expensive. A few test uploads seemed to show why: most of
+uMake's price was the router's path, not the wood, and a window is nothing but cutting. Opening each window
+out to the edge took the same wood away with a metre less cutting, and about $20 off. Rounding the new
+corners (the *fillets*) came last. Version 2's quote later showed the real reason, and it's simpler: uMake
+charges the wood by the rectangle round each part, so a window never saved any.
 
 ![The deck: windows, then notches open to the edge, then rounded notches](docs/img/evolution-deck.png)
 
@@ -97,15 +98,16 @@ Here's the frame all together, without its top:
 ## Checking it in code
 
 I couldn't afford to learn things by cutting wood: every mistake would be a new order and another week
-of waiting. So the design lives in code, and nearly 90 tests try to break it every time something changes.
+of waiting. So the design lives in code, and over a hundred tests try to break it every time something
+changes. The tools are the same for both versions; the numbers in this chapter are v1's unless I say so.
 
 Every dimension lives in one file, `params.toml`, including the things I'm not sure of yet:
 
 ```toml
 [material]
-t_nominal = 18.0
-t_min = 17.0          # mill tolerance -1.05 (TODO-verify actual stock in app)
-t_max = 18.9          # mill tolerance +0.85
+t_nominal = 15.0      # v2: 15 mm throughout (v1 was 18 mm, uMake's "19mm")
+t_min = 14.1          # mill tolerance about -0.9, TODO-verify
+t_max = 15.7          # mill tolerance about +0.7, TODO-verify
 
 [cnc]
 bit_d = 6.35          # 1/4" router bit -> dogbone radius bit_d/2
@@ -141,11 +143,11 @@ apart from rounding noise.
 
 ### Will it fit together?
 
-This was the scary one. Plywood sold as 18 mm can be anywhere from 17.0 to 18.9 mm thick, and I wouldn't
-know which until the box arrived. So every slot is cut for the thickest sheet (19.2 mm), with two small
-bumps on each wall, 0.5 mm proud, that narrow it to 18.2 mm. If a sheet turns out thicker, I sand the
-bumps down.
-The wedges have a 1:8 taper, so they take up whatever is left.
+This was the scary one. v1's plywood, sold as 18 mm, could be anywhere from 17.0 to 18.9 mm thick, and I
+wouldn't know which until the box arrived. So every slot was cut for the thickest sheet (19.2 mm), with two
+small bumps on each wall (*crush ribs*), 0.5 mm proud, that narrow it to 18.2 mm. If a sheet turned out
+thicker, I'd sand the bumps down. The wedges have a 1:8 taper, so they take up whatever is left. (v2's
+15 mm sheet gets the same treatment, for anything from 14.1 to 15.7 mm.)
 
 Each joint test runs three times: at the thinnest, the nominal and the thickest sheet. Here's the one
 for the leg wedges. Whatever the deck's real thickness, the gap above it has to land somewhere along
@@ -168,9 +170,10 @@ def test_leg_wedges_clamp_the_deck(Y, t_deck):
 
 ### Will it wobble?
 
-There's no big engineering package here, just small models I could read. Each leg-to-deck joint is a
-handful of springs: the leg's shoulder pressing up under the deck, the wedge pulling the tenon up, and
-the tenon's faces bearing on the sides of its hole. The catch is that wood in contact can push but
+For v1 there was no big engineering package, just small models I could read. Each leg-to-deck joint is a
+handful of springs: the leg's shoulder pressing up under the deck, the wedge pulling up the *tenon* (the
+tongue on top of the leg that pokes up through a hole in the deck, the *mortise*), and the tenon's faces
+bearing on the sides of its hole. The catch is that wood in contact can push but
 not pull: lean on the table and one side of a joint can lift off. The model handles that with
 "compression-only" springs, smoothed just enough (a *softplus*) that Newton's method can step across
 the moment a gap opens:
@@ -183,13 +186,13 @@ def _pos(c):
     return EPS * np.logaddexp(0.0, c / EPS)
 ```
 
-A firm 100 N sideways push (about 10 kg) sways the table about 0.9 mm. The model also caught a sneaky
-problem before I ordered: when the tenon ran right to the leg's inner edge, tapping the wedge in
-twisted the leg about 9 mm at the foot. A 10 mm shoulder on the other side fixed it.
+A firm 100 N sideways push (about 10 kg) swayed v1 about 0.9 mm (v2: 1.5 mm). The model also caught a
+sneaky problem before I ordered: the first legs had wood on only one side of each joint, and tapping the
+wedge in would have twisted each leg about 9 mm at the foot. A 10 mm shoulder on the other side fixed it.
 
 ### Will the top break?
 
-The top is a loose board resting on the four corner posts. The model treats it as a grid of little
+The top is a loose board resting on the tops of the legs. The model treats it as a grid of little
 beams that bend and twist like a plate. The posts can hold the top up but can't hold it down, so the
 solver works it out in rounds: solve, find any post that would have to pull, let it go, and solve
 again.
@@ -217,32 +220,36 @@ the middle (Timoshenko's), and it lands within 3 %. Then come the loads I actual
 "cat lands on the corner (x4), nobody else": paws(Ld.cat_impact * cat, h - 60, h - 60),
 ```
 
-Napping hunched over the table with a 7 kg cat and a laptop uses about 7 % of the wood's strength and
-sags it 1 mm. Even an 80 kg adult sitting hard on an edge uses about a quarter.
+On v1's 18 mm top, napping hunched over the table with a 7 kg cat and a laptop used about 7 % of the
+wood's strength and sagged it 1 mm. Even an 80 kg adult sitting hard on an edge used about a quarter. v2's
+thinner top works harder: 9 % and 37 %.
 
 ### What will it cost?
 
 uMake quotes instantly, so I uploaded a few test shapes and wrote down the prices. Each part costs a
-rate per square metre of wood, plus a rate per metre the bit travels, plus a little per hole. Then the
-order total follows a volume curve:
+rate per square metre plus a rate per metre the bit travels, and the order total follows a curve that
+gives bigger orders a discount:
 
 ```python
-A_RATE, L_RATE, H_RATE = 101.03, 15.25, 0.18     # $/m2, $/m of cut, $/hole (raw, before the volume curve)
-K, B = 11.25, 0.551                              # total = K * raw ** B  (fit: 6 probe states + the real order)
+A_RATE, L_RATE = 64.17, 5.84     # per m2 of bounding box, per m of cut (raw units, before the volume curve)
+K, B = 12.45, 0.595              # total = K * raw ** B  (two 15mm quotes, 2026-11)
 
 
 def raw(g) -> float:
-    a, l, h = features(g)
-    return A_RATE * a + L_RATE * l + H_RATE * h
+    return A_RATE * bbox_m2(g) + L_RATE * features(g)[1]
 ```
 
-It predicts uMake's quotes to within 15 cents, and for the real order it says $353.38 against the
-$353.33 I paid. It also showed that about three-quarters of the price is cutting, not wood, which is
-why the deck's windows became notches open to the edge: same wood out, a metre less cutting.
+That's the model today. v1's first version charged for the wood actually in each part, plus a little per
+hole. It put the real order at $353.38 against the $353.33 I paid, and it said about three-quarters of the
+price was cutting, which is why the deck's windows became notches open to the edge. It was right about the
+total and wrong about the reason. Version 2's quote showed that uMake charges the wood by each part's
+*bounding box*, the smallest rectangle round it. Cutting is about half the price, and a window never saves
+money (see The quote, in Version 2).
 
 ### Will it fit on the sheet?
 
-All 26 parts go on one 48 × 96" sheet. The packer draws each part on a grid of 4 mm squares, then
+All of v1's 26 parts went on one 48 × 96" sheet, and v2's 18 do too. uMake lays out its own sheets, so
+this is for anyone cutting it on their own router, and for summer. The packer draws each part on a grid of 4 mm squares, then
 uses a Fourier transform to test every position on the sheet at once, the way image software finds a
 pattern in a photo:
 
@@ -498,14 +505,16 @@ sheet question has a local answer too: Windsor Plywood in Vernon measures its 15
 
 ## Where it stands
 
-I placed the order in October 2026. One surprise: uMake's checkout ends with "a representative will reach
-out to confirm". So I still got one email. Next, the table comes apart again and goes to the garage
-for sanding, staining and wax.
+I placed the v1 order in October 2026. One surprise: uMake's checkout ends with "a representative will
+reach out to confirm". So I still got one email, and the final invoice was $405.83 before tax, $52.50 more
+than the cart (TODO-verify what was added). Next, the table comes apart again and goes to the garage for
+sanding and oil.
 
-Version 2 is in the works: lighter, with the heater up in the deck, and a finite-element check that found
-(and fixed) weak legs. See the Version 2 chapter.
+Version 2 is designed, checked and quoted ($303.98, not ordered yet): lighter, with the heater up in the
+deck, one diagonal leg at each corner, and a finite-element check that found (and fixed) weak legs. See
+the Version 2 chapter.
 
-I worked through all of this over about two days with an AI coding agent. I made the choices and drew
+I worked through v1 over about two days with an AI coding agent. I made the choices and drew
 the sketches. It wrote the geometry code and tests, ran the numbers and filled in the quote forms.
 
 <!-- page: make Make your own -->
