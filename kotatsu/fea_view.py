@@ -16,7 +16,7 @@ from pathlib import Path
 
 import numpy as np
 
-from . import fea, params
+from . import fea, params, yagura
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "out" / "fea.json"
@@ -155,6 +155,9 @@ def leg_cases(p) -> list[dict]:
     pls = {pt.name: pt.placements for pt in fr.parts(p)}
     runs = [(f"leg A: {H:g} N sideways push", "A", H, None), (f"leg A: {H:g} N push + the top's worst corner load", "A", H, top),
             ("leg A: the top's worst corner load only", "A", 0.0, top), (f"leg B: its share of {H:g} N, top clamped", "B", H, top)]
+    diag = yagura.diagonal(p)
+    if diag:                                     # one plate a corner: all four bend in their own planes
+        runs = [(lab.replace("leg A: ", "leg plate: "), w, hh, tp) for lab, w, hh, tp in runs if w == "A"]
     out = []
     for label, which, hh, tp in runs:
         r = fea.leg_case(p, which, hh, tp, h=VIEW_H["leg"])
@@ -174,6 +177,19 @@ def leg_cases(p) -> list[dict]:
             deck_u.append(-deck_u[0])
         worst = max(_worst(u, local) for u, _ in senses)
         sway = max(abs(d) for d in deck_u)
+        if diag:                                 # each plate takes its in-plane part of the deck's sway (the FE
+            S = sway / (2 ** -0.5)               #   result); the rest, across it, shows as a lean (world, at the top)
+            on = []
+            for i, (*_, d, n) in enumerate(yagura.corners(p)):
+                want = 1.0 if d[0] > 0 else -1.0
+                k = min(range(len(senses)), key=lambda j: -deck_u[j] * want) if sway > 1e-6 else 0
+                on.append({"i": i, "sense": k, "lean": [round(S * n[0] * n[0], 3), round(S * n[0] * n[1], 3)]})
+            packed = [_pack(r["result"][0].m, u, local, d) for u, d in senses]
+            out.append({"part": "leg plate", "label": label, "kind": "plane", "worst": worst,
+                        "sway_mm": None if r["sway_mm"] is None else round(S if sway > 1e-6 else 0.0, 1),
+                        "mesh": packed[0]["mesh"], "senses": [{k: v for k, v in s.items() if k != "mesh"} for s in packed],
+                        "on": on, "frame_shift": {"vec": [round(S, 3), 0.0], "z_full": L.z_deck_bot}})
+            continue
         on = []                                                           # push along +x: the x plates bend in plane
         for i, pl in enumerate(pls[f"leg plate {which}"]):
             if pl.axis != "x":

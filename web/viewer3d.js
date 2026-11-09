@@ -316,11 +316,12 @@ export class Viewer3D {
     if (resetBend) { this.state.feaBend = md > 0 ? Math.max(1, Math.min(300, Math.round(25 / md))) : 1; this.feaBendCtl.updateDisplay(); }
     const me = this.fea.meshes[c.mesh], t = this.fea.thickness, slots = this.slots[c.part] || [];
     // leg cases name the placements that bend in the push's plane, each with its sense; plates: every placement
-    const on = c.on ? c.on.map((e) => [slots[e.i], { kind: c.kind, ...c.senses[e.sense] }]) : slots.map((sl) => [sl, c]);
+    const on = c.on ? c.on.map((e) => [slots[e.i], { kind: c.kind, ...c.senses[e.sense], lean: e.lean }]) : slots.map((sl) => [sl, c]);
     for (const [sl, data] of on) {
       if (!sl) continue;
       const m = heatSlab(me, data, t, sl.mirror);
       m.matrixAutoUpdate = false; m.matrix.copy(sl.M);
+      if (data.lean) m.userData.lean = { v: data.lean, M0: sl.M.clone() };   // diagonal plates: the sway across them
       this.root.add(m); this.feaObjs.push(m); this.feaHidden.add(sl.it);
     }
     const sl0 = (this.slots[c.part] || [])[0];
@@ -331,7 +332,7 @@ export class Viewer3D {
     this.feaBendNow(1);
     const pct = (u) => `${Math.round(u * 100)} %`;
     const extra = c.sag_mm != null ? `sags ${c.sag_mm} mm` : c.sway_mm != null ? `sways ${c.sway_mm} mm` : "";
-    this.legend.innerHTML = `<b>${c.label}</b><br>worst ${pct(c.worst)} of its strength${extra ? ", " + extra : ""}${c.on ? " (a push along x: the plates along x bend in their plane, the rest of the frame is carried along)" : ""}
+    this.legend.innerHTML = `<b>${c.label}</b><br>worst ${pct(c.worst)} of its strength${extra ? ", " + extra : ""}${c.on ? " (a push along x: the plates bend in their plane, the rest of the frame is carried along)" : ""}
       (deflection drawn × ${this.state.feaBend})
       <div style="height:10px;margin:6px 0 2px;border-radius:3px;background:${GRADIENT}"></div>
       <div style="display:flex;justify-content:space-between"><span>0</span><span>50 %</span><span>100 %</span><span>150 %</span></div>
@@ -346,7 +347,12 @@ export class Viewer3D {
   feaBendNow(f) { // the slabs bent by bend × f (the pulse eases f between 0 and 1), the frame carried along
     if (!this.feaCase) return;
     this.feaK = this.state.feaBend * f;
-    for (const m of this.feaObjs) bend(m, this.feaK);
+    const zf = this.feaCase.frame_shift?.z_full || 1;
+    for (const m of this.feaObjs) {
+      bend(m, this.feaK);
+      const ln = m.userData.lean;                       // feet fixed, the top carried across the plate with the deck
+      if (ln) m.matrix.copy(ln.M0).premultiply(new THREE.Matrix4().set(1, 0, ln.v[0] * this.feaK / zf, 0, 0, 1, ln.v[1] * this.feaK / zf, 0, 0, 0, 1, 0, 0, 0, 0, 1));
+    }
     if (this.feaMarks) sinkMarks(this.feaMarks, this.feaK);
     this.feaCarry(this.feaK);
     this.render();
