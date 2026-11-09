@@ -21,8 +21,8 @@ later. Retrieved October 2026 from uMake.ca's public pages and the help text ins
 | CNC router | 3/4" and more (Baltic birch) | max part 61 × 140"; birch sheets 48 × 96", 60 × 60", 60 × 120" | ±0.30–0.45 mm |
 
 The laser only cuts thin plywood. That's too floppy for a table top and too weak for a frame with no glue
-(and laminating thin sheets would need glue). So everything is **CNC-routed 18 mm Baltic birch**, ordered the
-same way.
+(and laminating thin sheets would need glue). So everything is **CNC-routed Baltic birch** (18 mm in v1, 15 mm in
+v2), ordered the same way.
 
 Sources: <https://www.umake.ca/co2-laser-cutting-engraving>, <https://www.umake.ca/canada-custom-cnc-parts>
 
@@ -70,8 +70,8 @@ part and charges by that box. Shipping is free while the box is **91 cm or less*
 Source: <https://www.umake.ca/canada-shipping-terms>
 
 ## Weight
-Baltic birch weighs about 680–720 kg/m³, so 18 mm sheet is about **12.6 kg/m²**. The 86 cm top weighs
-about 9.3 kg, and the whole order about 16 kg.
+Baltic birch weighs about 680–720 kg/m³, so 18 mm sheet is about **12.6 kg/m²** (15 mm: about 10.5). In v1 the
+86 cm top weighed about 9.3 kg and the whole order about 16 kg; in v2, about 7.6 and 10.5 kg.
 
 ## Heaters
 Japanese kotatsu heaters run on 100 V. In Canada you want a **120 V replacement-style unit**, ideally with a
@@ -81,7 +81,8 @@ cUL, cETL or CSA mark, rather than a transformer. The one I chose, and why, is i
 Found in October 2026 (searched in English, French, German, Dutch, Japanese, Spanish and Portuguese) and checked only against
 their public pages. I haven't ordered from any of them. Everything here is **TODO-verify** before you rely
 on it: thickness range, largest part, bit size, and whether the price really comes back instantly.
-What this design needs: CNC routing of 18 mm (3/4") birch plywood from a DXF, and a part 860 mm across.
+What v1 needed: CNC routing of 18 mm (3/4") birch plywood from a DXF, and a part 860 mm across. (v2 needs 15 mm:
+see the next table.)
 
 | Region | Shop | What its pages say | Source |
 |---|---|---|---|
