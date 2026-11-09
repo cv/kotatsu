@@ -319,6 +319,13 @@ def arms(p) -> list[Polygon]:
             for sx in (-1, 1) for sy in (-1, 1)]
 
 
+def arms_by_corner(p) -> list[Polygon]:
+    """The arms in corners() order."""
+    L, h = fr.layout(p), fr.layout(p).Lf / 2
+    return [LineString([(L.cx, L.cy), (L.cx + sx * h, L.cy + sy * h)]).buffer(p.deck.arm_w / 2, cap_style="flat")
+            for sx, sy, *_ in corners(p)]
+
+
 def deck(p) -> Polygon:
     """Deck in world x-y: X-shaped. A ring round the heater well and four diagonal arms (inside corners filleted
     fillet_r), joined to the corner pads (pad_fillet_r); outside corners rounded edge_r; stopped square beside
@@ -327,7 +334,16 @@ def deck(p) -> Polygon:
     if D.edge_r >= D.arm_w / 2:
         raise ValueError("[deck] edge_r must stay under arm_w / 2, or the rounding eats the arms")
     core = geom.closing(unary_union([ring(p)] + arms(p)), D.fillet_r)
-    g = geom.closing(unary_union(pads(p) + [core]), D.pad_fillet_r)
+    reach = getattr(D, "pad_flare_reach", 0.0)
+    if reach > 0:                                      # owner 2026-11: each pad flares out of its own arm like a trumpet,
+        pads_ = pads(p)                                #   a long fillet between the two only (nowhere else on the deck)
+        local = []
+        for (*_, C, d, n), pad, arm in zip(corners(p), pads_, arms_by_corner(p)):
+            near = _plan(box(-1e3, -1e3, reach, 1e3), C, d, n)
+            local.append(geom.closing(unary_union([pad, arm.intersection(near)]), D.pad_fillet_r))
+        g = unary_union([core] + local)
+    else:
+        g = geom.closing(unary_union(pads(p) + [core]), D.pad_fillet_r)
     g = g.buffer(-D.edge_r, quad_segs=geom.Q).buffer(D.edge_r, quad_segs=geom.Q)
     g = g.intersection(deck_blank(p)).intersection(corner_trim(p))
     tr = getattr(D, "trim_r", 0.0)
