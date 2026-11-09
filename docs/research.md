@@ -112,6 +112,42 @@ Japanese results were machine sellers and international CNC networks, not plywoo
 the instant DXF quotes I found are for laser cutting (Makers Manufatura in Rio de Janeiro, CNCero in Argentina),
 which can't cut 18 mm plywood. Makers Medellín was the only instant router quote.
 
+### More shops, for v2's 15 mm (2026-11)
+Searched in English, Japanese, Korean, Chinese, German, Spanish, Italian, Polish, Dutch and Swedish; checked against
+each shop's own pages, nothing ordered, everything **TODO-verify** (thickness, largest part, bit size, shipping).
+
+| Region | Shop | What its pages say | Source |
+|---|---|---|---|
+| Japan | EMARF (VUILD) | Upload DXF (or Rhino/Fusion plugins) → see the quote → order; parts cut at workshops across Japan, delivered or picked up. Price = material + machining + finish + system fee + shipping + packing. シナ合板 (white, knot-free; r3.5 advised on sharp corners), thickness ±0.5 mm | <https://emarf.co/>, <https://docs.emarf.co/1525709244d2801b9a79f28ad4edec9b> |
+| Japan (Yokohama) | Fabnode | ShopBot router 2440 × 1220 × 120 mm; DXF upload gives an automatic rough estimate (Web見積もり); end mills φ3–12 mm; plywood, MDF, laminated wood supplied by them | <https://fabnode.jp/> |
+| Japan | Acoroom 合板部 | Plywood sold and cut; NC router for shapes, but the automatic price covers only rectangles, circles and ovals (up to 1800 × 900) | <https://www.plywood-ac.shop/page/automatic-quote> |
+| South Korea | 차츰우드 (Chachum Wood) | Russian B/BB birch plywood 4–30T from one sheet; cutting, CNC, oil, UV coating in its own factory; drawings by KakaoTalk; free delivery from 80 sheets (15T) | <https://ccwood.kkb.kr/> |
+| South Korea | 미르조각 (Mir CNC), Namyangju | Birch plywood CNC work from customers' drawings (18T examples) | <https://mircnc.co.kr/> |
+| Taiwan (Taichung) | 雲手木工 (YunShou) | Cutting up to 4 × 8 ft (122 × 244 cm); stocks 樺木夾板 3B (birch plywood); DXF or AI by LINE for a quote; from NT$1,000 a sheet plus simple work; pickup or delivery | <https://yunshou.com/cnc-service/> |
+| Taiwan (Taichung) | WoodCNC | 4 × 8 ft sheets, one-offs accepted, quotes by LINE | <https://woodcnc.com.tw/> |
+| China | Pizhou Tianfu Wood | Plywood maker (birch among others) that also CNC-cuts parts for "global furniture factories, designers, contractors": likely bulk | <https://www.tianfuplywood.com/en/product/CNC-cutting-plywood.html> |
+| China | JLCCNC, RapidDirect | Online CNC services with instant quotes, but for metals and plastics; no plywood found | <https://jlccnc.com/>, <https://www.rapiddirect.com/services/cnc-routing/> |
+| India (Mumbai) | HyperFabs | Search listing: "Online CNC Routing Service – up to 18 mm plywood, MDF, HDMR, 2–3 days, instant quote" (the page itself returned 404 on 2026-11-08) | <https://hyperfabs.com/services/cnc-routing> |
+| Malaysia | Ledanim | Online DXF quote for laser cutting and CNC routing: upload, choose material, thickness and sheet size, review, order (wood stock not checked) | <https://ledanim.com/OCQ_Main.html> |
+| Singapore | Plony Industries | Heavy timber CNC for construction ("unlike carpentry CNC services that focus on thin plywood"); enquiry only | <https://www.plonyindustries.com/wood-timber-cnc-cutting-construction-singapore> |
+| Sweden | ScandCut | BB/BB birch plywood 4–30 mm (and form plywood), **waterjet**-cut from a CAD file, "pris direkt online", ready in 5 days, ISO 9001/14001 | <https://www.scandcut.se/tra> |
+| Switzerland | Zunder Atelier | Online configurator: poplar, pine or birch plywood in 4, 10 or 16 mm; price estimate shown at once, then reviewed by a person; free shipping from CHF 55 | <https://zunderatelier.ch/cncofferte/> |
+| Spain (Madrid) | Manoj Sawlani Studio | Upload a DXF (mm), choose fiber laser, CO₂ laser or CNC, a material and thickness: instant estimate, then they confirm feasibility and the final price | <https://manojsawlani.com/es/presupuesto-instantaneo/> |
+| Italy | Godea | Online laser service; CNC milling for wood, marble, acrylic over 1 cm thick | <https://www.godea.it/> |
+| Poland | LaserTrade | Platform: one request goes to many CNC milling shops, which reply with free quotes; plywood 1–40 mm, birch among the species | <https://lasertrade.pl/frezowanie-sklejki> |
+| Netherlands | Vormig, Ritmeester CNC, De Firma CNC | Birch multiplex CNC milling to a drawing; quotes | <https://vormig.nl/multiplex-cnc-frezen/>, <https://defirmacnc.nl/services/cnc-utrecht/multiplex-laten-frezen/> |
+| Ireland | Woodworkers.ie (Dublin) | Stocked sheet goods custom- and CNC-cut to your specifications | <https://www.woodworkers.ie/pages/cnc-cutting> |
+| Ireland | Fineline | Online DXF shape cutting with nesting and an instant calculator, but MDF, MR-MDF, MFC and HDF only: not plywood | <https://fineline.ie/> |
+| US | Xometry | CNC routing lists Baltic birch plywood (with MDF, HDPE, acrylic, ACM…); instant quote; free standard US shipping | <https://www.xometry.com/capabilities/cnc-machining-service/cnc-routing/> |
+| Canada (Vancouver) | Fab Lab Vancouver | CNC router 72 × 96 × 6"; $2.50/min machining, $80 minimum per setup | <https://www.fablabvan.ca/service> |
+| Canada (Vancouver) | CNC Cutting Services; Mosswood Millwork; Westcoast CNC | Local CNC routing for furniture parts, signs, panels; quotes | <https://cnccuttingservices.ca/>, <https://www.mosswoodmillwork.com/cnc-cutting-routing-vancouver> |
+| Mexico | Arteknia | Wood (MDF, triplay, melamine), acrylic, PVC, aluminium; quote within 24 working hours; ships anywhere in Mexico | <https://arteknia.com.mx/> |
+| Mexico | Triplay Carpisur | Plywood retailer with a CNC cutting service | <https://carpisur.com.mx/servicios/corte-cnc/> |
+| — | Cut Ready CNC | Search listing promised instant plywood/MDF prices; the site returned 404 on 2026-11-08 | (dropped) |
+
+Also seen: Laser Studio (Japan) quotes a DXF in 30 s, but for laser cutting (thickness not checked; lasers seldom
+cut 15 mm plywood cleanly); Laseo (Québec) stocks Baltic birch only in 9–12 mm.
+
 ## Nicer woods: who cuts them online (owner question, 2026-11)
 Looking for walnut, white oak, "real" birch or hinoki, CNC-routed from a DXF with an instant online price and
 shipping to BC. Checked 2026-11; nothing ordered.

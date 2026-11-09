@@ -537,39 +537,74 @@ Ideas I built and then dropped are kept as git tags, so you can check one out an
 
 ### Ordering somewhere else
 
-I only ordered from uMake, in Canada. If you're somewhere else, look for a shop that **CNC-routes 18 mm
-(3/4") birch plywood** from a DXF and can cut a part 86 cm across. Ideally it should also give you a
-price online, without a phone call. These are the ones I found in October 2026. I haven't ordered from
-any of them, so check before you rely on one (the details and sources are in `docs/research.md`):
+I've only ordered from uMake, in Canada. Elsewhere, look for a shop that **CNC-routes 15 mm (5/8") birch plywood**
+from a DXF and can cut a part 86 cm across. Ideally it shows a price online, so there's no back-and-forth. If
+its plywood is another thickness (16, 18 mm…), set its real range in `params.toml` (`[material]`) and rebuild:
+the joints follow, and `make test` tells you if anything no longer fits.
 
-| Where | Shop | What I found |
-|---|---|---|
-| Canada | [uMake](https://www.umake.ca/) | What I used. Instant quote, CNC-routed "19mm" Baltic birch, free shipping in one box up to 91 cm |
-| Canada | [EZCNC](https://ezcnc.ca/), [Laseo](https://www.laseo.ca/services/cncrouting/) | Both take a DXF online. Laseo shows a price instantly and lists Baltic birch. I haven't checked their thicknesses |
-| US (I think) | [ConceptCut](https://conceptcut.net/) | Instant DXF quotes for 18 mm Baltic birch on 48 × 96" sheets, priced by sheets used plus length of cut. Its site works in inches but doesn't say where it is or ships to |
-| US | [SendCutSend](https://sendcutsend.com/materials/baltic-birch-plywood/) | Instant quotes, but its birch only goes up to 12 mm, and 44 × 44" parts. This design would need a 12 mm rework |
-| UK | [Chop Shop CNC](https://chopshopcnc.com/cnccutting) | Instant quotes from a DXF, delivery anywhere in the UK |
-| France | [Vectorealism](https://www.vectorealism.com/fr/fraisage-cnc/) | Online CNC routing in 15 and 18 mm birch, on 60 × 60, 120 × 120 or 180 × 120 cm sheets. You upload, and the quote comes back by email |
-| Netherlands | [Moderne Ambacht](https://www.moderneambacht.com/prijzen/) | A price calculator instead of an upload: €90 an hour of routing, and 18 mm birch at about €106 a sheet |
-| Australia | [Laser Cutting Experts](https://lasercuttingexperts.com.au/cnc-router-cut-plywood) (Sydney), [GV CNC](https://www.gvcnc.com.au/quote.html) (Victoria) | Both price a DXF for plywood routing instantly |
-| India | [HyperFabs](https://hyperfabs.com/) (Mumbai) | Instant quotes. Its listing says CNC-routed plywood up to 18 mm |
-| Brazil | [ZiOLAB](https://www.ziolab.com.br/corte-compensado/) | Router-cut plywood (compensado) in 4–25 mm, 18 mm included, on 1600 × 2200 or 2500 mm sheets. Quote on request |
-| Argentina | [Trebol CNC](https://trebolcnc.com.ar/servicios) | A 2 × 3 m router; 18 mm guatambú and phenolic plywood (multilaminado). Free quote on request |
-| Chile | [CNC Studio](https://cncstudio.cl/) (Santiago), [Andes Maker](https://andesmaker.cl/comocotizar/) | Both route 18 mm plywood (terciado) from a DXF. CNC Studio answers within a working day; Andes Maker can cut plywood you bring |
-| Colombia | [Makers Medellín](https://makersmedellin.com/cotizacion/) | An instant online quote: upload a DXF or SVG, pick the material and thickness, get a price straight away |
-| Peru | [Laser Cut Peru](https://lasercutperu.com/servicio/corte-router-cnc-lima-peru/) (Lima) | Routes plywood up to 60 mm on a 1.3 × 2.5 m bed. Free quote by email |
+These are the shops I found in October and November 2026, searching in each region's language. I haven't ordered
+from any of them, so check before you rely on one (details and sources are in `docs/research.md`). **Online** means
+the site shows a price for your file; **quote** means someone replies.
 
-Whichever shop you pick, tell the code about it in `params.toml`: the bit size (`[cnc] bit_d`, for the
-dogbones), its sheet sizes, the gap it wants between parts and round the sheet's edge, the real
-thickness range of its plywood (`[material]`), and its shipping limits (`[shipping]`). The 91 cm box is
-uMake's rule, not a law of nature. A makerspace with a CNC router works too: the DXFs are ordinary cut
-files.
+**North America**
 
+| Where | Shop | Price | What I found |
+|---|---|---|---|
+| Canada | [uMake](https://www.umake.ca/) | Online | What I use. CNC-routed Baltic birch, "15mm" included; free shipping in one box up to 91 cm and about 20 kg |
+| Canada | [EZCNC](https://ezcnc.ca/) | Online | Upload a DXF and configure the cut. All-birch and bamboo plywood, but in 3/4" (19 mm), not 5/8" |
+| Canada (Vancouver) | [Fab Lab Vancouver](https://www.fablabvan.ca/service) | Quote | A 72 × 96" router at $2.50 a minute, $80 minimum |
+| Canada (Vancouver) | [CNC Cutting Services](https://cnccuttingservices.ca/), [Mosswood Millwork](https://www.mosswoodmillwork.com/cnc-cutting-routing-vancouver) | Quote | Local routing shops for furniture parts |
+| US | [Xometry](https://www.xometry.com/capabilities/cnc-machining-service/cnc-routing/) | Online | CNC routing in Baltic birch plywood, free standard shipping in the US. Thicknesses not checked |
+| US (I think) | [ConceptCut](https://conceptcut.net/) | Online | Baltic birch in 18 mm only, on 48 × 96" sheets: v1's thickness |
+| US | [SendCutSend](https://sendcutsend.com/materials/baltic-birch-plywood/) | Online | Birch only up to 12 mm, and parts up to 44 × 44": too small for the top |
+| Mexico | [Arteknia](https://arteknia.com.mx/) | Quote | Routes triplay (plywood) and MDF; prices within a working day; ships anywhere in Mexico |
 
-**Caveats.** The plywood strength figures are rough textbook values, so read the load numbers as "lots of
-margin", not as a certificate. uMake sells this sheet as "19mm", and the joints are designed for
-17.0–18.9 mm. Follow your heater's instructions and clearances, and make sure it's rated for your mains
-supply.
+**Europe**
+
+| Where | Shop | Price | What I found |
+|---|---|---|---|
+| UK | [Chop Shop CNC](https://chopshopcnc.com/cnccutting), [Cut Online](https://www.cut-online.co.uk/) | Online | Both price a DXF online; Cut Online checks it before confirming (1220 × 2440 bed) |
+| Ireland | [Woodworkers.ie](https://www.woodworkers.ie/pages/cnc-cutting) (Dublin) | Quote | Stocks sheet goods and CNC-cuts them to your drawing |
+| France | [Vectorealism](https://www.vectorealism.com/fr/fraisage-cnc/) | Quote | Birch plywood in **15** and 18 mm, sheets up to 180 × 120 cm; quote by email, usually the same day |
+| Netherlands | [Moderne Ambacht](https://www.moderneambacht.com/prijzen/) | Calculator | €90 an hour of routing; birch plywood by the sheet. [Vormig](https://vormig.nl/multiplex-cnc-frezen/) and [De Firma CNC](https://defirmacnc.nl/services/cnc-utrecht/multiplex-laten-frezen/) quote birch multiplex too |
+| Sweden | [ScandCut](https://www.scandcut.se/tra) | Online | BB/BB birch plywood 4–30 mm, cut by **waterjet** from your CAD file; ready in 5 days |
+| Switzerland | [Zunder Atelier](https://zunderatelier.ch/cncofferte/) | Online estimate | A configurator with birch plywood, but only 4, 10 or 16 mm; then a person checks it |
+| Spain (Madrid) | [Manoj Sawlani Studio](https://manojsawlani.com/es/presupuesto-instantaneo/) | Online estimate | Upload a DXF, pick CNC and a material, see a price; they confirm. Materials not checked |
+| Italy | [Godea](https://www.godea.it/) | Quote | CNC milling of wood over 1 cm thick, besides laser cutting |
+| Poland | [LaserTrade](https://lasertrade.pl/frezowanie-sklejki) | Quotes | A platform: your request goes to several CNC shops, which send free quotes; birch plywood among them |
+
+**Asia**
+
+| Where | Shop | Price | What I found |
+|---|---|---|---|
+| Japan | [EMARF](https://emarf.co/) | Online | Upload a DXF (or use its CAD plugins), see the price, order; workshops across Japan cut it. White シナ (linden) plywood, ±0.5 mm |
+| Japan (Yokohama) | [Fabnode](https://fabnode.jp/) | Online estimate | Upload a DXF for a rough price; a 2440 × 1220 mm router, bits 3–12 mm; they supply the plywood |
+| South Korea | [차츰우드 (Chachum Wood)](https://ccwood.kkb.kr/) | Quote | Russian B/BB birch plywood 4–30 mm, CNC-cut in its own factory; send the drawing on KakaoTalk |
+| Taiwan (Taichung) | [雲手木工 (YunShou)](https://yunshou.com/cnc-service/) | Quote | Cuts up to 4 × 8 ft; stocks birch plywood (樺木夾板); send a DXF on LINE; from NT$1,000 a sheet |
+| China | Taobao / Alibaba sellers, [Tianfu Plywood](https://www.tianfuplywood.com/en/product/CNC-cutting-plywood.html) | Quote | Many sellers cut plywood to a drawing (来图加工), priced by chat. Tianfu makes birch plywood and CNC-cuts parts for furniture makers |
+| India (Mumbai) | [HyperFabs](https://hyperfabs.com/) | Online | Instant quotes; its listing says CNC-routed plywood up to 18 mm |
+| Malaysia | [Ledanim](https://ledanim.com/OCQ_Main.html) | Online | Upload a DXF, pick material, thickness and sheet size, get a quote for CNC routing. Wood stock not checked |
+
+**Elsewhere**
+
+| Where | Shop | Price | What I found |
+|---|---|---|---|
+| Australia | [Laser Cutting Experts](https://lasercuttingexperts.com.au/cnc-router-cut-plywood) (Sydney), [GV CNC](https://www.gvcnc.com.au/quote.html) (Victoria) | Online | Both price a DXF for plywood routing |
+| New Zealand | [CNC Cutting Direct](https://www.cnccutting.co.nz/cnc-services) (Christchurch) | Quote | Upload a DXF; delivers NZ-wide |
+| Brazil | [ZiOLAB](https://www.ziolab.com.br/corte-compensado/) | Quote | Router-cut compensado in 4–25 mm, **15** mm included |
+| Argentina | [Trebol CNC](https://trebolcnc.com.ar/servicios) | Quote | A 2 × 3 m router; guatambú and phenolic multilaminado |
+| Chile | [CNC Studio](https://cncstudio.cl/) (Santiago), [Andes Maker](https://andesmaker.cl/comocotizar/) | Quote | Both route terciado (plywood) from a DXF; Andes Maker can cut plywood you bring |
+| Colombia (Medellín) | [Makers Medellín](https://makersmedellin.com/cotizacion/) | Online | Upload a DXF or SVG, pick material and thickness, see a price |
+| Peru (Lima) | [Laser Cut Peru](https://lasercutperu.com/servicio/corte-router-cnc-lima-peru/) | Quote | Routes plywood up to 60 mm on a 1.3 × 2.5 m bed |
+
+Whichever shop you pick, tell the code about it in `params.toml`: the bit size (`[cnc] bit_d`, for the dogbones),
+its sheet sizes, the gap it wants between parts and round the sheet's edge, the real thickness range of its plywood
+(`[material]`), and its shipping limits (`[shipping]`). The 91 cm box is uMake's rule, not a law of nature. A
+makerspace with a CNC router works too: the DXFs are ordinary cut files.
+
+**Caveats.** The plywood strength figures are rough textbook values, so read the load numbers as "lots of margin",
+not as a certificate. uMake sells this sheet as "15mm", and the joints are designed for 14.1–15.7 mm. Follow your
+heater's instructions and clearances, and make sure it's rated for your mains supply.
 
 <!-- /story -->
 
