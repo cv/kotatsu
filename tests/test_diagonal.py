@@ -108,6 +108,6 @@ def test_twist_and_legroom():
 def test_squircle_top_covers_the_posts():
     from shapely.affinity import translate
     from kotatsu import top
-    posts = comfort.low_footprint(P, L.H, L.z_deck_top + 1)
+    posts = comfort.top_supports(P)                # what the top rests on: the posts' flat ends (and the tenons)
     tp = translate(top.build(P).outline, -P.top.length / 2, -P.top.width / 2)
     assert tp.contains(posts) and tp.exterior.distance(posts) >= 18.0

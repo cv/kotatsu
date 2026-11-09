@@ -84,11 +84,7 @@ def leg_plate(p) -> Polygon:
     g = g.union(fr._round_outer(box(ta, zs - 10, tb, H), tr))
     pu = post_u(p)
     if pu > 0:                                           # the post rises to the top, post_inset in from the end
-        pi = getattr(F, "post_inset", 0.0)
-        g = g.union(fr._round_outer(box(pi, zs - 10, pu, H), tr).intersection(box(0, 0, pu, H)))
-        if pi > 0:                                       # a fillet where the post meets the plate's top edge
-            rf = 6.0
-            g = g.union(box(pi - rf, zs - 0.1, pi + 0.1, zs + rf).difference(Point(pi - rf, zs + rf).buffer(rf, quad_segs=32)))
+        g = g.union(post(p))
     g = g.difference(fr.dogbone((ta, zs), (-1, 1), r))   # the tenon's root reliefs (the shoulders seat flat)
     if tb < wt - 0.01:
         g = g.difference(fr.dogbone((tb, zs), (1, 1), r))
@@ -99,6 +95,20 @@ def leg_plate(p) -> Polygon:
     g = g.difference(head_slot(p))
     g = g.union(crush_ribs(p, u - w / 2, u + w / 2, zs - lap_depth(p), zs))
     return g.difference(foot_relief(p))
+
+
+def post(p) -> Polygon:
+    """The corner post above the deck, in the plate's (u, v = z) plane: its inner edge straight up at post_u, its
+    outer edge one smooth sweep (owner 2026-11) from the plate's outer edge at the deck's underside, carrying straight
+    on from it, to post_inset in at the top: u = post_inset * s^2, s from 0 at the underside to 1 at the top. The top
+    rests on the flat end, post_inset to post_u."""
+    F, L = p.frame, fr.layout(p)
+    zs, H, pu = L.z_deck_bot, L.H, post_u(p)
+    pi = getattr(F, "post_inset", 0.0)
+    n = 48
+    sweep = [(pi * (k / n) ** 2, zs + (H - zs) * k / n) for k in range(n + 1)]
+    g = Polygon([(0, zs - 10)] + sweep + [(pu, H), (pu, zs - 10)])
+    return fr._round_outer(g, getattr(F, "top_r", 3.0)).union(box(0, zs - 10, pu, zs))
 
 
 def crosspiece(p) -> Polygon:
