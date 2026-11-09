@@ -43,8 +43,9 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
     (one plate alone would rock open at about 32 N). The crosspiece is cut 0.5 mm proud: sand its top edge at
     the fit-up until the deck sits on it and on the shoulders together.
   - The tenon rises through a mortise on the diagonal and takes the corner's one wedge, lying on the deck
-    across the arm. Above the deck the post rises to the top, starting 14 mm in from the plate's end so it stays
-    18+ mm inside the squircle top's edge (on the diagonal the edge comes closest).
+    across the arm. Above the deck the post rises to the top. Its outer edge sweeps in smoothly (owner 2026-11), carrying on from the
+    plate's outer edge to 14 mm in at the top, so the flat end the top rests on stays 18+ mm inside the squircle top's
+    edge (on the diagonal the edge comes closest).
   - Each head-slot wall has one small bump, 0.5 mm proud ("crush ribs"): sand them until the crosspiece slides
     in. The foot has a 1.5 mm arc cut under it, so the plate stands on its two ends and doesn't rock.
   - How the head got its shape, by the leg FEA under a 200 N shove: a 60 mm crosspiece needed the haunch at

@@ -462,8 +462,9 @@ bears on its top edge, so the joint now has a 90 mm base against twisting, and s
 pushed at a corner. Then the FEA shaped the head. A tall crosspiece needed a deep slot, and the slot's
 bottom landed in the leg's haunch, where it used 183 % of the plate's strength under a hard shove. A short
 one (25 mm) and a higher haunch brought it to 84-95 %, and a round-bottomed slot, with no dogbones at all
-since the crosspiece's edges can sit on the curve, brought it to 75 %. The posts also had to step 14 mm in
-from the corner: on the diagonal, the squircle top's edge comes closest.
+since the crosspiece's edges can sit on the curve, brought it to 75 %. The posts also had to end 14 mm in from
+the corner, since on the diagonal the squircle top's edge comes closest; each post's outer edge sweeps in to
+there in one smooth curve.
 
 ![The diagonal legs in the 3-D view, with the top, futon and rug hidden: one plate on each corner's diagonal, a crosspiece under each corner of the X deck, a wedge across each arm](docs/img/v2-diagonal.jpg)
 
