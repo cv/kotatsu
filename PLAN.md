@@ -1,6 +1,6 @@
 # Design notes: v2 (in progress)
 
-This is the reference for **v2**, on the `v2` branch. v1 was ordered (git tag `v1-ordered`), assembled
+This is the reference for **v2**, the design on `main` (designed and quoted, not ordered yet). v1 was ordered (git tag `v1-ordered`), assembled
 and is in use. The story of how it got here is in the README. Every number below comes from `params.toml`,
 and anything I haven't confirmed yet is marked **TODO-verify**.
 
@@ -14,7 +14,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
 | Legs | 8 plates in four "+" legs, 8 tenons, a wedge in each | **four diagonal legs**: one plate a corner on its diagonal, a crosspiece in its head, one tenon and wedge each |
 | Wedges | 12 + 2 spares | **4 + 2 spares** |
 | Top | square, R20 corners (re-rounded by hand) | **squircle** (n = 8), cut in the file; feet and deck rounder to match |
-| Parts, weight, cutting | 26, 15.9 kg, 25.5 m | **18, 10.6 kg, 16.9 m** |
+| Parts, weight, cutting | 26, 15.9 kg, 25.5 m | **18, 10.5 kg, 16.7 m** |
 | Chairs | none | a bought zaisu (owner, 2026-11). Two plywood ones were designed, checked and quoted (+$173), then archived (tag `zaisu-archive`) |
 
 ## Decisions
@@ -33,8 +33,8 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
 ## The parts
 
 - **Leg plates (4, 140 × 385 mm), one on each corner's diagonal**, its outer end at the frame corner (owner 2026-11).
-  - Under the deck each plate is 140 mm wide along the diagonal: the post (40 mm), the 19 mm head slot 60 mm in
-    from the corner, a 10 mm shoulder, the 50 mm tenon and a 10 mm inner shoulder. Below the haunch (full width
+  - Under the deck each plate is 140 mm wide along the diagonal: the post, the 16 mm head slot centred 60 mm
+    in from the corner, a 10 mm shoulder, the 50 mm tenon and a 12 mm inner shoulder. Below the haunch (full width
     down to 305 mm, then one S-curve) it narrows to 70 mm, and from 220 mm down tapers softly in one long line to 56 mm at the
     floor. Its outer edge stays at the corner all the way down, so the legs take up little room along each side.
   - **The crosspiece (4, 90 × 25.5 mm, its underside arched up to 14 mm at the ends: each half is a little
@@ -53,36 +53,37 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
     270 mm and cost ~90 mm of room at thigh height; at 36 mm the slot's bottom landed in the haunch (183 %);
     25 mm with the haunch from 305 mm gave 84-95 % with dogbones in the slot, and **74-75 %** with the round
     bottom.
-- **Deck (1, 780 × 780 mm, X-shaped).** It sits on the plates' shoulders and the crosspieces, its top
+- **Deck (1, 769 × 769 mm, X-shaped, on the 780 mm frame).** It sits on the plates' shoulders and the crosspieces, its top
   26 mm below the tenon tops. Each corner's pad holds only what needs wood: 20 mm round the mortise (tenon +
   0.2 mm each side), 5 mm past the lying wedge, the plate's top edge and the crosspiece's (owner, 2026-11), so the
   pads are small crosses at the ends of the arms; the deck stops square across the diagonal beside each post. A ring round the **heater well** (326 × 300 mm: the heater plus
   both cheeks) is 40 mm wide beside the cheeks and runs 15 mm past their ears. Four 36 mm arms along the
   diagonals join them, with R150 fillets at the ring (owner 2026-11: smoother, and stronger) and R12 corners outside. Each corner pad is
   one convex outline round what needs wood, flaring out of its arm on an R300 fillet (only there), and its far
-  corners, beside the post, are rounded R10 (owner 2026-11: nothing left to fight with sandpaper). 1.33 kg,
+  corners, beside the post, are rounded R10 (owner 2026-11: nothing left to fight with sandpaper). 1.27 kg,
   against 2.1 kg for the H.
   - The deck holds the futon up across the middle. Its openings are as big as the H's were (188 mm deep
     at mid-side, where the knees go); the extra open area is near the corners.
   - The arms: a 300 N hand pressing on the ring, plus the heater, as cantilevers at 45° to the grain on
-    the thinnest stock (173 mm free): 12 MPa, 40 % of the rough strength, 3.7 mm of give
+    the thinnest stock (116 mm free): 8 MPa, 27 % of the rough strength, 1.1 mm of give. The FEA finds more
+    (below): 60 %.
 - **Wedges (6: 4 plus 2 spares, 60 × 18 mm, 1:8 taper).** They lie on the deck across the arm and tap
   through each tenon, clamping the deck between the shoulders (and the crosspiece) and the wedge. This works at any sheet thickness from 14.1
   to 15.7 mm. Gravity can't replace all of them: with the weight alone (about 20 N a plate) the wobble
   model gives about 9 mm of sway at a 25 N push, because the tenon rocks in its mortise.
-- **Heater cradle: 2 cheeks (380 × 70 mm).** The heater screws between their inner faces, 294 mm apart (a
+- **Heater cradle: 2 cheeks (380 × 46 mm).** The heater screws between their inner faces, 294 mm apart (a
   290 mm heater gets 4 mm of play). The pair drops into the deck's well, and a 40 mm ear at each cheek end
   rests on the deck top: gravity holds it up, and it lifts out for summer. The cheeks cover the heater's
-  heater's screw line and 12.5 mm of wood below it, and rise 16 mm above the deck (the ears stay a sheet thick),
+  screw line and 12.5 mm of wood below it, and rise 16 mm above the deck (the ears stay a sheet thick),
   under the futon: 46 mm tall (owner 2026-11: the screws sit 10-15 mm from the heater's top; the cheeks were 60). The
   heater hangs with its top 5 mm under the deck top, low enough that its control panel, on one end, clears the
   deck's underside by 5 mm: the knob and the plug stick out under the deck's ring, and the cord runs out under it.
   21 mm of air above the heater, under the cheek tops.
-- **Top (1, 860 × 860 mm), a squircle**: |x/a|¹⁰ + |y/a|¹⁰ = 1, a curve that fades into the edges instead of
-  a radius that starts abruptly. The corner posts stay 28 mm inside its edge (v1: 40). The futon lies
+- **Top (1, 860 × 860 mm), a squircle**: |x/a|⁸ + |y/a|⁸ = 1, a curve that fades into the edges instead of
+  a radius that starts abruptly. The corner posts stay 20 mm inside its edge (v1: 40). The futon lies
   over the heater as in a traditional open frame (v1 had the deck in between).
 
-That's **18 parts, about 10.6 kg, 16.9 m of cutting**. They fit on one 48 × 96" sheet. uMake lays out
+That's **18 parts, about 10.5 kg, 16.7 m of cutting**. They fit on one 48 × 96" sheet. uMake lays out
 the sheets itself and prices per part, so this only matters for my estimate.
 
 ## Assembly (a mallet, plus a screwdriver for the heater)
@@ -101,16 +102,16 @@ the sheets itself and prices per part, so this only matters for my estimate.
 |---|---|
 | Clear height at the middle of each side (deck underside) | 344 mm |
 | Clear height under the heater | 304 mm (v1: 286) |
-| My 76 × 32 cm cross-legged knee zone (on the bare floor): how far it reaches under the top's edge | 40 mm |
+| My 76 × 32 cm cross-legged knee zone (on the bare floor): how far it reaches under the top's edge | 38 mm |
 | On a zaisu, legs forward: room above my thighs under the deck / my feet under the heater (seat 100 mm high when sat on, TODO-verify) | 69 mm / 69 mm (a typical 160 mm thigh, TODO-verify) |
-| My knee room on the floor pillows, against v1 (where it's fine, owner 2026-11) | the same or more: frame top 385 / 385 mm, deck underside 344 / 341, heater 304 / 286, reach 40 / 40, between the legs 570 / 568 |
+| My knee room on the floor pillows, against v1 (where it's fine, owner 2026-11) | about the same: frame top 385 / 385 mm, deck underside 344 / 341, heater 304 / 286, reach 38 / 40, between the legs 571 / 568 |
 | Cross-legged on a zaisu: knee room under the top's edge (385 mm, the futon squeezed over the knees) | none to spare once the seat's height is added, so I sit legs forward |
-| Room between the legs at knee height / legs forward (to 275 mm) | 571 / 656 mm ("+" legs: 568 / 637) |
+| Room between the legs at knee height / legs forward (to 275 mm) | 571 / 659 mm ("+" legs: 570 / 637) |
 | Sway under a sideways push (spring model; FEA at 200 N: 6.1 mm, "+" legs 7.1) | 0.75 mm at 50 N, 1.5 at 100 N, 3.5 at 200 N |
-| Twist: 115 N pushed along an edge at a top corner | 1.4 mm at the corner; the crosspiece joints open at about 191 N |
+| Twist: 115 N pushed along an edge at a top corner | 1.5 mm at the corner; the crosspiece joints open at about 191 N |
 | Play in each tenon, and extra wobble per 0.1 mm a wedge works loose | 0.4 mm, about 1 mm |
 | Push 50 mm in from the edge that tips the table / lifts the loose top's far side | never, in the model (the feet and corner posts sit almost under the edge) |
-| Push right at the edge that tips the table / lifts the loose top's far side | about 1640 N / 635 N (v1: 1700 / 770) |
+| Push right at the edge that tips the table / lifts the loose top's far side | about 1640 N / 640 N (v1: 1700 / 770) |
 
 - **Tipping** is worked out the way EN 12521 and EN 1730 test it: a vertical push in the middle of a side,
   50 mm in from the edge. It assumes the feet don't slide, and the weight includes a guessed 3 kg heater and
@@ -121,8 +122,9 @@ the sheets itself and prices per part, so this only matters for my estimate.
   edge, every shoulder sat on one side of the wedge, so tapping the wedge in twisted the leg about 9 mm at
   the foot. The inner shoulder (12 mm in v2) fixed that. Re-tap the wedges after the first heating season.
   A push along x reaches each diagonal plate at 45°: all four take part in their own planes, and their
-  stiffness across the plate is counted as nothing (twisting is the one thing only that resists: `stiffness.twist`).
-- **Strength** is checked two ways. A 200 N sideways push stresses the legs to about 1.0 MPa in the spring model (all four plates share it); the FEA finds more (below). For the top, a
+  stiffness across the plate is counted as nothing. Twisting is the one load that bends them across their
+  faces, and the crosspieces resist it (`stiffness.twist`).
+- **Strength** is checked two ways. A 200 N sideways push stresses the legs to about 1.1 MPa in the spring model (all four plates share it); the FEA finds more (below). For the top, a
   plate model (`kotatsu/loads.py`) puts it on its corner posts, which can only push up. I checked the model
   against textbook plate results, and it matches within 3–5 %. The top rests on the 4 posts and the 4
   tenons (v1: 8 tenons; the "+" legs: 8 posts and 4 tenons).
@@ -155,14 +157,14 @@ three parts with real outlines on 14.1 mm stock:
 | Item | Cost |
 |---|---|
 | Heater (PaletteLife, amazon.ca, delivered) | $258 |
-| uMake: 18 parts at 15mm, **quoted $303.98 + about $36.48 tax** (saved as quote 2926, not ordered, `docs/quote.md`), free shipping expected. If finalization adds what it did for v1 (~15 %): about $395 | $343–395 |
+| uMake: 18 parts at 15mm, **quoted $303.98 + about $36.48 tax** (saved as quote 2926, not ordered, `docs/quote.md`), free shipping expected. If finalization adds what it did for v1 (~15 %): about $391 | $340–391 |
 | Futon: 205 cm square from Etsy, or a queen duvet + cover from Douglas | $185–230 |
 | Sandpaper and finishing oil | $30–50 |
 | A zaisu (bought, adjustable: about $70, free shipping) + tax | $78 |
 | **Total** | **about $920–1040** |
 
 ## Off-season storage
-Everything packs flat inside the top's footprint, in two layers (the top, then the deck with all 19 other parts round it), a stack about 32 mm tall (kotatsu/storage.py
+Everything packs flat inside the top's footprint, in two layers (the top, then the deck with the other 16 parts round it), a stack about 32 mm tall (kotatsu/storage.py
 packs it by itself, flipping parts over where that helps).
 
 ## The design space (`make optimize`, 2026-11, for the "+" legs: TODO rerun for the diagonal legs)
@@ -198,17 +200,17 @@ Little: the design is at uMake's price floor (`docs/quote.md`, "What can still b
 doesn't depend on the design, the remaining cut is all required, and wood inside a part's box is free. A solid
 deck would save about $4 but costs 3.8 kg and the knee room in the X's openings, so the X stays. The bigger
 unknown is uMake's finalization: v1's receipt was **$405.83 + tax = $454.53**, $52.50 more than the cart's
-$353.33 (TODO-verify what was added; if it repeats, v2's $328.53 becomes about $378 + tax).
+$353.33 (TODO-verify what was added; if it repeats, v2's $303.98 becomes about $349 + tax, about $391).
 
 ## Still open
 1. **The 15 mm sheet.** Order uMake's "15mm" Baltic birch (its "16mm" is probably 5/8", too thick). Its
    real thickness range is assumed at 14.1–15.7 mm: TODO-verify. Windsor Plywood's 15 mm B/B measures 15.0 ± 0.1 mm
    (`docs/research.md`), well inside it. uMake requoted for the diagonal legs: $303.98 (`docs/quote.md`).
-2. **Heater details.** The screws' length (the tips must stay inside the 15 mm cheek), and nothing sticking
-   out of the heater's ends past the 300 mm well (cord, knob). With the futon now over the heater, check
+2. **Heater details.** The screws' length (the tips must stay inside the 15 mm cheek), and the control panel's
+   real height (read off a photo: the knob and plug must clear the deck's underside, and stick out under the ring). With the futon now over the heater, check
    its top stays cool to the touch on high (owner, 2026-11: 40 °C on v1, the same heater: fine). Look for a cUL, cETL or CSA mark on the rating label.
 3. **The crosspieces.** At the first fit-up, sand each crosspiece's top edge until the deck sits on it and on the
-   plate's shoulders together, then twist the frame by hand: the joints should feel solid. The twist figure (1.4 mm
+   plate's shoulders together, then twist the frame by hand: the joints should feel solid. The twist figure (1.5 mm
    at 115 N) comes from a spring model, not the FEA.
 4. **A tipping limit.** If I want one: EN 12521's force table, or a bathroom-scale test on the finished table.
 5. **Fit-up.** v1's wedges went in by hand. Watch whether 15 mm tenons and wedges hold as well.
@@ -224,9 +226,9 @@ The pale birch look of v1 is the goal (owner, 2026-11). All by hand, at no cost 
 - **Round every visible edge a little** (2–3 mm, sandpaper on a block). Crisp, even edges and a good finish
   matter more than shape.
 - **Legs: ease the exposed vertical edges to about 3 mm, no more.** v2's legs work hard (the FEA puts the
-  bottom of plate A's slot at 80 % of its strength under a hard 200 N shove), so the full half-rounds once
+  root of the head slot at 75 % of its strength under a hard 200 N shove), so the full half-rounds once
   planned for v1 would cost real strength. Keep sharp and flat: the top edges that carry the top and deck,
-  the tenons and shoulders, the slot walls and the faces inside the cross-laps, and the wedge holes. Ease
+  the tenons and shoulders, the head slots' walls and the crosspieces' edges in them, and the wedge holes. Ease
   the floor edge about 2 mm.
 - **Sand** to 180, wipe with a damp cloth to raise the grain, let it dry, then 220 (320 on the top).
 - **Oil:** Osmo Polyx-Oil Clear Satin (3032), which I already have. It's a hardwax oil, so it warms birch only
@@ -239,8 +241,8 @@ The pale birch look of v1 is the goal (owner, 2026-11). All by hand, at no cost 
 - **v1**, as ordered and built: 18 mm birch, the heater hung under the deck from wedged cheeks, R20
   corners. Git tag `v1-ordered` (and `main` until v2 merges).
 - **v2's "+" legs** (two crossed plates a corner, one wedged, the other held by gravity; as quoted at $328.02):
-  tag `plus-legs-archive`. The diagonal legs replaced them (owner 2026-11): $33 cheaper by the price model, 5.6 m
-  less cutting, 0.8 kg lighter, 19 mm more room between the legs, and a little stronger and stiffer in the FEA.
+  tag `plus-legs-archive`. The diagonal legs replaced them (owner 2026-11): $24 less in uMake's quotes ($36 by the price model), 5.8 m
+  less cutting, 0.8 kg lighter, 22 mm more room between the legs, and a little stronger and stiffer in the FEA.
 - **v2's H deck** (four notches round the heater well, a wedge in all 8 tenons): commit ced3313 on the v2 branch.
 - The 120 × 80 top in three boards with decorative seams (dovetails, arrowheads, maple leaves and more),
   and the 120 × 90 and Ø 90 tables: git tag `seams-archive`.
