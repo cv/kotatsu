@@ -549,12 +549,15 @@ them is at **https://github.com/cv/kotatsu**.
 
 | Part | Detail |
 |---|---|
-| Top | 860 × 860 × 18 mm, one piece, sits loose on the frame with the futon in between |
-| Frame | four "+" legs (8 plates, 2 shapes) under an H-shaped deck; 2 cheeks hold the heater |
-| Joints | cross-laps and wedged through-tenons; 14 wedges (2 spare) |
-| Height | about 40–41 cm with a futon |
-| Order | 26 parts, 16.6 kg, one 91 × 91 × 16 cm box; CAD $353 + tax on uMake (Oct 2026) |
-| Heater | 120 V 400 W replacement kotatsu heater, 29 × 29 × 5 cm, screws in at the sides |
+| Top | 860 × 860 × 15 mm squircle, one piece, sits loose on the frame with the futon in between |
+| Frame | four diagonal legs (one plate a corner, a crosspiece in its head) under an X-shaped deck |
+| Heater | 120 V 400 W replacement kotatsu heater, 29 × 29 × 5 cm, screwed between 2 cheeks that hang in a well in the deck |
+| Joints | wedged through-tenons and slotted crosspieces; 6 wedges (2 spare) |
+| Height | about 41 cm with a futon |
+| Order | 18 parts, about 10.5 kg, one 91 cm box; quoted at CAD $303.98 + tax on uMake (Nov 2026, not ordered yet) |
+
+These are v2's files. v1, the table in the Build chapter (26 parts in 18 mm, CAD $353 + tax in October
+2026), is at the git tag `v1-ordered`.
 
 ```sh
 uv sync
@@ -571,18 +574,25 @@ and quote. `AGENTS.md` has the project's rules.
 
 Every size is a number in `params.toml`. Change one, run `make all` and `make test`, and the parts, cut
 sheets, price, weight and 3-D view all follow. The tests tell you when a change breaks something. Here's
-what a few changes do, run through the same code:
+what a few changes do to v2, run through the same code (the prices are the price model's, which came in
+4 % under uMake's last real quote):
 
 | Change | What happens |
 |---|---|
-| A smaller top, 76 × 76 cm | $339 instead of $353, so smaller barely saves anything: most of the price is a fixed share plus cutting. 13.9 kg, and it fits a 60 × 60" sheet. |
-| A bigger top, 100 × 100 cm | $374 to cut, but the box goes past 91 cm, so uMake adds about $195 for shipping. It also weighs 20.5 kg, over the free-shipping weight. The parcel test fails. |
-| A lower frame, 355 mm instead of 385 | It sways less (0.3 mm at 100 N, against 0.9), but the deck's underside drops to 311 mm, under the 317.5 mm my knees need sitting cross-legged. The knee test fails. Set your own in `[comfort]`. |
-| A bigger heater, 33 × 33 cm | The cheeks move apart by themselves. Every test passes, and the price doesn't change. |
+| A smaller top, 76 × 76 cm | $269 instead of $291, and 8.8 kg. But the frame shrinks with it: my knees reach only 34 mm under the edge (the test wants 35), and the room between the legs drops from 659 to 559 mm. The knee tests fail. |
+| A bigger top, 100 × 100 cm | $324, and 13.4 kg, still under the free-shipping weight. But the top alone needs a 105 cm box, so uMake adds about $195 for shipping, and an adult sitting on its edge goes past the load test's limit. The parcel test fails. |
+| A lower frame, 355 mm instead of 385 | It sways less (1.2 mm at 100 N, against 1.5), but the deck's underside drops to 314 mm, under the 317.5 mm my knees need sitting cross-legged, and shins get less room under the heater. The knee tests fail. Set your own in `[comfort]`. |
+| A bigger heater, 33 × 33 cm | The cheeks and the well move apart by themselves. Every test passes, and the price goes up about $1.50. |
 
 Measure your own heater and put its size in `[heater]`. Don't guess it from a listing.
 
-Ideas I built and then dropped are kept as git tags, so you can check one out and build it:
+Earlier versions and ideas I built and then dropped are kept as git tags, so you can check one out and
+build it:
+
+- **`v1-ordered`**: v1, as ordered and built.
+- **`plus-legs-archive`**: v2's first legs, two crossed plates at each corner.
+- **`zaisu-archive`**: the two plywood zaisu, with their FEA.
+- **`show-top-archive`**: the quote pack for a "show" top in solid wood or stone, researched and dropped.
 
 - **`seams-archive`**: the 120 × 80 cm top in three boards, joined by decorative seams (dovetails,
   arrowheads, maple leaves), and a 90 cm round top. Round looked lovely, but it cost $199 to ship, and
@@ -608,7 +618,7 @@ the site shows a price for your file; **quote** means someone replies.
 | Where | Shop | Price | What I found |
 |---|---|---|---|
 | Canada | [uMake](https://www.umake.ca/) | Online | What I use. CNC-routed Baltic birch, "15mm" included; free shipping in one box up to 91 cm and about 20 kg |
-| Canada | [EZCNC](https://ezcnc.ca/) | Online | Upload a DXF and configure the cut. All-birch and bamboo plywood, but in 3/4" (19 mm), not 5/8". Roughly $36 a part however small: a 19 mm version of this table came to $787 before shipping, against uMake's $328 |
+| Canada | [EZCNC](https://ezcnc.ca/) | Online | Upload a DXF and configure the cut. All-birch and bamboo plywood, but in 3/4" (19 mm), not 5/8". Roughly $36 a part however small: a 19 mm version of this table (with the "+" legs) came to $787 before shipping, against uMake's $328 |
 | Canada (Vancouver) | [Fab Lab Vancouver](https://www.fablabvan.ca/service) | Quote | A 72 × 96" router at $2.50 a minute, $80 minimum |
 | Canada (Vancouver) | [CNC Cutting Services](https://cnccuttingservices.ca/), [Mosswood Millwork](https://www.mosswoodmillwork.com/cnc-cutting-routing-vancouver) | Quote | Local routing shops for furniture parts |
 | US | [Xometry](https://www.xometry.com/capabilities/cnc-machining-service/cnc-routing/) | Online | CNC routing in Baltic birch plywood, free standard shipping in the US. Thicknesses not checked |
