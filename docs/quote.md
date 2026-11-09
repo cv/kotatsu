@@ -121,6 +121,25 @@ unordered) and the new one is on it, quantity 2. Still **$328.40**; saved.
 380 × 60 mm (were 70 tall). The previous cheek is off the invoice, the new one on it at 2: **$328.02** before tax
 (about $39.36 tax at 12 %), saved and checked after a reload.
 
+### EZCNC, for comparison (2026-11-09)
+EZCNC (Canada) has no 5/8" sheet, so this quote is for a **19 mm variant** of the current design (the same 6 files
+regenerated for its 3/4" All-Birch at 17.5–19.3 mm, not committed or tested; 14.4 kg). Saved as a project in the
+owner's EZCNC account (created 2026-11-09, login in 1Password); not ordered.
+
+| Part (3/4" All-Birch, Natural, through cut) | Qty | EZCNC | Each | uMake 15mm, each |
+|---|---|---|---|---|
+| top (860 × 860) | 1 | $90.84 | $90.84 | $80.28 |
+| deck (780 × 780) | 1 | $106.66 | $106.66 | $94.90 |
+| leg plate A (110 × 385) | 4 | $148.20 | $37.05 | $16.21 |
+| leg plate B (110 × 385) | 4 | $148.20 | $37.05 | $14.78 |
+| heater cheek (380 × 60) | 2 | $75.66 | $37.83 | ~$10 |
+| wedge (60 × 17) | 6 | $217.62 | $36.27 | $1.52 |
+| **Production subtotal** | **18** | **$787.18** | | **$328.02 in all** |
+
+Plus a live shipping rate at checkout (oversized parcels go to a custom quote) and tax. **About 2.4× uMake.**
+EZCNC seems to have a floor of roughly $36 a part, so small parts cost as much as large ones: the 6 wedges alone are
+$217. In bamboo plywood (3/4", Natural) the top alone is $345.28, about 3.8× the birch.
+
 ### What can still be saved (tried 2026-11, not adopted)
 With material priced by bounding box, a change only saves money if it shrinks a part's box or its cut. At this
 order size 1 m of cutting is worth about $4.66 and 0.1 m² of bounding box about $5.12; about 40 % of the total

@@ -551,7 +551,7 @@ the site shows a price for your file; **quote** means someone replies.
 | Where | Shop | Price | What I found |
 |---|---|---|---|
 | Canada | [uMake](https://www.umake.ca/) | Online | What I use. CNC-routed Baltic birch, "15mm" included; free shipping in one box up to 91 cm and about 20 kg |
-| Canada | [EZCNC](https://ezcnc.ca/) | Online | Upload a DXF and configure the cut. All-birch and bamboo plywood, but in 3/4" (19 mm), not 5/8" |
+| Canada | [EZCNC](https://ezcnc.ca/) | Online | Upload a DXF and configure the cut. All-birch and bamboo plywood, but in 3/4" (19 mm), not 5/8". Roughly $36 a part however small: a 19 mm version of this table came to $787 before shipping, against uMake's $328 |
 | Canada (Vancouver) | [Fab Lab Vancouver](https://www.fablabvan.ca/service) | Quote | A 72 × 96" router at $2.50 a minute, $80 minimum |
 | Canada (Vancouver) | [CNC Cutting Services](https://cnccuttingservices.ca/), [Mosswood Millwork](https://www.mosswoodmillwork.com/cnc-cutting-routing-vancouver) | Quote | Local routing shops for furniture parts |
 | US | [Xometry](https://www.xometry.com/capabilities/cnc-machining-service/cnc-routing/) | Online | CNC routing in Baltic birch plywood, free standard shipping in the US. Thicknesses not checked |
