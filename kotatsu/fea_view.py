@@ -141,25 +141,21 @@ def deck_cases(p) -> list[dict]:
 
 
 def leg_cases(p) -> list[dict]:
-    """The leg plates under a push along +x at table height, drawn as the floor sees it: the feet stay put
-    and the deck sways (the model holds the deck and slides the floor; here that motion is taken off).
-    Only the plates in the push's plane bend in it: `on` lists those placements (frame.parts' order) and
-    the sense of each (a mirrored plate takes the push the other way round: the model's other sense).
-    `frame_shift`: how far the deck moves (world mm, true scale), for the view to carry the rest of the
-    frame along: the parts on the deck shift, the other leg plates lean, feet fixed."""
+    """The leg plate under a push along +x at table height, drawn as the floor sees it: the feet stay put and
+    the deck sways (the model holds the deck and slides the floor; here that motion is taken off). Every plate
+    bends in its own (diagonal) plane: `on` gives each placement (yagura.corners' order) the model's sense that
+    matches its direction, and the lean its foot shows across its plane. `frame_shift`: how far the deck moves
+    (world mm, true scale), for the view to carry the rest of the frame along: the parts on the deck shift, feet fixed."""
     from skfem import Basis, ElementTriP2, ElementVector
     from . import frame as fr
     H = p.fea.push_n
     top = fea.top_on_legs(p)
     L = fr.layout(p)
-    pls = {pt.name: pt.placements for pt in fr.parts(p)}
-    runs = [(f"leg A: {H:g} N sideways push", "A", H, None), (f"leg A: {H:g} N push + the top's worst corner load", "A", H, top),
-            ("leg A: the top's worst corner load only", "A", 0.0, top), (f"leg B: its share of {H:g} N, top clamped", "B", H, top)]
-    diag = True                                  # one plate a corner: all four bend in their own planes
-    runs = [(lab.replace("leg A: ", "leg plate: "), w, hh, tp) for lab, w, hh, tp in runs if w == "A"]
+    runs = [(f"leg plate: {H:g} N sideways push", H, None), (f"leg plate: {H:g} N push + the top's worst corner load", H, top),
+            ("leg plate: the top's worst corner load only", 0.0, top)]
     out = []
-    for label, which, hh, tp in runs:
-        r = fea.leg_case(p, which, hh, tp, h=VIEW_H["leg"])
+    for label, hh, tp in runs:
+        r = fea.leg_case(p, "A", hh, tp, h=VIEW_H["leg"])
         local = r["local"]
         senses, deck_u = [], []
         for x in r["result"]:
@@ -170,37 +166,19 @@ def leg_cases(p) -> list[dict]:
             util = tsai_hill(p, x.sv, x.su, x.tuv)                       # grain runs up the leg (v)
             senses.append((util, [U - fu, V - fv]))
             deck_u.append(-fu)                                            # the deck, seen from the floor (local u)
-        if len(senses) == 1 and abs(deck_u[0]) > 1e-6:                   # B: one sense; its mirror image by symmetry
-            util, (du, dv) = senses[0]
-            senses.append((util, [-du, dv]))
-            deck_u.append(-deck_u[0])
         worst = max(_worst(u, local) for u, _ in senses)
         sway = max(abs(d) for d in deck_u)
-        if diag:                                 # each plate takes its in-plane part of the deck's sway (the FE
-            S = sway / (2 ** -0.5)               #   result); the rest, across it, shows as a lean (world, at the top)
-            on = []
-            for i, (*_, d, n) in enumerate(yagura.corners(p)):
-                want = 1.0 if d[0] > 0 else -1.0
-                k = min(range(len(senses)), key=lambda j: -deck_u[j] * want) if sway > 1e-6 else 0
-                on.append({"i": i, "sense": k, "lean": [round(S * n[0] * n[0], 3), round(S * n[0] * n[1], 3)]})
-            packed = [_pack(r["result"][0].m, u, local, d) for u, d in senses]
-            out.append({"part": "leg plate", "label": label, "kind": "plane", "worst": worst,
-                        "sway_mm": None if r["sway_mm"] is None else round(S if sway > 1e-6 else 0.0, 1),
-                        "mesh": packed[0]["mesh"], "senses": [{k: v for k, v in s.items() if k != "mesh"} for s in packed],
-                        "on": on, "frame_shift": {"vec": [round(S, 3), 0.0], "z_full": L.z_deck_bot}})
-            continue
-        on = []                                                           # push along +x: the x plates bend in plane
-        for i, pl in enumerate(pls[f"leg plate {which}"]):
-            if pl.axis != "x":
-                continue
-            want = -1.0 if pl.mirror_u else 1.0                           # local u = -x on a mirrored placement
+        S = sway / (2 ** -0.5)       # each plate takes its in-plane part of the deck's sway (the FE result); the
+        on = []                      #   rest, across it, shows as a lean (world, at the top)
+        for i, (*_, d, n) in enumerate(yagura.corners(p)):
+            want = 1.0 if d[0] > 0 else -1.0
             k = min(range(len(senses)), key=lambda j: -deck_u[j] * want) if sway > 1e-6 else 0
-            on.append({"i": i, "sense": k})
+            on.append({"i": i, "sense": k, "lean": [round(S * n[0] * n[0], 3), round(S * n[0] * n[1], 3)]})
         packed = [_pack(r["result"][0].m, u, local, d) for u, d in senses]
-        out.append({"part": f"leg plate {which}", "label": label, "kind": "plane", "worst": worst,
-                    "sway_mm": None if r["sway_mm"] is None else round(r["sway_mm"], 1),
+        out.append({"part": "leg plate", "label": label, "kind": "plane", "worst": worst,
+                    "sway_mm": None if r["sway_mm"] is None else round(S if sway > 1e-6 else 0.0, 1),
                     "mesh": packed[0]["mesh"], "senses": [{k: v for k, v in s.items() if k != "mesh"} for s in packed],
-                    "on": on, "frame_shift": {"vec": [round(sway, 3), 0.0], "z_full": L.z_deck_bot}})
+                    "on": on, "frame_shift": {"vec": [round(S, 3), 0.0], "z_full": L.z_deck_bot}})
     return out
 
 
