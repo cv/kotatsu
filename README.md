@@ -313,150 +313,134 @@ the factory smell, then lowered it to medium.
 
 ## Version 2
 
-v1 works, and it gets used every evening. Living with it showed me what I'd change, so version 2 is
-taking shape on its own branch. It isn't ordered yet. This chapter grows as it does. I wanted four things:
+v1 works, and it gets used every evening. Living with it showed me four things I'd change:
 
 - **The heater sat low.** It hung under the deck, right where shins go.
 - **A lighter box.**
 - **Fewer wedges.** Let gravity do some of the work.
 - **Rounder corners.**
 
+Version 2 is designed, checked and quoted, but not ordered yet. This chapter is how it got there, detours
+included: two chairs I dropped, and a first set of legs I replaced.
+
 ### The heater moves into the deck
 
 The deck now has a hole in the middle, and the two heater cheeks became a cradle. I screw the heater
 between them on the floor, then lower the whole thing into the hole. An ear at each end of the cheeks
-rests on the deck, so gravity holds it up, and in summer it lifts straight out. The heater's top sits
-in the deck: 304 mm off the floor instead of 286, and four fewer wedges. (It started higher, 323 mm, until the
-heater's control panel turned out to sit on one end: the heater now hangs just low enough for the knob and plug
-to clear the deck, and since its screws are near the top, the cheeks became short, 46 mm.)
+rests on the deck, so gravity holds it up, and in summer it lifts straight out. That's four fewer wedges,
+and 304 mm of clear height under the heater instead of 286.
+
+It started higher, at 323 mm, until I noticed that the heater's control panel (the plug, switch and knob)
+sits on one end, where the deck would be. Now the heater hangs just low enough for the panel to clear the
+deck. Its screws are near its top, so the cheeks only need to reach a little below them: they're 46 mm tall.
 
 ### Thinner plywood
 
-Every part drops from 18 to 15 mm. Each joint is checked again across the range the shop's 15 mm sheet can
-really measure. The top bends a little more: when an adult sits hard on its edge, it sags about 9 mm
-instead of 4. A test quote showed that 15 mm costs about the same as 18 mm, so the saving is weight,
-not money.
-
-### One wedge per leg
-
-(These were the "+" legs, later replaced by diagonal ones, further down.) Could gravity hold the legs as well? Not on its own: the wobble model says the frame would sway about
-9 mm under a light push. But one wedge per leg is enough, if the wedges alternate. Each leg's other
-plate is trapped between the floor and the wedged-down deck, and hangs on its partner when I lift the
-frame. That plate doesn't even need a tenon any more, so the deck has 4 mortises instead of 8. The
-model counts the gravity-held plates as doing nothing, and still gets only 2 mm of sway under a hard
-shove (v1: under 1 mm). The finite-element check further down found the legs softer than that, and
-weaker.
+Every part drops from 18 to 15 mm, and each joint is checked again across the range the shop's 15 mm sheet
+might really measure (14.1 to 15.7 mm, TODO-verify). The top bends a little more: when an adult sits hard on
+its edge, it sags about 7 mm instead of 4 (9 on the thinnest sheet). A test quote showed that 15 mm costs
+about the same as 18 mm, so the saving is weight, not money.
 
 ### An X deck and a squircle top
 
-The deck becomes an X: a pad at each corner, a ring round the heater, and four arms at 45°, with a big
-fillet in every inside corner. v1 had rejected an X deck, because its openings let the futon sag right
-where the knees go. The ring round the heater fixes that. Each corner pad keeps only the wood that
-does something: round the mortise, under the wedge and over the plates' tops.
+The deck becomes an X: a pad at each corner, a ring round the heater, and four arms at 45° joining them,
+with a big fillet in every inside corner. v1 had rejected an X deck, because its openings let the futon sag
+right where the knees go. The ring round the heater fixes that. Each corner pad keeps only the wood that has
+a job: round the mortise, under the wedge, and over the tops of the legs.
 
-The top is a squircle, a curve that eases into its straight edges instead of starting suddenly like a
-radius. I liked it so much that every other corner got the same treatment: the legs' haunch is now one
-smooth S-curve instead of a slope with two small fillets, and the feet and shoulders are squircles too,
-as round as their jobs allow. (The feet stand on just 8 mm at each end, so they can't get much rounder.)
-Later, once the price model showed that wood inside a part's outline is free, I went after looks for nothing:
-a soft taper on the legs below the joints, so each leg's inner edge is one long curve from the shoulder to the
-foot; rounder squircle corners on the heater cheeks and the wedges' heads; and softer corners on the top. The
-taper even made the legs a little stronger. The rest is handwork: an undercut under the top's edge, so it reads
-half as thick, and a small roundover and oil on every edge.
+The top is a *squircle*: a curve that eases into its straight edges, where a radius starts suddenly. I liked
+it so much that the legs got the same treatment. The haunch is now one smooth S-curve instead of a slope with
+two small fillets, and the feet and shoulders are squircles too, as round as their jobs allow. (The feet stand
+on just 8 mm at each end, so they can't get much rounder.)
 
-![v1's cut parts above v2's, to the same scale: the square top becomes a squircle, the H deck an X with the heater's hole in the middle, the eight leg plates become four diagonal ones with a small crosspiece each, the cheeks lose their tabs, and the wedges go from 14 to 6](docs/img/v2-parts.png)
+### Fewer wedges: the first legs
 
-### Two zaisu
+v1's legs were two plates crossed into a "+" at each corner, each plate with a tenon and a wedge. Could
+gravity hold them instead? Not on its own: the wobble model says the frame would sway about 9 mm under a
+light push. But one wedge per leg is enough, if the wedges alternate. Each leg's other plate is trapped
+between the floor and the wedged-down deck, and hangs on its partner when I lift the frame. That plate
+doesn't even need a tenon, so the deck had 4 mortises instead of 8. The spring model counted the
+gravity-held plates as doing nothing, and still got only 2 mm of sway under a hard shove (v1: under 1 mm).
 
-There was room on the sheet and in the budget for two **zaisu**: legless floor chairs with a back. Each one
-is five parts and no wedges. The seat board's tabs go through the side frames, so sitting down holds
-the chair together and stops it tipping back. The stretcher and the back hook in, then drop 6 mm to lock.
-They're squircles all over: a big sweep where the post meets the runner, round post tops, and cut-outs
-in the seat and the back shaped like the top.
-
-![The 3-D view: two zaisu on the long sides of the kotatsu, each with its cushion, the futon draped over the frame and the top on it](docs/img/v2-zaisu.jpg)
-
-The first draft had back posts working at 15 % of their strength, so I asked for less wood. That turned
-up something more interesting: the posts were the wrong place to look. Leaning back pushes the back
-panel and the seat board face-on, across their 15 mm, and nothing was checking those. They work at
-about 40–46 %, so they stayed as they were. The posts went from 60 to 50 mm (the least that leaves the
-shop's 15 mm of wood beside their slots) and now stop at the top of the back instead of standing 13 cm
-above it. Each chair came down to 3.4 kg.
-
-The seat board sits as low as the shop's rules allow, 31 mm off the floor. Then the cushion: how thick
-could it be? My knee height (32 cm cross-legged) was measured on the bare floor, so a chair raises it by
-the whole seat. With the knees under the table's edge, that left room for only a thin, firm cushion (4–5 cm), and
-it showed a hole in the comfort model: it had never checked the top itself, so any knee height
-"fitted". On a zaisu I'll sit with my legs out under the table instead: thighs under the deck, feet
-under the heater. My cushions are 10 cm thick, and even if they didn't squash at all there'd be
-room to spare. On the floor-pillow sides nothing changes: v2 has the same knee room as v1, or a little more.
+These legs didn't last. The next check found them weaker than they looked.
 
 ### A second opinion
 
-v1's checks are small models I can read. For v2 I wanted a heavier check, so a second AI agent wrote
-a finite-element model of the three parts that carry load: the top, the deck and the leg plates. It
-worked on its own branch while the chairs took shape, and reported back:
+v1's checks are small models I can read. For v2 I wanted a heavier check, so a second AI agent wrote a
+*finite-element* model (FEA: each part cut into small triangles that are solved together) of the three parts
+that carry load: the top, the deck and the leg plates. It worked on its own branch and reported back:
 
 - **The top:** the simple model was right, within 10 %.
-- **The deck:** it works harder than I thought: up to about 68 % of its strength under a hard press on
-  the ring round the heater, not 40 %. Arms at 45° to the grain are softer and weaker than the simple model assumed.
-  That's fine as long as the wedges stay tight. With slack wedges it's overstressed, so I'll re-tap them
-  every season.
-- **The legs:** a real problem. Above its cross-lap slot, the wedged plate is two separate 22 mm
-  fingers, and the wedge hangs the whole joint's bending on one of them. My spring model had quietly
-  treated the slot as glued shut. A hard 200 N shove used 160 % of the leg's strength and swayed it
-  12 mm.
+- **The deck:** it works harder than I thought: up to about 68 % of its strength under a hard press on the
+  ring round the heater, not 40 %. Arms at 45° to the grain are softer and weaker than the simple model
+  assumed. That's fine as long as the wedges stay tight; with slack wedges it was overstressed, so I'll
+  re-tap them every season. (The final deck, further on, does better.)
+- **The legs:** a real problem. Above the slot where the two plates cross, the wedged plate is two separate
+  22 mm fingers, and the wedge hangs the whole joint's bending on one of them. My spring model had quietly
+  treated the slot as glued shut. A hard 200 N shove used 160 % of the leg's strength and swayed it 12 mm.
 
-My first fix, a shallow slot in one plate and a deep one in the other, made it worse: the peak just moved
-to the new slot's bottom. The plain fix worked: the narrow part of the legs went from 60 to 70 mm. The
-same shove now uses 87 % at worst and sways the frame 7.2 mm. (Later, a soft taper below the joints,
-for looks, brought that down to 81 %: the lower leg gives a little, so the joint at the top takes less.) It costs 0.25 kg and 2 cm of room between
-the legs at shin height, and none at the knees.
-
-Then the chairs got the same treatment. The seat and the back hold comfortably (38 % and 49 %), but
-the side frames had a hot spot I hadn't looked at: the small inside corner behind each back post,
-where it meets the runner's short tail. A hard flop back used 85 % of the wood's strength there. A bigger
-curve in that corner, and a runner 4 cm longer to make room for it, brought it down to 68 % for 54 g
-a chair. The chair is harder to tip back now, too.
+My first fix, a shallow slot in one plate and a deep one in the other, made it worse: the peak just moved to
+the new slot's bottom. The plain fix worked: the narrow part of the legs went from 60 to 70 mm. The same shove
+then used 87 % at worst and swayed the frame 7.2 mm, for 0.25 kg and 2 cm of room between the legs at shin
+height (none at the knees).
 
 ### Seeing the stresses
 
-Numbers in a table are easy to skim past, so the 3-D view can now paint them on the parts. Pick a load
-case and the part turns blue where it's idle, yellow at half its strength and red at all of it. It bends,
+Numbers in a table are easy to skim past, so the 3-D view can now paint them on the parts. Pick a load case
+and the part turns blue where it's idle, yellow at half its strength and red at all of it. It bends,
 exaggerated, as the load comes on and off.
 
 ![The FEA heat map in the 3-D view: the X deck under a hand pressing on the ring beside a cheek, mostly blue, warming to yellow in the arm's fillet near the hand](docs/img/v2-fea.jpg)
 
-The first version taught me something about the model, too. In the legs' case, plate A swung right
-through plate B. Nothing was wrong with the joint. Each part is analysed on its own, its neighbours
-standing in as springs and supports, and the view had drawn one plate bending while the rest of the
-frame stood still. At true scale, the slot round B narrows by 0.2 mm at most, and B has 0.9 mm to
-spare. Now the frame moves with the analysed part: the feet stay put, the deck sways, and the other
-plates lean along.
+The first version taught me something about the model, too. In the "+" legs' case, one plate swung right
+through the other. Nothing was wrong with the joint. Each part is analysed on its own, its neighbours standing
+in as springs and supports, and the view had drawn one plate bending while the rest of the frame stood still.
+At true scale, the slot round the other plate narrows by 0.2 mm at most, and that plate has 0.9 mm to spare.
+Now the frame moves with the analysed part: the feet stay put, the deck sways, and the other plates lean along.
 
-### Summer
+### Two chairs
 
-In summer the table goes flat into a stack the size of its top, as v1 does: two layers, about 3 cm. And the
-heater question is settled: on high, its top reaches about 40 °C, warm to the hand, so the futon can lie right
-on it.
+There was room on the sheet and in the budget for two **zaisu**: legless floor chairs with a back. Each was
+five parts and no wedges. The seat board's tabs went through the side frames, so sitting down held the chair
+together and stopped it tipping back. The stretcher and the back hooked in, then dropped 6 mm to lock. They
+were squircles all over: a big sweep where the post meets the runner, round post tops, and cut-outs in the
+seat and the back shaped like the top.
 
-![Summer storage: the top, then the deck with the leg plates, crosspieces, cheeks and wedges laid round it, all inside the top's footprint](docs/img/v2-storage.png)
+![The 3-D view: two zaisu on the long sides of the kotatsu, each with its cushion, the futon draped over the frame and the top on it](docs/img/v2-zaisu.jpg)
+
+The first draft had back posts working at 15 % of their strength, so I asked for less wood. That turned up
+something more interesting: the posts were the wrong place to look. Leaning back pushes the back panel and
+the seat board face-on, across their 15 mm, and nothing was checking those. They worked at about 40–46 %, so
+they stayed as they were. The posts went from 60 to 50 mm (the least that leaves the shop's 15 mm of wood
+beside their slots), and now stopped at the top of the back instead of standing 13 cm above it. The FEA then
+found a hot spot nobody had looked at: the small inside corner behind each back post, where it meets the
+runner's short tail. A hard flop back used 85 % of the wood's strength there. A bigger curve in that corner,
+and a runner 4 cm longer to make room for it, brought it down to 68 % for 54 g a chair, and made the chair
+harder to tip back. Each chair came to about 3.4 kg.
+
+The chairs also taught me how I sit. The seat board sat as low as the shop's rules allow, 31 mm off the
+floor, but my knee height (32 cm cross-legged) was measured on the bare floor, and a chair raises it by the
+whole seat. With my knees under the table's edge, that left room for only a thin, firm cushion (4–5 cm). It
+also showed a hole in the comfort model: it had never checked the top itself, so any knee height "fitted". On
+a zaisu I'll sit with my legs out under the table instead: thighs under the deck, feet under the heater. My
+cushions are 10 cm thick, and even if they didn't squash at all there'd be room to spare. On the
+floor-pillow sides v2 has about the same knee room as v1: a little more height, and 2 mm less reach under
+the top's edge.
 
 ### The quote
 
 The whole thing, table and both chairs, quoted at **$501.66**: 28 parts, all instant, shipping free in one
-91 × 91 × 20 cm box. That was 6 % more than my price model expected, and part by part it was further off than
-that: the open X deck and the chairs' side frames were a quarter dearer than predicted, small solid parts
-cheaper. The pattern gave it away. uMake charges the wood by each part's **bounding box**, not by the wood
-actually in it. Fitted that way, every line matches within 2 %. So v1's lesson needs a correction: a window
-never saves money, only weight. It just adds cutting. (It still had to happen in v1, where weight was what
-stood between me and free shipping.)
+91 × 91 × 20 cm box. That was 6 % more than my price model expected, and part by part it was further off: the
+open X deck and the chairs' side frames were a quarter dearer than predicted, small solid parts cheaper. The
+pattern gave it away. uMake charges the wood by each part's **bounding box**, the smallest rectangle round
+it, not by the wood actually in it. Fitted that way, every line but the tiny wedge matches within 2 %. So
+v1's lesson needs a correction: a window never saves money, only weight. It just adds cutting. (It still had
+to happen in v1, where weight was what stood between me and free shipping.)
 
-Then I took the chairs out of the quote. The table alone is **$328.53**, so the two zaisu were adding $173,
-and I'd found an adjustable zaisu online for about $70, delivered. That settled it: the plywood chairs
-went into the archive (the `zaisu-archive` tag has them, FEA and all), and I'm buying one. What they taught
-me stays: on a chair I sit with my legs out, and the comfort model now knows a knee can't go higher than the
-top.
+Then I took the chairs out of the quote. The table alone was **$328.53**, so the two zaisu were adding $173,
+and I'd found an adjustable zaisu online for about $70, delivered. That settled it: the plywood chairs went
+into the archive (the `zaisu-archive` tag has them, FEA and all), and I'm buying one. What they taught me
+stays: on a chair I sit with my legs out, and the comfort model now knows a knee can't go higher than the top.
 
 ### Diagonal legs
 
@@ -468,38 +452,70 @@ on the deck: the joint rocks open at about 32 N.
 
 The rescue is a **crosspiece**: a small board that drops into a slot in the plate's head, across it. The deck
 bears on its top edge, so the joint now has a 90 mm base against twisting, and stays shut up to about 190 N
-pushed at a corner. Then the FEA shaped the head. A tall crosspiece needed a deep slot, and the slot's
-bottom landed in the leg's haunch, where it used 183 % of the plate's strength under a hard shove. A short
-one (25 mm) and a higher haunch brought it to 84-95 %, and a round-bottomed slot, with no dogbones at all
-since the crosspiece's edges can sit on the curve, brought it to 75 %. The posts also had to end 14 mm in from
-the corner, since on the diagonal the squircle top's edge comes closest; each leg's outer edge sweeps in to
-there in one long curve, starting well below the deck, so it reads as part of the leg.
-A last pass shaved and smoothed every curve that didn't have a job: the legs taper in one long line, the
-crosspieces arch underneath, and the deck's arms flare into the ring and the pads with much bigger fillets.
-Each corner pad became one smooth outline flaring out of its arm like a trumpet, with rounded far corners:
-nothing left to fight with sandpaper. The bigger fillets made the deck stronger, too: with the wedges slack it
-now stays under its strength (97 %, was 127 %).
+pushed at a corner. Then the FEA shaped the head. A tall crosspiece needed a deep slot, and the slot's bottom
+landed in the leg's haunch, where it used 183 % of the plate's strength under a hard shove. A short one
+(25 mm) and a higher haunch brought it to 84–95 %. A round-bottomed slot brought it to 75 %, with no dogbones
+at all, since the crosspiece's square edges can sit on the curve.
+
+On the diagonal, the squircle top's edge comes closest to the legs, so the posts had to end 14 mm in from the
+corner. Each leg's outer edge sweeps in to there in one long curve that starts well below the deck, so it
+reads as part of the leg.
 
 ![The diagonal legs in the 3-D view, with the top, futon and rug hidden: one plate on each corner's diagonal, a crosspiece under each corner of the X deck, a wedge across each arm](docs/img/v2-diagonal.jpg)
 
-Against the "+" legs it's better nearly everywhere: $33 cheaper by the price model (the cutting drops from
-22.5 to 16.9 m), 0.8 kg lighter, 19 mm more room between the legs, and a little stronger and stiffer in the
-FEA. The one new job is at the fit-up: each crosspiece is cut half a millimetre tall, and I sand its top edge
-until the deck sits on it and on the plate's shoulders together. (The "+" legs are in the archive, tag
-`plus-legs-archive`.)
+### Smoothing every curve
 
-| | v1 | v2 so far |
+Once I knew uMake charges by the bounding box, wood inside a part's outline was free, so I could go after
+looks for nothing. The legs got a soft taper below the joints, so each leg's inner edge is one long curve from
+the shoulder to the foot. (On the "+" legs the taper even made them a little stronger, 81 % instead of 87: the
+lower leg gives a little, so the joint at the top takes less.) The heater cheeks and the wedges' heads got
+rounder squircle corners, and the top got softer ones.
+
+On the diagonal legs, a last pass shaved and smoothed every curve that didn't have a job. The legs taper in
+one long line, the crosspieces arch underneath, and the deck's arms flare into the ring and the pads with much
+bigger fillets. Each corner pad became one smooth outline, flaring out of its arm like a trumpet, with rounded
+far corners: nothing left to fight with sandpaper. The bigger fillets made the deck stronger, too: a hard
+press on the ring now uses 60 % of its strength, and with slack wedges it stays under it (97 %, was 127 %).
+
+The rest is handwork: an undercut under the top's edge, so it reads thinner (a 9 mm rim on the 15 mm top),
+and a small roundover and oil on every edge.
+
+### Summer
+
+In summer the table goes flat into a stack the size of its top, as v1 does: two layers, about 3 cm.
+
+![Summer storage: the top, then the deck with the leg plates, crosspieces, cheeks and wedges laid round it, all inside the top's footprint](docs/img/v2-storage.png)
+
+With the heater now in the deck, the futon lies right over it, so I measured it on v1: on high, the top of
+the heater reaches about 40 °C, warm to the hand. That should be fine to cover, but the heater's manual has
+the last word on clearances (TODO-verify).
+
+### Where v2 stands
+
+Against the "+" legs, the diagonal ones are better nearly everywhere. uMake quoted the table at **$303.98**,
+$24 less than the "+" legs' $328.02. The cutting drops from 22.5 to 16.7 m, the table is 0.8 kg lighter, and
+there's 22 mm more room between the legs. In the FEA they're a little stronger and stiffer too: under the hard
+shove, 75 % of the legs' strength and 6.1 mm of sway, against 80 % and 7.1 mm. The one new job is at the
+fit-up: each crosspiece is cut half a millimetre tall, and I sand its top edge until the deck sits on it and
+on the plate's shoulders together. (The "+" legs are in the archive, tag `plus-legs-archive`.)
+
+So, against my four wishes: the heater rides 18 mm higher and lifts out, the box is about 5 kg lighter, the
+wedges go from 14 to 6, and every corner is rounder.
+
+![v1's cut parts above v2's, to the same scale: the square top becomes a squircle, the H deck an X with the heater's hole in the middle, the eight leg plates become four diagonal ones with a small crosspiece each, the cheeks lose their tabs, and the wedges go from 14 to 6](docs/img/v2-parts.png)
+
+| | v1 | v2 |
 |---|---|---|
 | Parts | 26 | 18 |
-| Weight | 15.9 kg | 10.6 kg |
+| Weight | 15.9 kg | 10.5 kg |
 | Wedges | 14 | 6 (4 + 2 spares) |
 | Clear height under the heater | 286 mm | 304 mm |
 | A hard 200 N shove, finite elements | not checked | 75 % of the legs' strength, 6.1 mm of sway |
-| uMake | $353.33 in the cart ($405.83 once uMake finalized it) | $303.98 (a quote, not an order; about $343 with tax; the "+" legs quoted $328.02) |
+| uMake | $353.33 in the cart ($405.83 once uMake finalized it) | $303.98 (a quote, not an order; about $340 with tax; the "+" legs quoted $328.02) |
 
-Before I order it, I want to measure how I really sit (no tape to hand yet). The
-sheet question has a local answer too: Windsor Plywood in Vernon measures its 15 mm Baltic birch at
-15.0 ± 0.1 mm, right in the middle of what the joints take.
+Before I order it, I want to measure how I really sit (no tape to hand yet), and I'd like to know how thick
+uMake's "15mm" sheet really is (TODO-verify). A local yard, Windsor Plywood in Vernon, measures its 15 mm
+Baltic birch at 15.0 ± 0.1 mm, right in the middle of what the joints take.
 
 <!-- page: overview -->
 
