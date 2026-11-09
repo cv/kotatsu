@@ -1,10 +1,11 @@
 # The uMake quote
 
-The final order came to **CAD $395.73: $353.33 for 26 parts plus $42.40 tax, with free shipping**. Getting
-there took eight quotes over two days, and the cart taught me more about pricing than the published rules
+v1's order came to **CAD $395.73 at checkout: $353.33 for 26 parts plus $42.40 tax, with free shipping**. uMake's
+finalized invoice was higher: $405.83 + tax = $454.53 (TODO-verify what was added). Getting there took eight
+quotes over two days, and the cart taught me more about pricing than the published rules
 did.
 
-## The diagonal legs, quoted (2026-11, saved in my account as quote 2926, not ordered)
+## The diagonal legs, quoted: the current design (2026-11, saved in my account as quote 2926, not ordered)
 Baltic birch, 15mm, CNC router, millimetres; the old deck and leg plates A and B removed from the saved quote,
 the new deck, leg plate and crosspiece uploaded (top, cheeks and wedges unchanged).
 
@@ -19,11 +20,11 @@ the new deck, leg plate and crosspiece uploaded (top, cheeks and wedges unchange
 | **Subtotal** | | **18** | | **$303.98** |
 
 (First quoted at $306.47; the parts were re-uploaded as their curves got smoother and the cheeks shorter: $306.42,
-$306.36, $305.80, $304.82, $304.77, then $303.98.) With 12 % tax about **$340.46**; shipping should stay free (the same 91 cm box, 10.6 kg: not re-checked at the
-cart). That's $24.04 less than the "+" legs' $328.02. My price model said $293.71, 4 % low this time: a smaller
-order gets less of uMake's volume discount on every part (the top went from $80.36 to $87.59), which the model's
+$306.36, $305.80, $304.82, $304.77, then $303.98.) With 12 % tax about **$340.46**; shipping should stay free (the same 91 cm box, 10.5 kg: not re-checked at the
+cart). That's $24.04 less than the "+" legs' $328.02. My price model says $291.39, 4 % low this time: a smaller
+order gets less of uMake's volume discount on every part (the top went from about $80 to $88.05), which the model's
 curve, fitted on bigger orders, underrates (TODO: refit with this quote). If uMake's finalization adds what it
-did to v1 (+15 %), about $395 with tax.
+did to v1 (+15 %), about $391 with tax.
 
 ## What I ordered (October 2026)
 Every file: units in millimetres, Engineered Wood > Baltic Birch, **19mm**, CNC router, no extra processes.
@@ -41,7 +42,7 @@ The thickness menu offers 3, 6, 9, 12, 15, 16, 19 and 25 mm, with no 18. The "19
 
 Shipping: one 91 × 91 × 16 cm box, 16.6 kg, **free**. No part was flagged for a manual quote.
 
-## v2 test quote (November 2026, not ordered)
+## v2 test quote: the "+" legs (November 2026, not ordered; superseded)
 Every file: millimetres, Engineered Wood > Baltic Birch, **15mm**, CNC router, no extra processes. It
 quoted instantly; nothing was flagged.
 
@@ -64,8 +65,8 @@ quoted instantly; nothing was flagged.
   weigh about 11.6 kg, well inside free shipping.
 - With the top on its own, the top line was $137.78: the fixed share again.
 
-## v2 as designed (November 2026, not ordered)
-The final v2 table (tapered legs, rounder corners, squircle n = 8 top). Every file: millimetres, Engineered Wood >
+## v2 with the "+" legs, as designed then (November 2026, not ordered; superseded)
+The "+"-leg table as it stood then (tapered legs, rounder corners, squircle n = 8 top). Every file: millimetres, Engineered Wood >
 Baltic Birch, **15mm**, CNC router, no extra processes. All quoted instantly; nothing flagged.
 
 | File | Size | Qty | Each | Line |
@@ -82,7 +83,7 @@ The cart: one 91 × 91 × 14 cm box, shipping **free**, tax (BC GST/PST) $39.41,
 `kotatsu/price.py` predicted $327.64 (0.2 % low). If uMake's finalization adds what it added to v1 ($52.50 on
 $353.33, about 15 %), expect about $378 + tax, about $423. TODO-verify when ordering.
 
-## v2 full quote: table and both zaisu (November 2026, not ordered)
+## v2 full quote: the "+"-leg table and both zaisu (November 2026, not ordered; superseded)
 Every file: millimetres, Engineered Wood > Baltic Birch, **15mm**, CNC router, no extra processes. All 28 parts
 quoted instantly; nothing was flagged.
 
@@ -172,7 +173,7 @@ runs, in memory):
 - Corner pads as smooth convex blobs: no change (they're nearly convex already).
 - **A solid deck** (no X openings): −$4.26, deck FEA 60 % and a third of the sag, but +3.8 kg, and no knee room
   in the openings. Rejected by the owner: the X's openings give the knees a few more cm.
-- The top at squircle n = 8: −$0.20 (the posts 20 mm inside the edge instead of 28). Not taken.
+- The top at squircle n = 8: −$0.20 (the posts 20 mm inside the edge instead of 28). Taken later (owner 2026-11: softer).
 The cut that's left is required: outlines, cross-lap slots, wedge holes, mortises, the heater well.
 
 ## How each change moved the price
@@ -210,13 +211,13 @@ largest part, and charges by that box. I tested it by swapping only the top file
 
 **The price is mostly cutting.** I put test shapes into a separate quote to see how the price is built. One
 300 × 300 square on its own costs $83.18, so every order carries a big fixed share. Adding shapes one at a
-time (totals from $119 to $232) fits this model, now in `kotatsu/price.py`:
+time (totals from $119 to $232) fits this model, which `kotatsu/price.py` used until November 2026:
 
     each part ≈ $101 per m² of wood + $15.25 per metre of cutting + about $0.20 per hole
+    order total ≈ 11.25 × (sum of the parts) ^ 0.551
 
 (Superseded in November 2026: material goes by the bounding box, see the v2 full quote above. The
 conclusions about windows below were right for the wrong reason.)
-    order total ≈ 11.25 × (sum of the parts) ^ 0.551
 
 It predicts the real orders to within 15 cents. What it showed:
 - **Cutting is about 77 % of the cost.** At this order size, one more metre of cutting adds about $5.40, and
