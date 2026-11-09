@@ -151,7 +151,7 @@ three parts with real outlines on 14.1 mm stock:
 | Item | Cost |
 |---|---|
 | Heater (PaletteLife, amazon.ca, delivered) | $258 |
-| uMake: 18 parts at 15mm, **quoted $306.47 + about $36.78 tax** (saved as quote 2926, not ordered, `docs/quote.md`), free shipping expected. If finalization adds what it did for v1 (~15 %): about $395 | $343–395 |
+| uMake: 18 parts at 15mm, **quoted $306.42 + about $36.77 tax** (saved as quote 2926, not ordered, `docs/quote.md`), free shipping expected. If finalization adds what it did for v1 (~15 %): about $395 | $343–395 |
 | Futon: 205 cm square from Etsy, or a queen duvet + cover from Douglas | $185–230 |
 | Sandpaper and finishing oil | $30–50 |
 | A zaisu (bought, adjustable: about $70, free shipping) + tax | $78 |
@@ -199,7 +199,7 @@ $353.33 (TODO-verify what was added; if it repeats, v2's $328.53 becomes about $
 ## Still open
 1. **The 15 mm sheet.** Order uMake's "15mm" Baltic birch (its "16mm" is probably 5/8", too thick). Its
    real thickness range is assumed at 14.1–15.7 mm: TODO-verify. Windsor Plywood's 15 mm B/B measures 15.0 ± 0.1 mm
-   (`docs/research.md`), well inside it. uMake requoted for the diagonal legs: $306.47 (`docs/quote.md`).
+   (`docs/research.md`), well inside it. uMake requoted for the diagonal legs: $306.42 (`docs/quote.md`).
 2. **Heater details.** The screws' length (the tips must stay inside the 15 mm cheek), and nothing sticking
    out of the heater's ends past the 300 mm well (cord, knob). With the futon now over the heater, check
    its top stays cool to the touch on high (owner, 2026-11: 40 °C on v1, the same heater: fine). Look for a cUL, cETL or CSA mark on the rating label.
