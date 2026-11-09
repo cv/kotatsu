@@ -456,7 +456,7 @@ top.
 | Wedges | 14 | 6 (4 + 2 spares) |
 | Clear height under the heater | 286 mm | 323 mm |
 | A hard 200 N shove, finite elements | not checked | 87 % of the legs' strength, 7.2 mm of sway |
-| uMake | $353.33 in the cart ($405.83 once uMake finalized it) | $328.40 (a quote, not an order; $367.81 with tax, shipping free) |
+| uMake | $353.33 in the cart ($405.83 once uMake finalized it) | $328.02 (a quote, not an order; about $367.38 with tax, shipping free) |
 
 Before I order it, I want to measure how I really sit (no tape to hand yet) and find out how thick
 uMake's 15 mm sheet really is. Then a

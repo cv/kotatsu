@@ -117,6 +117,9 @@ public repo): the same 6 files, 15mm Baltic birch, CNC router, quantities 1 / 1 
 tax, matching the 2026-11 quote. Not ordered: the owner will confirm it later.
 **Updated 2026-11-08** for the raised heater: the old `heater-cheek.dxf` is off the invoice (its file tab stays,
 unordered) and the new one is on it, quantity 2. Still **$328.40**; saved.
+**Updated again 2026-11-08** for the heater 10 mm higher (owner: a 10 mm gap under the cheek tops): the cheeks are now
+380 × 60 mm (were 70 tall). The previous cheek is off the invoice, the new one on it at 2: **$328.02** before tax
+(about $39.36 tax at 12 %), saved and checked after a reload.
 
 ### What can still be saved (tried 2026-11, not adopted)
 With material priced by bounding box, a change only saves money if it shrinks a part's box or its cut. At this
