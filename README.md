@@ -465,6 +465,9 @@ one (25 mm) and a higher haunch brought it to 84-95 %, and a round-bottomed slot
 since the crosspiece's edges can sit on the curve, brought it to 75 %. The posts also had to end 14 mm in from
 the corner, since on the diagonal the squircle top's edge comes closest; each leg's outer edge sweeps in to
 there in one long curve, starting well below the deck, so it reads as part of the leg.
+A last pass shaved and smoothed every curve that didn't have a job: the legs taper in one long line, the
+crosspieces arch underneath, and the deck's arms flare into the ring and the pads with much bigger fillets.
+That made the deck stronger, too: with the wedges slack it now stays under its strength (97 %, was 127 %).
 
 ![The diagonal legs in the 3-D view, with the top, futon and rug hidden: one plate on each corner's diagonal, a crosspiece under each corner of the X deck, a wedge across each arm](docs/img/v2-diagonal.jpg)
 

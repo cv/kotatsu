@@ -35,9 +35,10 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
 - **Leg plates (4, 140 × 385 mm), one on each corner's diagonal**, its outer end at the frame corner (owner 2026-11).
   - Under the deck each plate is 140 mm wide along the diagonal: the post (40 mm), the 19 mm head slot 60 mm in
     from the corner, a 10 mm shoulder, the 50 mm tenon and a 10 mm inner shoulder. Below the haunch (full width
-    down to 305 mm, then one S-curve) it narrows to 70 mm, and from 150 mm down tapers softly to 56 mm at the
+    down to 305 mm, then one S-curve) it narrows to 70 mm, and from 220 mm down tapers softly in one long line to 56 mm at the
     floor. Its outer edge stays at the corner all the way down, so the legs take up little room along each side.
-  - **The crosspiece (4, 90 × 25.5 mm)** drops into the plate's head slot, across the plate. The slot is only
+  - **The crosspiece (4, 90 × 25.5 mm, its underside arched up to 14 mm at the ends: each half is a little
+    cantilever)** drops into the plate's head slot, across the plate. The slot is only
     25 mm deep and round-bottomed: the crosspiece's square edges sit on the arc, and its top comes out flush
     with the plate's shoulders. The deck bears on both, which gives the joint a 90 mm base against twisting
     (one plate alone would rock open at about 32 N). The crosspiece is cut 0.5 mm proud: sand its top edge at
@@ -57,7 +58,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
   0.2 mm each side), 5 mm past the lying wedge, the plate's top edge and the crosspiece's (owner, 2026-11), so the
   pads are small crosses at the ends of the arms; the deck stops square across the diagonal beside each post. A ring round the **heater well** (326 × 300 mm: the heater plus
   both cheeks) is 40 mm wide beside the cheeks and runs 15 mm past their ears. Four 36 mm arms along the
-  diagonals join them, with R90 fillets at the ring, R40 at the pads and R12 corners outside. 1.33 kg,
+  diagonals join them, with R150 fillets at the ring and R80 at the pads (owner 2026-11: smoother, and stronger), and R12 corners outside. 1.33 kg,
   against 2.1 kg for the H.
   - The deck holds the futon up across the middle. Its openings are as big as the H's were (188 mm deep
     at mid-side, where the knees go); the extra open area is near the corners.
@@ -138,9 +139,10 @@ corner, and the wedges and deck don't carry any of the weight from above.
 **Finite-element check ([docs/fea.md](docs/fea.md)).** `kotatsu/fea.py` re-checks the
 three parts with real outlines on 14.1 mm stock:
 - **Top.** The grillage above is confirmed within 10 %: everyday at most 15 %, an adult on an edge 37 %.
-- **X deck.** Under a 300 N hand the deck uses up to about 65 % of its strength at the arm fillets with the
+- **X deck.** Under a 300 N hand the deck uses up to about 60 % of its strength at the arm fillets with the
   wedges tight, not the cantilever estimate's 27 % (the 45° arms are softer and weaker than assumed). With
-  slack wedges it reaches 127 % (the "+" legs' deck: 155 %): keep them tight.
+  slack wedges 97 % (the bigger fillets, owner 2026-11; it was 127 % with R90/R40, 155 % under the "+" legs). Still,
+  keep them tight.
 - **Legs.** A 200 N sideways shove at table height, 14.1 mm stock: the worst spot is the head slot's root at
   74-75 % (mesh-stable), the wedge hole about 50 %; the sway is 6.1 mm along x. With the top's worst corner load
   as well (an adult on an edge) it drops to 51 %; that load alone uses 28 %. (The "+" legs' plate A: 80 %, sway 7.1 mm, after it first failed

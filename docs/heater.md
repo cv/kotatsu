@@ -46,8 +46,8 @@ two heater cheeks hanging under the deck.
 - **TODO-verify (before ordering v2):** where the knob and the cord's socket are, and how far they stick out. The
   well is only 5 mm longer than the body at each end, and the cheeks take both sides, so anything on an end or a
   side won't fit (on the bottom it's fine).
-- **TODO-verify:** the screws must be short enough not to poke out of the 15 mm cheek (v2): at most about 13 mm plus the
-  tab's thickness, so the tips stay 2 mm inside the wood. Drill 2–2.5 mm pilot holes. I'll drill the holes myself during assembly, so the cut
+- **Checked (owner, 2026-11):** the screws supplied with the heater suit the 15 mm cheeks (they must not poke out:
+  at most about 13 mm into the wood). Drill 2–2.5 mm pilot holes. I'll drill the holes myself during assembly, so the cut
   files don't have any.
 
 ## Things to watch
