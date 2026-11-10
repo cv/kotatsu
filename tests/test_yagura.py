@@ -63,12 +63,18 @@ def test_wedges_lie_on_the_deck_apart(Y):
 
 
 def test_posts_carry_the_top_further_out(Y):
+    """The posts carry the loose top near the frame's corners: pressed on its very edge it takes well over 1.5 x the
+    push to lift than without them; at the EN loading point (comfort.tip_inset in) it can't lift at all with them.
+    (At that point, without posts, it does: so the edge is where the comparison means something.)"""
+    import math
     from kotatsu import comfort
     P = Y[0]
-    with_posts = comfort.top_lift(P)[0]
+    with_posts = comfort.top_lift(P, 0.0)[0]
     P2 = params.tables(params.load())[0]
     P2.yagura.corner_posts = False
-    assert with_posts > 1.5 * comfort.top_lift(P2)[0]
+    without = comfort.top_lift(P2, 0.0)[0]
+    assert math.isfinite(with_posts) and with_posts > 1.5 * without
+    assert math.isinf(comfort.top_lift(P)[0]) and math.isfinite(comfort.top_lift(P2)[0])
 
 
 def test_x_deck_arms_carry_a_hand(Y):
