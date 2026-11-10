@@ -538,7 +538,7 @@ def leg_case(p, which: str, H: float, top: dict | None = None, N_deck: float | N
     m = mesh(shape, h, h_edge=h / 2)
     trac = [(edge(0, pu, L.H), (0.0, -on_post))] + ([(edge(ta, tb, L.H), (0.0, -on_tenon))] if on_tenon else [])
     kf = M.E_par * t / p.stiffness.bearing_len                         # end grain on the floor, as on the deck
-    foot = edge(-1, p.frame.leg_width + 1, 0.0)
+    foot = edge(shape.bounds[0] - 1, shape.bounds[2] + 1, 0.0)        # (the foot may swing out past u = 0)
     gap = max(0.0, (fr.slot_w(p) - 2 * fr.rib_proud(p) - t) / 2) if ribs else None   # sanded to slide in: 0 = touching
     cs = leg_contacts(p, shape, rib_gap=gap, t=t) + [
         Contact("floor", foot, 1, -1, kf, body=True), Contact("floor (grip)", foot, 0, -1, kf, bilateral=True, body=True)]

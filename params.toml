@@ -93,17 +93,22 @@ hole_h = 14.0         # wedge hole above the deck
 hole_drop = 1.0       # hole bottom below the thinnest deck's top face, so the wedge bears on the deck
 corner_posts = true   # each plate's outer end rises past the deck to the top as a post: the top rests at the frame
                       # corners (deck corners cut away around them); loose top lifts at ~363 N vs ~205 N without
-leg_narrow = 70.0     # below the haunch the leg keeps this much width (v2, owner 2026-11: 70, was 60; the FEA found the
-                      # "+" legs' slotted plate bending as two fingers: docs/fea.md)
+leg_narrow = 56.0     # below the haunch the leg keeps this much width (owner 2026-11: 56, was 70, slimmer with the kick;
+                      #   the longer haunch below keeps the head slot's root at 65 % under the 200 N push: docs/fea.md)
 leg_haunch_top = 305.0  # the plate is full width from here up, past the head slot's bottom (~312): the slot never
                       #   leaves a thin finger beside it ("+" legs: 320). Room between the legs 656 mm ("+": 638)
-leg_haunch_drop = 30.0  # ... and reaches the narrow line this much lower (a ~31° slope)
+leg_haunch_drop = 50.0  # ... and reaches the narrow line this much lower (owner 2026-11: 50, was 30: a gentler slope moves
+                        #   the bend away from the slot root; 30 with the slim leg would be 106 %)
 leg_haunch_r = 60.0   # the haunch's S-curve: each bend takes up to this along its edges (owner 2026-11: 60, was 30)
 leg_taper_top = 220.0 # full leg_narrow down to here, then a soft taper (owner 2026-11: from 220, was 150: one long line from the
                       # haunch to the foot; leg FEA 74 %, 3 mm more room between the legs) ...
-leg_foot_w = 56.0     # ... then the inner edge bends in to this at the floor (FEA: the leg plate at 81 % under the
-                      # 200 N push, was 89, the lower leg a little softer)
+leg_foot_w = 46.0     # ... then the inner edge bends in to this at the floor (owner 2026-11: 46, was 56; narrower can't
+                      #   be cut: the foot rounding and relief no longer fit)
 leg_taper_r = 110.0   # ... with a long squircle bend where the taper starts (110, was 70)
+leg_kick = 30.0       # the lower leg sweeps outwards, both edges together, by this much at the floor (owner 2026-11: 30,
+                      #   "more japanese-ish"); the feet stand ~24 mm past the top's edge, and tipping takes ~4.5 kN
+leg_kick_n = 2.0      # ... shaped (1 - z/leg_curve_top)^n: 2 spreads the curve up the leg
+leg_curve_top = 290.0 # ... fading out, with no slope, here: below the head slot, so the joints are untouched
 foot_relief = 1.5     # shallow arc under each plate's foot: it stands on its two ends
 foot_relief_margin = 20.0  # past the foot rounding: each end stands on a flat ~8 mm pad
 wedge_len = 60.0      # the leg wedges (v2: the only wedges; the heater cradle hangs by gravity)
@@ -139,7 +144,7 @@ refine_seeds = 6      # ... around this many of the best so far
 "deck.arm_w" = [28.0, 50.0]
 "deck.fillet_r" = [50.0, 180.0]
 "deck.ring_w" = [30.0, 60.0]
-"yagura.leg_narrow" = [60.0, 90.0]
+"yagura.leg_narrow" = [50.0, 90.0]
 "yagura.leg_haunch_top" = [290.0, 330.0]
 "yagura.leg_haunch_drop" = [20.0, 60.0]
 "yagura.leg_taper_top" = [100.0, 270.0]

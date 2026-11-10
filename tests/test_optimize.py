@@ -53,7 +53,7 @@ def test_nondominated_and_fronts():
 def test_leg_width_tracks_the_legs():
     w = looks.leg_width(P)
     assert 50 < w < 90
-    assert looks.leg_width(optimize.design({"yagura.leg_narrow": 85.0})) > w > looks.leg_width(optimize.design({"yagura.leg_narrow": 62.0}))
+    assert looks.leg_width(optimize.design({"yagura.leg_narrow": 85.0})) > w > looks.leg_width(optimize.design({"yagura.leg_narrow": 50.0}))
 
 
 def test_picks_spread_and_score():
