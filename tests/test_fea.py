@@ -98,12 +98,19 @@ def leg_push(p):
     return fea.leg_case(p, "A", p.fea.push_n, None, h=4)   # converged (6 mm overstates the wedge hole with the taper)
 
 
-def test_leg_pair_takes_the_push_and_the_wedge_its_preload(p, leg_push):
+@pytest.fixture(scope="module")
+def top_load(p):
+    """What the top puts on the most loaded leg (its worst case, loads.cases), as the FEA report uses it."""
+    return fea.top_on_legs(p)
+
+
+def test_leg_pair_takes_the_push_and_the_wedge_its_preload(p, leg_push, top_load):
     a, b = leg_push["forces"]                                   # the plate, and its mirror image
     assert a["floor (grip)"] - b["floor (grip)"] == pytest.approx(leg_push["H_plate_pair"], abs=1.0)   # diagonal: their share
-    rest = fea.leg_case(p, "A", 0.0, {"A tenon": 600.0}, h=6)
+    assert top_load["A post"] + top_load["A tenon"] > 0.25 * 9.81 * p.loads.sitter_kg     # it found a real corner load
+    rest = fea.leg_case(p, "A", 0.0, top_load, h=6)
     assert rest["forces"][0]["wedge"] == pytest.approx(p.stiffness.wedge_preload, abs=2.0)
-    assert max(z["tsai_hill"] for z in rest["zones"].values()) < 0.5   # a sitter's load alone is fine
+    assert max(z["tsai_hill"] for z in rest["zones"].values()) < 0.5   # the top's worst corner load alone is fine
 
 
 def test_lumped_leg_stress_understates_the_fe_peak(p, leg_push):
@@ -111,11 +118,21 @@ def test_lumped_leg_stress_understates_the_fe_peak(p, leg_push):
     slot's root, many times that value. (A reminder that the lumped leg stress is no strength check.)"""
     from kotatsu import stiffness
     z = leg_push["zones"]
-    finger = max(z["haunch fillet"]["sx"], z["slot root"]["sx"])        # at 70 mm the wedge hole can be worse still
+    finger = max(z["haunch fillet"]["sx"], z["slot root"]["sx"])
     assert finger > 5 * float(stiffness.stresses(p, p.fea.push_n)["leg_MPa"])
 
 
-def test_leg_plates_hold_the_push(leg_push):
-    """A 200 N shove at table height, 14.1 mm stock: no zone of plate A past its strength (Tsai-Hill; the
-    wedge's bearing peaks are local crushing, kept apart). Failed at leg_narrow 60; holds at 70 (owner 2026-11)."""
-    assert max(v["tsai_hill"] for k, v in leg_push["zones"].items() if k != "contact edges") < 1.0
+def test_leg_plates_hold_the_push(p, leg_push):
+    """A 200 N shove at table height, 14.1 mm stock: no zone of the plate past the share of its strength the design
+    search allows (optimize.use_max, Tsai-Hill; the wedge's bearing peaks are local crushing, kept apart), and the
+    frame's sway along x (the plate's own, in its diagonal plane, over cos 45) within optimize.sway_max.
+    (Slim legs: 56 / 46 mm with the 30 mm haunch failed at 106 %; the 50 mm haunch holds at ~63-65 %.)"""
+    assert max(v["tsai_hill"] for k, v in leg_push["zones"].items() if k != "contact edges") < p.optimize.use_max
+    assert leg_push["sway_mm"] * 2 ** 0.5 < p.optimize.sway_max
+
+
+def test_leg_plates_hold_the_push_with_the_top_load(p, top_load):
+    """The same shove with the top's worst corner load on the plate (the third leg case of docs/fea.md), coarser mesh
+    (6 mm overstates the peaks a little: conservative)."""
+    r = fea.leg_case(p, "A", p.fea.push_n, top_load, h=6)
+    assert max(v["tsai_hill"] for k, v in r["zones"].items() if k != "contact edges") < p.optimize.use_max
