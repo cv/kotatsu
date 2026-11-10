@@ -48,7 +48,7 @@ def leg_hole_z(p) -> tuple[float, float]:
 def post_u(p) -> float:
     """Where the corner post (outside the head slot) ends, from the plate's outer end; it rises past the deck to
     the top's underside, so the top is carried near the frame's corners. 0 = no posts."""
-    if not getattr(p.yagura, "corner_posts", False):
+    if not p.yagura.corner_posts:
         return 0.0
     return p.frame.ear - fr.slot_w(p) / 2
 
@@ -78,7 +78,7 @@ def leg_plate(p) -> Polygon:
     post and the tenon above the deck, the wedge hole, the head slot with its crush ribs, the foot relief."""
     F, L, r = p.frame, fr.layout(p), fr._rd(p)
     zs, H = L.z_deck_bot, L.H
-    wt, tr = F.leg_width, getattr(F, "top_r", 3.0)
+    wt, tr = F.leg_width, F.top_r
     g = leg_outline(p)
     ta, tb = _tenon_u(p)
     g = g.union(fr._round_outer(box(ta, zs - 10, tb, H), tr))
@@ -101,8 +101,8 @@ def _sweep(p) -> list[tuple[float, float]]:
     """The post's outer edge, bottom to top: u = post_inset * s^2, s from 0 at post_sweep_from (tangent to the plate's
     outer edge) to 1 at the top."""
     F, L = p.frame, fr.layout(p)
-    pi, H = getattr(F, "post_inset", 0.0), L.H
-    z0 = min(getattr(F, "post_sweep_from", L.z_deck_bot), L.z_deck_bot)
+    pi, H = F.post_inset, L.H
+    z0 = min(F.post_sweep_from, L.z_deck_bot)
     n = 96
     return [(pi * (k / n) ** 2, z0 + (H - z0) * k / n) for k in range(n + 1)]
 
@@ -114,7 +114,7 @@ def post(p) -> Polygon:
     F, L = p.frame, fr.layout(p)
     sw, pu = _sweep(p), post_u(p)
     g = Polygon(sw + [(pu, L.H), (pu, sw[0][1])])
-    return fr._round_outer(g, getattr(F, "top_r", 3.0))
+    return fr._round_outer(g, F.top_r)
 
 
 def sweep_cut(p) -> Polygon:
@@ -125,15 +125,11 @@ def sweep_cut(p) -> Polygon:
 
 def crosspiece(p) -> Polygon:
     """In its own (u across the plate, v = z from the head slot's bottom) plane: cross_w long, the slot's depth +
-    cross_proud tall (sanded to fit). Its top edge bears on the deck. With cross_end_h set, its underside arches up
-    from the plate (full depth where it sits in the slot) to cross_end_h at each end: each half is a little
-    cantilever, loaded at its end as the joint resists twisting, so it can be shallow there."""
+    cross_proud tall (sanded to fit). Its top edge bears on the deck. Its underside arches up from the plate (full
+    depth where it sits in the slot) to cross_end_h at each end: each half is a little cantilever, loaded at its
+    end as the joint resists twisting, so it can be shallow there."""
     Y = p.yagura
-    h = Y.head_slot + Y.cross_proud
-    he = getattr(Y, "cross_end_h", 0.0) or h
-    if he >= h - 0.01:
-        g = box(0, 0, Y.cross_w, h)
-        return geom.squircle_corners(g, lambda c, cv: Y.cross_r if c[1] < 1 else 3.0, p.frame.corner_n)
+    h, he = Y.head_slot + Y.cross_proud, Y.cross_end_h
     c, a = Y.cross_w / 2, p.material.t_max / 2 + 2.0          # full depth over the plate (and 2 mm either side)
     n = 40
     under = []
@@ -150,11 +146,11 @@ def crush_ribs(p, u0: float, u1: float, z0: float, z1: float) -> Polygon:
     radius fit.crush_rib_r), at fit.crush_rib_at fractions of the slot's length. They make the joint snug on any
     stock. Too tight: sand the bumps (or the crosspiece's faces) down at the fit-up (easy)."""
     F = p.fit
-    h, R = fr.rib_proud(p), getattr(F, "crush_rib_r", 10.0)
+    h, R = fr.rib_proud(p), F.crush_rib_r
     if h <= 0:
         return Polygon()
     bumps = []
-    for f in getattr(F, "crush_rib_at", [0.6]):
+    for f in F.crush_rib_at:
         z = z0 + f * (z1 - z0)
         bumps.append(Point(u0 + h - R, z).buffer(R, quad_segs=32).intersection(box(u0 - 1, z - R, u0 + h, z + R)))
         bumps.append(Point(u1 - h + R, z).buffer(R, quad_segs=32).intersection(box(u1 - h, z - R, u1 + 1, z + R)))
@@ -165,7 +161,7 @@ def foot_relief(p) -> Polygon:
     """Shallow arc (yagura.foot_relief deep) under the middle of the foot, so each plate stands on its two ends:
     no rocking on a slightly uneven floor."""
     Y = p.yagura
-    sag = getattr(Y, "foot_relief", 0.0)
+    sag = Y.foot_relief
     if sag <= 0:
         return Polygon()
     wn = foot_w(p)
@@ -177,11 +173,9 @@ def foot_relief(p) -> Polygon:
 
 # ----------------------------------------------------------------------------- the outline
 def foot_w(p) -> float:
-    """The leg's width at the floor: leg_foot_w if set (v2, owner 2026-11: a soft taper, the inner edge
-    bending in from leg_narrow at leg_taper_top down to this), else straight at leg_narrow."""
-    Y = p.yagura
-    wn = getattr(Y, "leg_narrow", 0.0) or p.frame.leg_width
-    return getattr(Y, "leg_foot_w", None) or wn
+    """The leg's width at the floor, leg_foot_w (v2, owner 2026-11: a soft taper, the inner edge bending in from
+    leg_narrow at leg_taper_top down to this; leg_outline keeps the leg straight if it's leg_narrow or more)."""
+    return p.yagura.leg_foot_w
 
 
 def leg_outline(p) -> Polygon:
@@ -193,26 +187,20 @@ def leg_outline(p) -> Polygon:
     (they still stand on their ends), the top corners shoulder_r (the inner shoulder bears on the deck)."""
     Y, F, L = p.yagura, p.frame, fr.layout(p)
     wt, zs = F.leg_width, L.z_deck_bot
-    wn = getattr(Y, "leg_narrow", 0.0)
-    if wn and wn < wt:
-        zt = Y.leg_haunch_top
-        wf, ztp = foot_w(p), getattr(Y, "leg_taper_top", 0.0)
-        if wf < wn and ztp > 0:      # full width down to leg_taper_top, then a soft taper to the foot
-            g = Polygon([(0, 0), (wf, 0), (wn, ztp), (wn, zt - Y.leg_haunch_drop), (wt, zt), (wt, zs), (0, zs)])
-        else:
-            g = Polygon([(0, 0), (wf, 0), (wn, zt - Y.leg_haunch_drop), (wt, zt), (wt, zs), (0, zs)])
-    else:
-        g = box(0, 0, wt, zs)
-
-    ztp = getattr(Y, "leg_taper_top", 0.0)
+    wn, zt, ztp = Y.leg_narrow, Y.leg_haunch_top, Y.leg_taper_top
+    wf = foot_w(p)
+    if wf < wn:                      # full width down to leg_taper_top, then a soft taper to the foot
+        g = Polygon([(0, 0), (wf, 0), (wn, ztp), (wn, zt - Y.leg_haunch_drop), (wt, zt), (wt, zs), (0, zs)])
+    else:                            # (optimize can reach leg_foot_w >= leg_narrow: no taper then)
+        g = Polygon([(0, 0), (wf, 0), (wn, zt - Y.leg_haunch_drop), (wt, zt), (wt, zs), (0, zs)])
 
     def size(c, convex):
         if c[1] < 1:
             return F.foot_r
         if c[1] > zs - 1:
             return F.shoulder_r
-        if ztp and abs(c[1] - ztp) < 1:
-            return getattr(Y, "leg_taper_r", 60.0)        # where the taper starts: a long, soft bend
+        if abs(c[1] - ztp) < 1:
+            return Y.leg_taper_r                          # where the taper starts: a long, soft bend
         return Y.leg_haunch_r
     return geom.squircle_corners(g, size, F.corner_n)
 
@@ -295,13 +283,12 @@ def deck_blank(p) -> Polygon:
 
 def pads(p) -> list[Polygon]:
     """The wood the corners need (owner 2026-11): pad_margin round each mortise (a hole), bearing_margin past each lying
-    wedge, each plate's top edge and each crosspiece's; with deck.pad_hull, one convex outline round them per corner."""
+    wedge, each plate's top edge and each crosspiece's; one convex outline round them per corner."""
     D = p.deck
     keep = [m.buffer(D.pad_margin, join_style="mitre") for m in mortise_boxes(p)]
     bits = [keep] + [[k.buffer(D.bearing_margin, join_style="mitre") for k in f(p)] for f in (wedge_footprints, plate_tops, cross_tops)]
-    if getattr(D, "pad_hull", False):                  # owner 2026-11: each corner's pad one convex outline round its
-        return [unary_union(c).convex_hull for c in zip(*bits)]   # bits: straight sides, no wiggles to sand
-    return [g for b in bits for g in b]
+    # owner 2026-11 (deck.pad_hull): each corner's pad one convex outline round its bits, no wiggles to sand
+    return [unary_union(c).convex_hull for c in zip(*bits)]
 
 
 def ring(p) -> Polygon:
@@ -327,19 +314,14 @@ def deck(p) -> Polygon:
     if D.edge_r >= D.arm_w / 2:
         raise ValueError("[deck] edge_r must stay under arm_w / 2, or the rounding eats the arms")
     core = geom.closing(unary_union([ring(p)] + arms(p)), D.fillet_r)
-    reach = getattr(D, "pad_flare_reach", 0.0)
-    if reach > 0:                                      # owner 2026-11: each pad flares out of its own arm like a trumpet,
-        pads_ = pads(p)                                #   a long fillet between the two only (nowhere else on the deck)
-        local = []
-        for (*_, C, d, n), pad, arm in zip(corners(p), pads_, arms(p)):
-            near = _plan(box(-1e3, -1e3, reach, 1e3), C, d, n)
-            local.append(geom.closing(unary_union([pad, arm.intersection(near)]), D.pad_fillet_r))
-        g = unary_union([core] + local)
-    else:
-        g = geom.closing(unary_union(pads(p) + [core]), D.pad_fillet_r)
+    local = []                                         # owner 2026-11: each pad flares out of its own arm like a trumpet,
+    for (*_, C, d, n), pad, arm in zip(corners(p), pads(p), arms(p)):   # a long fillet between the two only
+        near = _plan(box(-1e3, -1e3, D.pad_flare_reach, 1e3), C, d, n)    # (pad_flare_reach along the arm)
+        local.append(geom.closing(unary_union([pad, arm.intersection(near)]), D.pad_fillet_r))
+    g = unary_union([core] + local)
     g = g.buffer(-D.edge_r, quad_segs=geom.Q).buffer(D.edge_r, quad_segs=geom.Q)
     g = g.intersection(deck_blank(p)).intersection(corner_trim(p))
-    tr = getattr(D, "trim_r", 0.0)
+    tr = D.trim_r
     if tr > 0:                                         # owner 2026-11: round the pads' far corners, where the deck stops
         g = g.buffer(-tr, quad_segs=geom.Q).buffer(tr, quad_segs=geom.Q)   # beside each post. With convex pads these
                                                        # are the deck's only convex corners left, so nothing else changes
@@ -361,11 +343,8 @@ def wedge_shape(p, which: str = "leg") -> Polygon:
     n, h = wedge_dims(p)
     taper = p.fit.wedge_taper
     w = Polygon([(0, 0), (n, 0), (n, h), (0, h - n * taper)])
-    hr = getattr(p.yagura, "wedge_head_r", 0.0)
-    if hr > 0:
-        w = geom.squircle_corners(w, lambda c, cv: hr if c[0] > n - 1 else 3.0, p.frame.corner_n)
-        return w
-    return fr._round_outer(w, 3.0)
+    hr = p.yagura.wedge_head_r
+    return geom.squircle_corners(w, lambda c, cv: hr if c[0] > n - 1 else 3.0, p.frame.corner_n)
 
 
 def _vmat(udir, origin) -> tuple[float, ...]:
