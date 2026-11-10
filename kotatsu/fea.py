@@ -450,17 +450,18 @@ def top_on_legs(p, case: str | None = None) -> dict:
     return out
 
 
-def leg_contacts(p, shape, rib_gap: float | None = None) -> list[Contact]:
+def leg_contacts(p, shape, rib_gap: float | None = None, t: float | None = None) -> list[Contact]:
     """The joint as springs (stiffness.joint's values, spread along the edges): the shoulders on the deck's
     underside, the wedge on its hole's top edge, the tenon's faces on the mortise ends and the post's inner face
     on the deck's cut-out.
     rib_gap: if given, the crosspiece sits in the head slot as a strut between its two walls at each crush rib,
     with this gap per side (mm; 0 = just touching): it ties the wood either side of the slot sideways (no shear).
-    None: the slot is left empty (thin stock)."""
+    None: the slot is left empty (thin stock). t: the plate's (and deck's) thickness, default the thinnest."""
     from shapely.geometry import box
     from . import frame as fr, stiffness, yagura
     S, M, L = p.stiffness, p.material, fr.layout(p)
-    t, zs, ks = M.t_nominal, L.z_deck_bot, S.E_perp * M.t_nominal / L.t
+    t = M.t_min if t is None else t
+    zs, ks = L.z_deck_bot, S.E_perp                    # per mm of shoulder: bearing width t over the deck's depth t
     band = lambda a, b: box(a, zs - 0.3, b, zs + 0.3)
     out = []
     for i, (a, b) in enumerate(stiffness._shoulders(p, shape)):
@@ -476,7 +477,7 @@ def leg_contacts(p, shape, rib_gap: float | None = None) -> list[Contact]:
     uc, ts = (ta + tb) / 2, fr.thick_slot(p)
     _, z1 = yagura.leg_hole_z(p)
     wl, _ = yagura.wedge_dims(p)
-    k_bear = S.E_perp * (wl - t) * t / L.t
+    k_bear = S.E_perp * (wl - t)
     out.append(Contact("wedge", box(uc - ts / 2, z1 - 0.3, uc + ts / 2, z1 + 0.3), 1, -1, k_bear / ts))
     kh = M.E_par * t / S.bearing_len
     for u, sg in ((ta, -1), (tb, 1)):
@@ -536,10 +537,10 @@ def leg_case(p, which: str, H: float, top: dict | None = None, N_deck: float | N
     edge = lambda a, b, v: box(a, v - 0.3, b, v + 0.3)
     m = mesh(shape, h, h_edge=h / 2)
     trac = [(edge(0, pu, L.H), (0.0, -on_post))] + ([(edge(ta, tb, L.H), (0.0, -on_tenon))] if on_tenon else [])
-    kf = M.E_par * M.t_nominal / p.stiffness.bearing_len               # end grain on the floor, as on the deck
+    kf = M.E_par * t / p.stiffness.bearing_len                         # end grain on the floor, as on the deck
     foot = edge(-1, p.frame.leg_width + 1, 0.0)
     gap = max(0.0, (fr.slot_w(p) - 2 * fr.rib_proud(p) - t) / 2) if ribs else None   # sanded to slide in: 0 = touching
-    cs = leg_contacts(p, shape, rib_gap=gap) + [
+    cs = leg_contacts(p, shape, rib_gap=gap, t=t) + [
         Contact("floor", foot, 1, -1, kf, body=True), Contact("floor (grip)", foot, 0, -1, kf, bilateral=True, body=True)]
     Nv = N_deck + on_post + on_tenon
     run = lambda **kw: plane(m, t, Ld.E_cross, M.E_par, Ld.G_plate, cs, trac, **kw)

@@ -8,8 +8,8 @@ How the frame resists a sideways push H at the top
       delta = theta * L + H_i L^3 / (3 E I)          (joint rotation + plate bending; L = leg height)
   and the joint rotation theta comes from the leg <-> deck joint:
     * shoulders: the plate's top edge presses up on the deck's underside. Modelled as a row of
-      compression-only springs (Winkler), k = E_perp * t_plate / t_deck per mm of shoulder, E_perp
-      being plywood's (soft) modulus across its thickness;
+      compression-only springs (Winkler), k = E_perp per mm of shoulder (the plate's bearing width over the
+      deck's depth: the same sheet, so they cancel), E_perp being plywood's (soft) modulus across its thickness;
     * wedge: lies on the deck top and pulls the tenon up; a compression-only spring, the wedge's
       bearing on the deck in series with the wood above the wedge hole;
     * preload: tapping the wedge in clamps the deck between shoulder and wedge with force P0.
@@ -18,6 +18,7 @@ How the frame resists a sideways push H at the top
   four plates at 45 degrees, two leaning inwards and two outwards (mirror images, one at each end), so two
   work their joints in the strong sense and two in the weak sense.
 
+Thickness: every plate (and the deck) is taken at the thinnest stock, material.t_min, as the FEA does.
 All material values are TODO-verify (params [material] / [stiffness]); results are estimates for
 comparing options and spotting weak links, not certification.
 """
@@ -63,8 +64,8 @@ def _shoulders(p, shape) -> list[tuple[float, float]]:
 
 def joint(p, shape) -> Joint:
     S, M, L = p.stiffness, p.material, fr.layout(p)
-    t = M.t_nominal
-    ks = S.E_perp * t / L.t                                     # N/mm per mm of shoulder
+    t = M.t_min                                                 # plates and deck at the thinnest stock
+    ks = S.E_perp                                               # N/mm per mm of shoulder (bearing width t over depth t)
     us, kk = [], []
     for a, b in _shoulders(p, shape):
         n = max(2, int(round(b - a)))
@@ -75,7 +76,7 @@ def joint(p, shape) -> Joint:
     ta, tb = yagura._tenon_u(p)
     uw = (ta + tb) / 2
     wl, _ = yagura.wedge_dims(p, "leg")
-    k_bear = S.E_perp * (wl - t) * t / L.t                     # wedge pressing on the deck top
+    k_bear = S.E_perp * (wl - t)                                # wedge pressing on the deck top, either side of the plate
     z0, z1 = yagura.leg_hole_z(p)
     bridge = L.H - z1                                           # wood above the wedge hole
     span = fr.thick_slot(p)
@@ -88,9 +89,9 @@ def joint(p, shape) -> Joint:
     is_w[-1] = True
     c0 = np.zeros(len(u))       # shoulders: no interference; the wedge's is set by preload() below
     # tenon faces bearing on the mortise ends, near the deck's bottom and top faces
-    hz = np.array([1.0, L.t - 1.0, 1.0, L.t - 1.0])
+    hz = np.array([1.0, t - 1.0, 1.0, t - 1.0])
     hside = np.array([-1, -1, 1, 1])
-    hk = M.E_par * t * (L.t / 2) / S.bearing_len                # in-plane bearing, half the deck thickness each
+    hk = M.E_par * t * (t / 2) / S.bearing_len                  # in-plane bearing, half the deck thickness each
     foot = shape.intersection(box(-1e3, -1, 1e4, 1.0))
     uf = (foot.bounds[0] + foot.bounds[2]) / 2
     J = Joint(u, k, c0, is_w, uw, hz, hside, hk, p.fit.tight, uf)
@@ -184,7 +185,7 @@ def bend_compliance(p, shape, n: int = 60) -> float:
     integral of z^2 / (E I(z)) dz, from the plate's real cross-sections."""
     L, M = fr.layout(p), p.material
     zs = np.linspace(2.0, L.z_deck_bot - 2.0, n)
-    vals = [z * z / (M.E_par * max(section(shape, z, M.t_nominal)[0], 1.0)) for z in zs]
+    vals = [z * z / (M.E_par * max(section(shape, z, M.t_min)[0], 1.0)) for z in zs]
     return float(np.trapezoid(vals, zs))
 
 
@@ -316,7 +317,7 @@ def stresses(p, H_total: float = 200.0, F_edge: float = 1000.0) -> dict:
     """Peak bending stresses (MPa) for a sideways push H_total and a downward push F_edge at mid-side,
     50 mm in from the edge, against the face-grain bending strength f_m (rough)."""
     L, M = fr.layout(p), p.material
-    t = M.t_nominal
+    t = M.t_min
     r = frame_sway(p, H_total, "x")
     Hmax = max(abs(h) for h in r.get("per_plate_N", [H_total / 4])) if np.isfinite(r["sway_mm"]) else H_total
     leg_ = 0.0                                                  # moment H z at height z over the real section there

@@ -111,7 +111,7 @@ the sheets itself and prices per part, so this only matters for my estimate.
 | My knee room on the floor pillows, against v1 (where it's fine, owner 2026-11) | about the same: frame top 385 / 385 mm, deck underside 344 / 341, heater 304 / 286, reach 38 / 40, between the legs 571 / 568 |
 | Cross-legged on a zaisu: knee room under the top's edge (385 mm, the futon squeezed over the knees) | none to spare once the seat's height is added, so I sit legs forward |
 | Room between the legs at knee height / legs forward (to 275 mm) | 571 / 659 mm ("+" legs: 570 / 637) |
-| Sway under a sideways push (spring model; FEA at 200 N: 6.1 mm, "+" legs 7.1) | 0.75 mm at 50 N, 1.5 at 100 N, 3.5 at 200 N |
+| Sway under a sideways push (spring model; FEA at 200 N: 6.1 mm, "+" legs 7.1) | 0.76 mm at 50 N, 1.5 at 100 N, 3.5 at 200 N |
 | Twist: 115 N pushed along an edge at a top corner (best case: the joints rigid until they open, each crosspiece held down by the whole wedge clamp through the deck) | 1.5 mm at the corner; the crosspiece joints open at about 191 N at most |
 | Play in each tenon, and extra wobble per 0.1 mm a wedge works loose | 0.4 mm, about 1 mm |
 | Push 50 mm in from the edge that tips the table / lifts the loose top's far side | never, in the model (the feet and corner posts sit almost under the edge) |
@@ -128,7 +128,7 @@ the sheets itself and prices per part, so this only matters for my estimate.
   A push along x reaches each diagonal plate at 45°: all four take part in their own planes, and their
   stiffness across the plate is counted as nothing. Twisting is the one load that bends them across their
   faces, and the crosspieces resist it (`stiffness.twist`).
-- **Strength** is checked two ways. A 200 N sideways push stresses the legs to about 1.1 MPa in the spring model (all four plates share it); the FEA finds more (below). For the top, a
+- **Strength** is checked two ways. A 200 N sideways push stresses the legs to about 1.2 MPa in the spring model (all four plates share it; 14.1 mm stock, as everywhere); the FEA finds more (below). For the top, a
   plate model (`kotatsu/loads.py`) puts it on its corner posts, which can only push up. I checked the model
   against textbook plate results, and it matches within 3–5 %. The top rests on the 4 posts and the 4
   tenons (v1: 8 tenons; the "+" legs: 8 posts and 4 tenons).

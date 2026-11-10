@@ -80,7 +80,9 @@ Both are TODO-verify against a birch-plywood handbook, which gives 45° bending 
   far nearer *tight*: `stiffness.joint`'s springs (wedge ≈ 22 kN/mm, shoulders ≈ 6 kN/mm per plate) are
   hundreds of times stiffer than the deck (≈ 30 N/mm under a hand), so rigid is a fair stand-in.
 - *Legs*: the joint is `stiffness.joint`'s springs, spread along the real edges:
-  - shoulders on the deck's underside (E_perp·t/t_deck per mm, push only);
+  - shoulders on the deck's underside (E_perp per mm: the plate's bearing width over the deck's depth, the same
+    sheet, push only). Every spring, the floor's included, takes the run's thickness (14.1 mm, or 15 mm for the
+    nominal-stock row), as `stiffness.py` does at 14.1 mm;
   - the wedge on the hole's top edge (push only, tapped in to `stiffness.wedge_preload` = 300 N first). Only
     about 7 mm of that edge is straight: the dogbones take the rest;
   - the tenon's faces on the mortise ends, after `fit.tight`;
