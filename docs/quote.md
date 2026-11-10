@@ -6,28 +6,26 @@ quotes over two days, and I learned more about pricing from the cart than from t
 rules.
 
 ## The diagonal legs, quoted: the current design (2026-11, saved in my account as quote 2926, not ordered)
-Baltic birch, 15mm, CNC router, millimetres. The wedges are v1's leftovers (owner 2026-11), so I removed wedge.dxf
-from the saved quote and swapped in the leg plate with its wider wedge hole.
+Baltic birch, 15mm, CNC router, millimetres; the old deck and leg plates A and B removed from the saved quote,
+the new deck, leg plate and crosspiece uploaded (top, cheeks and wedges unchanged).
 
 | Part | Size | Qty | Each | Line |
 |---|---|---|---|---|
-| top | 860 × 860 mm | 1 | $89.08 | $89.08 |
-| deck (R150 ring fillets; convex pads flaring out of the arms on R300, R10 far corners; owner 2026-11) | 769 × 769 mm | 1 | $104.60 | $104.60 |
-| leg plate (slim, kicked 30 mm; a 19.4 mm wedge hole for v1's wedges: owner 2026-11) | 169 × 385 mm | 4 | $18.86 | $75.44 |
-| leg crosspiece (arched underneath) | 90 × 25.5 mm | 4 | $2.62 | $10.48 |
-| heater cheek (short: from just under the heater's screw line, owner 2026-11) | 380 × 46 mm | 2 | $11.26 | $22.52 |
-| wedge | (v1's leftovers, not ordered) | 0 | | |
-| **Subtotal** | | **12** | | **$302.12** |
+| top | 860 × 860 mm | 1 | $88.05 | $88.05 |
+| deck (R150 ring fillets; convex pads flaring out of the arms on R300, R10 far corners; owner 2026-11) | 769 × 769 mm | 1 | $102.73 | $102.73 |
+| leg plate (slim, kicked 30 mm: owner 2026-11) | 169 × 385 mm | 4 | $18.32 | $73.28 |
+| leg crosspiece (arched underneath) | 90 × 25.5 mm | 4 | $2.54 | $10.16 |
+| heater cheek (short: from just under the heater's screw line, owner 2026-11) | 380 × 46 mm | 2 | $10.95 | $21.90 |
+| wedge | 60 × 17 mm | 6 | $1.87 | $11.22 |
+| **Subtotal** | | **18** | | **$306.84** |
 
 (First quoted at $306.47; the parts were re-uploaded as their curves got smoother and the cheeks shorter: $306.42,
-$306.36, $305.80, $304.82, $304.77, $303.98; then the slim kicked leg plate, $306.84: its box is 29 mm wider; then
-without the wedges, $302.12. Dropping six $1.87 wedges saved only $4.72, not $11.22: every other line's price rose
-a little, because a smaller order gets less volume discount. I read the top's line by subtraction.) With 12 % tax
-about **$338.37**; shipping should stay free (the same 91 cm box, 10.3 kg: not re-checked at the cart). That's
-$25.90 less than the "+" legs' $328.02. My price model read the kicked design 4 % low ($294.06): its curve, fitted
-on bigger orders, gave a small order too much volume discount. So I refitted it on all five 15mm quotes as a fixed
-amount per order plus a rate (`kotatsu/price.py`). For this quote it says $298.97, 1.0 % low. If uMake's
-finalization adds what it did to v1 (+15 %), about $389 with tax.
+$306.36, $305.80, $304.82, $304.77, $303.98; then the slim kicked leg plate, $306.84: its box is 29 mm wider. The
+other lines shift by cents with the order's volume discount, so they don't add up exactly.) With 12 % tax about **$343.66**; shipping should stay free (the same 91 cm box, 10.4 kg: not re-checked at the
+cart). That's $21.18 less than the "+" legs' $328.02 ($24.04 less before the kick). My price model then read it 4 % low
+($294.06): its curve, fitted on bigger orders, gave a small order too much volume discount. So I refitted it on all five
+15mm quotes as a fixed amount per order plus a rate (`kotatsu/price.py`): it now says $302.50, 1.4 % low. If uMake's finalization adds what it
+did to v1 (+15 %), about $395 with tax.
 
 ## What I ordered (October 2026)
 Every file: units in millimetres, Engineered Wood > Baltic Birch, **19mm**, CNC router, no extra processes.

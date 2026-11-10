@@ -12,9 +12,9 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
 | Clear height under the heater | 286 mm | **304 mm** |
 | Deck | H-shaped (four notches) | **X-shaped**: corner pads, a ring round the heater, 45° arms |
 | Legs | 8 plates in four "+" legs, 8 tenons, a wedge in each | **four diagonal legs**: one plate a corner on its diagonal, a crosspiece in its head, one tenon and wedge each |
-| Wedges | 12 + 2 spares | **4 + 2 spares, v1's leftovers (not ordered)** |
+| Wedges | 12 + 2 spares | **4 + 2 spares** |
 | Top | square, R20 corners (re-rounded by hand) | **squircle** (n = 8), cut in the file; feet and deck rounder to match |
-| Parts, weight, cutting | 26, 15.9 kg, 25.5 m | **12 to order (+ v1's wedges), 10.3 kg, 15.9 m** |
+| Parts, weight, cutting | 26, 15.9 kg, 25.5 m | **18, 10.4 kg, 16.8 m** |
 | Chairs | none | a bought zaisu (owner, 2026-11). Two plywood ones were designed, checked and quoted (+$173), then archived (tag `zaisu-archive`) |
 
 ## Decisions
@@ -73,7 +73,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
   - The arms: a 300 N hand pressing on the ring, plus the heater, as cantilevers at 45° to the grain on
     the thinnest stock (116 mm free): 8 MPa, 27 % of the rough strength, 1.1 mm of give. In the FEA it's more
     (below): 60 %.
-- **Wedges (6: 4 plus 2 spares, 60 × 18 mm, 1:8 taper): v1's leftovers, not ordered** (owner 2026-11). v1 cut them from its "19mm" sheet, 17.0-18.9 mm thick, so I cut each leg's wedge hole 19.4 mm wide (the thickest + 0.5 mm; 15.5 mm of wood either side in the tenon; the shove's wedge-hole peak 45 %, was 43). A v2-thickness wedge would still clamp, just with play sideways. They lie on the deck across the arm and tap
+- **Wedges (6: 4 plus 2 spares, 60 × 18 mm, 1:8 taper).** They lie on the deck across the arm and tap
   through each tenon, clamping the deck between the shoulders (and the crosspiece) and the wedge. This works at any sheet thickness from 14.1
   to 15.7 mm. Gravity can't replace all of them: with the weight alone (about 20 N a plate) there's
   about 9 mm of sway at a 25 N push in the wobble model, because the tenon rocks in its mortise.
@@ -89,7 +89,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
   a radius that starts abruptly. The corner posts stay 20 mm inside its edge (v1: 40). The futon lies
   over the heater as in a traditional open frame (v1 had the deck in between).
 
-That's **12 parts to order, about 10.3 kg, 15.9 m of cutting**, plus six of v1's leftover wedges. They fit on one 48 × 96" sheet. uMake lays out
+That's **18 parts, about 10.4 kg, 16.8 m of cutting**. They fit on one 48 × 96" sheet. uMake lays out
 the sheets itself and prices per part, so this only matters for my estimate.
 
 ## Assembly (a mallet, plus a screwdriver for the heater)
@@ -170,11 +170,11 @@ corner, and the wedges and deck don't carry any of the weight from above.
 | Item | Cost |
 |---|---|
 | Heater (PaletteLife, amazon.ca, delivered) | $258 |
-| uMake: 12 parts at 15mm (the wedges are v1's), **quoted $302.12 + about $36.25 tax** ($306.84 with the wedges, $303.98 before the kick) (saved as quote 2926, not ordered, `docs/quote.md`), free shipping expected. If finalization adds what it did for v1 (~15 %): about $389 | $338–389 |
+| uMake: 18 parts at 15mm, **quoted $306.84 + about $36.82 tax** (slim kicked legs; $303.98 before) (saved as quote 2926, not ordered, `docs/quote.md`), free shipping expected. If finalization adds what it did for v1 (~15 %): about $395 | $344–395 |
 | Futon: an oversized king quilt, 120 × 120 in (owner 2026-11; planned as a 205 cm square from Etsy, or a queen duvet + cover) | about $200 |
 | Sandpaper and finishing oil | $30–50 |
 | A zaisu (bought, adjustable: about $70, free shipping) + tax | $78 |
-| **Total** | **about $905–975** |
+| **Total** | **about $910–980** |
 
 ## Off-season storage
 Everything packs flat inside the top's footprint, in two layers (the top, then the deck with the other 16 parts round it), a stack about 32 mm tall (I pack it with
@@ -213,12 +213,12 @@ Little: the design is at uMake's price floor (`docs/quote.md`, "What can still b
 doesn't depend on the design, the remaining cut is all required, and wood inside a part's box is free. A solid
 deck would save about $4 but costs 3.8 kg and the knee room in the X's openings, so I'm keeping the X. The bigger
 unknown is uMake's finalization: v1's receipt was **$405.83 + tax = $454.53**, $52.50 more than the cart's
-$353.33 (TODO-verify what was added; if it repeats, v2's $302.12 becomes about $347 + tax, about $389).
+$353.33 (TODO-verify what was added; if it repeats, v2's $306.84 becomes about $353 + tax, about $395).
 
 ## Still open
 1. **The 15 mm sheet.** Order uMake's "15mm" Baltic birch (its "16mm" is probably 5/8", too thick). Its
    real thickness range is assumed at 14.1–15.7 mm: TODO-verify. Windsor Plywood's 15 mm B/B measures 15.0 ± 0.1 mm
-   (`docs/research.md`), well inside it. uMake requoted for the diagonal legs: $303.98, $306.84 with the slim kicked legs, and $302.12 without the wedges (`docs/quote.md`).
+   (`docs/research.md`), well inside it. uMake requoted for the diagonal legs: $303.98, and $306.84 with the slim kicked legs (`docs/quote.md`).
 2. **Heater details.** The screws' length (the tips must stay inside the 15 mm cheek), and the control panel's
    real height (read off a photo: the knob and plug must clear the deck's underside, and stick out under the ring). With the futon now over the heater, check
    its top stays cool to the touch on high (owner, 2026-11: 40 °C on v1, the same heater: fine). Look for a cUL, cETL or CSA mark on the rating label.

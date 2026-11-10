@@ -96,19 +96,19 @@ def test_storage_layout_fits(Y):
 
 
 
-def test_v1_wedges_fit_and_stay_off_the_order():
-    """The leg wedges are v1's leftovers (owner 2026-11): every hole takes the thickest of them, and they're left
-    out of everything the shop cuts and prices."""
+def test_wedges_fit_their_holes_and_are_ordered():
+    """Every wedge hole takes the thickest wedge, and the wedges are on the order (owner 2026-11: new ones from
+    uMake, not v1's thicker leftovers). With yagura.wedge_stock set, the holes follow that stock instead."""
+    from types import SimpleNamespace as NS
     from kotatsu import cutlist, price
     P = YT[0]
     lo, hi = frame.wedge_t(P)
-    assert (lo, hi) == tuple(P.yagura.wedge_stock) and hi >= 18.9
-    assert frame.wedge_slot(P) >= hi + 0.3, "the thickest v1 wedge slides through"
+    assert (lo, hi) == (P.material.t_min, P.material.t_max), "the wedges are cut from the table's own sheet"
     g = yagura.leg_plate(P)
     (hole,) = g.interiors
     xs = [x for x, _ in hole.coords]
-    assert max(xs) - min(xs) >= frame.wedge_slot(P) - 0.01
-    assert not P.yagura.order_wedges
-    assert "wedge" not in [n for n, *_ in price.parts(P)]
-    assert "wedge" not in [c.name for c in cutlist.cut_list(P)]
-    assert {pt.name: pt.qty for pt in frame.parts(P)}["wedge"] == 6, "still 4 placed + 2 spares on the table"
+    assert max(xs) - min(xs) >= frame.wedge_slot(P) - 0.01 >= hi
+    assert P.yagura.order_wedges
+    assert "wedge" in [n for n, *_ in price.parts(P)] and "wedge" in [c.name for c in cutlist.cut_list(P)]
+    v1 = NS(**vars(P)); v1.yagura = NS(**{**vars(P.yagura), "wedge_stock": [17.0, 18.9]})
+    assert frame.wedge_slot(v1) >= 18.9 + 0.3, "v1's wedges would need wider holes"
