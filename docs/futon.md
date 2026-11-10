@@ -43,5 +43,5 @@ with free shipping from Douglas. It works on a kotatsu, with a few things to kno
 
 ## Safety
 Keep the futon away from the heater's grille and fan, which face down. In v1 the heater hangs under the solid
-deck, so they never touch; in v2 the futon rests on the heater's top, the face away from the grille (check the
-heater's manual allows it: TODO-verify). Either way, don't tuck the futon *inside* the frame, under the heater.
+deck, so they never touch; in v2 the futon lies just over the heater's top, the face away from the grille, which the
+heater's manual allows (owner 2026-11, `docs/heater.md`). Either way, don't tuck the futon *inside* the frame, under the heater.
