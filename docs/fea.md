@@ -183,7 +183,7 @@ How I found the slim legs (owner 2026-11: the kick, then "can it be thinner?"): 
 crowds the slot root: 62 / 50 mm 90 %, 56 / 46 mm 106 %, 50 / 42 mm 112 % (h = 4). A longer haunch fixes it:
 56 / 46 with a 50 mm drop 65 % (63 % at h = 3), with 70 mm 57 % (but 20 mm less room between the legs).
 Twisting (a push along an edge at a top corner) is checked by `stiffness.twist`, a spring model, not FE:
-1.7 mm at 115 N, the crosspiece joints opening at about 193 N. **Both are best cases.** The joint is taken as rigid
+1.5 mm at 115 N, the crosspiece joints opening at about 203 N (with the feet where the kick puts them, 3.9 mm outside the frame corner; 1.7 mm and 193 N before I counted the kick). **Both are best cases.** The joint is taken as rigid
 until it opens, and what holds the crosspiece down is the deck: it lies on the crosspiece's top edge (sanded flush
 with the plate's shoulders at the fit-up) and the wedge clamps it onto the shoulders beside the tenon. In the model I
 give the crosspiece that whole 300 N clamp; the share it really gets depends on the fit, so the joints may open

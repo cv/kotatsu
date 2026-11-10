@@ -380,6 +380,14 @@ def out_of_plane_k(p) -> float:
     return 1 / float(np.sum(zs ** 2 / (M.E_par * I)) * dz)
 
 
+def foot_u(p) -> float:
+    """Where the middle of a leg plate's foot stands, along its diagonal, measured inwards from the frame corner
+    (mm). The kick (yagura.leg_kick) puts it outside the corner: negative."""
+    g = yagura.leg_plate(p)
+    xs = [x for x, z in g.exterior.coords if z < 0.5]
+    return (min(xs) + max(xs)) / 2
+
+
 def twist(p, F_corner: float | None = None) -> dict:
     """Twisting the frame about the vertical (a sideways push at a top corner, along the
     edge) bends every plate the weak way. What holds each crosspiece down is the deck: it lies on the crosspiece's
@@ -392,9 +400,7 @@ def twist(p, F_corner: float | None = None) -> dict:
     S, L, D = p.stiffness, fr.layout(p), p.yagura
     F = S.twist_n if F_corner is None else F_corner
     k = out_of_plane_k(p)
-    R_f = L.Lf / 2 * np.sqrt(2) - yagura.foot_w(p) / 2                 # centre -> each foot, along the diagonal
-    # (as if the feet stood under the frame corners: the kick, yagura.leg_kick, puts them ~27 mm further out, which
-    #  would make the twist ~10 % smaller and the opening force ~5 % higher; left as is, a little conservative)
+    R_f = L.Lf / 2 * np.sqrt(2) - foot_u(p)                           # centre -> each foot, along the diagonal
     r_top = p.top.length / 2                                            # the push's lever: half the top's side
     theta = F * r_top / (4 * k * R_f ** 2)
     f_open = S.wedge_preload * (D.cross_w / 2) / L.z_deck_bot          # across each plate, at its foot
