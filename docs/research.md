@@ -248,3 +248,18 @@ For wood the everyday loads govern, about as much as edge-sitting. Stone is brit
 flaws, so I'd keep its everyday use under about a third of its strength. Owner's choice (2026-11): **pale wood**, used
 carefully (no sitting, coasters): white oak or hard maple at 20 mm, hinoki at 25. Ash is held back until Canada's
 ash import rules (emerald ash borer, CFIA) are checked. Hinoki dents about three times as easily as oak.
+
+## uMake's finishing options (checked 2026-11)
+- **Instant quote, wood:** nothing beyond the 2-D CNC cut. The quote's "Additional Processes" menu offers
+  Custom Instructions, Bending, Brushed Finish and Paint (Powder Coated); the last three are metal processes.
+  "Custom Instructions" is a free-text box with no price, so an operator reviews and quotes it by hand.
+- **Edges:** uMake's edge-quality FAQ (umake.ca/faq-edge-quality) describes deburring for metal, finishing for
+  stone and polishing for acrylic. For wood it says only that its CNC can do "2D, 2.5D and 3D cutting for all
+  wood substrates", plus "some post 2D cutting edge finishing and polishing" on request. No roundover, chamfer
+  or bevel, sanding, edge banding or wood finish is listed or priced. Plywood is cut with compression bits
+  (umake.ca/canada-custom-cnc-parts), which leave clean faces on both sides.
+- **Engraving and pockets** can go in the same DXF, on lines of a different colour (umake.ca/cnc-routeur-quebec).
+- **Holding tabs** stay on every part (about 4.8 mm wide, half the thickness deep): sand them off.
+- So any finishing beyond the cut means a manual quote, which also breaks the "no extra processes from the shop"
+  rule in AGENTS.md. Finishing by hand stays the plan (PLAN.md: tabs, an undercut bevel under the top's edge, a
+  2-3 mm roundover, Osmo Polyx-Oil 3043).
