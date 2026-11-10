@@ -77,6 +77,16 @@ def test_deck_hand_on_ring(p):
     assert slack["sag_mm"] > 2 * tight["sag_mm"]
 
 
+def test_deck_holds_every_hand_case(p):
+    """Every hand case on the ring (fea.deck_cases), wedges tight, coarse mesh: the worst zone within the design
+    search's limit (optimize.use_max), as optimize.heavy checks it. (With the wedges slack the hand on the ring's
+    corner reaches about its whole rough strength: the wedges must stay tapped in. Not checked here: report only.)"""
+    for name, case in fea.deck_cases(p).items():
+        r = fea.deck_case(p, case, h=16)
+        assert max(r[k]["tsai_hill"] for k in ("fillets", "arms", "ring", "pads")) < p.optimize.use_max, name
+
+
+
 def test_plane_stress_cantilever_matches_timoshenko():
     L, h, t, E, P = 200.0, 20.0, 10.0, 1e4, 10.0
     I = t * h ** 3 / 12
