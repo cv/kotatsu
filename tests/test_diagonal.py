@@ -113,10 +113,28 @@ def test_corners_are_the_same_rotated():
 
 def test_twist_and_legroom():
     """The crosspieces give each joint cross_w to rock on: a stiff twist, and joints that stay shut well past
-    the twist check's push; the legs, one thin plate a corner, leave more room than the "+" legs (638)."""
+    the twist check's push; the legs, one thin plate a corner, leave more room than the "+" legs did (638 mm; the
+    slim kicked legs: 642, the 50 mm haunch reaching into the legs-forward zone) and at least comfort.legroom_min."""
     tw = stiffness.twist(P)
     assert tw["corner_mm"] < 2.5 and tw["opens_at_corner_N"] > 1.5 * P.stiffness.twist_n
-    assert comfort.legroom(P) > 640
+    assert comfort.legroom(P) > 638 and comfort.legroom(P) >= P.comfort.legroom_min
+
+
+def test_the_kick_leaves_the_joints_alone():
+    """yagura.leg_kick sweeps the lower leg out, both edges together, fading out at leg_curve_top: below the head
+    slot's round bottom and the wedge hole, so above it the plate is exactly the unkicked one; at the floor the foot
+    has moved out by leg_kick, its width kept."""
+    import copy
+    q = copy.deepcopy(P)
+    q.yagura.leg_kick = 0.0
+    g, g0 = yagura.leg_plate(P), yagura.leg_plate(q)
+    zt, k = P.yagura.leg_curve_top, P.yagura.leg_kick
+    assert k > 0 and zt < yagura.head_slot(P).bounds[1] and zt < yagura.leg_hole_z(P)[0]
+    above = box(-1e3, zt, 1e3, 1e3)
+    assert g.intersection(above).symmetric_difference(g0.intersection(above)).area < 1.0
+    foot = box(-1e3, -1.0, 1e3, 0.5)
+    (a, _, b, _), (a0, _, b0, _) = g.intersection(foot).bounds, g0.intersection(foot).bounds
+    assert a == pytest.approx(a0 - k, abs=0.3) and b - a == pytest.approx(b0 - a0, abs=0.3)
 
 
 def test_squircle_top_covers_the_posts():
