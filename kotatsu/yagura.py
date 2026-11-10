@@ -23,6 +23,7 @@ from __future__ import annotations
 import math
 
 import numpy as np
+import shapely
 
 from shapely.affinity import affine_transform
 from shapely.geometry import LineString, Point, Polygon, box
@@ -96,24 +97,22 @@ def leg_plate(p) -> Polygon:
 
 def leg_curve(p, z: float) -> float:
     """How far (mm, along u: negative = outwards, past the frame corner) the leg is shifted at height z (owner
-    2026-11: a noticeable curve, both edges together). leg_bow bulges the lower leg out at mid-height (sin^2:
-    the foot stays put and stands flat); leg_kick swings the foot out. Both fade to nothing, with zero slope, at
-    leg_curve_top, below the joint, so the head slot, the tenon and the post are untouched."""
+    2026-11: a kick, both edges together): leg_kick at the floor, (1 - z / leg_curve_top)^leg_kick_n of it higher up,
+    fading to nothing, with zero slope, at leg_curve_top, below the joint, so the head slot, the tenon and the post
+    are untouched. The shift is the same along any height, so the foot still stands flat."""
     Y = p.yagura
-    zt = getattr(Y, "leg_curve_top", 0.0)
+    zt = Y.leg_curve_top
     if zt <= 0 or z >= zt:
         return 0.0
     s = max(0.0, z) / zt
-    n = getattr(Y, "leg_kick_n", 2.0)                 # 2: the curve spread up the leg; higher: gathered near the foot
-    return -getattr(Y, "leg_bow", 0.0) * math.sin(math.pi * s) ** 2 - getattr(Y, "leg_kick", 0.0) * (1 - s) ** n
+    return -Y.leg_kick * (1 - s) ** Y.leg_kick_n         # n = 2: the curve spread up the leg; higher: near the foot
 
 
 def leg_warp(p, g: Polygon) -> Polygon:
     """The plate with every point below leg_curve_top shifted along u by leg_curve (widths across the leg kept)."""
     Y = p.yagura
-    if not (getattr(Y, "leg_bow", 0.0) or getattr(Y, "leg_kick", 0.0)):
+    if not Y.leg_kick:
         return g
-    import shapely
     g = shapely.segmentize(g, 2.0)
 
     def shift(xy):
