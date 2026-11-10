@@ -258,14 +258,17 @@ The pale birch look of v1 is the goal (owner, 2026-11). All by hand, at no cost 
   planned for v1 would cost real strength. Keep sharp and flat: the top edges that carry the top and deck,
   the tenons and shoulders, the head slots' walls and the crosspieces' edges in them, and the wedge holes. Ease
   the floor edge about 2 mm.
-- **Sand** to 180, wipe with a damp cloth to raise the grain, let it dry, then 220 (320 on the top).
+- **Sand** to 180, wipe with a damp cloth to raise the grain, let it dry, then 220 (320 on the top). With the
+  palm sander (owner 2026-11): start at 120 or 150, not 80, and keep it moving. Baltic birch's face veneer is
+  only about 1 mm thick, so it's easy to sand through, especially at the edges and where the tabs were. Shape the
+  rounded edges and the undercut by hand on a block, so they stay even; the sander does the flat faces.
 - **Oil:** Osmo Polyx-Oil 3043 Clear Satin, which I already have and used on v1 (owner 2026-11). It's a hardwax oil, so it warms birch only
   a little (normal linseed, tung or Danish oils turn it honey-coloured). Try it on the 2 spare wedges first;
   if it looks too warm, Osmo Polyx-Oil Raw (3044) keeps it paler. Two thin coats, wiping off the excess,
   overnight between them, on **both faces and the edges equally**, so the top can't cup over the heater.
 - No essential oils (hinoki scent): the cat sleeps in the warm kotatsu, and many are toxic to cats.
 
-### Optional: veneer and edge banding on the top (owner 2026-11)
+### Considered and dropped: veneer and edge banding on the top (owner 2026-11: too pricey for what it adds; the plan is Osmo on the birch, with a palm sander)
 Glue in a finish is allowed (AGENTS.md); nothing structural changes. The heater's warmth doesn't reach the top
 under the quilt (owner), so iron-on (hot-melt or PVA) veneer is fine; contact cement is still a poor choice (veneer
 creeps and cracks on it). Veneer **both faces**, or the top cups with the seasons. The top gets about 1 mm
