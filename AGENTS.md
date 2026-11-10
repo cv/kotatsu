@@ -15,8 +15,10 @@ What this repo produces:
 4. A static website (`out/site`, published from `main` to GitHub Pages).
 
 ## Hard rules
-- **No glue, nails, screws, bolts, dowels, inserts or other hardware.** Joints are plywood only: cross-laps,
-  wedged through-tenons, tabs and slots. The one exception is the heater and the screws that come with it.
+- **No glue, nails, screws, bolts, dowels, inserts or other hardware in the joints.** Joints are plywood only:
+  cross-laps, wedged through-tenons, tabs and slots. The one exception is the heater and the screws that come with
+  it. Glue in a *finish* is the owner's call (2026-11: a veneer or edge banding on the top is allowed); it never
+  holds the table together.
 - **Online ordering only.** Every part must quote instantly in app.umake.ca. Nothing that needs a manual
   quote, freight or a pallet. In practice:
   - free shipping needs the whole order to pack into **one box of 91 cm or less** and weigh **under about

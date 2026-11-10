@@ -265,6 +265,31 @@ The pale birch look of v1 is the goal (owner, 2026-11). All by hand, at no cost 
   overnight between them, on **both faces and the edges equally**, so the top can't cup over the heater.
 - No essential oils (hinoki scent): the cat sleeps in the warm kotatsu, and many are toxic to cats.
 
+### Optional: veneer and edge banding on the top (owner 2026-11)
+Glue in a finish is allowed (AGENTS.md); nothing structural changes. The heater's warmth doesn't reach the top
+under the quilt (owner), so iron-on (hot-melt or PVA) veneer is fine; contact cement is still a poor choice (veneer
+creeps and cracks on it). Veneer **both faces**, or the top cups with the seasons. The top gets about 1 mm
+thicker. Options found on Amazon.ca (prices 2026-11, before tax, TODO-verify; Home Depot Canada has only melamine
+banding and unglued 24"-wide oak, RONA no real-wood veneer):
+
+| Item | Size | Price | Notes |
+|---|---|---|---|
+| Maplewood veneer, iron-on (hot-melt), real wood | 24 × 96" | $91.95 | One sheet covers one face with a seam down the middle (two 24 × 35" pieces) |
+| Birchwood veneer, iron-on (hot-melt), real wood | 24 × 96" | $94.95 | The same, in birch, to match the frame |
+| Edge Supply flat-cut maple veneer, paper-backed, unglued | 48 × 96" | $323.55 | Both faces from one sheet, no seams; needs glue (PVA, ironed on) |
+| White oak veneer, paper-backed, flat cut / rift | 48 × 96" | $333.20 / $468.88 | Seamless; warmer and more expensive |
+| Edge Supply maple banding, iron-on, unfinished | ¾" × 25 ft | $25.33 | The perimeter is about 11 ft |
+| Yarlung birch banding, iron-on | ¾" × 250 ft | $25.99 | Matches the frame |
+| Edge Supply white oak banding, iron-on | ¾" × 50 ft | $54.22 | |
+
+- Cheapest: two iron-on sheets (maple or birch, about $185-190) and a 25 ft roll of banding, about $210 + tax.
+  Seamless: the 48 × 96" maple sheet, glue and maple banding, about $365 + tax.
+- Avoid pre-finished (lacquered) banding: it won't take the Osmo like the veneer does.
+- Banding is about 0.5 mm thick, so the edges can only be eased about 1 mm, not rounded 2-3 mm, and it rules out
+  the undercut bevel. Without banding, the bevel cuts through the underside veneer and shows the plies, as planned.
+- Order of work: veneer the underside, then the top face; trim the overhang; band the edge if banding; sand
+  lightly (the veneer is about 0.6 mm: 180-220 by hand); oil.
+
 ## Earlier designs
 - **v1**, as ordered and built: 18 mm birch, the heater hung under the deck from wedged cheeks, R20
   corners. Git tag `v1-ordered` (and `main` until v2 merges).
