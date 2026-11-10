@@ -313,9 +313,10 @@ def wedge_slack_wobble(p, slack: float = 0.1) -> float:
     return rock * L.z_deck_bot
 
 
-def stresses(p, H_total: float = 200.0, F_edge: float = 1000.0) -> dict:
-    """Peak bending stresses (MPa) for a sideways push H_total and a downward push F_edge at mid-side,
-    50 mm in from the edge, against the face-grain bending strength f_m (rough)."""
+def stresses(p, H_total: float = 200.0) -> dict:
+    """Peak stresses (MPa) for a sideways push H_total: the legs' bending, over their real sections, and the shear
+    in the bridge above the wedge hole, against the face-grain bending strength f_m (rough). Lumped: the FEA
+    (fea.leg_report) finds the leg's peak several times higher. (The top is loads.py's and the FEA's.)"""
     L, M = fr.layout(p), p.material
     t = M.t_min
     r = frame_sway(p, H_total, "x")
@@ -326,13 +327,7 @@ def stresses(p, H_total: float = 200.0, F_edge: float = 1000.0) -> dict:
         W = section(g, z, t)[1]
         if W > 0:
             leg_ = max(leg_, Hmax * z / W)
-    R = p.top.length / 2
     q, shape = leg(p)
-    ta, tb = yagura._tenon_u(q)
-    e = (ta + tb) / 2 / np.sqrt(2)                              # tenons on the diagonals, uc/sqrt(2) in from each edge
-    support_y, span = L.Wf / 2 - e, L.Lf - 2 * e
-    a = R - p.comfort.tip_inset - support_y
-    top = 6 * F_edge * a / (span * t * t)
     z0, z1 = yagura.leg_hole_z(p)
     bridge = L.H - z1
     J = joint(q, shape)
@@ -343,7 +338,7 @@ def stresses(p, H_total: float = 200.0, F_edge: float = 1000.0) -> dict:
             Fv, _, _ = _forces(J, x)
             Fw = max(Fw, Fv[-1])
     tau = Fw / (2 * bridge * t)                                 # two shear planes above the wedge hole
-    return {"H_N": H_total, "leg_MPa": round(leg_, 1), "top_MPa_at_1000N": round(top, 1),
+    return {"H_N": H_total, "leg_MPa": round(leg_, 1),
             "wedge_bridge_shear_MPa": round(tau, 1), "f_m": M.f_m}
 
 

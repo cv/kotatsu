@@ -29,7 +29,7 @@ def test_sway_small_with_tight_wedges(S):
 def test_stress_margins(S):
     """At least 3x margin to the (rough) bending strength in every checked spot."""
     st = S["stress"]
-    for k in ("leg_MPa", "top_MPa_at_1000N", "wedge_bridge_shear_MPa"):
+    for k in ("leg_MPa", "wedge_bridge_shear_MPa"):
         assert st[k] * 3 <= st["f_m"], k
 
 
