@@ -99,6 +99,12 @@ def slot_w(p) -> float:
     return p.material.t_max + p.fit.slot_clearance
 
 
+def rib_proud(p) -> float:
+    """How far each crush rib stands proud of its slot wall: the gap between a pair is the thinnest sheet, so the
+    crosspiece is snug on any stock (thicker stock: sand the bumps or the crosspiece's faces at the fit-up)."""
+    return (slot_w(p) - p.material.t_min) / 2
+
+
 def thick_slot(p) -> float:
     """Width of any through-opening that a plate's thickness passes through (mortise height, wedge holes)."""
     return p.material.t_max + p.fit.mortise_height_extra

@@ -146,11 +146,11 @@ def crosspiece(p) -> Polygon:
 
 
 def crush_ribs(p, u0: float, u1: float, z0: float, z1: float) -> Polygon:
-    """Small rounded bumps on both walls of a slot (fit.crush_rib proud per side, radius fit.crush_rib_r), at
-    fit.crush_rib_at fractions of the slot's length. They make the joint snug on real stock that's thinner than
-    the slot is cut for. Too tight: sand the bumps down (easy)."""
+    """Small rounded bumps on both walls of a slot (frame.rib_proud per side: the thinnest sheet between them;
+    radius fit.crush_rib_r), at fit.crush_rib_at fractions of the slot's length. They make the joint snug on any
+    stock. Too tight: sand the bumps (or the crosspiece's faces) down at the fit-up (easy)."""
     F = p.fit
-    h, R = getattr(F, "crush_rib", 0.0), getattr(F, "crush_rib_r", 10.0)
+    h, R = fr.rib_proud(p), getattr(F, "crush_rib_r", 10.0)
     if h <= 0:
         return Polygon()
     bumps = []

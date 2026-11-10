@@ -147,7 +147,9 @@ This was the scary one. v1's plywood, sold as 18 mm, could be anywhere from 17.0
 wouldn't know which until the box arrived. So every slot was cut for the thickest sheet (19.2 mm), with two
 small bumps on each wall (*crush ribs*), 0.5 mm proud, that narrow it to 18.2 mm. If a sheet turned out
 thicker, I'd sand the bumps down. The wedges have a 1:8 taper, so they take up whatever is left. (v2's
-15 mm sheet gets the same treatment, for anything from 14.1 to 15.7 mm.)
+15 mm sheet gets the same treatment, for anything from 14.1 to 15.7 mm, except that its bumps are 0.95 mm proud
+and leave the thinnest sheet, 14.1 mm, between them: snug on any stock, and up to 0.8 mm a side to sand at the
+fit-up.)
 
 Each joint test runs three times: at the thinnest, the nominal and the thickest sheet. Here's the one
 for the leg wedges. Whatever the deck's real thickness, the gap above it has to land somewhere along

@@ -21,17 +21,32 @@ def test_quantities():
     assert q == {"leg plate": 4, "leg crosspiece": 4, "deck": 1, "heater cheek": 2, "wedge": 6}
 
 
-@pytest.mark.parametrize("t", T_RANGE)
-def test_crosspiece_fits_the_head_slot(t):
-    """The head slot is the full slot width except at the crush ribs, head_slot deep; the crosspiece is that
-    deep + cross_proud (sanded to fit), and long enough to stand out cross_w / 2 each side."""
+def _head_slot_gaps():
+    """The head slot's width across the plate, every 0.5 mm from just above its round bottom to the shoulders."""
     g, w = PARTS["leg plate"].shape, frame.slot_w(P)
     zb = L.z_deck_bot - D.head_slot
-    for z in np.linspace(zb + 1.5, L.z_deck_bot - 1, 40):        # (below: the round bottom it sits on)
+    out = []
+    for z in np.linspace(zb + 1.5, L.z_deck_bot - 1, 46):        # (below: the round bottom it sits on)
         cut = g.intersection(LineString([(D.ear - w, z), (D.ear + w, z)]))
         pieces = sorted((q.bounds[0], q.bounds[2]) for q in getattr(cut, "geoms", [cut]) if not q.is_empty)
-        gap = pieces[1][0] - pieces[0][1]
-        assert gap >= w - 2 * P.fit.crush_rib - 1e-6 and gap >= t - 2 * P.fit.crush_rib
+        out.append(pieces[1][0] - pieces[0][1])
+    return np.array(out)
+
+
+@pytest.mark.parametrize("t", T_RANGE)
+def test_crosspiece_fits_the_head_slot(t):
+    """The head slot is the full slot width (it takes the thickest sheet) but at the crush ribs, where it narrows
+    to the thinnest: the crosspiece is snug on any stock, and the thickest goes in after sanding the bumps (or its
+    faces) by (t - t_min) / 2 a side, within fit.fit_sand. The crosspiece is head_slot deep + cross_proud (sanded
+    to fit), and long enough to stand out cross_w / 2 each side."""
+    gaps, w = _head_slot_gaps(), frame.slot_w(P)
+    assert gaps.max() == pytest.approx(w, abs=1e-6) and w >= t, "clear of the bumps it takes any sheet"
+    snug = gaps.min()
+    assert snug == pytest.approx(P.material.t_min, abs=0.01), "the bumps leave the thinnest sheet between them"
+    assert snug <= t + 1e-6, "snug: no play at the bumps"
+    sand = max(0.0, (t - snug) / 2)
+    assert sand <= P.fit.fit_sand, f"{t} mm stock needs {sand:.2f} mm off each side at the fit-up"
+    assert frame.rib_proud(P) <= P.fit.fit_sand, "sanding a bump flat is within the fit-up's sanding"
     cp = PARTS["leg crosspiece"].shape
     assert cp.bounds[3] - cp.bounds[1] == pytest.approx(D.head_slot + D.cross_proud)
     assert cp.bounds[2] - cp.bounds[0] == pytest.approx(D.cross_w)

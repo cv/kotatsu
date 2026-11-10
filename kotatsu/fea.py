@@ -515,7 +515,8 @@ def leg_case(p, which: str, H: float, top: dict | None = None, N_deck: float | N
     Its wedge is first tapped in to stiffness.wedge_preload. Then the floor moves sideways by the sway that makes
     this plate and its mirror image (the plate at the opposite end of the push) take their share of H between
     them, as stiffness.frame_sway shares a push; both senses are reported (worst of each).
-    ribs: the crosspiece, t thick, bears on the head slot's crush ribs (leg_contacts rib_gap); else the slot is empty."""
+    ribs: the crosspiece, t thick, bears on the head slot's crush ribs (leg_contacts rib_gap; stock thicker than
+    the gap between them is sanded at the fit-up until it slides in, so it just touches); else the slot is empty."""
     from types import SimpleNamespace
     from shapely.geometry import box
     from . import frame as fr, stiffness, yagura
@@ -537,7 +538,7 @@ def leg_case(p, which: str, H: float, top: dict | None = None, N_deck: float | N
     trac = [(edge(0, pu, L.H), (0.0, -on_post))] + ([(edge(ta, tb, L.H), (0.0, -on_tenon))] if on_tenon else [])
     kf = M.E_par * M.t_nominal / p.stiffness.bearing_len               # end grain on the floor, as on the deck
     foot = edge(-1, p.frame.leg_width + 1, 0.0)
-    gap = (fr.slot_w(p) - 2 * p.fit.crush_rib - t) / 2 if ribs else None
+    gap = max(0.0, (fr.slot_w(p) - 2 * fr.rib_proud(p) - t) / 2) if ribs else None   # sanded to slide in: 0 = touching
     cs = leg_contacts(p, shape, rib_gap=gap) + [
         Contact("floor", foot, 1, -1, kf, body=True), Contact("floor (grip)", foot, 0, -1, kf, bilateral=True, body=True)]
     Nv = N_deck + on_post + on_tenon

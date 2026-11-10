@@ -18,8 +18,10 @@ sheets = [[1524, 1524], [1524, 3048], [1219, 2438]]  # 60x60, 60x120, 48x96 in
 
 [fit]
 slot_clearance = 0.3      # added to t_max for slots that take a plate's thickness
-crush_rib = 0.5           # owner 2026-10-20: bumps on each head slot wall, proud by this: the slot is t_max + 0.3 = 16.0,
-crush_rib_r = 10.0        #   15.0 at the bumps (snug from 15.0 mm stock up, 0.9 play at t_min); sand them if too tight
+crush_rib_r = 10.0        # bumps on each head slot wall (v2: sized for the thinnest sheet, yagura.rib_proud): the slot is
+                          #   t_max + 0.3 = 16.0, t_min = 14.1 at the bumps (0.95 proud), snug on any stock
+fit_sand = 1.0            # owner 2026-11: at the fit-up, sanding a crosspiece's faces (or the bumps) by up to about this a side is fine:
+                          #   the thickest stock (15.7) needs 0.8 a side
 crush_rib_at = [0.6]      # the head slot is short (25 mm): one pair of bumps, clear of its round bottom
 tight = 0.2               # in-plane tenon/mortise clearance
 mortise_height_extra = 0.5

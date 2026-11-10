@@ -47,8 +47,10 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
     across the arm. Above the deck the post rises to the top. Its outer edge sweeps in in one long, gentle curve (owner 2026-11), leaving
     from the foot, one curve the whole height of the leg (11 mm in at the deck's underside), reaching 14 mm in at the top, so the flat end the top rests on stays 18+ mm inside the squircle top's
     edge (on the diagonal the edge comes closest).
-  - Each head-slot wall has one small bump, 0.5 mm proud ("crush ribs"): sand them until the crosspiece slides
-    in. The foot has a 1.5 mm arc cut under it, so the plate stands on its two ends and doesn't rock.
+  - Each head-slot wall has one small bump ("crush ribs"), 0.95 mm proud: the slot is 16.0 mm (the thickest
+    sheet + 0.3) and 14.1 mm at the bumps, the thinnest sheet, so the crosspiece is snug on any stock (v2 recs; was
+    0.5 mm, 15.0 at the bumps, with 0.9 mm of play at 14.1). On thicker stock sand the bumps, or the crosspiece's
+    faces, at the fit-up: (t − 14.1) / 2 a side, 0.8 mm at 15.7 (owner: up to about 1 mm is fine, `fit.fit_sand`). The foot has a 1.5 mm arc cut under it, so the plate stands on its two ends and doesn't rock.
   - How the head got its shape, by the leg FEA under a 200 N shove: a 60 mm crosspiece needed the haunch at
     270 mm and cost ~90 mm of room at thigh height; at 36 mm the slot's bottom landed in the haunch (183 %);
     25 mm with the haunch from 305 mm gave 84-95 % with dogbones in the slot, and **74-75 %** with the round
@@ -87,7 +89,9 @@ That's **18 parts, about 10.5 kg, 16.7 m of cutting**. They fit on one 48 × 96"
 the sheets itself and prices per part, so this only matters for my estimate.
 
 ## Assembly (a mallet, plus a screwdriver for the heater)
-1. Sand the holding tabs off. Sand the crush ribs until each crosspiece slides into its plate's head slot.
+1. Sand the holding tabs off. Fit-up: measure the sheet. The crush ribs leave 14.1 mm, the thinnest sheet, so on
+   anything thicker sand the bumps (or the crosspiece's faces) about (t − 14.1) / 2 a side, up to 0.8 mm at 15.7,
+   until each crosspiece slides into its plate's head slot without play.
 2. Drop a crosspiece into the head of each leg plate.
 3. Stand the four legs up on the diagonals and lower the deck over the 4 tenons. Sand the crosspieces' top
    edges until the deck sits on them and on the shoulders together (first fit-up only).
@@ -148,7 +152,7 @@ three parts with real outlines on 14.1 mm stock:
   wedges tight, not the cantilever estimate's 27 % (the 45° arms are softer and weaker than assumed). With
   slack wedges 97 % (127 % before the bigger fillets, 155 % under the "+" legs). Keep them tight.
 - **Legs.** A 200 N sideways shove at table height, 14.1 mm stock: the worst spot is the head slot's root at
-  74-75 % (mesh-stable), the wedge hole about 50 %; the sway is 6.1 mm along x. With the top's worst corner load
+  74-78 % (mesh h = 5-3 mm), the wedge hole about 50 %; the sway is 6.1 mm along x. With the top's worst corner load
   as well (an adult on an edge) it drops to 51 %; that load alone uses 28 %. (The "+" legs' plate A: 80 %, sway 7.1 mm, after it first failed
   at a 60 mm leg width; tag `plus-legs-archive`.) TODO-verify the strengths.
 
