@@ -12,9 +12,9 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
 | Clear height under the heater | 286 mm | **304 mm** |
 | Deck | H-shaped (four notches) | **X-shaped**: corner pads, a ring round the heater, 45° arms |
 | Legs | 8 plates in four "+" legs, 8 tenons, a wedge in each | **four diagonal legs**: one plate a corner on its diagonal, a crosspiece in its head, one tenon and wedge each |
-| Wedges | 12 + 2 spares | **4 + 2 spares** |
+| Wedges | 12 + 2 spares | **4 + 2 spares, v1's leftovers (not ordered)** |
 | Top | square, R20 corners (re-rounded by hand) | **squircle** (n = 8), cut in the file; feet and deck rounder to match |
-| Parts, weight, cutting | 26, 15.9 kg, 25.5 m | **18, 10.4 kg, 16.8 m** |
+| Parts, weight, cutting | 26, 15.9 kg, 25.5 m | **12 to order (+ v1's wedges), 10.3 kg, 15.9 m** |
 | Chairs | none | a bought zaisu (owner, 2026-11). Two plywood ones were designed, checked and quoted (+$173), then archived (tag `zaisu-archive`) |
 
 ## Decisions
@@ -73,7 +73,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
   - The arms: a 300 N hand pressing on the ring, plus the heater, as cantilevers at 45° to the grain on
     the thinnest stock (116 mm free): 8 MPa, 27 % of the rough strength, 1.1 mm of give. In the FEA it's more
     (below): 60 %.
-- **Wedges (6: 4 plus 2 spares, 60 × 18 mm, 1:8 taper).** They lie on the deck across the arm and tap
+- **Wedges (6: 4 plus 2 spares, 60 × 18 mm, 1:8 taper): v1's leftovers, not ordered** (owner 2026-11). v1 cut them from its "19mm" sheet, 17.0-18.9 mm thick, so I cut each leg's wedge hole 19.4 mm wide (the thickest + 0.5 mm; 15.5 mm of wood either side in the tenon; the shove's wedge-hole peak 45 %, was 43). A v2-thickness wedge would still clamp, just with play sideways. They lie on the deck across the arm and tap
   through each tenon, clamping the deck between the shoulders (and the crosspiece) and the wedge. This works at any sheet thickness from 14.1
   to 15.7 mm. Gravity can't replace all of them: with the weight alone (about 20 N a plate) there's
   about 9 mm of sway at a 25 N push in the wobble model, because the tenon rocks in its mortise.
@@ -89,7 +89,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
   a radius that starts abruptly. The corner posts stay 20 mm inside its edge (v1: 40). The futon lies
   over the heater as in a traditional open frame (v1 had the deck in between).
 
-That's **18 parts, about 10.4 kg, 16.8 m of cutting**. They fit on one 48 × 96" sheet. uMake lays out
+That's **12 parts to order, about 10.3 kg, 15.9 m of cutting**, plus six of v1's leftover wedges. They fit on one 48 × 96" sheet. uMake lays out
 the sheets itself and prices per part, so this only matters for my estimate.
 
 ## Assembly (a mallet, plus a screwdriver for the heater)
