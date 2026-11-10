@@ -99,7 +99,9 @@ the sheets itself and prices per part, so this only matters for my estimate.
 2. Drop a crosspiece into the head of each leg plate.
 3. Stand the four legs up on the diagonals and lower the deck over the 4 tenons. Sand the crosspieces' top
    edges until the deck sits on them and on the shoulders together (first fit-up only).
-4. Tap a wedge through each tenon.
+4. Tap a wedge firmly through each tenon. Keep the wedges tapped in, and check them each season: with them
+   slack, a hard press on a corner of the deck's ring uses nearly all of the wood's rough strength
+   (`docs/fea.md`: 97 %, against 60 % with them tight).
 5. On the floor or a bench, screw the heater between the two cheeks (drill 2–2.5 mm pilot holes).
 6. Lower the heater and cheeks into the deck's well: the ears rest on the deck.
 7. Drape the futon over the frame and lay the top on it.
