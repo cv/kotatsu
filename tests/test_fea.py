@@ -45,6 +45,29 @@ def test_plate_simply_supported_square_matches_navier():
     assert r.reaction.sum() == pytest.approx(q * a * a, rel=1e-6)
 
 
+def test_top_rejects_nonconverged_contact_reactions():
+    """A smaller-frame trial used to return 6.45 kN of reaction for a 1.25 kN load.
+    Its active set cycles at this mesh; that is not a usable strength result.
+    """
+    from kotatsu import loads
+    p = params.tables(params.load())[0]
+    p.frame.overhang = 70.0
+    pats = loads.cases(p)["beyond normal: an 80 kg adult sits on the middle of an edge (x1.5)"]
+    with pytest.raises(RuntimeError, match="active set did not converge"):
+        fea.top_case(p, pats, h=20)
+
+
+@pytest.mark.parametrize("bad_value, message", [(np.nan, "non-finite"), (0.0, "do not balance")])
+def test_plate_rejects_invalid_linear_solution(monkeypatch, bad_value, message):
+    """Never turn a failed linear solve or unbalanced residual into a stress report."""
+    m = fea.mesh(box(0, 0, 100, 100), 20)
+    edge = np.where((m.p[0] == 0) | (m.p[0] == 100) | (m.p[1] == 0) | (m.p[1] == 100))[0]
+    monkeypatch.setattr(fea, "spsolve", lambda matrix, rhs: np.full(rhs.shape, bad_value))
+    with pytest.raises(RuntimeError, match=message):
+        fea.plate(m, 10.0, 1e4, 1e4, 5e3, np.ones(m.t.shape[1]), edge, hold=edge)
+
+
+
 def test_top_sitter_balances_and_holds(p):
     """The worst case (an adult sitting on an edge), coarse mesh: forces balance, the grillage agrees,
     and the thinnest top keeps a margin of 2 or more one thickness clear of the pads."""

@@ -119,6 +119,8 @@ def plate(m: MeshTri, t: float, Ex: float, Ey: float, G: float, q: np.ndarray, s
         free = np.setdiff1d(np.arange(b.N), fixed)
         u = np.zeros(b.N)
         u[free] = spsolve(K[free][:, free].tocsc(), f[free])
+        if not np.isfinite(u).all():
+            raise RuntimeError("plate contact solve produced non-finite displacements")
         R = K @ u - f                                    # support force on the plate, + = down
         push_up = -R[dofs] * sgn                         # > 0: the support pushes, as it can
         into = u[dofs] * sgn > 1e-9                      # a let-go vertex moving into its support
@@ -126,10 +128,15 @@ def plate(m: MeshTri, t: float, Ex: float, Ey: float, G: float, q: np.ndarray, s
         if np.array_equal(new, active):
             break
         active = new
+    else:
+        raise RuntimeError(f"plate contact active set did not converge in {it} iterations")
     H = b.interpolate(u).hess                           # (2, 2, nel, nqp): constant per Morley element
     kx, ky, kxy = H[0, 0][:, 0], H[1, 1][:, 0], H[0, 1][:, 0]
     reac = np.zeros(m.p.shape[1])
     np.add.at(reac, verts[active], -R[dofs[active]])
+    applied = float(np.dot(np.asarray(q, float), _areas(m)))
+    if not np.isclose(reac.sum(), applied, rtol=1e-6, atol=1e-6):
+        raise RuntimeError("plate contact reactions do not balance the applied load")
     w = u[b.nodal_dofs[0]]
     return PlateResult(m, w, Ex * t / 2 * kx, Ey * t / 2 * ky, G * t * kxy, reac,
                        np.asarray(sup, int)[~active[:len(sup)]], np.asarray(sup, int))

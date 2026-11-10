@@ -103,6 +103,15 @@ Both are TODO-verify against a birch-plywood handbook, which gives 45° bending 
   stress within 1 %;
 - force balance in every model.
 
+**Numerical validity (v2 review).** The plate solver now raises an error rather than returning stresses if
+its contact active set has not converged, its displacements are non-finite, or its vertical reactions do not
+balance the applied load. In a smaller-frame trial (`frame.overhang = 70`, top mesh 20 mm), I obtained
+6446 N of reaction for a 1247 N sitter load after the 60-iteration limit. The former code silently used the
+next active set with the preceding displacement solution. Those top and downstream leg results were not
+valid evidence of either strength or failure. The regression keeps this trial visible; the current design
+and its cut geometry are unchanged by the guard. A failed solve needs contact/mesh investigation, not a
+relaxed strength limit.
+
 ## Mesh convergence
 
 | Model | Element size (mm) | Result |
