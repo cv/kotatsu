@@ -79,7 +79,7 @@ def joint(p, shape) -> Joint:
     k_bear = S.E_perp * (wl - t)                                # wedge pressing on the deck top, either side of the plate
     z0, z1 = yagura.leg_hole_z(p)
     bridge = L.H - z1                                           # wood above the wedge hole
-    span = fr.thick_slot(p)
+    span = fr.wedge_slot(p)
     I_b = t * bridge ** 3 / 12                                  # fixed-fixed bridge, central load
     k_bridge = 192 * M.E_par * I_b / span ** 3
     kw = 1 / (1 / k_bear + 1 / k_bridge)

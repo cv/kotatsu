@@ -87,7 +87,7 @@ def leg_plate(p) -> Polygon:
     if tb < wt - 0.01:
         g = g.difference(fr.dogbone((tb, zs), (1, 1), r))
     hz0, hz1 = leg_hole_z(p)
-    uc, ts = (ta + tb) / 2, fr.thick_slot(p)
+    uc, ts = (ta + tb) / 2, fr.wedge_slot(p)
     g = g.difference(fr.hole(uc - ts / 2, hz0, uc + ts / 2, hz1, r))
     w, u = fr.slot_w(p), F.ear
     g = g.difference(head_slot(p))
@@ -269,9 +269,9 @@ def tenon_mid(p) -> float:
 
 
 def wedge_footprints(p) -> list[Polygon]:
-    """Plan (world) of each wedge lying on the deck across its tenon (thickest stock)."""
+    """Plan (world) of each wedge lying on the deck across its tenon (thickest wedge)."""
     wl, _ = wedge_dims(p)
-    uc, t = tenon_mid(p), p.material.t_max
+    uc, t = tenon_mid(p), fr.wedge_t(p)[1]
     return [_plan(box(uc - t / 2, -wl / 2, uc + t / 2, wl / 2), C, d, n) for *_, C, d, n in corners(p)]
 
 
@@ -399,5 +399,5 @@ def parts(p) -> list[Part]:
     zb, _ = fr.cheek_z(p)
     out.append(Part("heater cheek", cs, [Placement("y", (xi - (t if s < 0 else 0), y0, zb))
                                          for xi, s in zip(fr.cheek_xs(p), (-1, 1))], kind="cheek"))
-    out.append(Part("wedge", wedge_shape(p), wedges, spares=2, kind="wedge"))
+    out.append(Part("wedge", wedge_shape(p), wedges, spares=2, kind="wedge", ordered=p.yagura.order_wedges))
     return out

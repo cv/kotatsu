@@ -33,7 +33,7 @@ def test_leg_wedges_clamp_the_deck(Y, t_deck):
     assert wh - wl * P.fit.wedge_taper < need < wh
     assert L.z_deck_top + wh <= L.H - 3, "wedges stay under the futon plane"
     ta, tb = yagura._tenon_u(P)
-    assert (tb - ta) - frame.thick_slot(P) >= 2 * 15, "wood beside the wedge hole"
+    assert (tb - ta) - frame.wedge_slot(P) >= 2 * 15, "wood beside the wedge hole"
     assert L.H - z1 >= 10, "wood above the wedge hole"
 
 
@@ -94,3 +94,21 @@ def test_storage_layout_fits(Y):
 
 
 
+
+
+def test_v1_wedges_fit_and_stay_off_the_order():
+    """The leg wedges are v1's leftovers (owner 2026-11): every hole takes the thickest of them, and they're left
+    out of everything the shop cuts and prices."""
+    from kotatsu import cutlist, price
+    P = YT[0]
+    lo, hi = frame.wedge_t(P)
+    assert (lo, hi) == tuple(P.yagura.wedge_stock) and hi >= 18.9
+    assert frame.wedge_slot(P) >= hi + 0.3, "the thickest v1 wedge slides through"
+    g = yagura.leg_plate(P)
+    (hole,) = g.interiors
+    xs = [x for x, _ in hole.coords]
+    assert max(xs) - min(xs) >= frame.wedge_slot(P) - 0.01
+    assert not P.yagura.order_wedges
+    assert "wedge" not in [n for n, *_ in price.parts(P)]
+    assert "wedge" not in [c.name for c in cutlist.cut_list(P)]
+    assert {pt.name: pt.qty for pt in frame.parts(P)}["wedge"] == 6, "still 4 placed + 2 spares on the table"

@@ -13,7 +13,7 @@ import re
 
 from shapely.geometry import box
 
-from . import cutlist, export, nest, params
+from . import frame, cutlist, export, nest, params
 from .params import ROOT
 
 OUT = ROOT / "out"
@@ -87,6 +87,9 @@ def bom_markdown(p, parts, lays) -> str:
         cut = (c.shape.exterior.length + sum(i.length for i in c.shape.interiors)) / 1000
         rows.append(f"| {c.name} | {c.qty} | {x1:.0f} × {y1:.0f} | {kg(c.shape.area):.2f} | {cut:.2f} | {c.note} |")
         tot_q += c.qty; tot_kg += c.qty * kg(c.shape.area); tot_cut += c.qty * cut
+    have = [pt for pt in frame.parts(p) if not pt.ordered]
+    not_cut = "".join(f"\nNot cut: {pt.qty} × {pt.name} ({pt.spares} spare), the owner's own: v1's leftovers, "
+                      f"{frame.wedge_t(p)[0]:g}–{frame.wedge_t(p)[1]:g} mm thick.\n" for pt in have)
     sheet_rows = []
     for k, opts in lays.items():
         for name, n in sorted(opts.items(), key=lambda kv: nest.material_m2(kv[1])):
@@ -103,7 +106,7 @@ Top: one piece, {p.top.length:.0f} × {p.top.width:.0f} mm.
 |---|---|---|---|---|---|
 {chr(10).join(rows)}
 | **Total** | **{tot_q}** | | **{tot_kg:.1f} kg** | **{tot_cut:.1f} m** | |
-
+{not_cut}
 ## Sheet layouts
 
 Gap between parts: {nest.effective_gap(p):.2f} mm (uMake asks for >= {p.cnc.part_gap:.0f} mm, and the {p.cnc.bit_d} mm bit

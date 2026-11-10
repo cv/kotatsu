@@ -117,6 +117,9 @@ foot_relief_margin = 20.0  # past the foot rounding: each end stands on a flat ~
 wedge_len = 60.0      # the leg wedges (v2: the only wedges; the heater cradle hangs by gravity)
 wedge_head = 18.0     # (1:8 taper -> 10.5 mm foot)
 wedge_head_r = 8.0    # v2 (owner 2026-11): the struck head squircled (the long faces stay straight: they clamp)
+wedge_stock = [17.0, 18.9]  # owner 2026-11: the leg wedges are v1's leftovers (same 60 mm, 18 mm head, 1:8), cut from its
+                      #   "19mm" sheet (17.0-18.9 mm, v1's material range). The wedge holes take the thickest, + mortise_height_extra
+order_wedges = false  # ... so the wedges are left out of the uMake order: no DXF, not in the BOM, the price or the box's weight
 
 [cheek]               # v2 "cradle": 2 on-edge plates the heater screws in between (on the bench). The pair drops into
                       # the deck's heater well; an ear at each end rests on the deck top. Gravity holds it: no wedges

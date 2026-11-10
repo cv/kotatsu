@@ -39,6 +39,8 @@ def cut_list(p, copies: int = 1, frame_grain: str | None = None) -> list[CutPart
     out: list[CutPart] = [CutPart("top", _norm(tp.outline), 1, GRAIN_ALONG_U,
                                   "top", "one piece")]
     for pt in frame.parts(p):
+        if not pt.ordered:                     # the owner has these already (v1's wedges)
+            continue
         if pt.kind == "frame" and frame_grain == "horizontal":
             rot = GRAIN_ALONG_V if pt.grain == "v" else GRAIN_ALONG_U
         else:

@@ -40,7 +40,7 @@ def raw(g) -> float:
 
 def parts(p) -> list[tuple[str, object, int]]:
     out = [("top", top.build(p).outline, 1)]
-    out += [(pt.name, pt.shape, pt.qty) for pt in frame.parts(p)]
+    out += [(pt.name, pt.shape, pt.qty) for pt in frame.parts(p) if pt.ordered]
     return out
 
 

@@ -474,7 +474,7 @@ def leg_contacts(p, shape, rib_gap: float | None = None, t: float | None = None)
             for uw, sg in ((u0 - w / 2, 1), (u0 + w / 2, -1)):
                 out.append(Contact(f"rib {i} " + ("out" if sg > 0 else "in"), box(uw - 1.0, z - 6, uw + 1.0, z + 6), 0, sg, S.E_perp, -rib_gap, body=2 + i))
     ta, tb = yagura._tenon_u(p)
-    uc, ts = (ta + tb) / 2, fr.thick_slot(p)
+    uc, ts = (ta + tb) / 2, fr.wedge_slot(p)
     _, z1 = yagura.leg_hole_z(p)
     wl, _ = yagura.wedge_dims(p)
     k_bear = S.E_perp * (wl - t)
@@ -497,7 +497,7 @@ def leg_zones(p) -> dict:
     F, Y, L = p.frame, p.yagura, fr.layout(p)
     zs, d, w = L.z_deck_bot, Y.head_slot, fr.slot_w(p)
     ta, tb = yagura._tenon_u(p)
-    uc, ts = (ta + tb) / 2, fr.thick_slot(p)
+    uc, ts = (ta + tb) / 2, fr.wedge_slot(p)
     z0, z1 = yagura.leg_hole_z(p)
     z = {"haunch fillet": Point(Y.leg_narrow, Y.leg_haunch_top - Y.leg_haunch_drop).buffer(25),
          "slot root": Point(F.ear, zs - d).buffer(w / 2 + 10),

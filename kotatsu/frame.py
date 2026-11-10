@@ -37,6 +37,7 @@ class Part:
     placements: list[Placement] = field(default_factory=list)
     spares: int = 0                 # extra copies to cut (not placed)
     kind: str = "frame"             # frame | deck | cheek | wedge
+    ordered: bool = True            # cut by the shop (False: the owner has them already, e.g. v1's wedges)
     grain: str = "u"                # face grain along the part's u, or "v" (legs: grain running up the leg)
 
     @property
@@ -97,6 +98,18 @@ def layout(p) -> Layout:
 
 def slot_w(p) -> float:
     return p.material.t_max + p.fit.slot_clearance
+
+
+def wedge_t(p) -> tuple[float, float]:
+    """The leg wedges' thickness range (mm): yagura.wedge_stock if set (v1's wedges, from its thicker sheet), else
+    the sheet's."""
+    s = getattr(p.yagura, "wedge_stock", None)
+    return (float(s[0]), float(s[1])) if s else (p.material.t_min, p.material.t_max)
+
+
+def wedge_slot(p) -> float:
+    """Width of the wedge hole through each leg's tenon: the thickest wedge, + mortise_height_extra."""
+    return wedge_t(p)[1] + p.fit.mortise_height_extra
 
 
 def rib_proud(p) -> float:
