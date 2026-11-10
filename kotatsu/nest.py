@@ -209,10 +209,6 @@ def material_m2(n: Nest) -> float:
     return sum(s.w * s.h for s in n.sheets) / 1e6
 
 
-def utilisation(n: Nest) -> float:
-    return sum(s.area_used for s in n.sheets) / (material_m2(n) * 1e6 or 1)
-
-
 def plan(p, parts: list[CutPart], max_sheets: int = 4) -> Nest | None:
     """Least-plywood mix of the available sheet sizes that holds every part.
 
@@ -236,7 +232,7 @@ def plan(p, parts: list[CutPart], max_sheets: int = 4) -> Nest | None:
         tries = [nest(p, parts, mix, strategy=st, limit=True) for st in STRATEGIES]
         ok = [n for n in tries if not n.unplaced]
         if ok:
-            best = max(ok, key=utilisation)
+            best = max(ok, key=lambda n: n.utilisation)
             best.mix = [sheet_name(s) for s in mix]
             return best
     return None

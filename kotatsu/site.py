@@ -99,7 +99,7 @@ def table_summary(tp, fd: dict, plan) -> dict:
                 "knee_reach": k["reach_min"], "side_clear": tp.comfort.knee_h + tp.comfort.knee_margin},
         "sheets": [nest.sheet_name((s.w, s.h)) for s in plan.sheets] if plan else [],
         "plywood_m2": round(nest.material_m2(plan), 2) if plan else None,
-        "util": round(nest.utilisation(plan), 3) if plan else None,
+        "util": round(plan.utilisation, 3) if plan else None,
     }
 
 
@@ -123,7 +123,7 @@ def sheets_data(p) -> dict:
         for name, n in sorted(opts.items(), key=lambda kv: nest.material_m2(kv[1])):
             out[str(k)][name] = {
                 "margin": n.margin, "gap": round(n.gap, 2), "count": len(n.sheets),
-                "util": round(nest.utilisation(n), 3), "material_m2": round(nest.material_m2(n), 2),
+                "util": round(n.utilisation, 3), "material_m2": round(nest.material_m2(n), 2),
                 "sizes": [nest.sheet_name((s.w, s.h)) for s in n.sheets],
                 "sheets": [{"w": sh.w, "h": sh.h, "parts": [
                     {"name": pl.name, "group": group[pl.name], "angle": pl.angle, "shape": rings(pl.shape)}

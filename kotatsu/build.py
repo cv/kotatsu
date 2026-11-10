@@ -92,7 +92,7 @@ def bom_markdown(p, parts, lays) -> str:
         for name, n in sorted(opts.items(), key=lambda kv: nest.material_m2(kv[1])):
             sizes = " + ".join(nest.sheet_name((s.w, s.h)) for s in n.sheets)
             m2 = nest.material_m2(n)
-            sheet_rows.append(f"| {k} | {name} | {sizes} | {m2:.2f} | {m2 / k:.2f} | {100 * nest.utilisation(n):.0f}% |")
+            sheet_rows.append(f"| {k} | {name} | {sizes} | {m2:.2f} | {m2 / k:.2f} | {100 * n.utilisation:.0f}% |")
     return f"""# Bill of materials (generated — do not edit)
 
 Material: {p.material.name}, {t:.0f} mm nominal ({p.material.t_min}–{p.material.t_max} mm accepted by every joint).
