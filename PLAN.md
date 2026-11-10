@@ -55,7 +55,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
     sheet + 0.3) and 14.1 mm at the bumps, the thinnest sheet, so the crosspiece is snug on any stock (v2 recs; was
     0.5 mm, 15.0 at the bumps, with 0.9 mm of play at 14.1). On thicker stock sand the bumps, or the crosspiece's
     faces, at the fit-up: (t − 14.1) / 2 a side, 0.8 mm at 15.7 (owner: up to about 1 mm is fine, `fit.fit_sand`). The foot has a 1.5 mm arc cut under it, so the plate stands on its two ends and doesn't rock.
-  - How the head got its shape, by the leg FEA under a 200 N shove: a 60 mm crosspiece needed the haunch at
+  - How I shaped the head, with the leg FEA under a 200 N shove: a 60 mm crosspiece needed the haunch at
     270 mm and cost ~90 mm of room at thigh height; at 36 mm the slot's bottom landed in the haunch (183 %);
     25 mm with the haunch from 305 mm gave 84-95 % with dogbones in the slot, and **74-75 %** with the round
     bottom.
@@ -71,12 +71,12 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
   - The deck holds the futon up across the middle. Its openings are as big as the H's were (188 mm deep
     at mid-side, where the knees go); the extra open area is near the corners.
   - The arms: a 300 N hand pressing on the ring, plus the heater, as cantilevers at 45° to the grain on
-    the thinnest stock (116 mm free): 8 MPa, 27 % of the rough strength, 1.1 mm of give. The FEA finds more
+    the thinnest stock (116 mm free): 8 MPa, 27 % of the rough strength, 1.1 mm of give. In the FEA it's more
     (below): 60 %.
 - **Wedges (6: 4 plus 2 spares, 60 × 18 mm, 1:8 taper).** They lie on the deck across the arm and tap
   through each tenon, clamping the deck between the shoulders (and the crosspiece) and the wedge. This works at any sheet thickness from 14.1
-  to 15.7 mm. Gravity can't replace all of them: with the weight alone (about 20 N a plate) the wobble
-  model gives about 9 mm of sway at a 25 N push, because the tenon rocks in its mortise.
+  to 15.7 mm. Gravity can't replace all of them: with the weight alone (about 20 N a plate) there's
+  about 9 mm of sway at a 25 N push in the wobble model, because the tenon rocks in its mortise.
 - **Heater cradle: 2 cheeks (380 × 46 mm).** The heater screws between their inner faces, 294 mm apart (a
   290 mm heater gets 4 mm of play). The pair drops into the deck's well, and a 40 mm ear at each cheek end
   rests on the deck top: gravity holds it up, and it lifts out for summer. The cheeks cover the heater's
@@ -121,19 +121,20 @@ the sheets itself and prices per part, so this only matters for my estimate.
 | Push 50 mm in from the edge that tips the table / lifts the loose top's far side | never, in the model (the feet and corner posts sit almost under the edge) |
 | Push right at the edge that tips the table / lifts the loose top's far side | about 4500 N / 640 N (v1: 1700 / 770): the loose top lifts long before the table tips |
 
-- **Tipping** is worked out the way EN 12521 and EN 1730 test it: a vertical push in the middle of a side,
-  50 mm in from the edge. It assumes the feet don't slide, and the weight includes a guessed 3 kg heater and
+- **Tipping**: I work it out the way EN 12521 and EN 1730 test it: a vertical push in the middle of a side,
+  50 mm in from the edge. I assume the feet don't slide, and the weight includes a guessed 3 kg heater and
   2 kg futon. There's no pass/fail limit, only the report.
 - **Wobble** comes from a spring model of each leg-to-deck joint (`kotatsu/stiffness.py`), not FEA. It
   includes the shoulders pressing on the deck, a wedge tapped in to about 300 N, the tenon faces bearing in
   the mortises, and each plate bending. One early discovery: when the tenon ran right to the leg's inner
   edge, every shoulder sat on one side of the wedge, so tapping the wedge in twisted the leg about 9 mm at
-  the foot. The inner shoulder (12 mm in v2) fixed that. Re-tap the wedges after the first heating season.
+  the foot. I added the inner shoulder (12 mm in v2) to fix that. Re-tap the wedges after the first heating season.
   A push along x reaches each diagonal plate at 45°: all four take part in their own planes, and their
   stiffness across the plate is counted as nothing. Twisting is the one load that bends them across their
   faces, and the crosspieces resist it (`stiffness.twist`).
-- **Strength** is checked two ways. A 200 N sideways push stresses the legs to about 2.1 MPa in the spring model (all four plates share it; 14.1 mm stock, as everywhere); the FEA finds more (below). For the top, a
-  plate model (`kotatsu/loads.py`) puts it on its corner posts, which can only push up. I checked the model
+- **Strength**: I check it two ways. In the spring model, a 200 N sideways push stresses the legs to about
+  2.1 MPa (all four plates share it; 14.1 mm stock, as everywhere); in the FEA it's more (below). For the top, I
+  put it on its corner posts, which can only push up, in a plate model (`kotatsu/loads.py`). I checked the model
   against textbook plate results, and it matches within 3–5 %. The top rests on the 4 posts and the 4
   tenons (v1: 8 tenons; the "+" legs: 8 posts and 4 tenons).
 
@@ -149,10 +150,10 @@ No corner of the top lifts in any of these cases. The strength figures are rough
 (TODO-verify), and a typical sheet breaks at about 1.5× them. The legs carry at most about 60 kg per
 corner, and the wedges and deck don't carry any of the weight from above.
 
-**Finite-element check ([docs/fea.md](docs/fea.md)).** `kotatsu/fea.py` re-checks the
-three parts with real outlines on 14.1 mm stock:
-- **Top.** The grillage above (on the real squircle, the loads clipped to it) is confirmed, 9–15 % on the safe side:
-  the FE gives everyday at most 15 %, an adult on an edge 37 %.
+**Finite-element check ([docs/fea.md](docs/fea.md)).** I re-check the three parts with
+`kotatsu/fea.py`, with their real outlines on 14.1 mm stock:
+- **Top.** In the FE, everyday loads use at most 15 % and an adult on an edge 37 %, so I trust the grillage above
+  (on the real squircle, the loads clipped to it): it's 9–15 % on the safe side.
 - **X deck.** Under a 300 N hand the deck uses up to about 60 % of its strength at the arm fillets with the
   wedges tight, not the cantilever estimate's 27 % (the 45° arms are softer and weaker than assumed). With
   slack wedges 97 % (127 % before the bigger fillets, 155 % under the "+" legs). Keep them tight.
@@ -174,19 +175,19 @@ three parts with real outlines on 14.1 mm stock:
 | **Total** | **about $910–980** |
 
 ## Off-season storage
-Everything packs flat inside the top's footprint, in two layers (the top, then the deck with the other 16 parts round it), a stack about 32 mm tall (kotatsu/storage.py
-packs it by itself, flipping parts over where that helps).
+Everything packs flat inside the top's footprint, in two layers (the top, then the deck with the other 16 parts round it), a stack about 32 mm tall (I pack it with
+`kotatsu/storage.py`, flipping parts over where that helps).
 
 ## The design space (`make optimize`, 2026-11, for the "+" legs: TODO rerun for the diagonal legs)
-`kotatsu/optimize.py` samples 384 designs over 8 knobs (`[optimize.knobs]`: the deck's arm width, fillets and ring,
-the legs' lower width, haunch, taper and foot), keeps the ones that cut, box and ship free with the knees
-reaching under the top, then runs the FEA on the 48 most promising (plate A under the 200 N shove, plate B, the
-deck's hard hand cases). What it found:
+With `kotatsu/optimize.py` I sampled 384 designs over 8 knobs (`[optimize.knobs]`: the deck's arm width, fillets and
+ring, the legs' lower width, haunch, taper and foot), kept the ones that cut, box and ship free with the knees
+reaching under the top, then ran the FEA on the 48 most promising (plate A under the 200 N shove, plate B, the
+deck's hard hand cases). What I found:
 - **Price is flat:** every design costs $326.9–328.0. uMake prices each part's bounding box, and none of these
   knobs moves a box. Weight barely moves either (11.1–11.7 kg).
 - **The real trade is leg room against stiffness and strength,** and the lower-leg width drives it: from 60 to 90 mm
   it takes sway down 4.4 mm and the worst share of strength down 85 points, for 47 mm less room between the legs
-  where shins and thighs pass (`comfort.legroom`, new: the knee-height `shin_w` couldn't see it).
+  where shins and thighs pass (`comfort.legroom`, new: measured at knee height, `shin_w` left it out).
 - **The current design is on the front:** it has the most leg room (637 mm) of any design that passes the FEA.
 - Near-free gains: a wider foot (less taper) buys strength for almost no room; a higher haunch top buys room.
   For the same money, about 595 mm of room gives 5.7 mm of sway and 72 % (now 7.1 mm, 80 %).
@@ -208,7 +209,7 @@ between two supported corners.
 ## Price: what's left to save
 Little: the design is at uMake's price floor (`docs/quote.md`, "What can still be saved"). About 40 % of the bill
 doesn't depend on the design, the remaining cut is all required, and wood inside a part's box is free. A solid
-deck would save about $4 but costs 3.8 kg and the knee room in the X's openings, so the X stays. The bigger
+deck would save about $4 but costs 3.8 kg and the knee room in the X's openings, so I'm keeping the X. The bigger
 unknown is uMake's finalization: v1's receipt was **$405.83 + tax = $454.53**, $52.50 more than the cart's
 $353.33 (TODO-verify what was added; if it repeats, v2's $306.84 becomes about $353 + tax, about $395).
 
@@ -221,8 +222,8 @@ $353.33 (TODO-verify what was added; if it repeats, v2's $306.84 becomes about $
    its top stays cool to the touch on high (owner, 2026-11: 40 °C on v1, the same heater: fine). Look for a cUL, cETL or CSA mark on the rating label.
 3. **The crosspieces.** At the first fit-up, sand each crosspiece's top edge until the deck sits on it and on the
    plate's shoulders together, then twist the frame by hand: the joints should feel solid. The twist figure (1.7 mm
-   at 115 N) comes from a spring model, not the FEA, and is a best case: it takes each joint as rigid until it
-   opens, and gives each crosspiece the wedge's whole clamp. What holds the crosspiece down is the deck, lying on
+   at 115 N) comes from a spring model, not the FEA, and is a best case: in it I take each joint as rigid until it
+   opens, and give each crosspiece the wedge's whole clamp. What holds the crosspiece down is the deck, lying on
    its top edge (sanded flush with the shoulders) and clamped onto the shoulders by the wedge beside the tenon.
 4. **A tipping limit.** If I want one: EN 12521's force table, or a bathroom-scale test on the finished table.
 5. **Fit-up.** v1's wedges went in by hand. Watch whether 15 mm tenons and wedges hold as well.
@@ -237,8 +238,8 @@ The pale birch look of v1 is the goal (owner, 2026-11). All by hand, at no cost 
   the edge, so narrow the bevel to about 15 mm there.
 - **Round every visible edge a little** (2–3 mm, sandpaper on a block). Crisp, even edges and a good finish
   matter more than shape.
-- **Legs: ease the exposed vertical edges to about 3 mm, no more.** v2's legs work hard (the FEA puts the
-  root of the head slot at 63 % of its strength under a hard 200 N shove), so the full half-rounds once
+- **Legs: ease the exposed vertical edges to about 3 mm, no more.** v2's legs work hard (in the FEA the
+  root of the head slot uses 63 % of its strength under a hard 200 N shove), so the full half-rounds once
   planned for v1 would cost real strength. Keep sharp and flat: the top edges that carry the top and deck,
   the tenons and shoulders, the head slots' walls and the crosspieces' edges in them, and the wedge holes. Ease
   the floor edge about 2 mm.
@@ -253,7 +254,7 @@ The pale birch look of v1 is the goal (owner, 2026-11). All by hand, at no cost 
 - **v1**, as ordered and built: 18 mm birch, the heater hung under the deck from wedged cheeks, R20
   corners. Git tag `v1-ordered` (and `main` until v2 merges).
 - **v2's "+" legs** (two crossed plates a corner, one wedged, the other held by gravity; as quoted at $328.02):
-  tag `plus-legs-archive`. The diagonal legs replaced them (owner 2026-11). At the time: $24 less in uMake's quotes ($36 by the price model),
+  tag `plus-legs-archive`. I replaced them with the diagonal legs (owner 2026-11). At the time: $24 less in uMake's quotes ($36 by the price model),
   5.8 m less cutting, 0.8 kg lighter, 22 mm more room between the legs, and a little stronger and stiffer in the FEA.
   Slimmed and kicked, they're now $21.18 less ($306.84 against $328.02), 5.7 m less cutting, 1.0 kg lighter and 5 mm
   more room between the legs (642 against 637 mm).
@@ -266,7 +267,7 @@ The pale birch look of v1 is the goal (owner, 2026-11). All by hand, at no cost 
   - **X deck** (v1's): diagonal arms through the middle, optionally with a square "shield" over the heater.
     About $4 cheaper and 0.6 kg lighter, with the same joints. But the deck is what holds the futon up
     across the middle, and the X's openings are 22–26 cm wide against 18 cm in the H, each right where
-    the knees go. Not worth it then. v2's X keeps a ring round the heater, which fixes that.
+    the knees go. Not worth it then. v2's X has a ring round the heater, which holds the futon up there.
   - **Leg windows**: replaced by the slim haunched legs.
   - **Lighter-look cuts**: R70 top corners, a curved haunch, feet tapering 10 mm. About $1.50 cheaper and a
     little less tipping margin (1698 → 1476 N at the edge), but hard to see. The hand finishing does more.
