@@ -7,7 +7,9 @@ all 10 lines within 2 %, true area only within 38 %). So cut-outs and windows sa
 only add cutting. The order total then follows a volume curve:
     total ~= K * raw_total ** B
 fitted on two 15mm quotes ($328.70 for the table alone, $501.66 with two plywood zaisu, since archived). uMake's own share
-of the total between the parts is proportional to raw. v1's 19mm order comes out 3 % low (thicker stock).
+of the total between the parts is proportional to raw. v1's 19mm order comes out 3 % low (thicker stock), and the
+latest 15mm quote (2926, $306.84, docs/quote.md) 4 % low ($294.06): a smaller order gets less volume discount than the
+curve, fitted on bigger orders, gives it (TODO: refit with that quote).
 Cutting is about half the raw cost of this design; one more metre of cutting costs about as much as
 0.09 m2 more bounding box.
 """

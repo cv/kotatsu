@@ -3,8 +3,8 @@
 Each part (and each sheet's used area) is rasterised after growing it by half the part gap plus a
 cell, so two parts whose grown masks don't overlap are at least `gap` apart. A 2-D FFT
 cross-correlation finds every free position for a part at once; we take the one that keeps the
-layout shortest along the sheet (then lowest). Big parts go first; small ones fall into the leg
-openings and other gaps. The result is checked with exact shapely distances in tests.
+layout shortest along the sheet (then lowest). Big parts go first; small ones fall into the gaps (the deck's
+heater well, beside the legs). The result is checked with exact shapely distances in tests.
 """
 from __future__ import annotations
 
