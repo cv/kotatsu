@@ -66,6 +66,13 @@ What this repo produces:
 - Don't guess the heater's mounting geometry. Use the measured values in `[heater]` (`docs/heater.md`).
 - Don't compute geometry in the website's JavaScript. Python computes it, and JS only draws it.
 
+## Writing
+- **People act; things behave.** When a person did or decided something, say so: "I redesigned the deck as
+  an X", not "the deck becomes an X"; "in the FEA I found...", not "the FEA found...". Models, tests, the FEA
+  and the cart don't find, say or decide. Physical behaviour stays active: the top lifts at 640 N, the quilt drapes.
+- The README is the owner's first person ("I"). PLAN and docs keep their own voice, with people as the actors.
+- Prefer plain, calm sentences. The occasional twist keeps a reader going, but not every sentence needs one.
+
 ## Tools
 - **Python 3.12 or newer via `uv`.** Don't use the system Python.
 - `ezdxf` writes the DXFs. `shapely` does the 2-D geometry (booleans, dogbones, clearances, areas).
