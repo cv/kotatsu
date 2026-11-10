@@ -58,7 +58,8 @@ def knee_reach(p, width: float | None = None, height: float | None = None) -> fl
     (sx, sy, sz), (_, _, hz) = frame.heater_box(p)
     obstacles = [fp]
     if hz - sz / 2 < height:
-        obstacles.append(box(-sx / 2 - 20, -sy / 2 - 20, sx / 2 + 20, sy / 2 + 20))
+        k = C.heater_keepout
+        obstacles.append(box(-sx / 2 - k, -sy / 2 - k, sx / 2 + k, sy / 2 + k))
     obs = unary_union(obstacles)
     lo, hi = 0.0, 2 * R
     if box(-width / 2, R, width / 2, R + 1).intersects(obs):
@@ -158,11 +159,11 @@ def side_clear(p) -> float:
 
 
 def legroom(p, step: float = 10.0) -> float:
-    """Narrowest room between two legs on a side (mm), from 20 mm off the floor up to the thighs' top when
-    sitting legs forward on the zaisu (seat + thigh + margin): where shins and thighs pass between the legs."""
+    """Narrowest room between two legs on a side (mm), from comfort.legroom_from off the floor up to the thighs' top
+    when sitting legs forward on the zaisu (seat + thigh + margin): where shins and thighs pass between the legs."""
     C = p.comfort
-    z1 = C.chair_seat_h + C.thigh_h + C.leg_margin
-    zs = [20.0 + i * step for i in range(int((z1 - 20.0) // step) + 1)] + [z1]
+    z0, z1 = C.legroom_from, C.chair_seat_h + C.thigh_h + C.leg_margin
+    zs = [z0 + i * step for i in range(int((z1 - z0) // step) + 1)] + [z1]
     return min(p.top.length - 2 * p.frame.overhang - 2 * low_footprint_leg_u(p, z) for z in zs)
 
 

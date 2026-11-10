@@ -72,7 +72,7 @@ def cheap(knobs: dict[str, float]) -> dict:
             if g.geom_type != "Polygon" or not g.is_valid or not geom.router_cuttable(g, R):
                 return {**r, "ok": False, "why": f"{pt.name}: not one cuttable outline"}
             x0, y0, x1, y1 = g.bounds
-            if max(x1 - x0, y1 - y0) + 50 > p.shipping.box_max:
+            if max(x1 - x0, y1 - y0) + p.shipping.packing > p.shipping.box_max:
                 return {**r, "ok": False, "why": f"{pt.name}: too big for the box"}
         c = comfort.summary(p)
         e = price.estimate(p)

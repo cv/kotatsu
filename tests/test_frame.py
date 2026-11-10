@@ -41,7 +41,7 @@ def test_part_fits_sheet_and_parcel(C):
 def _fits(P, shape):
     x0, y0, x1, y1 = shape.bounds
     long_side = max(x1 - x0, y1 - y0)
-    assert long_side + 50 <= P.shipping.box_max                  # boxed, still ships free
+    assert long_side + P.shipping.packing <= P.shipping.box_max  # boxed, still ships free
     w, h = sorted((x1 - x0, y1 - y0))
     assert any(w <= min(s) - 2 * P.cnc.sheet_margin and h <= max(s) - 2 * P.cnc.sheet_margin
                for s in P.cnc.sheets)
@@ -124,7 +124,7 @@ def test_cross_legged_clearance(C):
     from kotatsu import comfort
     P = C.P
     K = P.comfort
-    assert comfort.summary(P)["side_clear"] >= K.knee_h + 5
+    assert comfort.summary(P)["side_clear"] >= K.knee_h + K.knee_margin
     assert comfort.knee_reach(P) >= K.knee_reach_min
 
 

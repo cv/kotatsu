@@ -96,7 +96,7 @@ def table_summary(tp, fd: dict, plan) -> dict:
         "tip_inset": k["tip_inset"],
         "wobble": stiffness.summary(tp),
         "min": {**({"tip_n": k["tip_min_n"]} if k["tip_min_n"] > 0 else {}),
-                "knee_reach": k["reach_min"], "side_clear": tp.comfort.knee_h + 5},
+                "knee_reach": k["reach_min"], "side_clear": tp.comfort.knee_h + tp.comfort.knee_margin},
         "sheets": [nest.sheet_name((s.w, s.h)) for s in plan.sheets] if plan else [],
         "plywood_m2": round(nest.material_m2(plan), 2) if plan else None,
         "util": round(nest.utilisation(plan), 3) if plan else None,

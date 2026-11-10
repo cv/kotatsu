@@ -195,6 +195,9 @@ thigh_h = 160.0       # legs out forward on the bare floor (the zaisu posture, o
                       # cushions there's room for thighs up to about 200 mm)
 foot_h = 220.0        # ... and the top of the toes, relaxed (TODO-verify: owner to measure)
 leg_margin = 15.0     # air left above thighs and feet
+knee_margin = 5.0     # the deck's underside clears the knees (knee_h) by at least this at mid-side
+heater_keepout = 20.0 # ... and the knee zone stays this far (plan) from the heater's body, if it hangs below knee_h
+legroom_from = 20.0   # legroom (between two legs, legs forward) is measured from this high off the floor up
 chair_seat_h = 100.0  # a bought zaisu (owner 2026-11: the plywood ones are archived, tag zaisu-archive): its seat
                       # sat on, padding included, above the floor (TODO-verify: measure it when it comes)
 legroom_min = 560.0   # room between two legs where shins and thighs pass, legs forward (comfort.legroom). About
@@ -226,6 +229,7 @@ sets = [1]                  # cut layouts for this many copies of the whole set 
 
 [shipping]            # uMake's free shipping, as observed at checkout (docs/quote.md)
 box_max = 910.0       # longest box side, mm (a 91 cm box ships free; 87 cm parts + packing fit)
+packing = 50.0        # what the packing adds to the longest part's side, mm (the box check: part + this <= box_max)
 free_kg = 18.9        # heaviest order that shipped free for us (20.4 kg did not)
 
 # ------------------------------------------------------------------------------------------------
