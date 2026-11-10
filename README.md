@@ -507,7 +507,7 @@ was a longer, gentler haunch. Now the legs are 56 mm wide, narrowing to a 46 mm 
 
 ### Where v2 stands
 
-Against the "+" legs, the diagonal ones are better nearly everywhere. uMake quoted the table at **$303.98**,
+Against the "+" legs, the diagonal ones are better nearly everywhere. uMake quoted the table at **$303.98** (**$306.84** once the legs got their kick, above),
 $24 less than the "+" legs' $328.02. The cutting drops from 22.5 to 16.7 m, the table is 0.8 kg lighter, and
 there's 22 mm more room between the legs. In the FEA they're a little stronger and stiffer too: under the hard
 shove, 75 % of the legs' strength and 6.1 mm of sway, against 80 % and 7.1 mm (63 % once they were slimmed and kicked). The one new job is at the
@@ -526,7 +526,7 @@ wedges go from 14 to 6, and every corner is rounder.
 | Wedges | 14 | 6 (4 + 2 spares) |
 | Clear height under the heater | 286 mm | 304 mm |
 | A hard 200 N shove, finite elements | not checked | 63 % of the legs' strength, 6.1 mm of sway |
-| uMake | $353.33 in the cart ($405.83 once uMake finalized it) | $303.98 (a quote, not an order; about $340 with tax; the "+" legs quoted $328.02) |
+| uMake | $353.33 in the cart ($405.83 once uMake finalized it) | $306.84 (a quote, not an order; about $344 with tax; the "+" legs quoted $328.02) |
 
 Before I order it, I want to measure how I really sit (no tape to hand yet), and I'd like to know how thick
 uMake's "15mm" sheet really is (TODO-verify). A local yard, Windsor Plywood in Vernon, measures its 15 mm
@@ -541,7 +541,7 @@ reach out to confirm". So I still got one email, and the final invoice was $405.
 than the cart (TODO-verify what was added). Next, the table comes apart again and goes to the garage for
 sanding and oil.
 
-Version 2 is designed, checked and quoted ($303.98, not ordered yet): lighter, with the heater up in the
+Version 2 is designed, checked and quoted ($306.84, not ordered yet): lighter, with the heater up in the
 deck, one diagonal leg at each corner, and a finite-element check that found (and fixed) weak legs. See
 the Version 2 chapter.
 
@@ -569,7 +569,7 @@ them is at **https://github.com/cv/kotatsu**.
 | Heater | 120 V 400 W replacement kotatsu heater, 29 × 29 × 5 cm, screwed between 2 cheeks that hang in a well in the deck |
 | Joints | wedged through-tenons and slotted crosspieces; 6 wedges (2 spare) |
 | Height | about 41 cm with a futon |
-| Order | 18 parts, about 10.5 kg, one 91 cm box; quoted at CAD $303.98 + tax on uMake (Nov 2026, not ordered yet) |
+| Order | 18 parts, about 10.4 kg, one 91 cm box; quoted at CAD $306.84 + tax on uMake (Nov 2026, not ordered yet) |
 
 These are v2's files. v1, the table in the Build chapter (26 parts in 18 mm, CAD $353 + tax in October
 2026), is at the git tag `v1-ordered`.

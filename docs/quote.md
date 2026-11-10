@@ -13,14 +13,15 @@ the new deck, leg plate and crosspiece uploaded (top, cheeks and wedges unchange
 |---|---|---|---|---|
 | top | 860 × 860 mm | 1 | $88.05 | $88.05 |
 | deck (R150 ring fillets; convex pads flaring out of the arms on R300, R10 far corners; owner 2026-11) | 769 × 769 mm | 1 | $102.73 | $102.73 |
-| leg plate (the posts' long sweep, one long taper) | 140 × 385 mm | 4 | $17.48 | $69.92 |
+| leg plate (slim, kicked 30 mm: owner 2026-11) | 169 × 385 mm | 4 | $18.32 | $73.28 |
 | leg crosspiece (arched underneath) | 90 × 25.5 mm | 4 | $2.54 | $10.16 |
 | heater cheek (short: from just under the heater's screw line, owner 2026-11) | 380 × 46 mm | 2 | $10.95 | $21.90 |
 | wedge | 60 × 17 mm | 6 | $1.87 | $11.22 |
-| **Subtotal** | | **18** | | **$303.98** |
+| **Subtotal** | | **18** | | **$306.84** |
 
 (First quoted at $306.47; the parts were re-uploaded as their curves got smoother and the cheeks shorter: $306.42,
-$306.36, $305.80, $304.82, $304.77, then $303.98.) With 12 % tax about **$340.46**; shipping should stay free (the same 91 cm box, 10.5 kg: not re-checked at the
+$306.36, $305.80, $304.82, $304.77, $303.98; then the slim kicked leg plate, $306.84: its box is 29 mm wider. The
+other lines shift by cents with the order's volume discount, so they don't add up exactly.) With 12 % tax about **$343.66**; shipping should stay free (the same 91 cm box, 10.4 kg: not re-checked at the
 cart). That's $24.04 less than the "+" legs' $328.02. My price model says $291.39, 4 % low this time: a smaller
 order gets less of uMake's volume discount on every part (the top went from about $80 to $88.05), which the model's
 curve, fitted on bigger orders, underrates (TODO: refit with this quote). If uMake's finalization adds what it
