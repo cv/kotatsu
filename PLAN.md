@@ -168,10 +168,10 @@ three parts with real outlines on 14.1 mm stock:
 |---|---|
 | Heater (PaletteLife, amazon.ca, delivered) | $258 |
 | uMake: 18 parts at 15mm, **quoted $306.84 + about $36.82 tax** (slim kicked legs; $303.98 before) (saved as quote 2926, not ordered, `docs/quote.md`), free shipping expected. If finalization adds what it did for v1 (~15 %): about $395 | $344–395 |
-| Futon: planned as a 205 cm square from Etsy, or a queen duvet + cover from Douglas; I now use an oversized king quilt (its cost not recorded here, TODO-verify) | $185–230 |
+| Futon: an oversized king quilt, 120 × 120 in (owner 2026-11; planned as a 205 cm square from Etsy, or a queen duvet + cover) | about $200 |
 | Sandpaper and finishing oil | $30–50 |
 | A zaisu (bought, adjustable: about $70, free shipping) + tax | $78 |
-| **Total** | **about $920–1040** |
+| **Total** | **about $910–980** |
 
 ## Off-season storage
 Everything packs flat inside the top's footprint, in two layers (the top, then the deck with the other 16 parts round it), a stack about 32 mm tall (kotatsu/storage.py
