@@ -177,7 +177,11 @@ senses together takes 0.71 × the push); the top's load goes on its post and ten
 How the head got its shape: a 36 mm crosspiece put the slot's bottom in the haunch (183 %); 25 mm with the haunch
 from 305 mm gave 84-95 % (dogbones in the slot's corners); a round-bottomed slot, no dogbones, gave 74-75 %.
 Twisting (a push along an edge at a top corner) is checked by `stiffness.twist`, a spring model, not FE:
-1.4 mm at 115 N, the crosspiece joints opening at about 191 N.
+1.5 mm at 115 N, the crosspiece joints opening at about 191 N. **Both are best cases.** The joint is taken as rigid
+until it opens, and what holds the crosspiece down is the deck: it lies on the crosspiece's top edge (sanded flush
+with the plate's shoulders at the fit-up) and the wedge clamps it onto the shoulders beside the tenon. The model
+gives the crosspiece that whole 300 N clamp; the share it really gets depends on the fit, so the joints may open
+sooner and the twist be larger. Twist the frame by hand at the fit-up (PLAN.md, open questions).
 
 ### The "+" legs' plates (tag `plus-legs-archive`), 14.1 mm, grain up the leg
 

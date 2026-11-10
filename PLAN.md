@@ -112,7 +112,7 @@ the sheets itself and prices per part, so this only matters for my estimate.
 | Cross-legged on a zaisu: knee room under the top's edge (385 mm, the futon squeezed over the knees) | none to spare once the seat's height is added, so I sit legs forward |
 | Room between the legs at knee height / legs forward (to 275 mm) | 571 / 659 mm ("+" legs: 570 / 637) |
 | Sway under a sideways push (spring model; FEA at 200 N: 6.1 mm, "+" legs 7.1) | 0.75 mm at 50 N, 1.5 at 100 N, 3.5 at 200 N |
-| Twist: 115 N pushed along an edge at a top corner | 1.5 mm at the corner; the crosspiece joints open at about 191 N |
+| Twist: 115 N pushed along an edge at a top corner (best case: the joints rigid until they open, each crosspiece held down by the whole wedge clamp through the deck) | 1.5 mm at the corner; the crosspiece joints open at about 191 N at most |
 | Play in each tenon, and extra wobble per 0.1 mm a wedge works loose | 0.4 mm, about 1 mm |
 | Push 50 mm in from the edge that tips the table / lifts the loose top's far side | never, in the model (the feet and corner posts sit almost under the edge) |
 | Push right at the edge that tips the table / lifts the loose top's far side | about 1630 N / 640 N (v1: 1700 / 770) |
@@ -216,7 +216,9 @@ $353.33 (TODO-verify what was added; if it repeats, v2's $303.98 becomes about $
    its top stays cool to the touch on high (owner, 2026-11: 40 °C on v1, the same heater: fine). Look for a cUL, cETL or CSA mark on the rating label.
 3. **The crosspieces.** At the first fit-up, sand each crosspiece's top edge until the deck sits on it and on the
    plate's shoulders together, then twist the frame by hand: the joints should feel solid. The twist figure (1.5 mm
-   at 115 N) comes from a spring model, not the FEA.
+   at 115 N) comes from a spring model, not the FEA, and is a best case: it takes each joint as rigid until it
+   opens, and gives each crosspiece the wedge's whole clamp. What holds the crosspiece down is the deck, lying on
+   its top edge (sanded flush with the shoulders) and clamped onto the shoulders by the wedge beside the tenon.
 4. **A tipping limit.** If I want one: EN 12521's force table, or a bathroom-scale test on the finished table.
 5. **Fit-up.** v1's wedges went in by hand. Watch whether 15 mm tenons and wedges hold as well.
 6. **Zaisu fit.** Measure the bought zaisu's seat (sat on, padding included: assumed 100 mm, `comfort.chair_seat_h`)

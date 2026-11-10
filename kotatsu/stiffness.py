@@ -370,7 +370,8 @@ def summary(p) -> dict:
 
 def out_of_plane_k(p) -> float:
     """A diagonal plate's stiffness (N/mm at the foot) bending the weak way, its head held by the crosspiece
-    joint (taken as rigid while it's closed) and its foot free to slide: integral of z^2 / (E I(z))."""
+    joint and its foot free to slide: integral of z^2 / (E I(z)). The joint is taken as rigid while it's closed,
+    so this is an upper bound: the real joint gives a little (the deck's bearing, the rib fit) before it opens."""
     q, shape = leg(p)
     L, M = fr.layout(p), p.material
     zs = np.linspace(0.5, L.z_deck_bot - 0.5, 300)
@@ -385,9 +386,13 @@ def out_of_plane_k(p) -> float:
 
 def twist(p, F_corner: float | None = None) -> dict:
     """Twisting the frame about the vertical (a sideways push at a top corner, along the
-    edge) bends every plate the weak way. Each crosspiece rocks open on the deck once its plate's push
-    across reaches preload x (cross_w / 2) / leg length; until then the joint is taken as rigid.
-    Returns the corner's twist (mm) under F_corner and the corner push at which the joints open."""
+    edge) bends every plate the weak way. What holds each crosspiece down is the deck: it lies on the crosspiece's
+    top edge (sanded flush with the plate's shoulders at the fit-up), and the wedge clamps it down onto the
+    shoulders beside the tenon. A crosspiece rocks open once its plate's push across, times the leg length, beats
+    that clamp times cross_w / 2; the model gives it the whole wedge preload (and nothing for the deck's own
+    weight or the ribs' friction), so the opening force is an upper bound too. Until then the joint is taken as
+    rigid (out_of_plane_k): the twist is a best case.
+    Returns the corner's twist (mm) under F_corner and the corner push at which the joints open (both best cases)."""
     S, L, D = p.stiffness, fr.layout(p), p.yagura
     F = S.twist_n if F_corner is None else F_corner
     k = out_of_plane_k(p)

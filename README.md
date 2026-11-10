@@ -455,7 +455,7 @@ on the deck: the joint rocks open at about 32 N.
 
 The rescue is a **crosspiece**: a small board that drops into a slot in the plate's head, across it. The deck
 bears on its top edge, so the joint now has a 90 mm base against twisting, and stays shut up to about 190 N
-pushed at a corner. Then the FEA shaped the head. A tall crosspiece needed a deep slot, and the slot's bottom
+pushed at a corner (at best: the model gives each crosspiece the wedge's whole clamp through the deck). Then the FEA shaped the head. A tall crosspiece needed a deep slot, and the slot's bottom
 landed in the leg's haunch, where it used 183 % of the plate's strength under a hard shove. A short one
 (25 mm) and a higher haunch brought it to 84–95 %. A round-bottomed slot brought it to 75 %, with no dogbones
 at all, since the crosspiece's square edges can sit on the curve.
