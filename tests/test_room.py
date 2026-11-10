@@ -1,6 +1,8 @@
 """Room layers for the 3-D view: the draped futon keeps its cloth length, and the pillows stay clear of the legs."""
 import math
 
+import pytest
+
 from kotatsu import frame, params, room
 
 
@@ -48,3 +50,22 @@ def test_pillows_fit_inside_the_rug_and_tuck_under_the_futon():
                 assert math.hypot(x + sx * w / 2 - L.cx, y + sy * dd / 2 - L.cy) <= rim + 1e-6
         inner = max(abs(x - L.cx) - w / 2, abs(y - L.cy) - dd / 2)
         assert rho_out - inner >= p.room.zabuton_tuck - 1e-6     # at least the minimum tuck under the futon
+
+
+def test_room_plan_draws_the_current_frame():
+    """The Futon & rug page draws the deck and the four (kicked) legs from Python and looks up every futon size it
+    offers in room.footprint_d (the page computes nothing); the floor pillows stay clear of the legs' feet."""
+    from shapely.geometry import Polygon, box
+    from kotatsu import comfort, yagura
+    p = P()
+    d = room.room_data(p)
+    rings = d["frame_plan"]
+    assert len(rings) == 1 + len(yagura.corners(p))
+    assert Polygon(rings[0]).area == pytest.approx(Polygon(yagura.deck(p).exterior).area, rel=0.01)
+    sizes = dict(d["plan_sizes"])
+    assert d["spread_d"] in sizes and all(f == round(room.footprint_d(p, s)) for s, f in sizes.items())
+    L = frame.layout(p)
+    legs = comfort.low_footprint(p, L.H + 1)
+    for s in room.room3d(p)["seats"]:
+        (x, y, _), (w, dd, _) = s["center"], s["size"]
+        assert box(x - L.cx - w / 2, y - L.cy - dd / 2, x - L.cx + w / 2, y - L.cy + dd / 2).distance(legs) > 0

@@ -80,11 +80,15 @@ function renderFutonList(d) {
   }
 }
 
-function footprint(R, fd) { return Math.max(R.top_d, fd - 2 * 0.7 * R.height); }
+// the futon's floor footprint for a size the page offers (kotatsu/room.py footprint_d computes them all)
+function footprint(R, fd) {
+  const s = R.plan_sizes.find(([x]) => x === fd) || R.futons.items.map((f) => [f.size_cm * 10, f.footprint_d]).find(([x]) => x === fd);
+  return s ? s[1] : R.footprint_d;
+}
 
 function renderFutonPlan(d, refit = false) {
-  const R = d.room, fd = state.fsize || R.futon_d, fp = footprint(R, fd);
-  $("#futon-btns").replaceChildren(btnGroup([1900, 2050, 2250, 2290].map((x) => [x, `${x / 10} cm`]), fd, (x) => { state.fsize = x; state.futon = null; renderFutonList(d); renderFutonPlan(d); }));
+  const R = d.room, fd = state.fsize || R.spread_d, fp = footprint(R, fd);   // default: the quilt as it drapes
+  $("#futon-btns").replaceChildren(btnGroup(R.plan_sizes.map(([x]) => [x, `${x / 10} cm`]), fd, (x) => { state.fsize = x; state.futon = null; renderFutonList(d); renderFutonPlan(d); }));
   $("#futon-summary").textContent = `futon ${sizeTxt(fd)} → floor ≈ ${sizeTxt(fp)} · rug showing ≈ ${Math.round((R.rug_d - fp * Math.SQRT2) / 20)}–${Math.round((R.rug_d - fp) / 20)} cm · top ${sizeTxt(R.top_d)}`;
   const host = $("#fviewer");
   let svg = host.querySelector("svg");
@@ -108,12 +112,9 @@ function renderFutonPlan(d, refit = false) {
       el("rect", { x: -zw / 2, y: -zd / 2, width: zw, height: zd, rx: 40, class: "zabuton" }, g);
     }
   }
-  const h = R.frame / 2, c = h - R.ear;     // "#" plan: panels cross `ear` in from their ends
-  for (const q of [-c, c]) {
-    el("line", { x1: -h, y1: q, x2: h, y2: q, class: "frame-ghost" }, svg);
-    el("line", { x1: q, y1: -h, x2: q, y2: h, class: "frame-ghost" }, svg);
-  }
   el("path", { d: "M" + R.top_outline.map((q) => q.join(" ")).join("L") + "Z", class: "top-disc" }, svg);
+  for (const ring of R.frame_plan)            // the deck and the legs under the top, a dashed ghost (room.frame_plan)
+    el("path", { d: "M" + ring.map((q) => q.join(" ")).join("L") + "Z", class: "frame-ghost" }, svg);
   if (R.knees) {                              // owner's cross-legged knee zone at each side
     const K = R.knees, y0 = R.top_d / 2 - K.reach;
     for (const ang of [0, 90, 180, 270]) {

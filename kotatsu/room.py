@@ -8,6 +8,7 @@ from . import comfort
 from .params import ROOT
 
 FUTONS = ROOT / "docs" / "futons.toml"
+PLAN_SIZES = (1900.0, 2050.0, 2250.0, 2290.0)     # futon sizes (mm) the room plan offers as buttons, with spread_d
 
 
 def footprint_d(p, futon_d: float) -> float:
@@ -64,13 +65,25 @@ def top_outline(p, tol: float = 0.5) -> list[list[float]]:
 
 
 
+def frame_plan(p) -> list[list[list[float]]]:
+    """The frame in plan, centred, for the room plan: the deck's outline and the legs' footprints, as rings of [x, y]."""
+    from shapely.affinity import translate
+    from . import frame, yagura
+    deck = translate(yagura.deck(p), -p.top.length / 2, -p.top.width / 2)
+    legs = comfort.low_footprint(p, frame.layout(p).H + 1)
+    return [[[round(x, 1), round(y, 1)] for x, y in g.simplify(0.5).exterior.coords[:-1]]
+            for g in [deck, *getattr(legs, "geoms", [legs])]]
+
+
 def room_data(p) -> dict:
+    sizes = sorted({*PLAN_SIZES, spread_d(p)})
     return {"rug_d": p.room.rug_d, "futon_d": p.room.futon_d, "top_d": p.top.length,
-            "top_outline": top_outline(p),
+            "top_outline": top_outline(p), "frame_plan": frame_plan(p),
             "frame": p.top.length - 2 * p.frame.overhang, "ear": p.frame.ear,
             "height": p.frame.height + p.material.t_nominal, "zabuton": list(p.room.zabuton),
             "seat_c": round(seat_offset(p), 1),
             "spread_d": spread_d(p), "footprint_d": round(footprint_d(p, spread_d(p))), "futons": futons(p),
+            "plan_sizes": [[s, round(footprint_d(p, s))] for s in sizes],
             "knees": comfort.summary(p)}
 
 
