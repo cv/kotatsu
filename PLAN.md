@@ -73,7 +73,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
   - The arms: a 300 N hand pressing on the ring, plus the heater, as cantilevers at 45° to the grain on
     the thinnest stock (116 mm free): 8 MPa, 27 % of the rough strength, 1.1 mm of give. In the FEA it's more
     (below): 60 %.
-- **Wedges (6: 4 plus 2 spares, 60 × 18 mm, 1:8 taper).** They lie on the deck across the arm and tap
+- **Wedges (6: 4 plus 2 spares, 60 × 18 mm, 1:8 taper), new from uMake** (owner 2026-11: v1's leftovers are the same shape but 17-18.9 mm thick, and would need 19.4 mm holes; leaving them off the order saved only $4.72. `yagura.wedge_stock` and `order_wedges` can switch to them). They lie on the deck across the arm and tap
   through each tenon, clamping the deck between the shoulders (and the crosspiece) and the wedge. This works at any sheet thickness from 14.1
   to 15.7 mm. Gravity can't replace all of them: with the weight alone (about 20 N a plate) there's
   about 9 mm of sway at a 25 N push in the wobble model, because the tenon rocks in its mortise.

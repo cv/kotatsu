@@ -508,6 +508,11 @@ with a longer, gentler haunch. Now the legs are 56 mm wide, narrowing to a 46 mm
 63 %, less than before. It costs 17 mm of room between the legs. With the kick and the slimming, uMake's
 quote went from $303.98 to $306.84: it prices each part by its bounding box, and the plate's got 29 mm wider.
 
+I still have a bag of wedges left over from v1, the same shape as v2's but cut from its thicker sheet. I widened
+the wedge holes to take them and dropped the wedges from the order, and the quote fell by only $4.72: the smaller
+order got less of uMake's volume discount on every other part. For that, new wedges that fit snugly are the better
+deal, so I put them back.
+
 ### Summer
 
 In summer I take the table apart into a flat stack the size of its top, as with v1: two layers, about 3 cm.
