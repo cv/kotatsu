@@ -22,9 +22,9 @@ the new deck, leg plate and crosspiece uploaded (top, cheeks and wedges unchange
 (First quoted at $306.47; the parts were re-uploaded as their curves got smoother and the cheeks shorter: $306.42,
 $306.36, $305.80, $304.82, $304.77, $303.98; then the slim kicked leg plate, $306.84: its box is 29 mm wider. The
 other lines shift by cents with the order's volume discount, so they don't add up exactly.) With 12 % tax about **$343.66**; shipping should stay free (the same 91 cm box, 10.4 kg: not re-checked at the
-cart). That's $21.18 less than the "+" legs' $328.02 ($24.04 less before the kick). With my price model I'd predicted $294.06, 4 % low this time: a smaller
-order gets less of uMake's volume discount on every part (the top went from about $80 to $88.05), and I fitted the
-model's curve on bigger orders, so it underrates that (TODO: refit with this quote). If uMake's finalization adds what it
+cart). That's $21.18 less than the "+" legs' $328.02 ($24.04 less before the kick). My price model then read it 4 % low
+($294.06): its curve, fitted on bigger orders, gave a small order too much volume discount. So I refitted it on all five
+15mm quotes as a fixed amount per order plus a rate (`kotatsu/price.py`): it now says $302.50, 1.4 % low. If uMake's finalization adds what it
 did to v1 (+15 %), about $395 with tax.
 
 ## What I ordered (October 2026)

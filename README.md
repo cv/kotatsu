@@ -230,12 +230,12 @@ thinner top works harder: 9 % and 37 %.
 ### What will it cost?
 
 uMake quotes instantly, so I uploaded a few test shapes and wrote down the prices. Each part costs a
-rate per square metre plus a rate per metre the bit travels, and the order total follows a curve that
-gives bigger orders a discount:
+rate per square metre plus a rate per metre the bit travels, and the order total adds a fixed amount per
+order on top. I fitted that on all five of my 15 mm quotes, and it matches each within 1.4 %:
 
 ```python
-A_RATE, L_RATE = 64.17, 5.84     # per m2 of bounding box, per m of cut (raw units, before the volume curve)
-K, B = 12.45, 0.595              # total = K * raw ** B  (two 15mm quotes, 2026-11)
+A_RATE, L_RATE = 64.17, 5.84     # per m2 of bounding box, per m of cut (raw units)
+FIXED, PER_RAW = 166.47, 0.6693  # total = FIXED + PER_RAW * raw  (five 15mm quotes, 2026-11)
 
 
 def raw(g) -> float:
@@ -470,7 +470,7 @@ on the deck: the joint rocks open at about 32 N.
 
 The rescue is a **crosspiece**: a small board that drops into a slot in the plate's head (its full-width top,
 under the deck), across the plate. The deck bears on its top edge, so the joint now has a 90 mm base against
-twisting, and stays shut up to about 190 N pushed at a corner. That's a best case, since in the model I give each
+twisting, and stays shut up to about 200 N pushed at a corner. That's a best case, since in the model I give each
 crosspiece the wedge's whole clamp through the deck, so I'll twist the frame by hand at the fit-up. Then I
 shaped the head with the FEA. A tall crosspiece needed a deep slot, and the slot's bottom landed in the haunch, where it
 used 183 % of the plate's strength under a hard shove. With a short one (25 mm) and a higher haunch, it came down

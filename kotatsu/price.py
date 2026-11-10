@@ -4,12 +4,14 @@ Per part (Baltic birch, CNC router):
     raw = A_RATE * bounding_box_m2 + L_RATE * cut_length_m        (no per-file or per-hole fee)
 Material is charged by each part's **bounding box**, not the wood in it (v2 full quote, 2026-11: this fits
 all 10 lines within 2 %, true area only within 38 %). So cut-outs and windows save weight, not money: they
-only add cutting. The order total then follows a volume curve:
-    total ~= K * raw_total ** B
-fitted on two 15mm quotes ($328.70 for the table alone, $501.66 with two plywood zaisu, since archived). uMake's own share
-of the total between the parts is proportional to raw. v1's 19mm order comes out 3 % low (thicker stock), and the
-latest 15mm quote (2926, $306.84, docs/quote.md) 4 % low ($294.06): a smaller order gets less volume discount than the
-curve, fitted on bigger orders, gives it (TODO: refit with that quote).
+only add cutting. The order total is then a fixed amount per order plus a rate on the raw total:
+    total ~= FIXED + PER_RAW * raw_total
+fitted (least squares, owner 2026-11) on all five 15mm quotes, each re-priced with the parts of the commit it
+quoted: $328.70, $328.53, $328.40 (tables with the "+" legs), $306.84 (quote 2926, the current design) and $501.66
+(a table and two plywood zaisu, since archived); every one within 1.4 %. (The earlier curve, K * raw ** B fitted
+on two of them, read the current design 4 % low; a three-parameter curve matched all five within 0.1 % but is an
+overfit, with a $240 order of nothing.) The total is split between the parts in proportion to raw. Thicker stock
+(v1's 19mm order) costs more than this predicts.
 Cutting is about half the raw cost of this design; one more metre of cutting costs about as much as
 0.09 m2 more bounding box.
 """
@@ -18,7 +20,7 @@ from __future__ import annotations
 from . import frame, top
 
 A_RATE, L_RATE = 64.17, 5.84     # per m2 of bounding box, per m of cut (raw units, before the volume curve)
-K, B = 12.45, 0.595              # total = K * raw ** B  (two 15mm quotes, 2026-11)
+FIXED, PER_RAW = 166.47, 0.6693  # total = FIXED + PER_RAW * raw  (five 15mm quotes, 2026-11)
 
 
 def features(g) -> tuple[float, float, int]:
@@ -45,8 +47,8 @@ def parts(p) -> list[tuple[str, object, int]]:
 def estimate(p) -> dict:
     rows = [(n, raw(g) * q, q) for n, g, q in parts(p)]
     R = sum(r for _, r, _ in rows)
-    T = K * R ** B
+    T = FIXED + PER_RAW * R
     cut = sum(features(g)[1] * q for _, g, q in parts(p))
     return {"subtotal": round(T, 2), "raw": round(R, 2), "cut_m": round(cut, 1),
-            "marginal_per_raw": round(B * T / R, 3),
+            "marginal_per_raw": PER_RAW,
             "by_part": {n: round(r * T / R, 2) for n, r, _ in rows}}
