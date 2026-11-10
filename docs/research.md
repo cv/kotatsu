@@ -1,6 +1,6 @@
 # Research notes
 
-What I learned about uMake and the materials before designing anything, plus what the cart taught me
+What I learned about uMake and the materials before designing anything, plus what I learned from the cart
 later. Retrieved October 2026 from uMake.ca's public pages and the help text inside app.umake.ca.
 
 ## Ordering
@@ -245,6 +245,6 @@ Only the top would come from Japan; the frame stays uMake birch (it's under the 
 | Limestone / travertine 20 mm (~7 MPa) | 35 | 38 % | 74 % |
 
 For wood the everyday loads govern, about as much as edge-sitting. Stone is brittle and natural stone has hidden
-flaws, so it wants everyday use under about a third of its strength. Owner's choice (2026-11): **pale wood**, used
+flaws, so I'd keep its everyday use under about a third of its strength. Owner's choice (2026-11): **pale wood**, used
 carefully (no sitting, coasters): white oak or hard maple at 20 mm, hinoki at 25. Ash is held back until Canada's
 ash import rules (emerald ash borer, CFIA) are checked. Hinoki dents about three times as easily as oak.

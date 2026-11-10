@@ -2,8 +2,8 @@
 
 v1's order came to **CAD $395.73 at checkout: $353.33 for 26 parts plus $42.40 tax, with free shipping**. uMake's
 finalized invoice was higher: $405.83 + tax = $454.53 (TODO-verify what was added). Getting there took eight
-quotes over two days, and the cart taught me more about pricing than the published rules
-did.
+quotes over two days, and I learned more about pricing from the cart than from the published
+rules.
 
 ## The diagonal legs, quoted: the current design (2026-11, saved in my account as quote 2926, not ordered)
 Baltic birch, 15mm, CNC router, millimetres; the old deck and leg plates A and B removed from the saved quote,
@@ -22,9 +22,9 @@ the new deck, leg plate and crosspiece uploaded (top, cheeks and wedges unchange
 (First quoted at $306.47; the parts were re-uploaded as their curves got smoother and the cheeks shorter: $306.42,
 $306.36, $305.80, $304.82, $304.77, $303.98; then the slim kicked leg plate, $306.84: its box is 29 mm wider. The
 other lines shift by cents with the order's volume discount, so they don't add up exactly.) With 12 % tax about **$343.66**; shipping should stay free (the same 91 cm box, 10.4 kg: not re-checked at the
-cart). That's $21.18 less than the "+" legs' $328.02 ($24.04 less before the kick). My price model says $294.06, 4 % low this time: a smaller
-order gets less of uMake's volume discount on every part (the top went from about $80 to $88.05), which the model's
-curve, fitted on bigger orders, underrates (TODO: refit with this quote). If uMake's finalization adds what it
+cart). That's $21.18 less than the "+" legs' $328.02 ($24.04 less before the kick). With my price model I'd predicted $294.06, 4 % low this time: a smaller
+order gets less of uMake's volume discount on every part (the top went from about $80 to $88.05), and I fitted the
+model's curve on bigger orders, so it underrates that (TODO: refit with this quote). If uMake's finalization adds what it
 did to v1 (+15 %), about $395 with tax.
 
 ## What I ordered (October 2026)
@@ -57,7 +57,7 @@ quoted instantly; nothing was flagged.
 | wedge.dxf | 60 × 17.6 | 6 | $1.51 | $9.06 |
 | **Subtotal** | | **18** | | **$328.70** |
 
-- `kotatsu/price.py` (fitted on 19mm quotes) predicted $330.36, so 15mm costs about the same per metre
+- With `kotatsu/price.py` (fitted on 19mm quotes) I'd predicted $330.36, so 15mm costs about the same per metre
   of cutting and per m² as 19mm. The saving is weight, not money.
 - The thickness menu has both **15mm** and **16mm**. Since "19mm" is the 3/4" sheet, "16mm" is probably
   5/8" (15.9 mm), thicker than the 15.7 mm the joints accept. Order "15mm". TODO-verify its real
@@ -81,7 +81,7 @@ Baltic Birch, **15mm**, CNC router, no extra processes. All quoted instantly; no
 | **Subtotal** | | **18** | | **$328.40** |
 
 The cart: one 91 × 91 × 14 cm box, shipping **free**, tax (BC GST/PST) $39.41, **total $367.81**, lead time 2 days.
-`kotatsu/price.py` predicted $327.64 (0.2 % low). If uMake's finalization adds what it added to v1 ($52.50 on
+With `kotatsu/price.py` I'd predicted $327.64 (0.2 % low). If uMake's finalization adds what it added to v1 ($52.50 on
 $353.33, about 15 %), expect about $378 + tax, about $423. TODO-verify when ordering.
 
 ## v2 full quote: the "+"-leg table and both zaisu (November 2026, not ordered; superseded)
@@ -107,15 +107,15 @@ The cart: one **91 × 91 × 20 cm** box, shipping **free**, tax (BC GST/PST) $60
 saw the same). The real parts weigh about 18.4 kg (about 18.0 kg on uMake's scale), still under free shipping.
 I stopped at the cart: its Confirm Order button wasn't pressed.
 
-**Material is priced by each part's bounding box.** The old model (below) put this order at $473.85, 5.5 % low,
-and part by part it was far off: the deck and the zaisu sides (big outlines, little wood) 25 % too cheap, small
+**Material is priced by each part's bounding box.** With the old model (below) I'd put this order at $473.85, 5.5 % low,
+and part by part I was far off: the deck and the zaisu sides (big outlines, little wood) 25 % too cheap, small
 solid parts 15–29 % too dear. Charging material by the bounding box instead of the wood fits all 10 lines within
-2 % (the tiny wedge within 9 %), and holes cost nothing extra. `kotatsu/price.py` now does that:
+2 % (the tiny wedge within 9 %), and holes cost nothing extra. I changed `kotatsu/price.py` to do that:
 
     each part (raw) ≈ 64.17 × bounding box (m²) + 5.84 × cutting (m)
     order total     ≈ 12.45 × (sum of the parts) ^ 0.595
 
-fitted on the two 15mm quotes. It predicts this one at $502.24, and v1's 19mm order 3 % low (thicker stock).
+fitted on the two 15mm quotes. With it I predict this one at $502.24, and v1's 19mm order 3 % low (thicker stock).
 What it means for the design: **a cut-out or window saves weight, never money.** It only adds cutting, which is
 about half the raw cost. One more metre of cutting costs about as much as 0.09 m² more bounding box.
 
@@ -123,7 +123,7 @@ about half the raw cost. One more metre of cutting costs about as much as 0.09 m
 Removing the four zaisu files from the same quote: **$328.53 for the 18 table parts**, one 91 × 91 × 14 cm box,
 shipping free, tax $39.42, **total $367.95** (not ordered). So the two zaisu added $173.13 to the order. The
 owner chose a bought, adjustable zaisu (about $70, free shipping) instead, and the plywood chairs were archived
-(tag `zaisu-archive`). The bounding-box model predicts the table alone at $328.40.
+(tag `zaisu-archive`). With the bounding-box model I predict the table alone at $328.40.
 
 | File | Each | Qty |
 |---|---|---|
@@ -192,7 +192,7 @@ The cut that's left is required: outlines, cross-lap slots, wedge holes, mortise
 The very first quote, before shipping, was $346.40 for the Ø 90 round design. The 78 cm frame jumped the
 price because every window is extra cutting.
 
-## What the cart taught me
+## What I learned from the cart
 
 **Shipping is set by one box.** The cart packs the whole order into one box about 5 cm bigger than the
 largest part, and charges by that box. I tested it by swapping only the top file:
@@ -220,7 +220,7 @@ time (totals from $119 to $232) fits this model, which `kotatsu/price.py` used u
 (Superseded in November 2026: material goes by the bounding box, see the v2 full quote above. The
 conclusions about windows below were right for the wrong reason.)
 
-It predicts the real orders to within 15 cents. What it showed:
+With it I predicted the real orders to within 15 cents. What I learned from it:
 - **Cutting is about 77 % of the cost.** At this order size, one more metre of cutting adds about $5.40, and
   one more m² of wood about $36. A window costs more in cutting than it saves in wood, but opening it out to
   the edge as a notch saves money.

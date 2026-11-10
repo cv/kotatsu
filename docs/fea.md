@@ -1,7 +1,7 @@
 # Finite-element check of the v2 table (top, X deck, leg plates)
 
-`kotatsu/fea.py` checks the three load-bearing parts of v2 with finite elements, to confirm or correct the lumped
-models (`kotatsu/loads.py` for the top and the deck arms, `kotatsu/stiffness.py` for the legs). It reads the real
+I check the three load-bearing parts of v2 with finite elements in `kotatsu/fea.py`, to confirm or correct the
+lumped models (`kotatsu/loads.py` for the top and the deck arms, `kotatsu/stiffness.py` for the legs). It reads the real
 outlines (`top.build`, `yagura.deck`, `frame.parts`), so it follows `params.toml`. Nothing here changes a cut part.
 
 ## In short
@@ -14,30 +14,30 @@ outlines (`top.build`, `yagura.deck`, `frame.parts`), so it follows `params.toml
   on the same squircle, is 9–15 % on the safe side.
 
 The details are under "The diagonal legs", below. The rest of this section, and most tables after it, are the
-history: v2's first, "+"-shaped legs (tag `plus-legs-archive`), where the FEA found a real problem.
+history: v2's first, "+"-shaped legs (tag `plus-legs-archive`), where I found a real problem in the FEA.
 
-**Update (v2, owner 2026-11): the "+" legs are fixed.** `yagura.leg_narrow` went from 60 to 70 mm (and the haunch
-became an S-curve of squircle corners). Under the 200 N push, plate A now peaks at the wedge hole (87 %), with
+**Update (v2, owner 2026-11): the "+" legs are fixed.** I widened `yagura.leg_narrow` from 60 to 70 mm (and made the
+haunch an S-curve of squircle corners). Under the 200 N push, plate A now peaks at the wedge hole (87 %), with
 the haunch at 81 %, the slot root at 77 % and sway 7.2 mm. `tests/test_fea.py::test_leg_plates_hold_the_push`
-is now a plain test, no longer an expected failure. The tables below are the 60 mm study that found it.
+is now a plain test, no longer an expected failure. The tables below are from the 60 mm study in which I found it.
 Then a soft taper below the joints (full 70 mm down to 150 mm, then in to 56 mm at the floor, owner 2026-11)
 moved plate A's peak to 81 % (haunch), slot root 80 %, wedge hole 73 %, sway unchanged at 7.2 mm; plate B 70 %.
 A straight taper from the haunch failed instead (102 % at 58 mm): it narrows the leg at A's slot root.
 Then rounder corners (the haunch's S-curve 60 mm, the taper's bend 110: one continuous inner edge): plate A's
 worst is the slot root at 80 % (86 % at 2 mm elements), the haunch 57–70 %, the wedge hole 73 %. The wedge's
 bearing peak used to leak past the 3 mm "contact edges" band into the wedge-hole zone, so that zone read anything
-from 73 to 104 % depending on the mesh; `leg_case` now treats 6 mm round the wedge's bearing as local crushing.
+from 73 to 104 % depending on the mesh; in `leg_case` I now treat 6 mm round the wedge's bearing as local crushing.
 
 
-| Part | Lumped model says | FEA says | Verdict |
+| Part | Lumped model | FEA | Verdict |
 |---|---|---|---|
 | Top, worst case (80 kg sitter × 1.5 on an edge), 14.1 mm | 14.8 MPa, 42 %, 8.0 mm sag (grillage at 14.1 mm, on the real squircle) | 13.0 MPa, 37 %, 7.5 mm | **Confirmed.** The grillage is conservative by 9–15 %. |
 | X deck, 300 N hand + heater | 11.9 MPa, 40 %, 3.7 mm (cantilever arm) | up to 68 % (Tsai-Hill) at the fillets, 7–10 mm sag, with the wedges tight | **Corrected.** About 1.7× the lumped figure, but it holds. With slack wedges it doesn't (up to 155 %). |
-| Leg plate A, 200 N sideways push | 3.6 MPa in the legs, 4.5 mm sway | 41–56 MPa at the haunch fillet (Tsai-Hill 160 %), 12 mm sway | **Problem.** The lumped model misses that A's upper half is two separate fingers. |
+| Leg plate A, 200 N sideways push | 3.6 MPa in the legs, 4.5 mm sway | 41–56 MPa at the haunch fillet (Tsai-Hill 160 %), 12 mm sway | **Problem.** In the lumped model I missed that A's upper half is two separate fingers. |
 
-The 200 N push is `stiffness.stresses`' check load, a hard shove at table height. On the thinnest stock the FE
-model puts A's first failure at about 125 N (if you scale linearly; contact makes it only roughly linear). That is
-a v2 design issue. See [Recommended changes](#recommended-changes-v2-not-made-here). The tests kept it visible as
+The 200 N push is `stiffness.stresses`' check load, a hard shove at table height. On the thinnest stock, in the FE
+model A first fails at about 125 N (if you scale linearly; contact makes it only roughly linear). That is
+a v2 design issue. See [Recommended changes](#recommended-changes-v2-not-made-here). I kept it visible in the tests as
 a strict `xfail` (`tests/test_fea.py::test_leg_plates_hold_the_push`) until the fix; it's a plain test now.
 
 ## Method
@@ -63,7 +63,7 @@ f_m = 35 (along), 30 (across) and 9 MPa (shear). All are rough, **TODO-verify**.
 The tables give Tsai-Hill unless they say otherwise. Every case uses the **thinnest stock, 14.1 mm**
 (`material.t_min`).
 
-Two consequences of orthotropy that the lumped deck model misses (hand calculation, same constants):
+Two consequences of orthotropy that I missed in the lumped deck model (hand calculation, same constants):
 - At 45° the bending modulus is 1/E45 = (1/Ex + 1/Ey + 1/G)/4, so E45 ≈ 2130 MPa. `deck_arms` uses
   E_par/2 = 4500 MPa.
 - At 45° Tsai-Hill gives a strength of about 2/√(1/Y² + 1/S²) ≈ 17 MPa. `deck_arms` holds the stress against
@@ -176,17 +176,17 @@ senses together takes 0.71 × the push); the top's load goes on its post and ten
 | Deck (300 N hand), wedges tight / slack | 60 / 97 % (R150 ring fillets, convex pads flaring out of the arms on R300, R10 far corners; R90/R40 and wiggly pads: 65 / 127; "+" legs: 68 / 155) | |
 | Top, everyday / an adult on an edge | 15 / 37 % ("+": 18 / 42) | |
 
-How the head got its shape: a 36 mm crosspiece put the slot's bottom in the haunch (183 %); 25 mm with the haunch
-from 305 mm gave 84-95 % (dogbones in the slot's corners); a round-bottomed slot, no dogbones, gave 74-75 %.
-How the slim legs were found (owner 2026-11: the kick, then "can it be thinner?"): the kick itself costs nothing
+How I shaped the head: a 36 mm crosspiece put the slot's bottom in the haunch (183 %); 25 mm with the haunch
+from 305 mm came to 84-95 % (dogbones in the slot's corners); a round-bottomed slot, no dogbones, to 74-75 %.
+How I found the slim legs (owner 2026-11: the kick, then "can it be thinner?"): the kick itself costs nothing
 (kick 20-30 at 70 / 56 mm: 74-78 %). Thinning alone fails, because a narrower leg steepens the haunch and its bend
 crowds the slot root: 62 / 50 mm 90 %, 56 / 46 mm 106 %, 50 / 42 mm 112 % (h = 4). A longer haunch fixes it:
 56 / 46 with a 50 mm drop 65 % (63 % at h = 3), with 70 mm 57 % (but 20 mm less room between the legs).
 Twisting (a push along an edge at a top corner) is checked by `stiffness.twist`, a spring model, not FE:
 1.7 mm at 115 N, the crosspiece joints opening at about 193 N. **Both are best cases.** The joint is taken as rigid
 until it opens, and what holds the crosspiece down is the deck: it lies on the crosspiece's top edge (sanded flush
-with the plate's shoulders at the fit-up) and the wedge clamps it onto the shoulders beside the tenon. The model
-gives the crosspiece that whole 300 N clamp; the share it really gets depends on the fit, so the joints may open
+with the plate's shoulders at the fit-up) and the wedge clamps it onto the shoulders beside the tenon. In the model I
+give the crosspiece that whole 300 N clamp; the share it really gets depends on the fit, so the joints may open
 sooner and the twist be larger. Twist the frame by hand at the fit-up (PLAN.md, open questions).
 
 ### The "+" legs' plates (tag `plus-legs-archive`), 14.1 mm, grain up the leg
@@ -238,8 +238,8 @@ local crushing of end grain, not a bending failure. TODO-verify the wedge seat a
    them didn't make the corner and edge cases worse, though: the corner cat's paws now land on the corner
    itself, over the pad, and the grillage's figure fell (3.3 to 2.6 %); the edge case rose from 13.6 to 14.6 %,
    the sitter from 41.8 to 42.3 %. Nothing to correct in the design.
-4. **Joint forces.** The lumped model's wedge force (and the 3.0 MPa bridge shear from it) assumes the wedge
-   stays near its 300 N tap-in. FE has it rising to about 1.25 kN under a 200 N push, and to 0.8–0.9 kN under a
+4. **Joint forces.** For the lumped model's wedge force (and the 3.0 MPa bridge shear from it) I assumed the
+   wedge stays near its 300 N tap-in. In the FE it rises to about 1.25 kN under a 200 N push, and to 0.8–0.9 kN under a
    hand on the deck. The two shoulders next to the tenon are only about 6 and 4 mm long after the root reliefs
    and rounding, so the lever is short. The bridge above the hole still copes: 45–47 % at 200 N.
 
@@ -274,9 +274,9 @@ against comfort (knee room), weight and the cut list before adopting it.
   legs' in-plane values here are the bending values (TODO-verify).
 - Rigid pads under the top and the deck. The futon under the top and the deck's soft E_perp bearing spread
   loads in reality, which lowers peaks over the pads.
-- The leg model lets the floor slide but not turn, and holds the deck still. It leaves out the legs'
-  out-of-plane bending, buckling and B's friction. It counts B as carrying none of the push, as
-  `stiffness.py` does.
+- In the leg model the floor slides but doesn't turn, and the deck stays still. I left out the legs'
+  out-of-plane bending, buckling and B's friction. I count B as carrying none of the push, as in
+  `stiffness.py`.
 - Static, short-term strength. No creep (a warm heater under a loaded top), fatigue or moisture.
 - The strengths (f_m 35, f_m,cross 30, f_v 9 MPa) are rough characteristic values (TODO-verify). A typical sheet
   breaks well above them, which is why 160 % is a warning and not a prediction that the leg snaps.
@@ -297,7 +297,7 @@ round (the nester may turn chair parts any way), next to `zaisu.py`'s lumped che
 | Side frame, a 450 N flop back with a 600 N sitter | plane stress on the floor (push only, gripping), the lean through the back's slots (split by lever), the sitter through the board's holes | 68 % (85 % before, see below) | 37 % (post root) |
 | Side frame, a 1000 N sitter alone | as above | 2 % | n/a |
 
-The lumped post check missed the side frame's peak. It isn't at the post's root but in the small inside corner
+With the lumped post check I missed the side frame's peak. It isn't at the post's root but in the small inside corner
 *behind* the post, where it meets the runner's short tail: 85 % with a 40 mm fillet on a 560 mm runner. A
 bigger fillet there (80 mm) on a slightly longer runner (600 mm, which also makes the chair harder to tip back:
 600 N instead of 531) brings it to 68 % for 54 g a chair. Adopted (`zaisu.fillet_back_r`, `zaisu.runner_len`).
@@ -315,7 +315,7 @@ round, while the deck and everything on it shift and the other plates lean with 
 cradle rides down with the ring. At true scale nothing collides: under the 200 N push the head slot
 narrows by 0.2 mm at most, and the crosspiece, sanded at the fit-up to slide in between the crush ribs, takes that. `kotatsu/fea_view.py` computes it
 on slightly coarser meshes (15 cases, about a minute): run `make fea` after changing the design. The site
-says so when the results are stale. CI runs it on every push.
+shows a notice when the results are stale. CI runs it on every push.
 
 The **Frame parts** tab shows the same heat maps flat on each part (pick a case in its toolbar): crisp at any
 zoom, for reading exactly where a peak sits.
