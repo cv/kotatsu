@@ -221,7 +221,7 @@ unknown is uMake's finalization: v1's receipt was **$405.83 + tax = $454.53**, $
 $353.33 (TODO-verify what was added; if it repeats, v2's $306.91 becomes about $353 + tax, about $395).
 
 ## Still open
-- **From the adversarial savings review (2026-11, /tmp notes summarized here):** no substantial saving survives
+- **From the adversarial savings review (2026-11):** no substantial saving survives
   the checks (a smaller frame saves $5-7 but gives up 60-80 mm of room between the legs and fails the loose-top
   check; a 12 mm top saves 1.5 kg but sags 14.8 mm and uses 58 %; a 12 mm deck fails at 94 % tight). Risks to
   watch: the twist figures assume each crosspiece gets the wedge's whole clamp (with half of it, the joints would
