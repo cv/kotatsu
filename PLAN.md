@@ -153,8 +153,8 @@ three parts with real outlines on 14.1 mm stock:
   wedges tight, not the cantilever estimate's 27 % (the 45° arms are softer and weaker than assumed). With
   slack wedges 97 % (127 % before the bigger fillets, 155 % under the "+" legs). Keep them tight.
 - **Legs.** A 200 N sideways shove at table height, 14.1 mm stock: the worst spot is the head slot's root at
-  74-78 % (mesh h = 5-3 mm), the wedge hole about 50 %; the sway is 6.1 mm along x. With the top's worst corner load
-  as well (an adult on an edge) it drops to 51 %; that load alone uses 28 %. (The "+" legs' plate A: 80 %, sway 7.1 mm, after it first failed
+  74-75 % (mesh h = 5-3 mm), the wedge hole about 50 %; the sway is 6.2 mm along x. With the top's worst corner load
+  as well (an adult on an edge) it drops to 49-50 %; that load alone uses 31-32 % (at the haunch). (The "+" legs' plate A: 80 %, sway 7.1 mm, after it first failed
   at a 60 mm leg width; tag `plus-legs-archive`.) TODO-verify the strengths.
 
 ## Budget (CAD)

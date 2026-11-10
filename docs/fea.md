@@ -7,7 +7,7 @@ outlines (`top.build`, `yagura.deck`, `frame.parts`), so it follows `params.toml
 ## In short
 
 **Where it stands: the diagonal legs (owner 2026-11), on the thinnest 14.1 mm stock.**
-- **Legs:** a hard 200 N shove uses 74–78 % of a plate's strength, at the root of its head slot, and sways the
+- **Legs:** a hard 200 N shove uses 74–75 % of a plate's strength, at the root of its head slot, and sways the
   frame 6.1 mm.
 - **Deck:** a 300 N hand on the ring uses 60 % of its strength with the wedges tight, 97 % with them slack.
 - **Top:** everyday loads use at most 15 %, an adult sitting hard on an edge 37 %. The simple grillage model,
@@ -169,9 +169,9 @@ senses together takes 0.71 × the push); the top's load goes on its post and ten
 
 | Case | Worst (Tsai-Hill) | Sway along x |
 |---|---|---|
-| 200 N sideways push | **74-78 %** at the head slot's root (mesh h = 5-3 mm; 74-76 % before the crush ribs grew from 0.5 to 0.95 mm); the wedge hole ~50 % | 6.1 mm ("+" legs: 7.1) |
-| 200 N push + the top's worst corner load | 51 % (the load from above steadies the joint) | |
-| The top's worst corner load only (an adult on an edge) | 28 % | |
+| 200 N sideways push | **74-75 %** at the head slot's root (mesh h = 5-3 mm, with the ribs at 0.95 mm and the outer edge's sweep from the foot); the wedge hole ~50 % | 6.1 mm ("+" legs: 7.1) |
+| 200 N push + the top's worst corner load | 49-50 % (the load from above steadies the joint) | |
+| The top's worst corner load only (an adult on an edge) | 31-32 %, at the haunch | |
 | 200 N push, nominal 15 mm stock, the crosspiece on the crush ribs (sanded at the fit-up until it slides in: just touching) | 65-68 % (h = 5-3 mm) | |
 | Deck (300 N hand), wedges tight / slack | 60 / 97 % (R150 ring fillets, convex pads flaring out of the arms on R300, R10 far corners; R90/R40 and wiggly pads: 65 / 127; "+" legs: 68 / 155) | |
 | Top, everyday / an adult on an edge | 15 / 37 % ("+": 18 / 42) | |
