@@ -492,12 +492,25 @@ With the heater now in the deck, the futon lies right over it, so I measured it 
 the heater reaches about 40 °C, warm to the hand. That should be fine to cover, but the heater's manual has
 the last word on clearances (TODO-verify).
 
+### A kick
+
+With every line smooth, the legs still looked a bit plain: straight posts with a taper. I asked for a curve,
+and I liked it best as a *kick*. Below the joints, the whole lower leg sweeps outwards, both edges together, so
+the foot lands 30 mm past the frame's corner. It reads as a splayed Japanese leg, and it costs about $2.70 (uMake
+prices each part by its bounding box, and the plate's gets 29 mm wider). The joints don't move, and the FEA doesn't mind (74 % of the legs' strength under the hard shove, as before). A wider
+stance also makes the table much harder to tip.
+
+Then I asked whether, with the better stance, the legs could be thinner. Not just like that: at 56 mm the root
+of the head slot went to 106 %. A narrower leg makes the haunch steeper, and its bend crowds the slot. The fix
+was a longer, gentler haunch. Now the legs are 56 mm wide, narrowing to a 46 mm foot, and the shove uses only
+63 %, less than before. It costs 18 mm of room between the legs, and nothing in price.
+
 ### Where v2 stands
 
 Against the "+" legs, the diagonal ones are better nearly everywhere. uMake quoted the table at **$303.98**,
 $24 less than the "+" legs' $328.02. The cutting drops from 22.5 to 16.7 m, the table is 0.8 kg lighter, and
 there's 22 mm more room between the legs. In the FEA they're a little stronger and stiffer too: under the hard
-shove, 75 % of the legs' strength and 6.1 mm of sway, against 80 % and 7.1 mm. The one new job is at the
+shove, 75 % of the legs' strength and 6.1 mm of sway, against 80 % and 7.1 mm (63 % once they were slimmed and kicked). The one new job is at the
 fit-up: each crosspiece is cut half a millimetre tall, and I sand its top edge until the deck sits on it and
 on the plate's shoulders together. (The "+" legs are in the archive, tag `plus-legs-archive`.)
 
@@ -509,10 +522,10 @@ wedges go from 14 to 6, and every corner is rounder.
 | | v1 | v2 |
 |---|---|---|
 | Parts | 26 | 18 |
-| Weight | 15.9 kg | 10.5 kg |
+| Weight | 15.9 kg | 10.4 kg |
 | Wedges | 14 | 6 (4 + 2 spares) |
 | Clear height under the heater | 286 mm | 304 mm |
-| A hard 200 N shove, finite elements | not checked | 75 % of the legs' strength, 6.1 mm of sway |
+| A hard 200 N shove, finite elements | not checked | 63 % of the legs' strength, 6.1 mm of sway |
 | uMake | $353.33 in the cart ($405.83 once uMake finalized it) | $303.98 (a quote, not an order; about $340 with tax; the "+" legs quoted $328.02) |
 
 Before I order it, I want to measure how I really sit (no tape to hand yet), and I'd like to know how thick

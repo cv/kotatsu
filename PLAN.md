@@ -14,7 +14,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
 | Legs | 8 plates in four "+" legs, 8 tenons, a wedge in each | **four diagonal legs**: one plate a corner on its diagonal, a crosspiece in its head, one tenon and wedge each |
 | Wedges | 12 + 2 spares | **4 + 2 spares** |
 | Top | square, R20 corners (re-rounded by hand) | **squircle** (n = 8), cut in the file; feet and deck rounder to match |
-| Parts, weight, cutting | 26, 15.9 kg, 25.5 m | **18, 10.5 kg, 16.7 m** |
+| Parts, weight, cutting | 26, 15.9 kg, 25.5 m | **18, 10.4 kg, 16.8 m** |
 | Chairs | none | a bought zaisu (owner, 2026-11). Two plywood ones were designed, checked and quoted (+$173), then archived (tag `zaisu-archive`) |
 
 ## Decisions
@@ -32,11 +32,15 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
 
 ## The parts
 
-- **Leg plates (4, 140 × 385 mm), one on each corner's diagonal**, its outer end at the frame corner (owner 2026-11).
+- **Leg plates (4, 169 × 385 mm), one on each corner's diagonal**, its outer end at the frame corner (owner 2026-11).
   - Under the deck each plate is 140 mm wide along the diagonal: the post, the 16 mm head slot centred 60 mm
     in from the corner, a 10 mm shoulder, the 50 mm tenon and a 12 mm inner shoulder. Below the haunch (full width
-    down to 305 mm, then one S-curve) it narrows to 70 mm, and from 220 mm down tapers softly in one long line to 56 mm at the
-    floor. Its outer edge stays at the corner all the way down, so the legs take up little room along each side.
+    down to 305 mm, then one S-curve 50 mm long) it narrows to 56 mm, and from 220 mm down tapers softly to 46 mm at the
+    floor. **The kick** (owner 2026-11, "more japanese-ish"): below 290 mm the whole lower leg sweeps outwards, both
+    edges together, reaching 30 mm past the frame corner at the floor (`yagura.leg_kick`). The feet stand about 24 mm
+    past the top's edge, and tipping the table at an edge takes about 4.5 kN. Slimmer than this fails: 56 mm with the
+    old 30 mm haunch puts the slot root at 106 % (the longer haunch moves its bend away from the slot); feet under
+    46 mm can't be cut.
   - **The crosspiece (4, 90 × 25.5 mm, its underside arched up to 14 mm at the ends: each half is a little
     cantilever)** drops into the plate's head slot, across the plate. The slot is only
     25 mm deep and round-bottomed: the crosspiece's square edges sit on the arc, and its top comes out flush
@@ -85,7 +89,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
   a radius that starts abruptly. The corner posts stay 20 mm inside its edge (v1: 40). The futon lies
   over the heater as in a traditional open frame (v1 had the deck in between).
 
-That's **18 parts, about 10.5 kg, 16.7 m of cutting**. They fit on one 48 × 96" sheet. uMake lays out
+That's **18 parts, about 10.4 kg, 16.8 m of cutting**. They fit on one 48 × 96" sheet. uMake lays out
 the sheets itself and prices per part, so this only matters for my estimate.
 
 ## Assembly (a mallet, plus a screwdriver for the heater)
@@ -153,9 +157,10 @@ three parts with real outlines on 14.1 mm stock:
   wedges tight, not the cantilever estimate's 27 % (the 45° arms are softer and weaker than assumed). With
   slack wedges 97 % (127 % before the bigger fillets, 155 % under the "+" legs). Keep them tight.
 - **Legs.** A 200 N sideways shove at table height, 14.1 mm stock: the worst spot is the head slot's root at
-  74-75 % (mesh h = 5-3 mm), the wedge hole about 50 %; the sway is 6.2 mm along x. With the top's worst corner load
-  as well (an adult on an edge) it drops to 49-50 %; that load alone uses 31-32 % (at the haunch). (The "+" legs' plate A: 80 %, sway 7.1 mm, after it first failed
-  at a 60 mm leg width; tag `plus-legs-archive`.) TODO-verify the strengths.
+  63 % (slim kicked legs; 74-75 % before), the wedge hole about 43 %; the sway is 6.2 mm along x, unchanged. With the
+  top's worst corner load as well (an adult on an edge) 54 %, at the haunch fillet; that load alone uses 42 % (was
+  31-32 %: the slimmer leg carries it harder at the haunch). (The "+" legs' plate A: 80 %, sway 7.1 mm, after it
+  first failed at a 60 mm leg width; tag `plus-legs-archive`.) TODO-verify the strengths.
 
 ## Budget (CAD)
 

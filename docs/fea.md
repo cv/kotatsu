@@ -7,8 +7,8 @@ outlines (`top.build`, `yagura.deck`, `frame.parts`), so it follows `params.toml
 ## In short
 
 **Where it stands: the diagonal legs (owner 2026-11), on the thinnest 14.1 mm stock.**
-- **Legs:** a hard 200 N shove uses 74–75 % of a plate's strength, at the root of its head slot, and sways the
-  frame 6.1 mm.
+- **Legs:** a hard 200 N shove uses 63 % of a plate's strength, at the root of its head slot, and sways the
+  frame 6.1 mm (slim kicked legs, owner 2026-11; 74–75 % before).
 - **Deck:** a 300 N hand on the ring uses 60 % of its strength with the wedges tight, 97 % with them slack.
 - **Top:** everyday loads use at most 15 %, an adult sitting hard on an edge 37 %. The simple grillage model,
   on the same squircle, is 9–15 % on the safe side.
@@ -169,15 +169,19 @@ senses together takes 0.71 × the push); the top's load goes on its post and ten
 
 | Case | Worst (Tsai-Hill) | Sway along x |
 |---|---|---|
-| 200 N sideways push | **74-75 %** at the head slot's root (mesh h = 5-3 mm, with the ribs at 0.95 mm and the outer edge's sweep from the foot); the wedge hole ~50 % | 6.1 mm ("+" legs: 7.1) |
-| 200 N push + the top's worst corner load | 49-50 % (the load from above steadies the joint) | |
-| The top's worst corner load only (an adult on an edge) | 31-32 %, at the haunch | |
+| 200 N sideways push | **63 %** at the head slot's root (slim kicked legs: 56 / 46 mm, a 50 mm haunch, kick 30; was 74-75 % at 70 / 56 mm with a 30 mm haunch, mesh h = 5-3 mm, ribs at 0.95 mm); the wedge hole ~43 % | 6.1 mm ("+" legs: 7.1) |
+| 200 N push + the top's worst corner load | 54 %, at the haunch fillet (was 49-50 %) | |
+| The top's worst corner load only (an adult on an edge) | 42 %, at the haunch fillet (was 31-32 %: the slimmer leg carries it harder there) | |
 | 200 N push, nominal 15 mm stock, the crosspiece on the crush ribs (sanded at the fit-up until it slides in: just touching) | 65-68 % (h = 5-3 mm) | |
 | Deck (300 N hand), wedges tight / slack | 60 / 97 % (R150 ring fillets, convex pads flaring out of the arms on R300, R10 far corners; R90/R40 and wiggly pads: 65 / 127; "+" legs: 68 / 155) | |
 | Top, everyday / an adult on an edge | 15 / 37 % ("+": 18 / 42) | |
 
 How the head got its shape: a 36 mm crosspiece put the slot's bottom in the haunch (183 %); 25 mm with the haunch
 from 305 mm gave 84-95 % (dogbones in the slot's corners); a round-bottomed slot, no dogbones, gave 74-75 %.
+How the slim legs were found (owner 2026-11: the kick, then "can it be thinner?"): the kick itself costs nothing
+(kick 20-30 at 70 / 56 mm: 74-78 %). Thinning alone fails, because a narrower leg steepens the haunch and its bend
+crowds the slot root: 62 / 50 mm 90 %, 56 / 46 mm 106 %, 50 / 42 mm 112 % (h = 4). A longer haunch fixes it:
+56 / 46 with a 50 mm drop 65 % (63 % at h = 3), with 70 mm 57 % (but 20 mm less room between the legs).
 Twisting (a push along an edge at a top corner) is checked by `stiffness.twist`, a spring model, not FE:
 1.5 mm at 115 N, the crosspiece joints opening at about 191 N. **Both are best cases.** The joint is taken as rigid
 until it opens, and what holds the crosspiece down is the deck: it lies on the crosspiece's top edge (sanded flush
