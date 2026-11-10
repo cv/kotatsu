@@ -45,8 +45,8 @@ leg_width = 140.0     # plate width under the deck, along the diagonal: post | s
 post_inset = 14.0     # above the deck the post starts this far in from the plate's outer end (below the deck the
                       #   plate still reaches the corner): on the diagonal the squircle top's edge comes closest, and
                       #   this keeps the post 18+ mm inside it
-post_sweep_from = 240.0  # the post's outer edge sweeps in from the plate's outer edge this high up (owner 2026-11: a long,
-                      #   gentle curve, 7 mm in at the deck's underside, post_inset at the top; was a short one from 341)
+post_sweep_from = 0.0  # the post's outer edge sweeps in from this high up: from the floor (owner 2026-11: one gentle curve
+                      #   the whole height of the leg, 14 mm in at the top; was from 240)
 corner_n = 4.0        # v2 (owner 2026-11): leg corners are squircles (geom.squircle_corners), this exponent
 foot_r = 12.0         # rounding of the plates' foot corners (v2: 12, was 6, to go with the squircle top)
 shoulder_r = 6.0      # ... and of their top corners: keep it small, the 12 mm inner shoulder bears on the deck

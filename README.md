@@ -458,8 +458,7 @@ landed in the leg's haunch, where it used 183 % of the plate's strength under a 
 at all, since the crosspiece's square edges can sit on the curve.
 
 On the diagonal, the squircle top's edge comes closest to the legs, so the posts had to end 14 mm in from the
-corner. Each leg's outer edge sweeps in to there in one long curve that starts well below the deck, so it
-reads as part of the leg.
+corner. Each leg's outer edge sweeps in to there in one long curve, all the way from the foot, so it reads as part of the leg.
 
 ![The diagonal legs in the 3-D view, with the top, futon and rug hidden: one plate on each corner's diagonal, a crosspiece under each corner of the X deck, a wedge across each arm](docs/img/v2-diagonal.jpg)
 

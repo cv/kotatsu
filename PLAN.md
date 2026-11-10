@@ -45,7 +45,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
     the fit-up until the deck sits on it and on the shoulders together.
   - The tenon rises through a mortise on the diagonal and takes the corner's one wedge, lying on the deck
     across the arm. Above the deck the post rises to the top. Its outer edge sweeps in in one long, gentle curve (owner 2026-11), leaving
-    the plate's outer edge 240 mm up (7 mm in at the deck's underside) and reaching 14 mm in at the top, so the flat end the top rests on stays 18+ mm inside the squircle top's
+    from the foot, one curve the whole height of the leg (11 mm in at the deck's underside), reaching 14 mm in at the top, so the flat end the top rests on stays 18+ mm inside the squircle top's
     edge (on the diagonal the edge comes closest).
   - Each head-slot wall has one small bump, 0.5 mm proud ("crush ribs"): sand them until the crosspiece slides
     in. The foot has a 1.5 mm arc cut under it, so the plate stands on its two ends and doesn't rock.
