@@ -206,10 +206,13 @@ futon_kg = 2.0
 [room]                # for the Futon & rug page (docs/futons.toml has the candidates)
 rug_d = 2440.0        # 8 ft round rug
 futon_d = 3048.0      # owner 2026-11: an oversized king quilt, 120 x 120 in, "works really well" (planned: an 80 x 80 in futon)
+futon_spread_d = 2240.0  # ... folded and tucked so it doesn't spread so much (owner 2026-11): it drapes like a square this
+                      #   size, its floor edge about the middle of the pillows (the 3-D view and the room plan use this)
 drape_k = 0.7         # footprint radius ~ futon radius - drape_k * (frame height + top): rough, futons slope out
 zabuton = [635.0, 635.0]  # owner 2026-10-20: square floor pillows, 25 x 25 in
 zabuton_h = 90.0      # pillow thickness (3-D view)
-zabuton_tuck = 150.0  # each pillow's inner edge sits at least this far under the futon's floor edge (the futon drapes over it)
+zabuton_tuck = 317.5  # each pillow's inner edge sits this far under the futon's floor edge: the quilt covers about half of
+                      #   each pillow (owner 2026-11; was 150)
 rug_margin = 20.0     # ...and further in if needed, so every pillow (corners too) stays this far inside the rug
 zabuton_ramp = 80.0   # 3-D view: the futon eases from the floor onto a pillow over this distance
 rug_t = 10.0          # rug thickness (3-D view)

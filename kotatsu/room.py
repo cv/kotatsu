@@ -20,6 +20,12 @@ def footprint_d(p, futon_d: float) -> float:
     return max(p.top.length, futon_d - 2 * p.room.drape_k * h)
 
 
+def spread_d(p) -> float:
+    """How big the futon drapes: room.futon_spread_d if set (owner 2026-11: the quilt is folded and tucked in),
+    else its real size."""
+    return getattr(p.room, "futon_spread_d", None) or p.room.futon_d
+
+
 def futons(p) -> dict:
     d = tomllib.loads(FUTONS.read_text())
     rates = {"JPY": d.get("jpy_cad", 0.0), "USD": d.get("usd_cad", 1.0), "CAD": 1.0}
@@ -42,7 +48,7 @@ def seat_offset(p) -> float:
     all of it, corners included, stays rug_margin inside the round rug."""
     R = p.room
     w, d = R.zabuton
-    rho_out = footprint_d(p, R.futon_d) / 2
+    rho_out = footprint_d(p, spread_d(p)) / 2
     c = rho_out - getattr(R, "zabuton_tuck", 50.0) + d / 2
     lim = (R.rug_d / 2 - getattr(R, "rug_margin", 0.0)) ** 2 - (w / 2) ** 2
     if lim > 0:
@@ -64,7 +70,7 @@ def room_data(p) -> dict:
             "frame": p.top.length - 2 * p.frame.overhang, "ear": p.frame.ear,
             "height": p.frame.height + p.material.t_nominal, "zabuton": list(p.room.zabuton),
             "seat_c": round(seat_offset(p), 1),
-            "footprint_d": round(footprint_d(p, p.room.futon_d)), "futons": futons(p),
+            "spread_d": spread_d(p), "footprint_d": round(footprint_d(p, spread_d(p))), "futons": futons(p),
             "knees": comfort.summary(p)}
 
 
@@ -124,7 +130,7 @@ def room3d(p, n: int = 81) -> dict:
     L = frame.layout(p)
     cx, cy = L.cx, L.cy
     R = p.room
-    fd = R.futon_d
+    fd = spread_d(p)                                           # folded and tucked: how far it really spreads
     at, _, rho_out = drape_profile(p, fd)
     half = fd / 2
     w, d = R.zabuton
