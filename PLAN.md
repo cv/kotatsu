@@ -115,7 +115,7 @@ the sheets itself and prices per part, so this only matters for my estimate.
 | Twist: 115 N pushed along an edge at a top corner | 1.5 mm at the corner; the crosspiece joints open at about 191 N |
 | Play in each tenon, and extra wobble per 0.1 mm a wedge works loose | 0.4 mm, about 1 mm |
 | Push 50 mm in from the edge that tips the table / lifts the loose top's far side | never, in the model (the feet and corner posts sit almost under the edge) |
-| Push right at the edge that tips the table / lifts the loose top's far side | about 1640 N / 640 N (v1: 1700 / 770) |
+| Push right at the edge that tips the table / lifts the loose top's far side | about 1630 N / 640 N (v1: 1700 / 770) |
 
 - **Tipping** is worked out the way EN 12521 and EN 1730 test it: a vertical push in the middle of a side,
   50 mm in from the edge. It assumes the feet don't slide, and the weight includes a guessed 3 kg heater and

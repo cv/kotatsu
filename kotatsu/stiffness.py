@@ -257,9 +257,8 @@ def _cosines(p, direction: str) -> list[float]:
 
 
 def deck_weight_n(p) -> float:
-    """What the legs carry from the deck up (N): deck, cheeks, wedges and heater. (Counts the spare wedges too,
-    with pt.qty: a few grams, kept so the numbers stay as ordered.)"""
-    a = sum(pt.shape.area * pt.qty for pt in fr.parts(p) if pt.kind in ("deck", "cheek", "wedge"))
+    """What the legs carry from the deck up (N): deck, cheeks, wedges and heater, as placed (not the spare wedges)."""
+    a = sum(pt.shape.area * len(pt.placements) for pt in fr.parts(p) if pt.kind in ("deck", "cheek", "wedge"))
     return (a / 1e6 * p.material.t_nominal / 1000 * p.material.density_kg_m3 + p.comfort.heater_kg) * 9.81
 
 

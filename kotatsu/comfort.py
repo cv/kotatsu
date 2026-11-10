@@ -70,10 +70,10 @@ def knee_reach(p, width: float | None = None, height: float | None = None) -> fl
 
 
 def weight_n(p) -> float:
-    """Table + heater + futon weight (N): what holds it down against tipping."""
+    """Table + heater + futon weight (N): what holds it down against tipping (the parts as placed, not the spares)."""
     t, rho = p.material.t_nominal / 1000, p.material.density_kg_m3
     from . import top
-    area = top.build(p).outline.area + sum(pt.shape.area * pt.qty for pt in frame.parts(p))
+    area = top.build(p).outline.area + sum(pt.shape.area * len(pt.placements) for pt in frame.parts(p))
     kg = area / 1e6 * t * rho + p.comfort.heater_kg + p.comfort.futon_kg
     return kg * 9.81
 
