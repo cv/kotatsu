@@ -10,8 +10,8 @@ outlines (`top.build`, `yagura.deck`, `frame.parts`), so it follows `params.toml
 - **Legs:** a hard 200 N shove uses 74–78 % of a plate's strength, at the root of its head slot, and sways the
   frame 6.1 mm.
 - **Deck:** a 300 N hand on the ring uses 60 % of its strength with the wedges tight, 97 % with them slack.
-- **Top:** everyday loads use at most 15 %, an adult sitting hard on an edge 37 %. The simple grillage model
-  agrees within 10 %.
+- **Top:** everyday loads use at most 15 %, an adult sitting hard on an edge 37 %. The simple grillage model,
+  on the same squircle, is 9–15 % on the safe side.
 
 The details are under "The diagonal legs", below. The rest of this section, and most tables after it, are the
 history: v2's first, "+"-shaped legs (tag `plus-legs-archive`), where the FEA found a real problem.
@@ -31,7 +31,7 @@ from 73 to 104 % depending on the mesh; `leg_case` now treats 6 mm round the wed
 
 | Part | Lumped model says | FEA says | Verdict |
 |---|---|---|---|
-| Top, worst case (80 kg sitter × 1.5 on an edge), 14.1 mm | 16.3 MPa, 46 %, 10.4 mm sag (grillage at 14.1 mm) | 14.7 MPa, 42 %, 9.2 mm | **Confirmed.** The grillage is slightly conservative. |
+| Top, worst case (80 kg sitter × 1.5 on an edge), 14.1 mm | 14.8 MPa, 42 %, 8.0 mm sag (grillage at 14.1 mm, on the real squircle) | 13.0 MPa, 37 %, 7.5 mm | **Confirmed.** The grillage is conservative by 9–15 %. |
 | X deck, 300 N hand + heater | 11.9 MPa, 40 %, 3.7 mm (cantilever arm) | up to 68 % (Tsai-Hill) at the fillets, 7–10 mm sag, with the wedges tight | **Corrected.** About 1.7× the lumped figure, but it holds. With slack wedges it doesn't (up to 155 %). |
 | Leg plate A, 200 N sideways push | 3.6 MPa in the legs, 4.5 mm sway | 41–56 MPa at the haunch fillet (Tsai-Hill 160 %), 12 mm sway | **Problem.** The lumped model misses that A's upper half is two separate fingers. |
 
@@ -116,25 +116,27 @@ because the worst element shifts along the fillet. Read the leg peaks as ±15 %.
 
 ## Results
 
-### The top (15 mm squircle on 8 posts and 4 tenons), 14.1 mm
+### The top (15 mm squircle on 4 posts and 4 tenons), 14.1 mm
 
 FE stresses are along / across / twist, one plate thickness clear of the pads. The grillage
 (`loads.solve`) is run at the same 14.1 mm (`loads.report` itself uses 15 mm).
 
-| Case | FE sag | FE stress (MPa) | FE use | Grillage sag | Grillage stress | Grillage use |
+| Case | FE sag | FE stress (MPa) | FE use | Grillage sag | Grillage stress | Grillage use (as a square) |
 |---|---|---|---|---|---|---|
-| Nap, cat curled mid-table, laptop | 2.1 mm | 3.7 / 1.4 / 0.4 | 10 % | 2.3 mm | 3.9 / 1.4 / 0.2 | 11 % |
-| Nap, cat curled by your head | 2.3 | 3.9 / 1.5 / 0.4 | 11 % | 2.5 | 4.1 / 1.4 / 0.2 | 12 % |
-| Slump × 1.5 + cat landing mid-table × 4 | 4.1 | 6.1 / 2.7 / 0.6 | 17 % | 4.4 | 6.5 / 2.7 / 0.3 | 19 % |
-| Cat lands on a corner × 4 | 0.2 | 0.3 / 0.3 / 0.1 (1.4 over the pad) | 1 % | 0.2 | 1.1 / 0.4 / 0.1 | 3 % |
-| Everything at one edge | 3.2 | 5.2 / 2.2 / 0.6 | 15 % | 3.5 | 5.5 / 1.9 / 0.4 | 16 % |
-| 80 kg adult sits on an edge × 1.5 | 9.2 | 14.7 / 4.2 / 1.6 | 42 % | 10.4 | 16.3 / 3.6 / 1.1 | 46 % |
+| Nap, cat curled mid-table, laptop | 1.6 mm | 3.2 / 1.1 / 0.3 | 9 % | 1.9 mm | 3.7 / 1.2 / 0.2 | 11 % (10 %) |
+| Nap, cat curled by your head | 1.7 | 3.4 / 1.1 / 0.3 | 10 % | 2.0 | 3.9 / 1.2 / 0.2 | 11 % (10 %) |
+| Slump × 1.5 + cat landing mid-table × 4 | 3.2 | 5.3 / 2.6 / 0.5 | 15 % | 3.2 | 5.8 / 2.3 / 0.3 | 17 % (15 %) |
+| Cat lands on a corner × 4 | 0.1 | 0.4 / 0.4 / 0.1 (1.0 over the pad) | 2 % | 0.1 | 0.9 / 0.3 / 0.1 | 3 % (3 %) |
+| Everything at one edge | 2.4 | 4.5 / 1.9 / 0.5 | 13 % | 2.7 | 5.1 / 1.3 / 0.3 | 15 % (14 %) |
+| 80 kg adult sits on an edge × 1.5 | 7.5 | 13.0 / 4.2 / 1.3 | 37 % | 8.0 | 14.8 / 2.7 / 0.9 | 42 % (42 %) |
 
-Corner reactions agree within a few newtons (sitter: 617 / 550 / 58 / 23 N in FE against 618 / 563 / 50 / 17 N
-in the grillage). No corner lifts off entirely. With rigid pads, though, only 4 or 5 of the 12 pads carry anything
-in each case, and the rest carry nothing. On a real futon the load spreads
-over the pads, so the rigid model is the harsh one. The peak is in the open span, not over a pad, so the
-pad-edge singularity doesn't set the result.
+The grillage models the real squircle, as the FE does: each patch clipped to it (its whole force on the part
+that's on the table), grid nodes off it left out, and its own weight from the real area. (Until v2 recs it was the
+full 860 mm square; that column is in brackets.) Corner reactions agree within about 20 N (sitter: 599 / 599 / 25 / 25 N
+in FE against 583 / 581 / 42 / 42 N in the grillage; as a square 594 / 594 / 30 / 30). No corner lifts off
+entirely. With rigid pads, though, only 4 or 5 of the 8 pads carry anything in each case, and the rest carry
+nothing. On a real futon the load spreads over the pads, so the rigid model is the harsh one. The peak is in the
+open span, not over a pad, so the pad-edge singularity doesn't set the result.
 
 ### The X deck (hand_n = 300 N on an 80 mm patch on the ring + 3 kg heater on the cheek ears), 14.1 mm
 
@@ -219,7 +221,13 @@ local crushing of end grain, not a bending failure. TODO-verify the wedge seat a
    strength. At 45° plywood is governed by its shear modulus and strength, so it is about half as stiff and
    about half as strong as assumed. The hand also bends the 40 mm ring strip, and the fillets concentrate the
    stress where arm meets ring. The lumped cantilever is unconservative: 40 % against 68 %.
-3. **The top: agreement.** The grillage is within 10 %, a little on the safe side. Nothing to correct.
+3. **The top: agreement, on the safe side.** On the same squircle the grillage is 9–15 % above the FE's use of
+   strength in every case (the corner cat: 2.6 against 1.7 %, both tiny) and 0–19 % above its sag. As the full
+   860 mm square it had looked closer (0–12 %, the corner cat 3.3 %), so that agreement was partly a coincidence:
+   it carried the load on phantom wood at the corners and loaded patches that hang off the real top. Clipping
+   them didn't make the corner and edge cases worse, though: the corner cat's paws now land on the corner
+   itself, over the pad, and the grillage's figure fell (3.3 to 2.6 %); the edge case rose from 13.6 to 14.6 %,
+   the sitter from 41.8 to 42.3 %. Nothing to correct in the design.
 4. **Joint forces.** The lumped model's wedge force (and the 3.0 MPa bridge shear from it) assumes the wedge
    stays near its 300 N tap-in. FE has it rising to about 1.25 kN under a 200 N push, and to 0.8–0.9 kN under a
    hand on the deck. The two shoulders next to the tenon are only about 6 and 4 mm long after the root reliefs

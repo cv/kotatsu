@@ -372,7 +372,8 @@ v1's checks are small models I can read. For v2 I wanted a heavier check, so a s
 *finite-element* model (FEA: each part cut into small triangles that are solved together) of the three parts
 that carry load: the top, the deck and the leg plates. It worked on its own branch and reported back:
 
-- **The top:** the simple model was right, within 10 %.
+- **The top:** the simple model was right, within 10 %. (Later, run on the real squircle instead of a square, it
+  came out 9–15 % on the safe side.)
 - **The deck:** it works harder than I thought: up to about 68 % of its strength under a hard press on the
   ring round the heater, not 40 %. Arms at 45° to the grain are softer and weaker than the simple model
   assumed. That's fine as long as the wedges stay tight; with slack wedges it was overstressed, so I'll

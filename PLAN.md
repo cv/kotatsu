@@ -135,11 +135,11 @@ the sheets itself and prices per part, so this only matters for my estimate.
 
 | Load on the top | Peak load | Peak stress | Share of strength | Sag |
 |---|---|---|---|---|
-| Napping hunched over, a 7 kg cat curled up, a laptop | 39 kg | 3.0–3.2 MPa | 9 % | 1.4–1.6 mm |
-| Flopping down while the cat jumps up mid-table | 75 kg | 4.7 MPa | 13 % | 2.6 mm |
-| The cat lands on a corner | 28 kg | 1.0 MPa | 3 % | 0.1 mm |
-| Everything piled at one edge | 54 kg | 4.2 MPa | 12 % | 2.0 mm |
-| *Beyond normal:* an 80 kg adult sits hard on an edge | 120 kg | 12.9 MPa | 37 % | 6.7 mm |
+| Napping hunched over, a 7 kg cat curled up, a laptop | 39 kg | 3.3–3.5 MPa | 9–10 % | 1.6–1.7 mm |
+| Flopping down while the cat jumps up mid-table | 75 kg | 5.1 MPa | 15 % | 2.7 mm |
+| The cat lands on a corner | 28 kg | 0.8 MPa | 2 % | 0.1 mm |
+| Everything piled at one edge | 54 kg | 4.5 MPa | 13 % | 2.2 mm |
+| *Beyond normal:* an 80 kg adult sits hard on an edge | 120 kg | 13.1 MPa | 37 % | 6.7 mm |
 
 No corner of the top lifts in any of these cases. The strength figures are rough textbook values
 (TODO-verify), and a typical sheet breaks at about 1.5× them. The legs carry at most about 60 kg per
@@ -147,7 +147,8 @@ corner, and the wedges and deck don't carry any of the weight from above.
 
 **Finite-element check ([docs/fea.md](docs/fea.md)).** `kotatsu/fea.py` re-checks the
 three parts with real outlines on 14.1 mm stock:
-- **Top.** The grillage above is confirmed within 10 %: everyday at most 15 %, an adult on an edge 37 %.
+- **Top.** The grillage above (on the real squircle, the loads clipped to it) is confirmed, 9–15 % on the safe side:
+  the FE gives everyday at most 15 %, an adult on an edge 37 %.
 - **X deck.** Under a 300 N hand the deck uses up to about 60 % of its strength at the arm fillets with the
   wedges tight, not the cantilever estimate's 27 % (the 45° arms are softer and weaker than assumed). With
   slack wedges 97 % (127 % before the bigger fillets, 155 % under the "+" legs). Keep them tight.
