@@ -40,7 +40,7 @@ squircle_n = 8.0      # v2 (owner): a squircle, |x/a|^n + |y/a|^n = 1. n = 8 (ow
                       # gives the joint a cross_w-wide base against twisting (one plate alone rocks open at ~32 N)
 height = 385.0        # floor to the tenon tops (futon plane); + 15 top + ~10 futon ≈ 41 cm total
 overhang = 40.0       # owner 2026-10-20: legs as far apart as reasonable -> frame 780 x 780 under the 860 top
-                      # (more room between the legs, much steadier; knees reach 40 mm under the edge)
+                      # (more room between the legs, much steadier; knees reach 40 mm under the edge on v1, 38 on v2)
 ear = 60.0            # frame corner -> the crosspiece's slot centre, along the diagonal (the post is outside it). 60
                       #   keeps the crosspiece's ends 5 mm inside the frame's edges, so the deck covers them
 leg_width = 140.0     # plate width under the deck, along the diagonal: post | slot | 10 | 50 tenon | 10
@@ -79,8 +79,8 @@ ear_margin = 15.0     # ... and past the cheek ears (y)
 [yagura]              # leg <-> deck joints
 head_slot = 25.0      # the plate's round-bottomed slot, from the shoulders down: the crosspiece's whole height. Short,
                       #   so the haunch can stay high, over the thighs (legs-forward sitting needs room up to 275 mm).
-                      #   Leg FEA under the 200 N push: slot root 75 % (36 mm deep: 183 %; dogbones instead of the round
-                      #   bottom: 95 %)
+                      #   Leg FEA under the 200 N push: slot root 63 % (docs/fea.md; when it was tried: 36 mm deep 183 %,
+                      #   dogbones instead of the round bottom 95 %)
 cross_w = 90.0        # crosspiece length, across the plate (the joint's base against twisting)
 cross_proud = 0.5     # the crosspiece is cut this much taller than its slot: sand its top edge at the fit-up
                       #   until the deck sits on it and on the plate's shoulders together (TODO-verify at fit-up)
@@ -92,21 +92,24 @@ tenon_w = 50.4        # tenon width (>= wedge hole + 2 x 15 mm); leg width beyon
 hole_h = 14.0         # wedge hole above the deck
 hole_drop = 1.0       # hole bottom below the thinnest deck's top face, so the wedge bears on the deck
 corner_posts = true   # each plate's outer end rises past the deck to the top as a post: the top rests at the frame
-                      # corners (deck corners cut away around them); loose top lifts at ~363 N vs ~205 N without
+                      # corners (deck corners cut away around them); pressed at the very edge, the loose top lifts at
+                      # ~637 N vs ~280 N without (comfort.top_lift; 50 mm in from the edge it never does)
 leg_narrow = 56.0     # below the haunch the leg keeps this much width (owner 2026-11: 56, was 70, slimmer with the kick;
-                      #   the longer haunch below keeps the head slot's root at 65 % under the 200 N push: docs/fea.md)
-leg_haunch_top = 305.0  # the plate is full width from here up, past the head slot's bottom (~312): the slot never
-                      #   leaves a thin finger beside it ("+" legs: 320). Room between the legs 656 mm ("+": 638)
+                      #   the longer haunch below keeps the head slot's root at 63 % under the 200 N push: docs/fea.md)
+leg_haunch_top = 305.0  # the plate is full width from here up, past the head slot's bottom (~314): the slot never
+                      #   leaves a thin finger beside it ("+" legs: 320). Room between the legs 642 mm (comfort.legroom, up to
+                      #   275 mm: the 50 mm haunch below reaches into it; "+" legs: 638)
 leg_haunch_drop = 50.0  # ... and reaches the narrow line this much lower (owner 2026-11: 50, was 30: a gentler slope moves
                         #   the bend away from the slot root; 30 with the slim leg would be 106 %)
 leg_haunch_r = 60.0   # the haunch's S-curve: each bend takes up to this along its edges (owner 2026-11: 60, was 30)
 leg_taper_top = 220.0 # full leg_narrow down to here, then a soft taper (owner 2026-11: from 220, was 150: one long line from the
-                      # haunch to the foot; leg FEA 74 %, 3 mm more room between the legs) ...
+                      # haunch to the foot; at the time leg FEA 74 %, 3 mm more room between the legs) ...
 leg_foot_w = 46.0     # ... then the inner edge bends in to this at the floor (owner 2026-11: 46, was 56; narrower can't
                       #   be cut: the foot rounding and relief no longer fit)
 leg_taper_r = 110.0   # ... with a long squircle bend where the taper starts (110, was 70)
 leg_kick = 30.0       # the lower leg sweeps outwards, both edges together, by this much at the floor (owner 2026-11: 30,
-                      #   "more japanese-ish"); the feet stand ~24 mm past the top's edge, and tipping takes ~4.5 kN
+                      #   "more japanese-ish"); the feet stand ~24 mm past the top's edge, and tipping the table by
+                      #   pressing on the very edge takes ~4.5 kN (50 mm in, at the EN loading point, it can't tip)
 leg_kick_n = 2.0      # ... shaped (1 - z/leg_curve_top)^n: 2 spreads the curve up the leg
 leg_curve_top = 290.0 # ... fading out, with no slope, here: below the head slot, so the joints are untouched
 foot_relief = 1.5     # shallow arc under each plate's foot: it stands on its two ends
