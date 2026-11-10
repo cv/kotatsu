@@ -170,11 +170,11 @@ corner, and the wedges and deck don't carry any of the weight from above.
 | Item | Cost |
 |---|---|
 | Heater (PaletteLife, amazon.ca, delivered) | $258 |
-| uMake: 18 parts at 15mm, **quoted $306.84 + about $36.82 tax** (slim kicked legs; $303.98 before) (saved as quote 2926, not ordered, `docs/quote.md`), free shipping expected. If finalization adds what it did for v1 (~15 %): about $395 | $344–395 |
+| uMake: 12 parts at 15mm (the wedges are v1's), **quoted $302.12 + about $36.25 tax** ($306.84 with the wedges, $303.98 before the kick) (saved as quote 2926, not ordered, `docs/quote.md`), free shipping expected. If finalization adds what it did for v1 (~15 %): about $389 | $338–389 |
 | Futon: an oversized king quilt, 120 × 120 in (owner 2026-11; planned as a 205 cm square from Etsy, or a queen duvet + cover) | about $200 |
 | Sandpaper and finishing oil | $30–50 |
 | A zaisu (bought, adjustable: about $70, free shipping) + tax | $78 |
-| **Total** | **about $910–980** |
+| **Total** | **about $905–975** |
 
 ## Off-season storage
 Everything packs flat inside the top's footprint, in two layers (the top, then the deck with the other 16 parts round it), a stack about 32 mm tall (I pack it with
@@ -213,12 +213,12 @@ Little: the design is at uMake's price floor (`docs/quote.md`, "What can still b
 doesn't depend on the design, the remaining cut is all required, and wood inside a part's box is free. A solid
 deck would save about $4 but costs 3.8 kg and the knee room in the X's openings, so I'm keeping the X. The bigger
 unknown is uMake's finalization: v1's receipt was **$405.83 + tax = $454.53**, $52.50 more than the cart's
-$353.33 (TODO-verify what was added; if it repeats, v2's $306.84 becomes about $353 + tax, about $395).
+$353.33 (TODO-verify what was added; if it repeats, v2's $302.12 becomes about $347 + tax, about $389).
 
 ## Still open
 1. **The 15 mm sheet.** Order uMake's "15mm" Baltic birch (its "16mm" is probably 5/8", too thick). Its
    real thickness range is assumed at 14.1–15.7 mm: TODO-verify. Windsor Plywood's 15 mm B/B measures 15.0 ± 0.1 mm
-   (`docs/research.md`), well inside it. uMake requoted for the diagonal legs: $303.98, and $306.84 with the slim kicked legs (`docs/quote.md`).
+   (`docs/research.md`), well inside it. uMake requoted for the diagonal legs: $303.98, $306.84 with the slim kicked legs, and $302.12 without the wedges (`docs/quote.md`).
 2. **Heater details.** The screws' length (the tips must stay inside the 15 mm cheek), and the control panel's
    real height (read off a photo: the knob and plug must clear the deck's underside, and stick out under the ring). With the futon now over the heater, check
    its top stays cool to the touch on high (owner, 2026-11: 40 °C on v1, the same heater: fine). Look for a cUL, cETL or CSA mark on the rating label.

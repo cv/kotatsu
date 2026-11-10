@@ -510,7 +510,7 @@ quote went from $303.98 to $306.84: it prices each part by its bounding box, and
 
 I still had a bag of wedges left over from v1, the same shape as v2's: 60 mm long, with an 18 mm head and a 1:8
 taper. They're thicker, though, cut from v1's "19mm" sheet, so I widened each leg's wedge hole to 19.4 mm to take
-the thickest of them, and dropped the wedges from the uMake order. The legs hardly notice: the wedge hole's peak
+the thickest of them, and dropped the wedges from the uMake order. The quote went to $302.12: only $4.72 less, because a smaller order gets less of uMake's volume discount on every other part. The legs hardly notice: the wedge hole's peak
 under the hard shove went from 43 to 45 %.
 
 ### Summer
@@ -521,7 +521,7 @@ In summer I take the table apart into a flat stack the size of its top, as with 
 
 ### Where v2 stands
 
-Against the "+" legs, the diagonal ones are better nearly everywhere. uMake quoted the table at **$306.84**,
+Against the "+" legs, the diagonal ones are better nearly everywhere. uMake quoted the table at **$302.12** (with v1's wedges reused, below),
 $21 less than the "+" legs' $328.02. The cutting drops from 22.5 to 16.8 m, the table is 1 kg lighter, and
 there's a little more room between the legs (642 mm against 637). In the FEA they're stronger and stiffer too:
 under the hard shove, 63 % of the legs' strength and 6.1 mm of sway, against 80 % and 7.1 mm. The one new job
@@ -542,7 +542,7 @@ wedges go from 14 to 6, and every corner is rounder.
 | Wedges | 14 | 6 (4 + 2 spares), v1's leftovers |
 | Clear height under the heater | 286 mm | 304 mm |
 | A hard 200 N shove, finite elements | not checked | 63 % of the legs' strength, 6.1 mm of sway |
-| uMake | $353.33 in the cart ($405.83 once uMake finalized it) | $306.84 (a quote, not an order; about $344 with tax; the "+" legs quoted $328.02) |
+| uMake | $353.33 in the cart ($405.83 once uMake finalized it) | $302.12 (a quote, not an order; about $338 with tax; the "+" legs quoted $328.02) |
 
 Before I order it, I want to measure how I really sit (no tape to hand yet), and I'd like to know how thick
 uMake's "15mm" sheet really is (TODO-verify). A local yard, Windsor Plywood in Vernon, measures its 15 mm
@@ -556,7 +556,7 @@ I placed the v1 order in October 2026. One surprise: uMake's checkout ends with 
 reach out to confirm". So I still got one email, and the final invoice was $405.83 before tax, $52.50 more
 than the cart (TODO-verify what was added). Since then I've oiled the top with Osmo Polyx-Oil 3043 Clear Satin.
 
-Version 2 is designed, checked and quoted ($306.84, not ordered yet): lighter, with the heater up in the
+Version 2 is designed, checked and quoted ($302.12, not ordered yet): lighter, with the heater up in the
 deck, one diagonal leg at each corner, and a finite-element check in which I found (and fixed) weak legs. See
 the Version 2 chapter.
 
@@ -584,7 +584,7 @@ them is at **https://github.com/cv/kotatsu**.
 | Heater | 120 V 400 W replacement kotatsu heater, 29 × 29 × 5 cm, screwed between 2 cheeks that hang in a well in the deck |
 | Joints | wedged through-tenons and slotted crosspieces; 6 wedges (2 spare), reused from v1 |
 | Height | about 41 cm with a futon |
-| Order | 18 parts, about 10.4 kg, one 91 cm box; quoted at CAD $306.84 + tax on uMake (Nov 2026, not ordered yet) |
+| Order | 12 parts (plus v1's wedges), about 10.3 kg, one 91 cm box; quoted at CAD $302.12 + tax on uMake (Nov 2026, not ordered yet) |
 
 These are v2's files. v1, the table in the Build chapter (26 parts in 18 mm, CAD $353 + tax in October
 2026), is at the git tag `v1-ordered`.
