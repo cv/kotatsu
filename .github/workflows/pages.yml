@@ -29,6 +29,9 @@ jobs:
         run: uv run python -m kotatsu.fea_view
       - name: Site (runs the tests too; the results show on the page)
         run: uv run python -m kotatsu.site
+      - name: Stop here if a test failed (owner 2026-11: never publish cut files from a red build)
+        run: |
+          uv run python -c "import json, sys; t = json.load(open('out/site/data.json'))['tests']; print(t['summary']); sys.exit(0 if t['ok'] else 1)"
       - name: Add the DXFs and an index
         run: |
           mkdir -p out/site/dxf
