@@ -34,13 +34,13 @@ def cut_list(p, copies: int = 1, frame_grain: str | None = None) -> list[CutPart
 
     frame_grain: "horizontal" = frame parts keep their grain where it looks right (legs: up the leg); "free" = any rotation
     (default from params [layout])."""
-    frame_grain = frame_grain or getattr(getattr(p, "layout", None), "frame_grain", "horizontal")
+    frame_grain = frame_grain or p.layout.frame_grain
     tp = top.build(p)
     out: list[CutPart] = [CutPart("top", _norm(tp.outline), 1, GRAIN_ALONG_U,
                                   "top", "one piece")]
     for pt in frame.parts(p):
         if pt.kind == "frame" and frame_grain == "horizontal":
-            rot = GRAIN_ALONG_V if getattr(pt, "grain", "u") == "v" else GRAIN_ALONG_U
+            rot = GRAIN_ALONG_V if pt.grain == "v" else GRAIN_ALONG_U
         else:
             rot = ANY
         grp = "wedge" if pt.kind == "wedge" else "frame"

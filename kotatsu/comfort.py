@@ -107,7 +107,7 @@ def tip_load(p, inset: float | None = None) -> float:
     top's edge (default comfort.tip_inset = 50 mm, the EN 12521 / EN 1730 loading point), in the worst
     direction. It pivots on the outermost feet. Assumes the feet don't slide; the weight includes a
     guessed heater + futon."""
-    inset = getattr(p.comfort, "tip_inset", 0.0) if inset is None else inset
+    inset = p.comfort.tip_inset if inset is None else inset
     return _lever_min(weight_n(p), low_footprint(p, 1.0), _top_centred(p), inset)[0]
 
 
@@ -120,7 +120,7 @@ def top_supports(p):
 def top_lift(p, inset: float | None = None) -> tuple[float, float]:
     """Smallest downward push (N), `inset` in from the top's edge, that lifts the loose top's far side off
     its supports, and the direction (deg) it happens in. The top pivots on the outermost support line."""
-    inset = getattr(p.comfort, "tip_inset", 0.0) if inset is None else inset
+    inset = p.comfort.tip_inset if inset is None else inset
     top_o = _top_centred(p)
     W = top_o.area / 1e6 * p.material.t_nominal / 1000 * p.material.density_kg_m3 * 9.81
     return _lever_min(W, top_supports(p), top_o, inset)
@@ -136,7 +136,7 @@ def summary(p) -> dict:
     return {"knee_w": C.knee_w, "knee_h": C.knee_h, "reach": round(knee_reach(p), 1),
             "tip_n": _n(tip_load(p)), "tip_edge_n": _n(tip_load(p, 0.0)),
             "top_lift_n": _n(top_lift(p)[0]), "top_lift_edge_n": _n(top_lift(p, 0.0)[0]),
-            "tip_inset": getattr(C, "tip_inset", 0.0), "tip_min_n": C.tip_min_n,
+            "tip_inset": C.tip_inset, "tip_min_n": C.tip_min_n,
             "reach_min": C.knee_reach_min,
             "side_clear": side_clear(p),
             "shin_w": round(p.top.length - 2 * p.frame.overhang - 2 * low_footprint_leg_u(p, C.knee_h), 1),

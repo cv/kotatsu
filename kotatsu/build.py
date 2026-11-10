@@ -34,7 +34,7 @@ def slug(s: str) -> str:
 def layouts(p) -> dict[int, dict[str, nest.Nest]]:
     """{sets: {"best mix" | "<size> only": Nest}} for every count in [layout].sets (copies of all [[tables]])."""
     out = {}
-    for k in getattr(p.layout, "sets", [1]):
+    for k in p.layout.sets:
         parts = cutlist.cut_list_all(p, copies=k)
         opts = {}
         best = nest.plan(p, parts)

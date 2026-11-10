@@ -24,7 +24,7 @@ def footprint_d(p, futon_d: float) -> float:
 def spread_d(p) -> float:
     """How big the futon drapes: room.futon_spread_d if set (owner 2026-11: the quilt is folded and tucked in),
     else its real size."""
-    return getattr(p.room, "futon_spread_d", None) or p.room.futon_d
+    return p.room.futon_spread_d or p.room.futon_d
 
 
 def futons(p) -> dict:
@@ -50,8 +50,8 @@ def seat_offset(p) -> float:
     R = p.room
     w, d = R.zabuton
     rho_out = footprint_d(p, spread_d(p)) / 2
-    c = rho_out - getattr(R, "zabuton_tuck", 50.0) + d / 2
-    lim = (R.rug_d / 2 - getattr(R, "rug_margin", 0.0)) ** 2 - (w / 2) ** 2
+    c = rho_out - R.zabuton_tuck + d / 2
+    lim = (R.rug_d / 2 - R.rug_margin) ** 2 - (w / 2) ** 2
     if lim > 0:
         c = min(c, math.sqrt(lim) - d / 2)
     return c
@@ -147,11 +147,11 @@ def room3d(p, n: int = 81) -> dict:
     at, _, rho_out = drape_profile(p, fd)
     half = fd / 2
     w, d = R.zabuton
-    h = getattr(R, "zabuton_h", 90.0)
+    h = R.zabuton_h
     c = seat_offset(p)                                         # pillow centre distance from the table centre
     seats = [{"center": [cx + ux * c, cy + uy * c, h / 2], "size": [w if uy else d, d if uy else w, h]}
              for ux, uy in ((1, 0), (-1, 0), (0, 1), (0, -1))]
-    ramp = getattr(R, "zabuton_ramp", 80.0)
+    ramp = R.zabuton_ramp
 
     def over_seats(x: float, y: float) -> float:
         """Height the cloth must clear at (x, y): each pillow's top, easing down to the floor around it."""
@@ -172,6 +172,6 @@ def room3d(p, n: int = 81) -> dict:
             x, y = cx + a * k, cy + b * k
             z = max(z, over_seats(x, y) + 4.0)                 # lies on the rug (and the pillows), not in them
             pts += [round(x, 1), round(y, 1), round(z, 1)]
-    return {"rug": {"center": [cx, cy], "d": R.rug_d, "t": getattr(R, "rug_t", 10.0)},
+    return {"rug": {"center": [cx, cy], "d": R.rug_d, "t": R.rug_t},
             "futon": {"n": n, "pts": pts, "size": fd},
             "seats": seats}
