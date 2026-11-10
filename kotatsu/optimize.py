@@ -24,7 +24,7 @@ import numpy as np
 
 from . import comfort, frame, geom, looks, params, price
 
-OUT = Path("out/optimize")
+OUT = params.ROOT / "out" / "optimize"
 UMAKE_KG = 20.4 / 20.85          # our weight model -> uMake's cart weight (calibrated, docs/quote.md)
 OBJECTIVES = ("price", "look")   # both minimised: the order's price and the legs' visible width (looks.py).
 # Strength, sway, leg room, knee reach and free shipping are limits, not goals (owner 2026-11: "functional aspects
