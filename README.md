@@ -188,7 +188,7 @@ def _pos(c):
     return EPS * np.logaddexp(0.0, c / EPS)
 ```
 
-A firm 100 N sideways push (about 10 kg) swayed v1 about 0.9 mm (v2: 1.5 mm). The model also caught a
+A firm 100 N sideways push (about 10 kg) swayed v1 about 0.9 mm (v2: 1.6 mm). The model also caught a
 sneaky problem before I ordered: the first legs had wood on only one side of each joint, and tapping the
 wedge in would have twisted each leg about 9 mm at the foot. A 10 mm shoulder on the other side fixed it.
 
@@ -340,7 +340,7 @@ deck. Its screws are near its top, so the cheeks only need to reach a little bel
 
 Every part drops from 18 to 15 mm, and each joint is checked again across the range the shop's 15 mm sheet
 might really measure (14.1 to 15.7 mm, TODO-verify). The top bends a little more: when an adult sits hard on
-its edge, it sags about 7 mm instead of 4 (9 on the thinnest sheet). A test quote showed that 15 mm costs
+its edge, it sags about 7 mm instead of 4 (8 on the thinnest sheet). A test quote showed that 15 mm costs
 about the same as 18 mm, so the saving is weight, not money.
 
 ### An X deck and a squircle top
@@ -496,22 +496,23 @@ the last word on clearances (TODO-verify).
 
 With every line smooth, the legs still looked a bit plain: straight posts with a taper. I asked for a curve,
 and I liked it best as a *kick*. Below the joints, the whole lower leg sweeps outwards, both edges together, so
-the foot lands 30 mm past the frame's corner. It reads as a splayed Japanese leg, and it costs about $2.70 (uMake
-prices each part by its bounding box, and the plate's gets 29 mm wider). The joints don't move, and the FEA doesn't mind (74 % of the legs' strength under the hard shove, as before). A wider
-stance also makes the table much harder to tip.
+the foot lands 30 mm past the frame's corner. It reads as a splayed Japanese leg. The joints don't move, and the FEA doesn't mind (74 % of the legs' strength
+under the hard shove, as before). The wider stance makes the table much harder to tip: pushing down right at an
+edge, it would take about 4.5 kN, though the loose top would lift at its far side long before, at about 640 N.
 
 Then I asked whether, with the better stance, the legs could be thinner. Not just like that: at 56 mm the root
 of the head slot went to 106 %. A narrower leg makes the haunch steeper, and its bend crowds the slot. The fix
 was a longer, gentler haunch. Now the legs are 56 mm wide, narrowing to a 46 mm foot, and the shove uses only
-63 %, less than before. It costs 18 mm of room between the legs, and nothing in price.
+63 %, less than before. It costs 17 mm of room between the legs. With the kick, uMake's requote went from $303.98 to $306.84: it
+prices each part by its bounding box, and the plate's got 29 mm wider.
 
 ### Where v2 stands
 
-Against the "+" legs, the diagonal ones are better nearly everywhere. uMake quoted the table at **$303.98** (**$306.84** once the legs got their kick, above),
-$24 less than the "+" legs' $328.02. The cutting drops from 22.5 to 16.7 m, the table is 0.8 kg lighter, and
-there's 22 mm more room between the legs. In the FEA they're a little stronger and stiffer too: under the hard
-shove, 75 % of the legs' strength and 6.1 mm of sway, against 80 % and 7.1 mm (63 % once they were slimmed and kicked). The one new job is at the
-fit-up: each crosspiece is cut half a millimetre tall, and I sand its top edge until the deck sits on it and
+Against the "+" legs, the diagonal ones are better nearly everywhere. uMake quoted the table at **$306.84**,
+$21 less than the "+" legs' $328.02. The cutting drops from 22.5 to 16.8 m, the table is 1 kg lighter, and
+there's a little more room between the legs (642 mm against 637). In the FEA they're stronger and stiffer too:
+under the hard shove, 63 % of the legs' strength and 6.1 mm of sway, against 80 % and 7.1 mm. The one new job
+is at the fit-up: each crosspiece is cut half a millimetre tall, and I sand its top edge until the deck sits on it and
 on the plate's shoulders together. (The "+" legs are in the archive, tag `plus-legs-archive`.)
 
 So, against my four wishes: the heater rides 18 mm higher and lifts out, the box is about 5 kg lighter, the
@@ -538,8 +539,7 @@ Baltic birch at 15.0 ± 0.1 mm, right in the middle of what the joints take.
 
 I placed the v1 order in October 2026. One surprise: uMake's checkout ends with "a representative will
 reach out to confirm". So I still got one email, and the final invoice was $405.83 before tax, $52.50 more
-than the cart (TODO-verify what was added). Next, the table comes apart again and goes to the garage for
-sanding and oil.
+than the cart (TODO-verify what was added). Since then the top has had its oil: Osmo Polyx-Oil 3043 Clear Satin.
 
 Version 2 is designed, checked and quoted ($306.84, not ordered yet): lighter, with the heater up in the
 deck, one diagonal leg at each corner, and a finite-element check that found (and fixed) weak legs. See
@@ -589,14 +589,14 @@ and quote. `AGENTS.md` has the project's rules.
 
 Every size is a number in `params.toml`. Change one, run `make all` and `make test`, and the parts, cut
 sheets, price, weight and 3-D view all follow. The tests tell you when a change breaks something. Here's
-what a few changes do to v2, run through the same code (the prices are the price model's, which came in
-4 % under uMake's last real quote):
+what a few changes do to v2, run through the same code and the whole test suite (the prices are the price
+model's, which came in 4 % under uMake's last real quote):
 
 | Change | What happens |
 |---|---|
-| A smaller top, 76 × 76 cm | $269 instead of $291, and 8.8 kg. But the frame shrinks with it: my knees reach only 34 mm under the edge (the test wants 35), and the room between the legs drops from 659 to 559 mm. The knee tests fail. |
-| A bigger top, 100 × 100 cm | $324, and 13.4 kg, still under the free-shipping weight. But the top alone needs a 105 cm box, so uMake adds about $195 for shipping, and an adult sitting on its edge goes past the load test's limit. The parcel test fails. |
-| A lower frame, 355 mm instead of 385 | It sways less (1.2 mm at 100 N, against 1.5), but the deck's underside drops to 314 mm, under the 317.5 mm my knees need sitting cross-legged, and shins get less room under the heater. The knee tests fail. Set your own in `[comfort]`. |
+| A smaller top, 76 × 76 cm | $272 instead of $294, and 8.6 kg. But the frame shrinks with it: my knees reach only 14 mm under the edge (the test wants 35), and the room between the legs drops from 642 to 542 mm. The knee tests fail. |
+| A bigger top, 100 × 100 cm | $327, and 13.2 kg, still under the free-shipping weight. But the top needs a 105 cm box, and the deck no longer fits a 91 cm one either, so uMake adds about $195 for shipping. An adult sitting on the edge goes past the load test's limit, and a hand on the deck's ring past the deck's. The parcel and load tests fail. |
+| A lower frame, 355 mm instead of 385 | It sways less (1.3 mm at 100 N, against 1.6), but the deck's underside drops to 314 mm, under the 317.5 mm my knees need sitting cross-legged, and shins get less room under the heater. The knee tests fail, and so does the leg FEA: the shorter leg uses 175 % of its strength under the hard shove. Set your own knees in `[comfort]`. |
 | A bigger heater, 33 × 33 cm | The cheeks and the well move apart by themselves. Every test passes, and the price goes up about $1.50. |
 
 Measure your own heater and put its size in `[heater]`. Don't guess it from a listing.
@@ -608,10 +608,9 @@ build it:
 - **`plus-legs-archive`**: v2's first legs, two crossed plates at each corner.
 - **`zaisu-archive`**: the two plywood zaisu, with their FEA.
 - **`show-top-archive`**: the quote pack for a "show" top in solid wood or stone, researched and dropped.
-
 - **`seams-archive`**: the 120 × 80 cm top in three boards, joined by decorative seams (dovetails,
   arrowheads, maple leaves), and a 90 cm round top. Round looked lovely, but it cost $199 to ship, and
-  round futons wouldn't ship here.
+  round futons were hard to find at a fair price.
 - **`frame-variants-archive`**: the solid-sided frame with tapered legs and flared feet, and a yagura
   with splayed legs.
 - **`options-archive`**: windows in the deck and legs, an X-shaped deck, lighter-looking cuts, and
@@ -686,7 +685,8 @@ makerspace with a CNC router works too: the DXFs are ordinary cut files.
 
 **Caveats.** The plywood strength figures are rough textbook values, so read the load numbers as "lots of margin",
 not as a certificate. uMake sells this sheet as "15mm", and the joints are designed for 14.1–15.7 mm. Follow your
-heater's instructions and clearances, and make sure it's rated for your mains supply.
+heater's instructions and clearances, make sure it's rated for your mains supply, and look for a safety mark
+(in Canada: cUL, cETL or CSA) on its label.
 
 <!-- /story -->
 
