@@ -45,7 +45,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
     cantilever)** drops into the plate's head slot, across the plate. The slot is only
     25 mm deep and round-bottomed: the crosspiece's square edges sit on the arc, and its top comes out flush
     with the plate's shoulders. The deck bears on both, which gives the joint a 90 mm base against twisting
-    (one plate alone would rock open at about 32 N). **v2 review proposal, not re-quoted:** cut the crosspiece
+    (one plate alone would rock open at about 32 N). **From the savings review (owner 2026-11: agreed, re-quoted):** cut the crosspiece
     1.5 mm taller than `head_slot`, not 0.5. Thin stock sinks about 1 mm deeper into the round seat than nominal
     stock: the former crosspiece left a 0.50 mm gap under the deck at 14.1 mm, which sanding could not fix.
     The new one stands about 0.50 / 1.50 / 2.74 mm proud at 14.1 / 15.0 / 15.7 mm. Sand its top edge at
@@ -175,7 +175,7 @@ corner, and the wedges and deck don't carry any of the weight from above.
 | Item | Cost |
 |---|---|
 | Heater (PaletteLife, amazon.ca, delivered) | $258 |
-| uMake: 18 parts at 15mm, **quoted $306.84 + about $36.82 tax** (slim kicked legs; $303.98 before) (saved as quote 2926, not ordered, `docs/quote.md`), free shipping expected. If finalization adds what it did for v1 (~15 %): about $395 | $344–395 |
+| uMake: 18 parts at 15mm, **quoted $306.91 + about $36.83 tax** (slim kicked legs and the taller crosspiece; $303.98 before) (saved as quote 2926, not ordered, `docs/quote.md`), free shipping expected. If finalization adds what it did for v1 (~15 %): about $395 | $344–395 |
 | Futon: an oversized king quilt, 120 × 120 in (owner 2026-11; planned as a 205 cm square from Etsy, or a queen duvet + cover) | about $200 |
 | Sandpaper and finishing oil | $30–50 |
 | A zaisu (bought, adjustable: about $70, free shipping) + tax | $78 |
@@ -218,12 +218,20 @@ Little: the design is at uMake's price floor (`docs/quote.md`, "What can still b
 doesn't depend on the design, the remaining cut is all required, and wood inside a part's box is free. A solid
 deck would save about $4 but costs 3.8 kg and the knee room in the X's openings, so I'm keeping the X. The bigger
 unknown is uMake's finalization: v1's receipt was **$405.83 + tax = $454.53**, $52.50 more than the cart's
-$353.33 (TODO-verify what was added; if it repeats, v2's $306.84 becomes about $353 + tax, about $395).
+$353.33 (TODO-verify what was added; if it repeats, v2's $306.91 becomes about $353 + tax, about $395).
 
 ## Still open
+- **From the adversarial savings review (2026-11, /tmp notes summarized here):** no substantial saving survives
+  the checks (a smaller frame saves $5-7 but gives up 60-80 mm of room between the legs and fails the loose-top
+  check; a 12 mm top saves 1.5 kg but sags 14.8 mm and uses 58 %; a 12 mm deck fails at 94 % tight). Risks to
+  watch: the twist figures assume each crosspiece gets the wedge's whole clamp (with half of it, the joints would
+  open at about 100 N, under the 115 N check): twist the frame by hand at the fit-up and after it settles. With
+  slack wedges the deck is at 97-99 % of its rough strength: keep them tight. TODO-verify the heater's panel
+  height (35 mm, from a photo), its plug, cord and knob clearance in the well, and its cUL / cETL / CSA label.
+  The 860 mm top in a 91 cm box has little room for packing: check free shipping in the cart before ordering.
 1. **The 15 mm sheet.** Order uMake's "15mm" Baltic birch (its "16mm" is probably 5/8", too thick). Its
    real thickness range is assumed at 14.1–15.7 mm: TODO-verify. Windsor Plywood's 15 mm B/B measures 15.0 ± 0.1 mm
-   (`docs/research.md`), well inside it. uMake requoted for the diagonal legs: $303.98, and $306.84 with the slim kicked legs (`docs/quote.md`).
+   (`docs/research.md`), well inside it. uMake requoted for the diagonal legs: $303.98, $306.84 with the slim kicked legs, and $306.91 with the taller crosspiece (`docs/quote.md`).
 2. **Heater details.** The screws' length (the tips must stay inside the 15 mm cheek), and the control panel's
    real height (read off a photo: the knob and plug must clear the deck's underside, and stick out under the ring). With the futon now over the heater, check
    its top stays cool to the touch on high (owner, 2026-11: 40 °C on v1, the same heater: fine). Look for a cUL, cETL or CSA mark on the rating label.

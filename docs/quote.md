@@ -14,16 +14,16 @@ the new deck, leg plate and crosspiece uploaded (top, cheeks and wedges unchange
 | top | 860 × 860 mm | 1 | $87.82 | $87.82 |
 | deck (R150 ring fillets; convex pads flaring out of the arms on R300, R10 far corners; owner 2026-11) | 769 × 769 mm | 1 | $102.50 | $102.50 |
 | leg plate (slim, kicked 30 mm: owner 2026-11) | 169 × 385 mm | 4 | $18.32 | $73.28 |
-| leg crosspiece (arched underneath) | 90 × 25.5 mm | 4 | $2.54 | $10.16 |
+| leg crosspiece (arched underneath; 1.5 mm proud for thin stock) | 90 × 26.5 mm | 4 | $2.56 | $10.24 |
 | heater cheek (short: from just under the heater's screw line, owner 2026-11) | 380 × 46 mm | 2 | $10.93 | $21.86 |
 | wedge | 60 × 17 mm | 6 | $1.87 | $11.22 |
-| **Subtotal** | | **18** | | **$306.84** |
+| **Subtotal** | | **18** | | **$306.91** |
 
 (First quoted at $306.47; the parts were re-uploaded as their curves got smoother and the cheeks shorter: $306.42,
 $306.36, $305.80, $304.82, $304.77, $303.98; then the slim kicked leg plate, $306.84: its box is 29 mm wider. I
 also tried leaving the wedges off and reusing v1's (owner 2026-11): $302.12, only $4.72 less, because a smaller
 order gets less volume discount on every other line, and v1's thicker wedges needed wider holes. So I put six new
-wedges back, for $306.84 again. I read the top's line by subtraction; the others shift by cents between uploads.) With 12 % tax about **$343.66**; shipping should stay free (the same 91 cm box, 10.4 kg: not re-checked at the
+wedges back, for $306.84 again. Then the crosspiece 1 mm taller (a fit fix from the savings review), $306.91. I read the top's line by subtraction; the others shift by cents between uploads.) With 12 % tax about **$343.74**; shipping should stay free (the same 91 cm box, 10.4 kg: not re-checked at the
 cart). That's $21.18 less than the "+" legs' $328.02 ($24.04 less before the kick). My price model then read it 4 % low
 ($294.06): its curve, fitted on bigger orders, gave a small order too much volume discount. So I refitted it on all five
 15mm quotes as a fixed amount per order plus a rate (`kotatsu/price.py`): it now says $302.50, 1.4 % low. If uMake's finalization adds what it
