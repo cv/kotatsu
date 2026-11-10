@@ -91,5 +91,6 @@ def test_heavy_runs_the_cases_that_exist(monkeypatch):
     monkeypatch.setattr(optimize, "_TOP", {"A post": 100.0, "A tenon": 50.0})
     r = optimize.heavy(optimize.current_knobs(P))
     assert sorted(calls) == [("A", False), ("A", True)]
-    assert r["sway"] == 2.0 and r["use"] == 0.7, "contact edges (local bearing) stay out of the worst"
+    assert abs(r["sway"] - 2.0 * 2 ** 0.5) < 1e-9, "the plate's sway, turned into the frame's along x"
+    assert r["use"] == 0.7, "contact edges (local bearing) stay out of the worst"
     assert set(r["use_by_part"]) == {"leg", "leg + top load", "deck"}

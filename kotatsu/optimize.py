@@ -115,7 +115,9 @@ def heavy(knobs: dict[str, float]) -> dict:
         d = fea.deck_case(p, ld, h=O.fea_deck_h, wedges=True)
         deck[name] = max(d[k]["tsai_hill"] for k in ("fillets", "arms", "ring", "pads"))
     use = {"leg": worst(a["zones"]), "leg + top load": worst(b["zones"]), "deck": max(deck.values())}
-    return {"sway": float(a["sway_mm"]), "use": max(use.values()), "use_by_part": {k: round(v, 3) for k, v in use.items()}}
+    # fea.leg_case's sway is the plate's own, along its diagonal; a push along x moves the frame that x sqrt(2)
+    # (fea_view and docs/fea.md report it that way), which is what sway_max means
+    return {"sway": float(a["sway_mm"]) * 2 ** 0.5, "use": max(use.values()), "use_by_part": {k: round(v, 3) for k, v in use.items()}}
 
 
 def nondominated(rows: list[dict], keys=OBJECTIVES) -> list[int]:
