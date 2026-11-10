@@ -94,7 +94,7 @@ def layout(p) -> dict[str, list]:
         if name == "deck":
             continue
         g = translate(pt.shape, -pt.shape.bounds[0], -pt.shape.bounds[1])
-        items += [(name, g)] * (pt.qty + getattr(pt, "spares", 0))
+        items += [(name, g)] * pt.qty                    # (qty includes the spares)
     packed = _pack(items, {"deck layer": [deck], "layer 3": []}, side)
     return {"top": [_centred(top.build(p).outline)], **packed}
 
