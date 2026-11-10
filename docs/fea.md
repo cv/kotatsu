@@ -183,7 +183,7 @@ How the slim legs were found (owner 2026-11: the kick, then "can it be thinner?"
 crowds the slot root: 62 / 50 mm 90 %, 56 / 46 mm 106 %, 50 / 42 mm 112 % (h = 4). A longer haunch fixes it:
 56 / 46 with a 50 mm drop 65 % (63 % at h = 3), with 70 mm 57 % (but 20 mm less room between the legs).
 Twisting (a push along an edge at a top corner) is checked by `stiffness.twist`, a spring model, not FE:
-1.5 mm at 115 N, the crosspiece joints opening at about 191 N. **Both are best cases.** The joint is taken as rigid
+1.7 mm at 115 N, the crosspiece joints opening at about 193 N. **Both are best cases.** The joint is taken as rigid
 until it opens, and what holds the crosspiece down is the deck: it lies on the crosspiece's top edge (sanded flush
 with the plate's shoulders at the fit-up) and the wedge clamps it onto the shoulders beside the tenon. The model
 gives the crosspiece that whole 300 N clamp; the share it really gets depends on the fit, so the joints may open
@@ -260,7 +260,8 @@ against comfort (knee room), weight and the cut list before adopting it.
   *from the floor* (the moment H·z is largest near the deck, and smallest at the floor where that slot is), or
   widen the narrow leg to about 80 mm. Swapping A and B is a code change in `yagura.leg_plate` (the tenon,
   wedge hole and foot relief go on the floor-slotted plate) and should be re-run through this model.
-  Until then: the table is fine for sitting at and leaning on (the top-load-only row is 37 %). Don't shove it
+  (History: this was written for the "+" legs at 60 mm, before the fix above, and those legs have since been
+  replaced by the diagonal ones.) Until then: the table is fine for sitting at and leaning on (the top-load-only row is 37 %). Don't shove it
   sideways hard, and keep the wedges tapped tight.
 - **Deck.** It holds as cut, with the wedges tight: 68 % worst, a margin of about 1.5 on rough strengths.
   Re-tap the wedges: slack wedges nearly triple the sag and overstress the fillets under a hard press. If more

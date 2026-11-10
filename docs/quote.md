@@ -22,10 +22,10 @@ the new deck, leg plate and crosspiece uploaded (top, cheeks and wedges unchange
 (First quoted at $306.47; the parts were re-uploaded as their curves got smoother and the cheeks shorter: $306.42,
 $306.36, $305.80, $304.82, $304.77, $303.98; then the slim kicked leg plate, $306.84: its box is 29 mm wider. The
 other lines shift by cents with the order's volume discount, so they don't add up exactly.) With 12 % tax about **$343.66**; shipping should stay free (the same 91 cm box, 10.4 kg: not re-checked at the
-cart). That's $24.04 less than the "+" legs' $328.02. My price model says $291.39, 4 % low this time: a smaller
+cart). That's $21.18 less than the "+" legs' $328.02 ($24.04 less before the kick). My price model says $294.06, 4 % low this time: a smaller
 order gets less of uMake's volume discount on every part (the top went from about $80 to $88.05), which the model's
 curve, fitted on bigger orders, underrates (TODO: refit with this quote). If uMake's finalization adds what it
-did to v1 (+15 %), about $391 with tax.
+did to v1 (+15 %), about $395 with tax.
 
 ## What I ordered (October 2026)
 Every file: units in millimetres, Engineered Wood > Baltic Birch, **19mm**, CNC router, no extra processes.
