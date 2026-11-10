@@ -2,7 +2,7 @@
 the real order, and each part starts clear of what it goes into."""
 import pytest
 
-from kotatsu import assembly, frame, params, site, yagura
+from kotatsu import assembly, frame, params, site
 
 P = params.tables(params.load())[0]
 L = frame.layout(P)
@@ -39,7 +39,7 @@ def test_parts_start_clear():
     deck = first_from("deck")[0][0]["from"]
     assert L.z_deck_bot + deck[2] > L.H, "the deck starts above the tenon tops"
     for moves in first_from("leg crosspiece"):
-        assert moves[0]["step"] == assembly.LEGS and moves[0]["from"][2] >= yagura.lap_depth(P)
+        assert moves[0]["step"] == assembly.LEGS and moves[0]["from"][2] >= P.yagura.head_slot
     lift = assembly.cradle_lift(P)
     for moves in first_from("heater cheek"):                  # put together above the table, then lowered in
         assert [m["step"] for m in moves] == [assembly.CRADLE, assembly.LOWER]

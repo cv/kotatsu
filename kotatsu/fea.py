@@ -467,7 +467,7 @@ def leg_contacts(p, shape, rib_gap: float | None = None, t: float | None = None)
     for i, (a, b) in enumerate(stiffness._shoulders(p, shape)):
         out.append(Contact(f"shoulder {i}", band(a, b), 1, 1, ks))
     if rib_gap is not None:
-        w, d, u0 = fr.slot_w(p), yagura.lap_depth(p), p.frame.ear
+        w, d, u0 = fr.slot_w(p), p.yagura.head_slot, p.frame.ear
         za, zb = zs - d, zs
         for i, f in enumerate(p.fit.crush_rib_at):
             z = za + f * (zb - za)
@@ -495,7 +495,7 @@ def leg_zones(p) -> dict:
     from shapely.geometry import Point, box
     from . import frame as fr, yagura
     F, Y, L = p.frame, p.yagura, fr.layout(p)
-    zs, d, w = L.z_deck_bot, yagura.lap_depth(p), fr.slot_w(p)
+    zs, d, w = L.z_deck_bot, Y.head_slot, fr.slot_w(p)
     ta, tb = yagura._tenon_u(p)
     uc, ts = (ta + tb) / 2, fr.thick_slot(p)
     z0, z1 = yagura.leg_hole_z(p)

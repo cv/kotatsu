@@ -58,18 +58,13 @@ def deck_start_u(p) -> float:
     return post_u(p) + p.fit.tight
 
 
-def lap_depth(p) -> float:
-    """The head slot's depth: the crosspiece's height."""
-    return p.yagura.head_slot
-
-
 def head_slot(p) -> Polygon:
     """The round-bottomed slot in the plate's head (no dogbones: the crosspiece's square edges sit on the arc, a
     gentle root), cut deeper by that seat so the crosspiece's top comes out flush with the shoulders."""
     L, u, w = fr.layout(p), p.frame.ear, fr.slot_w(p)
     R = w / 2
     seat = R - math.sqrt(R * R - (p.material.t_nominal / 2) ** 2)
-    zb = L.z_deck_bot - lap_depth(p) - seat
+    zb = L.z_deck_bot - p.yagura.head_slot - seat
     return box(u - R, zb + R, u + R, L.z_deck_bot + 1).union(Point(u, zb + R).buffer(R, quad_segs=32))
 
 
@@ -93,7 +88,7 @@ def leg_plate(p) -> Polygon:
     g = g.difference(fr.hole(uc - ts / 2, hz0, uc + ts / 2, hz1, r))
     w, u = fr.slot_w(p), F.ear
     g = g.difference(head_slot(p))
-    g = g.union(crush_ribs(p, u - w / 2, u + w / 2, zs - lap_depth(p), zs))
+    g = g.union(crush_ribs(p, u - w / 2, u + w / 2, zs - p.yagura.head_slot, zs))
     return g.difference(foot_relief(p))
 
 
@@ -331,13 +326,13 @@ def deck(p) -> Polygon:
 
 
 # ----------------------------------------------------------------------------- wedges, parts
-def wedge_dims(p, which: str = "leg") -> tuple[float, float]:
-    """(length, head) of the wedges (v2: only the leg wedges; `which` is kept for older callers)."""
+def wedge_dims(p) -> tuple[float, float]:
+    """(length, head) of the wedges (v2: the leg wedges are the only ones)."""
     Y = p.yagura
     return Y.wedge_len, Y.wedge_head
 
 
-def wedge_shape(p, which: str = "leg") -> Polygon:
+def wedge_shape(p) -> Polygon:
     """The tapered wedge: its two long faces stay straight (they clamp); v2 (owner 2026-11) squircles its
     struck head (wedge_head_r) and softens the tip."""
     n, h = wedge_dims(p)

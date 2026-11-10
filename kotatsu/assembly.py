@@ -56,7 +56,7 @@ def part_moves(p, pt, pl, c, k: int) -> list[dict]:
         spread = L.Lf * 0.3                      # the legs wait out beyond their corners
         out = [move(STAND, (sx * spread / math.sqrt(2), sy * spread / math.sqrt(2), 0), stagger(i, 4))]
         if pt.name == "leg crosspiece":          # drops into the plate's head slot from above
-            out.insert(0, move(LEGS, (0, 0, yagura.lap_depth(p) + CLEAR), stagger(i, 4)))
+            out.insert(0, move(LEGS, (0, 0, p.yagura.head_slot + CLEAR), stagger(i, 4)))
         return out
     if pt.kind == "deck":                        # comes down over the tenons
         return [move(DECK, (0, 0, L.H - L.z_deck_bot + CLEAR))]

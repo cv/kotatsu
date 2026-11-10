@@ -75,7 +75,7 @@ def joint(p, shape) -> Joint:
         kk += [ks * (b - a) / n] * n
     ta, tb = yagura._tenon_u(p)
     uw = (ta + tb) / 2
-    wl, _ = yagura.wedge_dims(p, "leg")
+    wl, _ = yagura.wedge_dims(p)
     k_bear = S.E_perp * (wl - t)                                # wedge pressing on the deck top, either side of the plate
     z0, z1 = yagura.leg_hole_z(p)
     bridge = L.H - z1                                           # wood above the wedge hole
