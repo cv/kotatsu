@@ -53,6 +53,28 @@ def test_crosspiece_fits_the_head_slot(t):
 
 
 @pytest.mark.parametrize("t", T_RANGE)
+def test_seated_crosspiece_reaches_the_deck(t):
+    """Width fit is not enough: thin stock sinks further into the round seat.
+    After sanding the ribs (or faces) to slide in, the fully seated crosspiece
+    must still reach the shoulders; sanding its top cannot repair a gap.
+    The t_min case also covers a thicker crosspiece with its faces sanded thin.
+    """
+    slot = yagura.head_slot(P)
+    z0, z1 = slot.bounds[1], slot.bounds[3]
+    seat = max(slot.intersection(LineString([(D.ear + s * t / 2, z0),
+                                            (D.ear + s * t / 2, z1)])).bounds[1]
+               for s in (-1, 1))
+    cp = PARTS["leg crosspiece"].shape
+    middle = cp.intersection(LineString([(D.cross_w / 2, cp.bounds[1]),
+                                        (D.cross_w / 2, cp.bounds[3])]))
+    seated_top = seat + middle.bounds[3] - middle.bounds[1]
+    assert seated_top >= L.z_deck_bot, (
+        f"{t:g} mm crosspiece seats {L.z_deck_bot - seated_top:.3f} mm below the deck; "
+        "increase cross_proud rather than relying on friction at the ribs")
+
+
+
+@pytest.mark.parametrize("t", T_RANGE)
 def test_tenons_fit_the_mortises(t):
     """In each corner's own frame: the mortise takes the tenon + fit.tight each way, and any sheet across."""
     ta, tb = yagura._tenon_u(P)

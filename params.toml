@@ -82,8 +82,9 @@ head_slot = 25.0      # the plate's round-bottomed slot, from the shoulders down
                       #   Leg FEA under the 200 N push: slot root 63 % (docs/fea.md; when it was tried: 36 mm deep 183 %,
                       #   dogbones instead of the round bottom 95 %)
 cross_w = 90.0        # crosspiece length, across the plate (the joint's base against twisting)
-cross_proud = 0.5     # the crosspiece is cut this much taller than its slot: sand its top edge at the fit-up
-                      #   until the deck sits on it and on the plate's shoulders together (TODO-verify at fit-up)
+cross_proud = 1.5     # v2 review: extra height for the round seat. At 14.1 mm a crosspiece sinks ~1 mm deeper
+                      #   than at nominal stock: 0.5 proud left a gap. Now sand ~0.5-2.75 mm off the top
+                      #   until deck and shoulders bear together (TODO-verify at fit-up; do not round the seat edges).
 cross_r = 8.0         # the crosspiece's lower corners (the top ones stay 3: they bear on the deck)
 cross_end_h = 14.0    # its underside arches up to this at the ends (owner 2026-11: shave and smooth): each half is a
                       #   little cantilever loaded at its end (about 22 % of the rough strength at its root)

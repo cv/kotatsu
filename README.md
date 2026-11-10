@@ -525,8 +525,9 @@ Against the "+" legs, the diagonal ones are better nearly everywhere. uMake quot
 $21 less than the "+" legs' $328.02. The cutting drops from 22.5 to 16.8 m, the table is 1 kg lighter, and
 there's a little more room between the legs (642 mm against 637). In the FEA they're stronger and stiffer too:
 under the hard shove, 63 % of the legs' strength and 6.1 mm of sway, against 80 % and 7.1 mm. The one new job
-is at the fit-up: each crosspiece is cut half a millimetre tall, and I sand its top edge until the deck sits on
-it and on the plate's shoulders together. After that, I keep the leg wedges tapped in and check them each
+is at the fit-up: in this review proposal I cut each crosspiece 1.5 mm taller than the nominal slot depth,
+so even the thinnest stock reaches the deck after settling into the round seat. I sand its top edge until the
+deck sits on it and on the plate's shoulders together. After that, I keep the leg wedges tapped in and check them each
 season: with them slack, a hard press on the deck's ring comes close to the wood's rough strength. (The "+"
 legs are in the archive, tag `plus-legs-archive`.)
 

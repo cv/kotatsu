@@ -41,12 +41,17 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
     past the top's edge, and tipping the table at an edge takes about 4.5 kN. Slimmer than this fails: 56 mm with the
     old 30 mm haunch puts the slot root at 106 % (the longer haunch moves its bend away from the slot); feet under
     46 mm can't be cut.
-  - **The crosspiece (4, 90 × 25.5 mm, its underside arched up to 14 mm at the ends: each half is a little
+  - **The crosspiece (4, 90 × 26.5 mm, its underside arched up to 14 mm at the ends: each half is a little
     cantilever)** drops into the plate's head slot, across the plate. The slot is only
     25 mm deep and round-bottomed: the crosspiece's square edges sit on the arc, and its top comes out flush
     with the plate's shoulders. The deck bears on both, which gives the joint a 90 mm base against twisting
-    (one plate alone would rock open at about 32 N). The crosspiece is cut 0.5 mm proud: sand its top edge at
-    the fit-up until the deck sits on it and on the shoulders together.
+    (one plate alone would rock open at about 32 N). **v2 review proposal, not re-quoted:** cut the crosspiece
+    1.5 mm taller than `head_slot`, not 0.5. Thin stock sinks about 1 mm deeper into the round seat than nominal
+    stock: the former crosspiece left a 0.50 mm gap under the deck at 14.1 mm, which sanding could not fix.
+    The new one stands about 0.50 / 1.50 / 2.74 mm proud at 14.1 / 15.0 / 15.7 mm. Sand its top edge at
+    the fit-up until the deck sits on it and on the shoulders together; keep the seating edges square.
+    TODO-verify contact and twist at fit-up, including after sanding the faces to fit the ribs. The other
+    cut parts stay unchanged; this adds about 3 g and $0.03 in the price model.
   - The tenon rises through a mortise on the diagonal and takes the corner's one wedge, lying on the deck
     across the arm. Above the deck the post rises to the top. Its outer edge sweeps in in one long, gentle curve (owner 2026-11), leaving
     from the foot, one curve the whole height of the leg (11 mm in at the deck's underside), reaching 14 mm in at the top, so the flat end the top rests on stays 18+ mm inside the squircle top's
