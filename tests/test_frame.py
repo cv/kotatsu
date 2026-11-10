@@ -4,7 +4,7 @@ Leg/deck joints: tests/test_yagura.py."""
 import pytest
 from shapely.geometry import box
 
-from kotatsu import frame, geom, params
+from kotatsu import frame, geom, params, top
 
 from types import SimpleNamespace
 
@@ -33,9 +33,20 @@ def test_part_valid_cuttable(C):
 
 
 def test_part_fits_sheet_and_parcel(C):
+    """Every part, the top too (the biggest: it sets the box), fits a sheet and the free-shipping box."""
     P = C.P
     for name, pt in C.PARTS.items():
         _fits(P, pt.shape)
+    _fits(P, top.build(P).outline)
+
+
+def test_order_ships_free(C):
+    """The whole order (every part, spares included, and the top), at the thickest stock and as uMake's cart weighs
+    it (optimize.weight_kg's calibration), stays under the heaviest order that shipped free (shipping.free_kg)."""
+    from kotatsu import optimize
+    P = C.P
+    kg = optimize.weight_kg(P) * P.material.t_max / P.material.t_nominal
+    assert kg <= P.shipping.free_kg
 
 
 def _fits(P, shape):
@@ -129,12 +140,19 @@ def test_cross_legged_clearance(C):
 
 
 def test_does_not_tip_easily(C):
-    """Tipping load at the EN 12521 / EN 1730 loading point (mid-side, tip_inset in from the edge).
-    No pass/fail limit until tip_min_n comes from the standard's table or a real test (0 = report only)."""
+    """Tipping load at the EN 12521 / EN 1730 loading point (tip_inset in from the edge, the worst direction).
+    No pass/fail limit until tip_min_n comes from the standard's table or a real test (0 = report only); but the
+    model must be consistent: a loading line that lies inside the feet can't tip the table (infinite), one outside
+    them can, and pressing on the very edge must take more than the table's own weight."""
+    import math
     from kotatsu import comfort
     P = C.P
     edge, std = comfort.tip_load(P, 0.0), comfort.tip_load(P)
     assert 0 < edge < std, "pushing further in must take more force"
+    assert edge > comfort.weight_n(P)
+    feet = comfort.low_footprint(P, 1.0).convex_hull
+    inside = feet.buffer(1e-6).contains(comfort._top_centred(P).buffer(-P.comfort.tip_inset))
+    assert math.isinf(std) == inside
     if P.comfort.tip_min_n > 0:
         assert std >= P.comfort.tip_min_n
 
