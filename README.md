@@ -553,12 +553,12 @@ Baltic birch at 15.0 ± 0.1 mm, right in the middle of what the joints take.
 
 ## Where it stands
 
-I placed the v1 order in October 2026. One surprise: uMake's checkout ends with "a representative will
-reach out to confirm". So I still got one email, and the final invoice was $405.83 before tax, $52.50 more
+I placed the v1 order in October 2026. uMake's checkout held one surprise. It ends with "a representative will
+reach out to confirm", so I still got one email, and the final invoice was $405.83 before tax, $52.50 more
 than the cart (TODO-verify what was added). Since then I've oiled the top with Osmo Polyx-Oil 3043 Clear Satin.
 
-Version 2 is designed, checked and quoted ($306.91, not ordered yet): lighter, with the heater up in the
-deck, one diagonal leg at each corner, and a finite-element check in which I found (and fixed) weak legs. See
+Version 2 is designed, checked and quoted at $306.91, but not ordered yet. It's lighter, with the heater up in the
+deck and one diagonal leg at each corner, and in a finite-element check I found weak legs and fixed them. See
 the Version 2 chapter.
 
 I worked through v1 over about two days with an AI coding agent. I made the choices and drew
