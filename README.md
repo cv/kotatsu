@@ -365,10 +365,10 @@ made the haunch one smooth S-curve instead of a slope with two small fillets, an
 squircles too, as round as their jobs allow. (The feet stand on just 8 mm at each end, so they can't get much
 rounder.)
 
-### Fewer wedges: the first legs
+### The first legs, with fewer wedges
 
-v1's legs were two plates crossed into a "+" at each corner, each plate with a tenon and a wedge. Could
-gravity hold them instead? Not on its own: in the wobble model, the frame would sway about 9 mm under a
+v1's legs were two plates crossed into a "+" at each corner, each plate with a tenon and a wedge. I wondered
+if gravity could hold them instead. It can't on its own. In the wobble model, the frame would sway about 9 mm under a
 light push. But one wedge per leg is enough, if the wedges alternate. Each leg's other plate is trapped
 between the floor and the wedged-down deck, and hangs on its partner when I lift the frame. That plate
 doesn't even need a tenon, so I cut only 4 mortises in the deck instead of 8. Even when I counted the
