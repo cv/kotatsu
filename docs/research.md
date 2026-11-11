@@ -31,12 +31,12 @@ Sources: <https://www.umake.ca/co2-laser-cutting-engraving>, <https://www.umake.
 - Leave at least **5 mm between parts** and a **20 mm margin** round the sheet.
 - **No part smaller than the sheet's thickness.**
 - Outlines only, closed, with no overlapping or doubled lines.
-- Mark engraving or pockets with different colours. (In practice uMake doesn't offer pockets: a test shape
+- Mark engraving or pockets with different colours. (In practice uMake doesn't offer pockets. A test shape
   on a pocket layer came back priced as a hole cut right through.)
-- The bit can't cut a sharp inside corner. It leaves a radius of half its width: about 1.6 mm for a 1/8"
-  bit, 3.2 mm for a 1/4" bit. So every square slot gets small round **dogbones** in its corners. The shop
+- The bit can't cut a sharp inside corner. It leaves a radius of half its width, about 1.6 mm for a 1/8"
+  bit and 3.2 mm for a 1/4" bit. So every square slot gets small round *dogbones* in its corners. The shop
   says a small dogbone leaves only about 0.5 mm of visible overcut.
-- The shop leaves **holding tabs**, about 4.8 mm wide and half the sheet thick, to keep parts in place. Sand
+- The shop leaves holding tabs, about 4.8 mm wide and half the sheet thick, to keep parts in place. Sand
   them off.
 
 ## How thick is "18 mm"?
@@ -62,15 +62,15 @@ uMake publishes these rules (policy dated 2025-12-02):
 | Oversize parcel | longest side 48–60", or 51–150 lb | priced at checkout | no |
 | Freight | over 60", over 150 lb, or needs a pallet | quoted by staff | **yes, so avoid** |
 
-**The cart works differently.** It packs the whole order into one box about 5 cm bigger than the largest
+The cart works differently. It packs the whole order into one box about 5 cm bigger than the largest
 part and charges by that box. Shipping is free while the box is **91 cm or less** and the order weighs
-**under about 20 kg**. A 92 cm box cost about $195. The published length + girth rule doesn't apply: a free
+**under about 20 kg**. A 92 cm box cost about $195. The published length + girth rule doesn't apply. A free
 85 cm box is already about 115". Details are in `docs/quote.md`.
 
 Source: <https://www.umake.ca/canada-shipping-terms>
 
 ## Weight
-Baltic birch weighs about 680–720 kg/m³, so 18 mm sheet is about **12.6 kg/m²** (15 mm: about 10.5). In v1 the
+Baltic birch weighs about 680–720 kg/m³, so 18 mm sheet is about 12.6 kg/m² (15 mm: about 10.5). In v1 the
 86 cm top weighed about 9.3 kg and the whole order about 16 kg; in v2, about 7.6 and 10.5 kg.
 
 ## Heaters
@@ -150,7 +150,7 @@ Also seen: Laser Studio (Japan) quotes a DXF in 30 s, but for laser cutting (thi
 cut 15 mm plywood cleanly); Laseo (Québec) stocks Baltic birch only in 9–12 mm.
 
 
-## Local route: plywood from Windsor Plywood (Vernon) and a makerspace router (2026-11)
+## The local route, with plywood from Windsor Plywood (Vernon) and a makerspace router (2026-11)
 Windsor Plywood's Vernon store answered my price request by email (2026-11; prices before tax, all in stock):
 
 | Sheet | Price | Notes |
@@ -168,7 +168,7 @@ Baltic birch's even stripes are the look I want. Cutting it means a CNC router: 
 medium-to-large one (<https://shuswapmakerspace.ca/equipment-2/>) and a CNC 101 course; membership and router time
 are not counted above (TODO-verify).
 
-## Nicer woods: who cuts them online (owner question, 2026-11)
+## Who cuts nicer woods online (owner question, 2026-11)
 Looking for walnut, white oak, "real" birch or hinoki, CNC-routed from a DXF with an instant online price and
 shipping to BC. Checked 2026-11; nothing ordered.
 
@@ -245,7 +245,7 @@ Only the top would come from Japan; the frame stays uMake birch (it's under the 
 | Limestone / travertine 20 mm (~7 MPa) | 35 | 38 % | 74 % |
 
 For wood the everyday loads govern, about as much as edge-sitting. Stone is brittle and natural stone has hidden
-flaws, so I'd keep its everyday use under about a third of its strength. Owner's choice (2026-11): **pale wood**, used
+flaws, so I'd keep its everyday use under about a third of its strength. The owner chose pale wood (2026-11), used
 carefully (no sitting, coasters): white oak or hard maple at 20 mm, hinoki at 25. Ash is held back until Canada's
 ash import rules (emerald ash borer, CFIA) are checked. Hinoki dents about three times as easily as oak.
 
