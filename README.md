@@ -466,9 +466,9 @@ With the design settled I kept poking at it, and asked what the legs could be if
 crossed plates. The idea I liked best was the simplest: one plate per corner, standing on the diagonal. Half
 the leg plates, less cutting, and from every side you'd see a single thin edge. I saw the catch in the
 numbers straight away. Twist the frame, and a single plate has nothing to resist with but its own thin edge
-on the deck: the joint rocks open at about 32 N.
+on the deck, and the joint rocks open at about 32 N.
 
-The rescue is a **crosspiece**: a small board that drops into a slot in the plate's head (its full-width top,
+I rescued it with a *crosspiece*, a small board that drops into a slot in the plate's head (its full-width top,
 under the deck), across the plate. The deck bears on its top edge, so the joint now has a 90 mm base against
 twisting, and stays shut up to about 200 N pushed at a corner. That's a best case, since in the model I give each
 crosspiece the wedge's whole clamp through the deck, so I'll twist the frame by hand at the fit-up. Then I
@@ -485,8 +485,8 @@ there in one long curve from the foot, so the post reads as part of the leg.
 
 In a last pass I shaved and smoothed every curve that didn't have a job. The legs taper in one long line, the
 crosspieces arch underneath, and the deck's arms flare into the ring and the pads with much bigger fillets.
-I made each corner pad one smooth outline, flaring out of its arm like a trumpet, with rounded far corners:
-nothing left to fight with sandpaper. The bigger fillets made the deck stronger, too: a hard press on the ring
+I made each corner pad one smooth outline, flaring out of its arm like a trumpet, with rounded far corners,
+so there's nothing left to fight with sandpaper. The bigger fillets made the deck stronger, too. A hard press on the ring
 now uses 60 % of its strength, and with slack wedges it stays under it (97 %, was 127 %).
 
 The rest is handwork: an undercut under the top's edge, so it reads thinner (a 9 mm rim on the 15 mm top), a
@@ -502,14 +502,14 @@ were, and in the FEA the legs still use 74 % of their strength under the hard sh
 stance makes the table much harder to tip: pushing down right at an edge, it would take about 4.5 kN, though
 the loose top would lift at its far side long before, at about 640 N.
 
-Then I asked whether, with the better stance, the legs could be thinner. Not just like that: at 56 mm the root
+Then I asked whether, with the better stance, the legs could be thinner. Not just like that. At 56 mm the root
 of the head slot went to 106 %. A narrower leg makes the haunch steeper, and its bend crowds the slot. I fixed it
 with a longer, gentler haunch. Now the legs are 56 mm wide, narrowing to a 46 mm foot, and the shove uses only
 63 %, less than before. It costs 17 mm of room between the legs. With the kick and the slimming, uMake's
-quote went from $303.98 to $306.84: it prices each part by its bounding box, and the plate's got 29 mm wider.
+quote went from $303.98 to $306.84. uMake prices each part by its bounding box, and the plate's got 29 mm wider.
 
 I still have a bag of wedges left over from v1, the same shape as v2's but cut from its thicker sheet. I widened
-the wedge holes to take them and dropped the wedges from the order, and the quote fell by only $4.72: the smaller
+the wedge holes to take them and dropped the wedges from the order, and the quote fell by only $4.72, because the smaller
 order got less of uMake's volume discount on every other part. For that, new wedges that fit snugly are the better
 deal, so I put them back.
 
