@@ -576,7 +576,7 @@ The website has the drawings, a 3-D view, the cut sheets and all the numbers:
 <!-- /github-only -->
 
 The cut files (DXF, in millimetres) are at **https://lixo.org/kotatsu/dxf/**, and the code that makes
-them is at **https://github.com/cv/kotatsu**.
+them is at https://github.com/cv/kotatsu.
 
 | Part | Detail |
 |---|---|
@@ -620,16 +620,16 @@ Measure your own heater and put its size in `[heater]`. Don't guess it from a li
 Earlier versions and ideas I built and then dropped are kept as git tags, so you can check one out and
 build it:
 
-- **`v1-ordered`**: v1, as ordered and built.
-- **`plus-legs-archive`**: v2's first legs, two crossed plates at each corner.
-- **`zaisu-archive`**: the two plywood zaisu, with their FEA.
-- **`show-top-archive`**: the quote pack for a "show" top in solid wood or stone, researched and dropped.
-- **`seams-archive`**: the 120 × 80 cm top in three boards, joined by decorative seams (dovetails,
+- `v1-ordered`: v1, as ordered and built.
+- `plus-legs-archive`: v2's first legs, two crossed plates at each corner.
+- `zaisu-archive`: the two plywood zaisu, with their FEA.
+- `show-top-archive`: the quote pack for a "show" top in solid wood or stone, researched and dropped.
+- `seams-archive`: the 120 × 80 cm top in three boards, joined by decorative seams (dovetails,
   arrowheads, maple leaves), and a 90 cm round top. Round looked lovely, but it cost $199 to ship, and
   round futons were hard to find at a fair price.
-- **`frame-variants-archive`**: the solid-sided frame with tapered legs and flared feet, and a yagura
+- `frame-variants-archive`: the solid-sided frame with tapered legs and flared feet, and a yagura
   with splayed legs.
-- **`options-archive`**: windows in the deck and legs, an X-shaped deck, lighter-looking cuts, and
+- `options-archive`: windows in the deck and legs, an X-shaped deck, lighter-looking cuts, and
   modules that link several tables into a row.
 
 ### Ordering somewhere else
@@ -640,8 +640,8 @@ its plywood is another thickness (16, 18 mm…), set its real range in `params.t
 the joints follow, and `make test` fails if anything no longer fits.
 
 These are the shops I found in October and November 2026, searching in each region's language. I haven't ordered
-from any of them, so check before you rely on one (details and sources are in `docs/research.md`). **Online** means
-the site shows a price for your file; **quote** means someone replies.
+from any of them, so check before you rely on one (details and sources are in `docs/research.md`). In the tables, "Online" means
+the site shows a price for your file, and "Quote" means someone replies.
 
 **North America**
 
@@ -699,7 +699,9 @@ its sheet sizes, the gap it wants between parts and round the sheet's edge, the 
 (`[material]`), and its shipping limits (`[shipping]`). The 91 cm box is uMake's rule, not a law of nature. A
 makerspace with a CNC router works too: the DXFs are ordinary cut files.
 
-**Caveats.** The plywood strength figures are rough textbook values, so read the load numbers as "lots of margin",
+### Caveats
+
+The plywood strength figures are rough textbook values, so read the load numbers as "lots of margin",
 not as a certificate. uMake sells this sheet as "15mm", and the joints are designed for 14.1–15.7 mm. Follow your
 heater's instructions and clearances, make sure it's rated for your mains supply, and look for a safety mark
 (in Canada: cUL, cETL or CSA) on its label.
