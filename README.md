@@ -598,8 +598,8 @@ make site      # the website, in out/site
 make dev       # serve it on :8765 and rebuild on every change
 ```
 
-`PLAN.md` has the decisions and open questions. `docs/` has the research on the shop, heater, futon
-and quote. `AGENTS.md` has the project's rules.
+`PLAN.md` has the decisions and open questions, `docs/` the research on the shop, heater, futon
+and quote, and `AGENTS.md` the project's rules.
 
 ### Make it yours
 
@@ -636,8 +636,8 @@ build it:
 
 I've only ordered from uMake, in Canada. Elsewhere, look for a shop that **CNC-routes 15 mm (5/8") birch plywood**
 from a DXF and can cut a part 86 cm across. Ideally it shows a price online, so there's no back-and-forth. If
-its plywood is another thickness (16, 18 mm…), set its real range in `params.toml` (`[material]`) and rebuild:
-the joints follow, and `make test` fails if anything no longer fits.
+its plywood is another thickness (16, 18 mm…), set its real range in `params.toml` (`[material]`) and rebuild.
+The joints follow, and `make test` fails if anything no longer fits.
 
 These are the shops I found in October and November 2026, searching in each region's language. I haven't ordered
 from any of them, so check before you rely on one (details and sources are in `docs/research.md`). In the tables, "Online" means
@@ -648,12 +648,12 @@ the site shows a price for your file, and "Quote" means someone replies.
 | Where | Shop | Price | What I found |
 |---|---|---|---|
 | Canada | [uMake](https://www.umake.ca/) | Online | What I use. CNC-routed Baltic birch, "15mm" included; free shipping in one box up to 91 cm and about 20 kg |
-| Canada | [EZCNC](https://ezcnc.ca/) | Online | Upload a DXF and configure the cut. All-birch and bamboo plywood, but in 3/4" (19 mm), not 5/8". Roughly $36 a part however small: a 19 mm version of this table (with the "+" legs) came to $787 before shipping, against uMake's $328 |
+| Canada | [EZCNC](https://ezcnc.ca/) | Online | Upload a DXF and configure the cut. All-birch and bamboo plywood, but in 3/4" (19 mm), not 5/8". Roughly $36 a part however small. A 19 mm version of this table (with the "+" legs) came to $787 before shipping, against uMake's $328 |
 | Canada (Vancouver) | [Fab Lab Vancouver](https://www.fablabvan.ca/service) | Quote | A 72 × 96" router at $2.50 a minute, $80 minimum |
 | Canada (Vancouver) | [CNC Cutting Services](https://cnccuttingservices.ca/), [Mosswood Millwork](https://www.mosswoodmillwork.com/cnc-cutting-routing-vancouver) | Quote | Local routing shops for furniture parts |
 | US | [Xometry](https://www.xometry.com/capabilities/cnc-machining-service/cnc-routing/) | Online | CNC routing in Baltic birch plywood, free standard shipping in the US. Thicknesses not checked |
-| US (I think) | [ConceptCut](https://conceptcut.net/) | Online | Baltic birch in 18 mm only, on 48 × 96" sheets: v1's thickness |
-| US | [SendCutSend](https://sendcutsend.com/materials/baltic-birch-plywood/) | Online | Birch only up to 12 mm, and parts up to 44 × 44": too small for the top |
+| US (I think) | [ConceptCut](https://conceptcut.net/) | Online | Baltic birch in 18 mm only (v1's thickness), on 48 × 96" sheets |
+| US | [SendCutSend](https://sendcutsend.com/materials/baltic-birch-plywood/) | Online | Birch only up to 12 mm, and parts up to 44 × 44", too small for the top |
 | Mexico | [Arteknia](https://arteknia.com.mx/) | Quote | Routes triplay (plywood) and MDF; prices within a working day; ships anywhere in Mexico |
 
 **Europe**
@@ -697,7 +697,7 @@ the site shows a price for your file, and "Quote" means someone replies.
 Whichever shop you pick, tell the code about it in `params.toml`: the bit size (`[cnc] bit_d`, for the dogbones),
 its sheet sizes, the gap it wants between parts and round the sheet's edge, the real thickness range of its plywood
 (`[material]`), and its shipping limits (`[shipping]`). The 91 cm box is uMake's rule, not a law of nature. A
-makerspace with a CNC router works too: the DXFs are ordinary cut files.
+makerspace with a CNC router works too, since the DXFs are ordinary cut files.
 
 ### Caveats
 
