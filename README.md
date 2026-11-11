@@ -37,7 +37,7 @@ This chapter is v1, the table I built and use every evening. Version 2 has its o
 I made most of this table's choices around things I couldn't change: a cardboard box, my knees, a bathroom
 scale and uMake's price list. Here are the four fights, and how each one ended.
 
-This is the very first full design, from the first afternoon: a 120 × 80 cm top in three boards joined
+This is the very first full design, from the first afternoon. It had a 120 × 80 cm top in three boards joined
 by dovetails, sitting on solid side panels.
 
 ![The very first full design: a 120 × 80 top in three boards joined by dovetails, on solid side panels](docs/img/first-design.png)
@@ -57,7 +57,7 @@ local Secwépemc artist to design one.
 
 Then I measured my room again, and it works much better with a square table. A round top looked lovely,
 but it cost $200 more to ship, and round futons (the quilt that drapes over a kotatsu) were hard to find at a
-fair price. I gave in to the box: 86 × 86 cm
+fair price. I gave in to the box and made the top 86 × 86 cm,
 in one piece, with no joinery at all. I cancelled the commission and put the seams away in a git tag.
 
 ![The top: 120 × 80 in three boards, then 90 cm round, then 86 cm square, drawn to scale against the 91 cm box](docs/img/evolution-top.png)
@@ -67,7 +67,7 @@ in one piece, with no joinery at all. I cancelled the commission and put the sea
 Sitting cross-legged, my knees need a space 30" wide and 12.5" high. The first frame had solid side
 panels that slot together at the corners. It was strong and simple, and the strip of wood along each
 side (the apron) sat exactly where my knees wanted to be. I tapered the legs and flared the feet for a
-little more room, then dropped the aprons altogether, which gave the knees all of it. That's a *yagura*: four "+"-shaped corner
+little more room, then dropped the aprons altogether, which gave the knees all of it. That's a *yagura*. Four "+"-shaped corner
 legs hold up a flat deck, the heater hangs under the deck, and the middle of each side is open, with
 34 cm of clearance under the deck.
 
@@ -77,14 +77,14 @@ legs hold up a flat deck, the heater hangs under the deck, and the middle of eac
 
 The first yagura legs were plain strips, and the weight crept up. Free shipping stops at about 20 kg, and
 the order came to 20.4 kg, so the cart charged $195 to ship it. I cut windows in the legs and the deck to get it
-back under. Then I sketched my own leg shape, twice: full width under the deck, where the joints are, then a
-sloped shoulder (a *haunch*) down to a 60 mm leg. It needs no windows.
+back under. Then I sketched my own leg shape, twice. It's full width under the deck, where the joints are, then a
+sloped shoulder (a *haunch*) takes it down to a 60 mm leg, light enough to need no windows.
 
 ![The legs: plates with windows, then my first sketch, then my second, slimmer sketch](docs/img/evolution-legs.png)
 
 ### Notches instead of windows
 
-When I cut holes in the deck, the table got more expensive. From a few test uploads I thought I saw why: most
+When I cut holes in the deck, the table got more expensive. From a few test uploads I thought I saw why. Most
 of uMake's price was the router's path, not the wood, and a window is nothing but cutting. So I opened each
 window out to the edge, which took the same wood away with a metre less cutting, and about $20 off. Last, I
 rounded the new corners (the *fillets*). The notches were the right call, but for a reason I only found in
