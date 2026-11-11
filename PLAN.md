@@ -1,4 +1,4 @@
-# Design notes: v2 (in progress)
+# Design notes for v2 (in progress)
 
 This is the reference for **v2**, the design on `main` (designed and quoted, not ordered yet). v1 was ordered (git tag `v1-ordered`), assembled
 and is in use. The story of how it got here is in the README. Every number below comes from `params.toml`,
@@ -203,7 +203,7 @@ deck's hard hand cases). What I found:
   The slimmest that passes is 61.9 mm (−2 %), at 88 % of strength and $0.05 more; the cheapest saves $0.59 with legs
   19 % wider. So on these knobs the design is already at the edge for looks, and economics can't be traded at all.
 
-## Tried and rejected: the heater turned 45° (2026-11, prototype)
+## The heater turned 45°, tried and rejected (2026-11, prototype)
 Turning the heater, cradle and ring 45° (a diamond well, the arms meeting the ring mid-side) was tried in memory
 against today's deck, with the same loads turned with it (deck FEA at h = 10, wedges tight):
 - the ring's corners point at the sitters with nothing under them: a hand there uses **146–233 %** of the ring's
@@ -213,7 +213,7 @@ against today's deck, with the same loads turned with it (deck FEA at h = 10, we
 Today's orientation is the natural one for an X deck: each arm lands on a ring corner, so every ring side spans
 between two supported corners.
 
-## Price: what's left to save
+## What's left to save on the price
 Little: the design is at uMake's price floor (`docs/quote.md`, "What can still be saved"). About 40 % of the bill
 doesn't depend on the design, the remaining cut is all required, and wood inside a part's box is free. A solid
 deck would save about $4 but costs 3.8 kg and the knee room in the X's openings, so I'm keeping the X. The bigger
@@ -272,7 +272,7 @@ The pale birch look of v1 is the goal (owner, 2026-11). All by hand, at no cost 
   overnight between them, on **both faces and the edges equally**, so the top can't cup over the heater.
 - No essential oils (hinoki scent): the cat sleeps in the warm kotatsu, and many are toxic to cats.
 
-### Considered and dropped: veneer and edge banding on the top (owner 2026-11: too pricey for what it adds; the plan is Osmo on the birch, with a palm sander)
+### Veneer and edge banding on the top, considered and dropped (owner 2026-11: too pricey for what it adds; the plan is Osmo on the birch, with a palm sander)
 Glue in a finish is allowed (AGENTS.md); nothing structural changes. The heater's warmth doesn't reach the top
 under the quilt (owner), so iron-on (hot-melt or PVA) veneer is fine; contact cement is still a poor choice (veneer
 creeps and cracks on it). Veneer **both faces**, or the top cups with the seasons. The top gets about 1 mm
