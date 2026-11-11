@@ -98,7 +98,7 @@ Here's the frame all together, without its top:
 
 ## Checking it in code
 
-I couldn't afford to learn things by cutting wood: every mistake would be a new order and another week
+I couldn't afford to learn things by cutting wood. Every mistake would be a new order and another week
 of waiting. So I keep the design in code, and every time I change something I run over a hundred tests that
 try to break it. The tools are the same for both versions; the numbers in this chapter are v1's unless I say so.
 
@@ -123,7 +123,7 @@ lightly trimmed.
 ### Corners a router can cut
 
 A router bit is round, so it can't cut a sharp inside corner. It leaves a little curve the size of the
-bit, and a square edge won't seat in a slot like that. The fix is a *dogbone*: a small circle cut just
+bit, and a square edge won't seat in a slot like that. The fix is a *dogbone*, a small circle cut just
 past each inside corner. To check that every corner has one, I borrowed a trick from image processing
 called *closing*. Grow the shape by the bit's radius, then shrink it back. Anything the bit can't reach
 gets filled in, so if the result isn't the same as the drawing, some corner is too sharp:
@@ -178,7 +178,7 @@ For v1 there was no big engineering package, just small models I could read. I m
 handful of springs: the leg's shoulder pressing up under the deck, the wedge pulling up the *tenon* (the
 tongue on top of the leg that pokes up through a hole in the deck, the *mortise*), and the tenon's faces
 bearing on the sides of its hole. The catch is that wood in contact can push but
-not pull: lean on the table and one side of a joint can lift off. I handled that with
+not pull. Lean on the table, and one side of a joint can lift off. I handled that with
 "compression-only" springs, smoothed just enough (a *softplus*) that Newton's method can step across
 the moment a gap opens:
 
@@ -191,7 +191,7 @@ def _pos(c):
 ```
 
 In the model, a firm 100 N sideways push (about 10 kg) swayed v1 about 0.9 mm (v2: 1.6 mm). With it I also
-caught a sneaky problem before I ordered: the first legs had wood on only one side of each joint, and tapping the
+caught a sneaky problem before I ordered. The first legs had wood on only one side of each joint, and tapping the
 wedge in would have twisted each leg about 9 mm at the foot. I added a 10 mm shoulder on the other side, and that fixed it.
 
 ### How strong the top is
