@@ -62,12 +62,12 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
     faces, at the fit-up: (t − 14.1) / 2 a side, 0.8 mm at 15.7 (owner: up to about 1 mm is fine, `fit.fit_sand`). The foot has a 1.5 mm arc cut under it, so the plate stands on its two ends and doesn't rock.
   - How I shaped the head, with the leg FEA under a 200 N shove: a 60 mm crosspiece needed the haunch at
     270 mm and cost ~90 mm of room at thigh height; at 36 mm the slot's bottom landed in the haunch (183 %);
-    25 mm with the haunch from 305 mm gave 84-95 % with dogbones in the slot, and **74-75 %** with the round
+    25 mm with the haunch from 305 mm gave 84-95 % with dogbones in the slot, and 74-75 % with the round
     bottom.
 - **Deck (1, 769 × 769 mm, X-shaped, on the 780 mm frame).** It sits on the plates' shoulders and the crosspieces, its top
   26 mm below the tenon tops. Each corner's pad holds only what needs wood: 20 mm round the mortise (tenon +
   0.2 mm each side), 5 mm past the lying wedge, the plate's top edge and the crosspiece's (owner, 2026-11), so the
-  pads are small crosses at the ends of the arms; the deck stops square across the diagonal beside each post. A ring round the **heater well** (326 × 300 mm: the heater plus
+  pads are small crosses at the ends of the arms; the deck stops square across the diagonal beside each post. A ring round the heater well (326 × 300 mm: the heater plus
   both cheeks) is 40 mm wide beside the cheeks and runs 15 mm past their ears. Four 36 mm arms along the
   diagonals join them, with R150 fillets at the ring (owner 2026-11: smoother, and stronger) and R12 corners outside. Each corner pad is
   one convex outline round what needs wood, flaring out of its arm on an R300 fillet (only there), and its far
@@ -94,7 +94,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
   a radius that starts abruptly. The corner posts stay 20 mm inside its edge (v1: 40). The futon lies
   over the heater as in a traditional open frame (v1 had the deck in between).
 
-That's **18 parts, about 10.4 kg, 16.8 m of cutting**. They fit on one 48 × 96" sheet. uMake lays out
+That's 18 parts, about 10.4 kg and 16.8 m of cutting. They fit on one 48 × 96" sheet. uMake lays out
 the sheets itself and prices per part, so this only matters for my estimate.
 
 ## Assembly (a mallet, plus a screwdriver for the heater)
@@ -206,7 +206,7 @@ deck's hard hand cases). What I found:
 ## The heater turned 45°, tried and rejected (2026-11, prototype)
 Turning the heater, cradle and ring 45° (a diamond well, the arms meeting the ring mid-side) was tried in memory
 against today's deck, with the same loads turned with it (deck FEA at h = 10, wedges tight):
-- the ring's corners point at the sitters with nothing under them: a hand there uses **146–233 %** of the ring's
+- the ring's corners point at the sitters with nothing under them: a hand there uses 146–233 % of the ring's
   strength (today 51–64 %); fillets 62–95 % (today 49–67 %); sag 10.7–10.9 mm (today 7.3–9.9);
 - the deck-free opening in front of each sitter shrinks from 187 to 107 mm; the deck gets 0.24 kg heavier and the
   order $1.37 dearer; the cheeks' ends overhang the rounded diamond.
@@ -217,7 +217,7 @@ between two supported corners.
 Little: the design is at uMake's price floor (`docs/quote.md`, "What can still be saved"). About 40 % of the bill
 doesn't depend on the design, the remaining cut is all required, and wood inside a part's box is free. A solid
 deck would save about $4 but costs 3.8 kg and the knee room in the X's openings, so I'm keeping the X. The bigger
-unknown is uMake's finalization. v1's receipt was **$405.83 + tax = $454.53**, $52.50 more than the cart's
+unknown is uMake's finalization. v1's receipt was $405.83 + tax = $454.53, $52.50 more than the cart's
 $353.33 (TODO-verify what was added; if it repeats, v2's $306.91 becomes about $353 + tax, about $395).
 
 ## Still open
