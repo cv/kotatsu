@@ -20,10 +20,10 @@ amazon.ca, delivering to rural BC. Prices are in CAD, including import fees wher
 | Element | quartz tube and fan, 400 W | PTC ceramic, 400 W, thermostat 104–149 °F | quartz or halogen, 500–600 W |
 | Size (listed) | 292 × 292 × 51 mm | 290 × 290 × 50 mm | — |
 | Safety | power fuse, resin housing | over-current and over-heat cut-off with a reset button; PTC limits itself | — |
-| Mounting | **4 screws through the sides** into two crossbars | the same side screws, or 4 L-brackets under a flat board (included) | — |
+| Mounting | 4 screws through the sides into two crossbars | the same side screws, or 4 L-brackets under a flat board (included) | — |
 | Cord | detachable, knob on the unit | detachable, 3 m, knob on the unit | — |
-| Reviews | **4.7★ from 58 ratings** | 3.9★, a new listing with few ratings | — |
-| Price | **$258.47** with import fees, free delivery in about a week | $276.91 + $13.71 delivery | $226–232 |
+| Reviews | 4.7★ from 58 ratings | 3.9★, a new listing with few ratings | — |
+| Price | $258.47 with import fees, free delivery in about a week | $276.91 + $13.71 delivery | $226–232 |
 | cUL / cETL / CSA listed? | not stated ⚠️ | not stated ⚠️ | — |
 
 The Zuomeng is the backup, or the better pick if you'd rather have PTC's self-limiting heat and a thermostat
@@ -33,8 +33,8 @@ Sources: amazon.ca/dp/B0CKBS16YY, amazon.ca/dp/B0HF7DW7YD, and forkinthe.net/kot
 120 V kotatsu heaters are rare in North America.
 
 ## How it mounts
-The listing's installation photo shows the heater between **two parallel crossbars**, held by **4 screws,
-2 a side, driven sideways into the bars' inner faces** near the corners. In this table those bars are the
+The listing's installation photo shows the heater between two parallel crossbars, held by 4 screws,
+2 a side, driven sideways into the bars' inner faces near the corners. In this table those bars are the
 two heater cheeks (v1: hanging under the deck; v2: hanging in a well in the deck).
 
 - I measured the body at 29 × 29 × 5 cm (to the nearest cm). The cheeks sit 294 mm apart, which leaves
