@@ -248,7 +248,11 @@ $353.33 (TODO-verify what was added; if it repeats, v2's $306.91 becomes about $
 ## Finishing (by hand, after the first fit-up)
 The pale birch look of v1 is the goal (owner, 2026-11). All by hand, at no cost to the order:
 - **Pick the cleaner face of the top** (fewest patches) and put it up, before anything else.
-- **Undercut the top's edge:** a 15° bevel on the underside, about 35 mm wide, leaving a 9 mm rim, so from the
+- **Edge-band the top (owner 2026-11: the plies showing on the edge bother me):** iron-on birch banding, ¾" wide,
+  about 11 ft round the squircle (the outline is convex everywhere, with no tight bends). Sand the edge square and
+  flat first, with the holding tabs gone, or the banding won't sit down. Trim it flush, then ease its corners only
+  about 0.5 mm: the banding is about 0.5 mm thick. This replaces the undercut below.
+- ~~**Undercut the top's edge:**~~ (dropped for the banding) a 15° bevel on the underside, about 35 mm wide, leaving a 9 mm rim, so from the
   side the 15 mm top reads thinner and its plies show as stripes. At the corners the posts sit 20 mm in from
   the edge, so narrow the bevel to about 15 mm there.
 - **Round every visible edge a little** (2–3 mm, sandpaper on a block). Crisp, even edges and a good finish
