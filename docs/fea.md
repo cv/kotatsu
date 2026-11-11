@@ -22,7 +22,7 @@ the haunch at 81 %, the slot root at 77 % and sway 7.2 mm. `tests/test_fea.py::t
 is now a plain test, no longer an expected failure. The tables below are from the 60 mm study in which I found it.
 Then a soft taper below the joints (full 70 mm down to 150 mm, then in to 56 mm at the floor, owner 2026-11)
 moved plate A's peak to 81 % (haunch), slot root 80 %, wedge hole 73 %, sway unchanged at 7.2 mm; plate B 70 %.
-A straight taper from the haunch failed instead (102 % at 58 mm): it narrows the leg at A's slot root.
+A straight taper from the haunch failed instead (102 % at 58 mm), because it narrows the leg at A's slot root.
 Then rounder corners (the haunch's S-curve 60 mm, the taper's bend 110: one continuous inner edge): plate A's
 worst is the slot root at 80 % (86 % at 2 mm elements), the haunch 57–70 %, the wedge hole 73 %. The wedge's
 bearing peak used to leak past the 3 mm "contact edges" band into the wedge-hole zone, so that zone read anything
@@ -193,7 +193,7 @@ crowds the slot root: 62 / 50 mm 90 %, 56 / 46 mm 106 %, 50 / 42 mm 112 % (h = 4
 56 / 46 with a 50 mm drop 65 % (63 % at h = 3), with 70 mm 57 % (but 20 mm less room between the legs).
 Twisting (a push along an edge at a top corner) is checked by `stiffness.twist`, a spring model, not FE:
 1.5 mm at 115 N, the crosspiece joints opening at about 203 N (with the feet where the kick puts them, 3.9 mm outside the frame corner; 1.7 mm and 193 N before I counted the kick). **Both are best cases.** The joint is taken as rigid
-until it opens, and what holds the crosspiece down is the deck: it lies on the crosspiece's top edge (sanded flush
+until it opens, and what holds the crosspiece down is the deck, lying on the crosspiece's top edge (sanded flush
 with the plate's shoulders at the fit-up) and the wedge clamps it onto the shoulders beside the tenon. In the model I
 give the crosspiece that whole 300 N clamp; the share it really gets depends on the fit, so the joints may open
 sooner and the twist be larger. Twist the frame by hand at the fit-up (PLAN.md, open questions).
@@ -202,7 +202,7 @@ sooner and the twist be larger. Twist the frame by hand at the fit-up (PLAN.md, 
 
 `stiffness.stresses` (200 N): legs **3.6 MPa**, wedge-bridge shear 3.0 MPa. `frame_sway`: 4.5 mm.
 
-The worst case comes up first: the top's worst corner load is the sitter case, 616 N on A's tenon top at the
+The worst case comes up first. The top's worst corner load is the sitter case, 616 N on A's tenon top at the
 (−,−) corner.
 
 | Case | Sway | Wedge | Haunch fillet | Slot root | Wedge hole | Bridge | Elsewhere | Contact edges |
@@ -270,10 +270,10 @@ against comfort (knee room), weight and the cut list before adopting it.
   widen the narrow leg to about 80 mm. Swapping A and B is a code change in `yagura.leg_plate` (the tenon,
   wedge hole and foot relief go on the floor-slotted plate) and should be re-run through this model.
   (History: this was written for the "+" legs at 60 mm, before the fix above, and those legs have since been
-  replaced by the diagonal ones.) Until then: the table is fine for sitting at and leaning on (the top-load-only row is 37 %). Don't shove it
+  replaced by the diagonal ones.) Until then, the table is fine for sitting at and leaning on (the top-load-only row is 37 %). Don't shove it
   sideways hard, and keep the wedges tapped tight.
 - **Deck.** It holds as cut, with the wedges tight: 68 % worst, a margin of about 1.5 on rough strengths.
-  Re-tap the wedges: slack wedges nearly triple the sag and overstress the fillets under a hard press. If more
+  Re-tap the wedges, since slack wedges nearly triple the sag and overstress the fillets under a hard press. If more
   margin is wanted, the cheapest is a wider ring beside the cheeks or wider arms (table above).
 - **Top.** No change.
 
@@ -314,19 +314,19 @@ bigger fillet there (80 mm) on a slightly longer runner (600 mm, which also make
 
 ## Seeing it
 
-The site's **3-D view** has a "stress (FEA)" control. Pick a load case: the part is painted where it stands,
+The site's 3-D view has a "stress (FEA)" control. Pick a load case, and the part is painted where it stands,
 blue (idle) to yellow (half its strength) to red (all of it) and purple (past it), and drawn bent (exaggerated
 "bend ×" times, pulsing load on and off). The load's patch is a dark pad; grey marks pads and contacts, whose
 peaks are local bearing. Each part is analysed alone, its neighbours standing in as springs and supports, so
 the view only *carries* the rest of the frame: for the leg cases (a push along x) it draws them as the floor
 sees them, feet still and the deck swaying; the two plates along x bend in their plane, each the right way
 round, while the deck and everything on it shift and the other plates lean with it. For the deck, the
-cradle rides down with the ring. At true scale nothing collides: under the 200 N push the head slot
+cradle rides down with the ring. At true scale nothing collides. Under the 200 N push the head slot
 narrows by 0.2 mm at most, and the crosspiece, sanded at the fit-up to slide in between the crush ribs, takes that. `kotatsu/fea_view.py` computes it
-on slightly coarser meshes (15 cases, about a minute): run `make fea` after changing the design. The site
+on slightly coarser meshes (15 cases, about a minute). Run `make fea` after changing the design. The site
 shows a notice when the results are stale. CI runs it on every push.
 
-The **Frame parts** tab shows the same heat maps flat on each part (pick a case in its toolbar): crisp at any
+The Frame parts tab shows the same heat maps flat on each part (pick a case in its toolbar), crisp at any
 zoom, for reading exactly where a peak sits.
 
 ## Running it
