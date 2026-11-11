@@ -1,18 +1,18 @@
 # Futon and rug
 
 A kotatsu needs a futon draped over the frame, with the top sitting on it. Round futons that ship to
-Canada at a fair price turned out to be hard to find, so the top became an **86 × 86 cm square**
+Canada at a fair price turned out to be hard to find, so I made the top an 86 × 86 cm square
 (October 2026). I went looking for square futons of 225 cm or more.
 
 ## What size?
 Sellers go by **futon = top + 110–130 cm** (BarklotJapan, Etsy). For an 86 cm top that's 196–216 cm, so
-**205 × 205** is right. The 190 × 190 size is sold for 70–80 cm tops, and on this one it barely reaches the
-floor. I planned an **80 × 80 in (203 cm)** futon; in the end an **oversized king quilt, 120 × 120 in (305 cm)**, went
-over v1 and works really well (owner 2026-11). With it go four **25 × 25 in square floor pillows**, all on
-the 8 ft round rug. That's what the site's 3-D view shows: draped over the frame, the futon covers about
+205 × 205 is right. The 190 × 190 size is sold for 70–80 cm tops, and on this one it barely reaches the
+floor. I planned an 80 × 80 in (203 cm) futon; in the end an **oversized king quilt, 120 × 120 in (305 cm)**, went
+over v1 and works really well (owner 2026-11). With it go four 25 × 25 in square floor pillows, all on
+the 8 ft round rug. That's what the site's 3-D view shows. Draped over the frame, the futon covers about
 147 cm of floor, which leaves a ring of rug about 49 cm wide.
 
-I found no **225 × 225 or larger** square kotatsu futon that ships to Canada at a fair price:
+I found no 225 × 225 or larger square kotatsu futon that ships to Canada at a fair price:
 - amazon.ca only stocks 185–190 cm squares;
 - Futon Tokyo only lists 205 cm (from US$433);
 - Wataman's 225 × 225 is sold out, and only ships within Japan.
@@ -31,7 +31,7 @@ The full list is in `docs/futons.toml` and on the site's "Futon & rug" tab.
 
 ## The duvet option
 A queen duvet (about 88–90 × 90–92 in; TODO-verify Douglas's own size chart) in a 90 × 90 in cover comes
-out at about 229 cm. That's **bigger than a 205 cm kotatsu futon**, and cheaper too: about $185–220 all in,
+out at about 229 cm. That's bigger than a 205 cm kotatsu futon, and cheaper too, at about $185–220 all in,
 with free shipping from Douglas. It works on a kotatsu, with a few things to know:
 - **Loft.** A bed duvet is puffier than a quilted kotatsu futon. The top rests on the corner posts *through*
   the duvet, so it sits about 1–2 cm higher and may rock a little until the fill settles. A lightweight
