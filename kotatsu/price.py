@@ -7,7 +7,7 @@ all 10 lines within 2 %, true area only within 38 %). So cut-outs and windows sa
 only add cutting. The order total is then a fixed amount per order plus a rate on the raw total:
     total ~= FIXED + PER_RAW * raw_total
 fitted (least squares, owner 2026-11) on all five 15mm quotes, each re-priced with the parts of the commit it
-quoted: $328.70, $328.53, $328.40 (tables with the "+" legs), $306.84 (quote 2926, the current design) and $501.66
+quoted: $328.70, $328.53, $328.40 (tables with the "+" legs), $306.84 (the current design) and $501.66
 (a table and two plywood zaisu, since archived); every one within 1.4 %. (The earlier curve, K * raw ** B fitted
 on two of them, read the current design 4 % low; a three-parameter curve matched all five within 0.1 % but is an
 overfit, with a $240 order of nothing.) The total is split between the parts in proportion to raw. Thicker stock
