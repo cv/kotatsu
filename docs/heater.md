@@ -39,7 +39,7 @@ two heater cheeks (v1: hanging under the deck; v2: hanging in a well in the deck
 
 - I measured the body at 29 × 29 × 5 cm (to the nearest cm). The cheeks sit 294 mm apart, which leaves
   about 2 mm a side once it's centred.
-- In v2 the cheeks are 380 mm long, 45 mm past the heater at each end, and 46 mm tall: they reach 12.5 mm below
+- In v2 the cheeks are 380 mm long, 45 mm past the heater at each end, and 46 mm tall, reaching 12.5 mm below
   the heater's screw line (below), so the corner screws go into solid wood. The cheeks' only other features are
   the ears at their top corners, out of the screws' way.
 - **TODO-verify:** the exact width across the screw tabs. If there's a gap, the tabs bend slightly as the
@@ -51,8 +51,8 @@ two heater cheeks (v1: hanging under the deck; v2: hanging in a well in the deck
   deck's underside by 5 mm. The knob and the plug then stick out under the deck's ring, in open air, and the cord
   runs out under the deck. Reach the knob by lifting the futon, as on v1.
 - **The screws (owner, 2026-11):** the side holes are 10-15 mm from the heater's top (`[heater] screw_from_top`
-  12.5), so the cheeks only cover that band and 12.5 mm below it: 46 mm tall.
-- **Checked (owner, 2026-11):** the screws supplied with the heater suit the 15 mm cheeks (they must not poke out:
+  12.5), so the cheeks, 46 mm tall, cover only that band and 12.5 mm below it.
+- **Checked (owner, 2026-11):** the screws supplied with the heater suit the 15 mm cheeks (they must not poke out, so
   at most about 13 mm into the wood). Drill 2–2.5 mm pilot holes. I'll drill the holes myself during assembly, so the cut
   files don't have any.
 
@@ -62,9 +62,9 @@ two heater cheeks (v1: hanging under the deck; v2: hanging in a well in the deck
 - **Certification.** Neither listing mentions a cUL, cETL or CSA mark. When it arrives, look for one on the
   rating label. If there isn't one, think about returning it within the 30 days, since it can matter for
   home insurance.
-- **Airflow.** Don't block the fan or grille. Follow the clearances in its manual: they override anything in
+- **Airflow.** Don't block the fan or grille. Follow the clearances in its manual. They override anything in
   this design. v2 lets the futon lie on the heater's top, the face away from the grille (about 40 °C on high,
-  below): checked against the manual, the placement is fine (owner, 2026-11).
+  below). I checked the placement against the manual, and it's fine (owner, 2026-11).
 
 ## Measured in use
 
