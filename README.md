@@ -6,7 +6,7 @@
 
 I designed a kotatsu, the low Japanese table with a heater underneath and a quilt draped over it. A CNC
 shop cuts every part from birch plywood and ships it all to my door in one box, for free, and it goes
-together with **no glue and no screws**: wooden wedges, tapped in with a mallet, hold it tight. The 26 parts came to
+together with **no glue and no screws**. Wooden wedges, tapped in with a mallet, hold it tight. The 26 parts came to
 CAD $396 with tax in uMake's cart, and $455 once uMake had finalized the order. The only metal in it is the
 heater.
 
