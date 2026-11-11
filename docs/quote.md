@@ -20,13 +20,13 @@ the new deck, leg plate and crosspiece uploaded (top, cheeks and wedges unchange
 | **Subtotal** | | **18** | | **$306.91** |
 
 (First quoted at $306.47; the parts were re-uploaded as their curves got smoother and the cheeks shorter: $306.42,
-$306.36, $305.80, $304.82, $304.77, $303.98; then the slim kicked leg plate, $306.84: its box is 29 mm wider. I
+$306.36, $305.80, $304.82, $304.77, $303.98; then the slim kicked leg plate, $306.84, since its box is 29 mm wider. I
 also tried leaving the wedges off and reusing v1's (owner 2026-11): $302.12, only $4.72 less, because a smaller
 order gets less volume discount on every other line, and v1's thicker wedges needed wider holes. So I put six new
 wedges back, for $306.84 again. Then the crosspiece 1 mm taller (a fit fix from the savings review), $306.91. I read the top's line by subtraction; the others shift by cents between uploads.) With 12 % tax about $343.74; shipping should stay free (the same 91 cm box, 10.4 kg: not re-checked at the
-cart). That's $21.18 less than the "+" legs' $328.02 ($24.04 less before the kick). My price model then read it 4 % low
-($294.06): its curve, fitted on bigger orders, gave a small order too much volume discount. So I refitted it on all five
-15mm quotes as a fixed amount per order plus a rate (`kotatsu/price.py`): it now says $302.50, 1.4 % low. If uMake's finalization adds what it
+cart). That's $21.18 less than the "+" legs' $328.02 ($24.04 less before the kick). With my price model I'd predicted it 4 % low
+($294.06). Its curve, fitted on bigger orders, gave a small order too much volume discount. So I refitted it on all five
+15mm quotes as a fixed amount per order plus a rate (`kotatsu/price.py`). It now says $302.50, 1.4 % low. If uMake's finalization adds what it
 did to v1 (+15 %), about $395 with tax.
 
 ## What I ordered (October 2026)
@@ -66,7 +66,7 @@ quoted instantly; nothing was flagged.
   thickness range (14.1–15.7 mm assumed).
 - I didn't open the cart, so no shipping quote; the top is still 860 mm (a 91 cm box) and the parts
   weigh about 11.6 kg, well inside free shipping.
-- With the top on its own, the top line was $137.78: the fixed share again.
+- With the top on its own, the top line was $137.78, the fixed share again.
 
 ## v2 with the "+" legs, as designed then (November 2026, not ordered; superseded)
 The "+"-leg table as it stood then (tapered legs, rounder corners, squircle n = 8 top). Every file: millimetres, Engineered Wood >
@@ -110,7 +110,7 @@ saw the same). The real parts weigh about 18.4 kg (about 18.0 kg on uMake's scal
 I stopped at the cart: its Confirm Order button wasn't pressed.
 
 **Material is priced by each part's bounding box.** With the old model (below) I'd put this order at $473.85, 5.5 % low,
-and part by part I was far off: the deck and the zaisu sides (big outlines, little wood) 25 % too cheap, small
+and part by part I was far off. The deck and the zaisu sides (big outlines, little wood) 25 % too cheap, small
 solid parts 15–29 % too dear. Charging material by the bounding box instead of the wood fits all 10 lines within
 2 % (the tiny wedge within 9 %), and holes cost nothing extra. I changed `kotatsu/price.py` to do that:
 
@@ -118,13 +118,13 @@ solid parts 15–29 % too dear. Charging material by the bounding box instead of
     order total     ≈ 12.45 × (sum of the parts) ^ 0.595
 
 fitted on the two 15mm quotes. With it I predict this one at $502.24, and v1's 19mm order 3 % low (thicker stock).
-What it means for the design: **a cut-out or window saves weight, never money.** It only adds cutting, which is
+For the design, this means that **a cut-out or window saves weight, never money.** It only adds cutting, which is
 about half the raw cost. One more metre of cutting costs about as much as 0.09 m² more bounding box.
 
 ### Without the chairs
 Removing the four zaisu files from the same quote: $328.53 for the 18 table parts, one 91 × 91 × 14 cm box,
 shipping free, tax $39.42, total $367.95 (not ordered). So the two zaisu added $173.13 to the order. The
-owner chose a bought, adjustable zaisu (about $70, free shipping) instead, and the plywood chairs were archived
+owner chose a bought, adjustable zaisu (about $70, free shipping) instead, and archived the plywood chairs
 (tag `zaisu-archive`). With the bounding-box model I predict the table alone at $328.40.
 
 | File | Each | Qty |
@@ -139,7 +139,7 @@ owner chose a bought, adjustable zaisu (about $70, free shipping) instead, and t
 ### Ready to order (2026-11-08)
 Rebuilt from fresh DXFs (`make dxf`) and saved to the owner's uMake account (the quote ID stays out of this
 public repo): the same 6 files, 15mm Baltic birch, CNC router, quantities 1 / 1 / 4 / 4 / 2 / 6, $328.40 before
-tax, matching the 2026-11 quote. Not ordered: the owner will confirm it later.
+tax, matching the 2026-11 quote. It isn't ordered yet. The owner will confirm it later.
 **Updated 2026-11-08** for the raised heater: the old `heater-cheek.dxf` is off the invoice (its file tab stays,
 unordered) and the new one is on it, quantity 2. Still $328.40; saved.
 **Updated again 2026-11-08** for the heater 10 mm higher (owner: a 10 mm gap under the cheek tops): the cheeks are now
@@ -162,7 +162,7 @@ owner's EZCNC account (created 2026-11-09, login in 1Password); not ordered.
 | **Production subtotal** | **18** | **$787.18** | | **$328.02 in all** |
 
 Plus a live shipping rate at checkout (oversized parcels go to a custom quote) and tax. **About 2.4× uMake.**
-EZCNC seems to have a floor of roughly $36 a part, so small parts cost as much as large ones: the 6 wedges alone are
+EZCNC seems to have a floor of roughly $36 a part, so small parts cost as much as large ones. The 6 wedges alone are
 $217. In bamboo plywood (3/4", Natural) the top alone is $345.28, about 3.8× the birch.
 
 ### What can still be saved (tried 2026-11, not adopted)
@@ -175,7 +175,7 @@ runs, in memory):
   FEA peak up to 67–73 %, and the pads' short edges turn into curves the bit can't cut.
 - Corner pads as smooth convex blobs: no change (they're nearly convex already).
 - **A solid deck** (no X openings): −$4.26, deck FEA 60 % and a third of the sag, but +3.8 kg, and no knee room
-  in the openings. Rejected by the owner: the X's openings give the knees a few more cm.
+  in the openings. The owner rejected it, because the X's openings give the knees a few more cm.
 - The top at squircle n = 8: −$0.20 (the posts 20 mm inside the edge instead of 28). Taken later (owner 2026-11: softer).
 The cut that's left is required: outlines, cross-lap slots, wedge holes, mortises, the heater well.
 
@@ -207,7 +207,7 @@ largest part, and charges by that box. I tested it by swapping only the top file
 | Ø 800 | 85 × 85 × 18 cm | **free** |
 
 - Free shipping stops between a 91 and a 92 cm box, about 36". So the top can be at most about 86 cm.
-- The published "length + girth ≤ 108"" rule isn't what the cart uses: the free 85 cm box is already about 115".
+- The published "length + girth ≤ 108"" rule isn't what the cart uses. The free 85 cm box is already about 115".
 - **Weight matters too.** Free shipping also needs the order under about 20 kg. A square 860 top with the
   first frame came to 20.4 kg and cost $195.38 to ship. Windows in the deck brought it to 18.9 kg, and it
   shipped free. (My first probe got the weights wrong, because the cart had counted the leg plates once.)
@@ -240,5 +240,5 @@ uMake confirms. So the order goes in online, but uMake gets in touch once.
 
 ## Still to check
 **The thickness (v2).** The joints accept 14.1–15.7 mm of uMake's "15mm" Baltic birch (TODO-verify when it arrives;
-Windsor Plywood's 15 mm measures 15.0 ± 0.1). Over 15.7 mm the 16 mm head slots and mortises get tight: the crush
+Windsor Plywood's 15 mm measures 15.0 ± 0.1). Over 15.7 mm the 16 mm head slots and mortises get tight. The crush
 ribs and wedges absorb some of that, and sanding does the rest. (v1, "19mm": 17.0–18.9 mm.)
