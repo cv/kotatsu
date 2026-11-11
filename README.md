@@ -438,18 +438,18 @@ height and 2 mm less reach under the top's edge.
 
 ### The quote
 
-The whole thing, table and both chairs, quoted at **$501.66**: 28 parts, all instant, shipping free in one
-91 × 91 × 20 cm box. That was 6 % more than I'd predicted with my price model, and part by part I was further off: the
-open X deck and the chairs' side frames were a quarter dearer than predicted, small solid parts cheaper. I could
+The whole thing, table and both chairs, quoted at $501.66 for 28 parts, all instant and shipping free in one
+91 × 91 × 20 cm box. That was 6 % more than I'd predicted with my price model, and part by part I was further off. The
+open X deck and the chairs' side frames were a quarter dearer than predicted, and small solid parts cheaper. I could
 see why from the pattern: uMake charges the wood by each part's **bounding box**, the smallest rectangle round
 it, not by the wood actually in it. When I fitted the model that way, every line but the tiny wedge matched within 2 %. So
-v1's lesson needs a correction: a window never saves money, only weight. It just adds cutting. (It still had
+v1's lesson needs a correction. A window never saves money, only weight, because it just adds cutting. (It still had
 to happen in v1, where weight was what stood between me and free shipping.)
 
-Then I took the chairs out of the quote. The table alone was **$328.53**, so the two zaisu were adding $173,
+Then I took the chairs out of the quote. The table alone was $328.53, so the two zaisu were adding $173,
 and I'd found an adjustable zaisu online for about $70, delivered. So I put the plywood chairs in the
-archive (the `zaisu-archive` tag has them, FEA and all), and I'm buying one. What I learned from them stays:
-on a chair I sit with my legs out, and I added a check to the comfort model that a knee can't go higher than
+archive (the `zaisu-archive` tag has them, FEA and all), and I'm buying one. What I learned from them stays.
+On a chair I sit with my legs out, and I added a check to the comfort model that a knee can't go higher than
 the top.
 
 ### Smoothing every curve
