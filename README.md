@@ -120,7 +120,7 @@ From it, I generate the outlines the shop cuts in Python (with `shapely` for the
 the maths), and I wrote the tests to ask the same questions a woodworker would. The snippets below are from the repo,
 lightly trimmed.
 
-### Can a router cut it?
+### Corners a router can cut
 
 A router bit is round, so it can't cut a sharp inside corner. It leaves a little curve the size of the
 bit, and a square edge won't seat in a slot like that. The fix is a *dogbone*: a small circle cut just
@@ -142,7 +142,7 @@ def router_cuttable(g: BaseGeometry, r: float, tol: float = 0.5) -> bool:
 I run every frame part through it. A square corner leaves about 2.2 mm² behind, which is easy to tell
 apart from rounding noise.
 
-### Will it fit together?
+### Joints for any thickness
 
 This was the scary one. v1's plywood, sold as 18 mm, could be anywhere from 17.0 to 18.9 mm thick, and I
 wouldn't know which until the box arrived. So every slot was cut for the thickest sheet (19.2 mm), with two
@@ -194,7 +194,7 @@ In the model, a firm 100 N sideways push (about 10 kg) swayed v1 about 0.9 mm (v
 caught a sneaky problem before I ordered: the first legs had wood on only one side of each joint, and tapping the
 wedge in would have twisted each leg about 9 mm at the foot. I added a 10 mm shoulder on the other side, and that fixed it.
 
-### Will the top break?
+### How strong the top is
 
 The top is a loose board resting on the tops of the legs. I modelled it as a grid of little
 beams that bend and twist like a plate. The legs can hold the top up but can't hold it down, so I solve it
@@ -227,7 +227,7 @@ On v1's 18 mm top, napping hunched over the table with a 7 kg cat and a laptop u
 wood's strength and sagged it 1 mm. Even an 80 kg adult sitting hard on an edge used about a quarter. v2's
 thinner top works harder: 9 % and 37 %.
 
-### What will it cost?
+### Modelling uMake's price
 
 uMake quotes instantly, so I uploaded a few test shapes and wrote down the prices. Each part costs a
 rate per square metre plus a rate per metre the bit travels, and the order total adds a fixed amount per
@@ -249,7 +249,7 @@ open to the edge. I was right about the total and wrong about the reason. From V
 that uMake charges the wood by each part's *bounding box*, the smallest rectangle round it. Cutting is about half the price, and a window never saves
 money (see The quote, in Version 2).
 
-### Will it fit on the sheet?
+### Packing the sheet
 
 All of v1's 26 parts fit on one 48 × 96" sheet, and v2's 18 do too. uMake lays out its own sheets, so
 this is for anyone cutting it on their own router, and for summer. To pack them, I draw each part on a grid
