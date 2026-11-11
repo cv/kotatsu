@@ -489,9 +489,9 @@ I made each corner pad one smooth outline, flaring out of its arm like a trumpet
 so there's nothing left to fight with sandpaper. The bigger fillets made the deck stronger, too. A hard press on the ring
 now uses 60 % of its strength, and with slack wedges it stays under it (97 %, was 127 %).
 
-The rest is handwork: an undercut under the top's edge, so it reads thinner (a 9 mm rim on the 15 mm top), a
-small roundover on every edge, and two thin coats of Osmo Polyx-Oil 3043 Clear Satin, the oil I used on v1, on
-both faces equally so the top can't cup over the heater.
+The rest is handwork. The plies showing on the top's edge bother me, so I'll iron birch edge banding onto it.
+Then a small roundover on every other edge, and two thin coats of Osmo Polyx-Oil 3043 Clear Satin, the oil I used
+on v1, on both faces equally so the top stays flat.
 
 ### A kick
 
