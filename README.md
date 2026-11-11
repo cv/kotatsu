@@ -5,16 +5,16 @@
 [![The finished kotatsu by a wood stove: a plaid blanket over the frame, a laptop on the top showing this design, and a white Persian cat peeking out from underneath](docs/img/home.jpg)](docs/img/home.jpg)
 
 I designed a kotatsu, the low Japanese table with a heater underneath and a quilt draped over it. A CNC
-shop cuts every part from birch plywood and ships it all to my door in **one box, for free**, and it goes
+shop cuts every part from birch plywood and ships it all to my door in one box, for free, and it goes
 together with **no glue and no screws**: wooden wedges, tapped in with a mallet, hold it tight. The 26 parts came to
-**CAD $396 with tax** in uMake's cart, and $455 once uMake had finalized the order. The only metal in it is the
+CAD $396 with tax in uMake's cart, and $455 once uMake had finalized the order. The only metal in it is the
 heater.
 
 Three things got me there:
 
-1. **I set strict rules up front**, so every idea had to pass them.
-2. **I let real limits shrink the design**: the shipping box, the futon I could find, and the price.
-3. **I checked everything in code before spending a cent**: strength, wobble, knee room and price.
+1. I set strict rules up front, so every idea had to pass them.
+2. I let real limits shrink the design: the shipping box, the futon I could find, and the price.
+3. I checked everything in code before spending a cent: strength, wobble, knee room and price.
 
 ## The rules
 
