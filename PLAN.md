@@ -175,7 +175,7 @@ corner, and the wedges and deck don't carry any of the weight from above.
 | Item | Cost |
 |---|---|
 | Heater (PaletteLife, amazon.ca, delivered) | $258 |
-| uMake: 18 parts at 15mm, **quoted $306.91 + about $36.83 tax** (slim kicked legs and the taller crosspiece; $303.98 before) (saved as quote 2926, not ordered, `docs/quote.md`), free shipping expected. If finalization adds what it did for v1 (~15 %): about $395 | $344–395 |
+| uMake: 18 parts at 15mm, **quoted $306.91 + about $36.83 tax** (slim kicked legs and the taller crosspiece; $303.98 before) (saved in my account, not ordered, `docs/quote.md`), free shipping expected. If finalization adds what it did for v1 (~15 %): about $395 | $344–395 |
 | Futon: an oversized king quilt, 120 × 120 in (owner 2026-11; planned as a 205 cm square from Etsy, or a queen duvet + cover) | about $200 |
 | Sandpaper and finishing oil | $30–50 |
 | A zaisu (bought, adjustable: about $70, free shipping) + tax | $78 |
