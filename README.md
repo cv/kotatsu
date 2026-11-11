@@ -383,18 +383,18 @@ v1's checks are small models I can read. For v2 I wanted a heavier check, so I h
 *finite-element* model (FEA: each part cut into small triangles that are solved together) of the three parts
 that carry load: the top, the deck and the leg plates. It worked on its own branch and reported back:
 
-- **The top:** the simple model was right, within 10 %. (Later I ran it on the real squircle instead of a square,
+- For the top, the simple model was right, within 10 %. (Later I ran it on the real squircle instead of a square,
   and it came out 9–15 % on the safe side.)
-- **The deck:** it works harder than I thought: up to about 68 % of its strength under a hard press on the
+- The deck works harder than I thought, up to about 68 % of its strength under a hard press on the
   ring round the heater, not 40 %. Arms at 45° to the grain are softer and weaker than I had assumed in the
-  simple model. That's fine as long as the wedges stay tight; with slack wedges it was overstressed, so I'll
+  simple model. That's fine as long as the wedges stay tight. With slack wedges it was overstressed, so I'll
   re-tap them every season. (The final deck, further on, does better.)
-- **The legs:** a real problem. Above the slot where the two plates cross, the wedged plate is two separate
+- The legs had a real problem. Above the slot where the two plates cross, the wedged plate is two separate
   22 mm fingers, and the wedge hangs the whole joint's bending on one of them. In my spring model I had quietly
   treated the slot as glued shut. A hard 200 N shove used 160 % of the leg's strength and swayed it 12 mm.
 
-My first fix, a shallow slot in one plate and a deep one in the other, made it worse: the peak just moved to
-the new slot's bottom. The plain fix worked: I widened the narrow part of the legs from 60 to 70 mm. The same
+My first fix, a shallow slot in one plate and a deep one in the other, made it worse, because the peak just moved to
+the new slot's bottom. The plain fix worked. I widened the narrow part of the legs from 60 to 70 mm. The same
 shove then used 87 % at worst and swayed the frame 7.2 mm, for 0.25 kg and 2 cm of room between the legs at shin
 height (none at the knees).
 
