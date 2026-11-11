@@ -263,7 +263,7 @@ corr = np.fft.irfft2(F * M, sh)[mh - 1:H, mw - 1:W]
 return corr < 0.5
 ```
 
-I place the big parts first, and the wedges fall into the gaps. Then I measure the real distances in a test: no two
+I place the big parts first, and the wedges fall into the gaps. Then I measure the real distances in a test. No two
 parts are closer than 7.35 mm (the shop asks for 5, and the bit needs room to pass between them), and
 nothing crosses the 20 mm margin.
 
@@ -275,7 +275,7 @@ With the same packer I fold the parts flat into the top's footprint for summer.
 
 ## Building it
 
-The box arrived at the end of October: one flat parcel, with every part in a single shrink-wrapped stack.
+The box arrived at the end of October, one flat parcel with every part in a single shrink-wrapped stack.
 The feline QA department was eager to begin inspections.
 
 [![The opened box on the living-room floor: every part in one shrink-wrapped stack, and a ginger cat looking up](docs/img/build-1-box.jpg)](docs/img/build-1-box.jpg)
