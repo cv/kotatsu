@@ -46,7 +46,7 @@ And this is where it ended up:
 
 ![The finished design: a square birch table on four slim legs](docs/img/table.png)
 
-### The top: sized for the box
+### A top that fits in the box
 
 I wanted a big table, 120 × 80 cm. uMake ships free in one box up to 91 cm, so a top that size had to
 come in three boards, and joining boards without glue is where the fun was: dovetails, Japanese
@@ -62,7 +62,7 @@ in one piece, with no joinery at all. I cancelled the commission and put the sea
 
 ![The top: 120 × 80 in three boards, then 90 cm round, then 86 cm square, drawn to scale against the 91 cm box](docs/img/evolution-top.png)
 
-### The frame: built round my knees
+### Room for my knees
 
 Sitting cross-legged, my knees need a space 30" wide and 12.5" high. The first frame had solid side
 panels that slot together at the corners. It was strong and simple, and the strip of wood along each
@@ -73,7 +73,7 @@ legs hold up a flat deck, the heater hangs under the deck, and the middle of eac
 
 ![The frame: solid side panels, then tapered and flared legs, then the yagura with no aprons](docs/img/evolution-frame.png)
 
-### The legs: slimmed for the scale
+### Under the weight limit
 
 The first yagura legs were plain strips, and the weight crept up. Free shipping stops at about 20 kg, and
 the order came to 20.4 kg, so the cart charged $195 to ship it. I cut windows in the legs and the deck to get it
@@ -82,7 +82,7 @@ sloped shoulder (a *haunch*) down to a 60 mm leg. It needs no windows.
 
 ![The legs: plates with windows, then my first sketch, then my second, slimmer sketch](docs/img/evolution-legs.png)
 
-### The deck: cut for the price list
+### Notches instead of windows
 
 When I cut holes in the deck, the table got more expensive. From a few test uploads I thought I saw why: most
 of uMake's price was the router's path, not the wood, and a window is nothing but cutting. So I opened each
