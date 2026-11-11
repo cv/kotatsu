@@ -326,7 +326,7 @@ v1 works, and I use it every evening. Living with it, I found four things I'd ch
 - **Rounder corners.**
 
 Version 2 is designed, checked and quoted, but not ordered yet. This chapter is how I got there, detours
-included: two chairs I dropped, and a first set of legs I replaced.
+included. I designed two chairs and dropped them, and I replaced my first set of legs.
 
 ### Moving the heater into the deck
 
@@ -337,10 +337,10 @@ wedges, and 304 mm of clear height under the heater instead of 286.
 
 I first had it higher, at 323 mm, until I noticed that the heater's control panel (the plug, switch and
 knob) sits on one end, where the deck would be. So I lowered it just enough for the panel to clear the deck.
-Its screws are near its top, so I made the cheeks reach only a little below them: they're 46 mm tall.
+Its screws are near its top, so I made the cheeks 46 mm tall, reaching only a little below them.
 
 With the heater up in the deck, the futon lies just over it, on the cheeks, with about 2 cm of air above the
-heater's top, as on a traditional open frame. So I measured it on v1: on high, the top of the heater reaches
+heater's top, as on a traditional open frame. So I measured it on v1. On high, the top of the heater reaches
 about 40 °C, warm to the hand, and I checked the placement against its manual. The grille and the fan face
 down, into open air, and the futon must never be tucked into the frame under them. Where the manual's
 clearances differ from anything here, I follow the manual.
@@ -354,12 +354,12 @@ costs about the same as 18 mm, so the saving is weight, not money.
 
 ### An X deck and a squircle top
 
-I redesigned the deck as an X: a pad at each corner, a ring round the heater, and four arms at 45° joining them,
+I redesigned the deck as an X. Four arms at 45° join a pad at each corner to a ring round the heater,
 with a big fillet in every inside corner. For v1 I had rejected an X deck, because its openings let the futon sag
 right where the knees go. The ring round the heater holds it up there. On each corner pad I kept only the wood
 that has a job: round the mortise, under the wedge, and over the tops of the legs.
 
-The top is a *squircle*: a square whose corners bend gradually out of the straight edges, where a radius starts
+The top is a *squircle*, a square whose corners bend gradually out of the straight edges, where a radius starts
 bending all at once. I liked it so much that I gave the legs (still the "+" ones then) the same treatment. I
 made the haunch one smooth S-curve instead of a slope with two small fillets, and the feet and shoulders
 squircles too, as round as their jobs allow. (The feet stand on just 8 mm at each end, so they can't get much
