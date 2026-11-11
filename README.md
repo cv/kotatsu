@@ -145,12 +145,12 @@ apart from rounding noise.
 ### Joints for any thickness
 
 This was the scary one. v1's plywood, sold as 18 mm, could be anywhere from 17.0 to 18.9 mm thick, and I
-wouldn't know which until the box arrived. So every slot was cut for the thickest sheet (19.2 mm), with two
-small bumps on each wall (*crush ribs*), 0.5 mm proud, that narrow it to 18.2 mm. If a sheet turned out
+wouldn't know which until the box arrived. So I cut every slot for the thickest sheet (19.2 mm), with two
+small bumps on each wall (*crush ribs*) that narrow it to 18.2 mm. If a sheet turned out
 thicker, I'd sand the bumps down. The wedges have a 1:8 taper, so they take up whatever is left.
 
-I gave v2's 15 mm sheet the same treatment, for anything from 14.1 to 15.7 mm, with one change: its bumps stand
-0.95 mm proud and leave exactly the thinnest sheet between them. That's snug on any stock, with up to 0.8 mm a
+I gave v2's 15 mm sheet the same treatment, for anything from 14.1 to 15.7 mm, with one change. Its bumps stand
+taller and leave exactly the thinnest sheet between them, so the fit is snug on any stock, with up to 0.8 mm a
 side to sand at the fit-up.
 
 I run each joint test three times: at the thinnest, the nominal and the thickest sheet. Here's the one
