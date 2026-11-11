@@ -410,19 +410,19 @@ I learned something about the model from the first version, too. In the "+" legs
 through the other. Nothing was wrong with the joint. Each part is analysed on its own, its neighbours standing
 in as springs and supports, and I had the view draw one plate bending while the rest of the frame stood still.
 At true scale, the slot round the other plate narrows by 0.2 mm at most, and that plate has 0.9 mm to spare.
-Now I move the whole frame with the analysed part: the feet stay put, the deck sways, and the other plates lean along.
+Now I move the whole frame with the analysed part, so the feet stay put while the deck sways and the other plates lean along.
 
 ### Two chairs
 
-There was room on the sheet and in the budget for two **zaisu**: legless floor chairs with a back. Each was
+There was room on the sheet and in the budget for two *zaisu*, legless floor chairs with a back. Each was
 five parts and no wedges. The seat board's tabs went through the side frames, so sitting down held the chair
 together, and the stretcher and the back hooked in, then dropped 6 mm to lock. They were squircles all over,
 down to cut-outs in the seat and the back shaped like the top.
 
 ![The 3-D view: two zaisu on the long sides of the kotatsu, each with its cushion, the futon draped over the frame and the top on it](docs/img/v2-zaisu.jpg)
 
-The back posts worked at only 15 % of their strength, so I asked for less wood. Looking into it, I found the
-parts nobody was checking: leaning back pushes the back panel and the seat board face-on, across their 15 mm, and
+The back posts worked at only 15 % of their strength, so I asked for less wood. Looking into it, I found
+parts nobody was checking. Leaning back pushes the back panel and the seat board face-on, across their 15 mm, and
 those worked at about 40–46 %. So I left those as they were, and slimmed the posts from 60 to 50 mm. Then in the
 FEA I found a hot spot in the small inside corner behind each back post, where it meets the runner: a hard flop back
 used 85 % of the wood's strength there. I gave that corner a bigger curve, and the runner 4 cm more length to
@@ -432,9 +432,9 @@ I also learned from the chairs how I sit. I'd measured my knee height (32 cm cro
 chair raises it by the whole seat. Even with the seat board as low as the shop's rules allow, 31 mm off the
 floor, my knees would only fit under the table's edge on a thin, firm cushion (4–5 cm). I hadn't caught
 it with the comfort model, because I'd never made it check the top itself, so any knee height "fitted". On a zaisu I'll sit
-with my legs out under the table instead: thighs under the deck, feet under the heater, with room to spare
-even on my 10 cm cushions. On the floor-pillow sides v2 has about the same knee room as v1: a little more
-height, and 2 mm less reach under the top's edge.
+with my legs out under the table instead, thighs under the deck and feet under the heater, with room to spare
+even on my 10 cm cushions. On the floor-pillow sides v2 has about the same knee room as v1, with a little more
+height and 2 mm less reach under the top's edge.
 
 ### The quote
 
