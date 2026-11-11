@@ -1,11 +1,11 @@
 # The uMake quote
 
-v1's order came to **CAD $395.73 at checkout: $353.33 for 26 parts plus $42.40 tax, with free shipping**. uMake's
+v1's order came to **CAD $395.73** at checkout: $353.33 for 26 parts plus $42.40 tax, with free shipping. uMake's
 finalized invoice was higher: $405.83 + tax = $454.53 (TODO-verify what was added). Getting there took eight
 quotes over two days, and I learned more about pricing from the cart than from the published
 rules.
 
-## The diagonal legs, quoted: the current design (2026-11, saved in my account as quote 2926, not ordered)
+## The diagonal legs, the current design (2026-11, saved in my account, not ordered)
 Baltic birch, 15mm, CNC router, millimetres; the old deck and leg plates A and B removed from the saved quote,
 the new deck, leg plate and crosspiece uploaded (top, cheeks and wedges unchanged).
 
@@ -23,14 +23,14 @@ the new deck, leg plate and crosspiece uploaded (top, cheeks and wedges unchange
 $306.36, $305.80, $304.82, $304.77, $303.98; then the slim kicked leg plate, $306.84: its box is 29 mm wider. I
 also tried leaving the wedges off and reusing v1's (owner 2026-11): $302.12, only $4.72 less, because a smaller
 order gets less volume discount on every other line, and v1's thicker wedges needed wider holes. So I put six new
-wedges back, for $306.84 again. Then the crosspiece 1 mm taller (a fit fix from the savings review), $306.91. I read the top's line by subtraction; the others shift by cents between uploads.) With 12 % tax about **$343.74**; shipping should stay free (the same 91 cm box, 10.4 kg: not re-checked at the
+wedges back, for $306.84 again. Then the crosspiece 1 mm taller (a fit fix from the savings review), $306.91. I read the top's line by subtraction; the others shift by cents between uploads.) With 12 % tax about $343.74; shipping should stay free (the same 91 cm box, 10.4 kg: not re-checked at the
 cart). That's $21.18 less than the "+" legs' $328.02 ($24.04 less before the kick). My price model then read it 4 % low
 ($294.06): its curve, fitted on bigger orders, gave a small order too much volume discount. So I refitted it on all five
 15mm quotes as a fixed amount per order plus a rate (`kotatsu/price.py`): it now says $302.50, 1.4 % low. If uMake's finalization adds what it
 did to v1 (+15 %), about $395 with tax.
 
 ## What I ordered (October 2026)
-Every file: units in millimetres, Engineered Wood > Baltic Birch, **19mm**, CNC router, no extra processes.
+Every file: units in millimetres, Engineered Wood > Baltic Birch, 19mm, CNC router, no extra processes.
 The thickness menu offers 3, 6, 9, 12, 15, 16, 19 and 25 mm, with no 18. The "19mm" is uMake's 3/4" birch.
 
 | File | Size | Qty | Line |
@@ -43,10 +43,10 @@ The thickness menu offers 3, 6, 9, 12, 15, 16, 19 and 25 mm, with no 18. The "19
 | wedge.dxf | 60 × 17.6 | 14 | $17.50 |
 | **Subtotal** | | **26** | **$353.33** |
 
-Shipping: one 91 × 91 × 16 cm box, 16.6 kg, **free**. No part was flagged for a manual quote.
+Shipping: one 91 × 91 × 16 cm box, 16.6 kg, free. No part was flagged for a manual quote.
 
-## v2 test quote: the "+" legs (November 2026, not ordered; superseded)
-Every file: millimetres, Engineered Wood > Baltic Birch, **15mm**, CNC router, no extra processes. It
+## A v2 test quote with the "+" legs (November 2026, not ordered; superseded)
+Every file: millimetres, Engineered Wood > Baltic Birch, 15mm, CNC router, no extra processes. It
 quoted instantly; nothing was flagged.
 
 | File | Size | Qty | Each | Line |
@@ -61,7 +61,7 @@ quoted instantly; nothing was flagged.
 
 - With `kotatsu/price.py` (fitted on 19mm quotes) I'd predicted $330.36, so 15mm costs about the same per metre
   of cutting and per m² as 19mm. The saving is weight, not money.
-- The thickness menu has both **15mm** and **16mm**. Since "19mm" is the 3/4" sheet, "16mm" is probably
+- The thickness menu has both 15mm and 16mm. Since "19mm" is the 3/4" sheet, "16mm" is probably
   5/8" (15.9 mm), thicker than the 15.7 mm the joints accept. Order "15mm". TODO-verify its real
   thickness range (14.1–15.7 mm assumed).
 - I didn't open the cart, so no shipping quote; the top is still 860 mm (a 91 cm box) and the parts
@@ -70,7 +70,7 @@ quoted instantly; nothing was flagged.
 
 ## v2 with the "+" legs, as designed then (November 2026, not ordered; superseded)
 The "+"-leg table as it stood then (tapered legs, rounder corners, squircle n = 8 top). Every file: millimetres, Engineered Wood >
-Baltic Birch, **15mm**, CNC router, no extra processes. All quoted instantly; nothing flagged.
+Baltic Birch, 15mm, CNC router, no extra processes. All quoted instantly; nothing flagged.
 
 | File | Size | Qty | Each | Line |
 |---|---|---|---|---|
@@ -82,12 +82,12 @@ Baltic Birch, **15mm**, CNC router, no extra processes. All quoted instantly; no
 | wedge.dxf | 60 × 17.4 | 6 | $1.52 | $9.12 |
 | **Subtotal** | | **18** | | **$328.40** |
 
-The cart: one 91 × 91 × 14 cm box, shipping **free**, tax (BC GST/PST) $39.41, **total $367.81**, lead time 2 days.
+The cart: one 91 × 91 × 14 cm box, shipping free, tax (BC GST/PST) $39.41, total $367.81, lead time 2 days.
 With `kotatsu/price.py` I'd predicted $327.64 (0.2 % low). If uMake's finalization adds what it added to v1 ($52.50 on
 $353.33, about 15 %), expect about $378 + tax, about $423. TODO-verify when ordering.
 
-## v2 full quote: the "+"-leg table and both zaisu (November 2026, not ordered; superseded)
-Every file: millimetres, Engineered Wood > Baltic Birch, **15mm**, CNC router, no extra processes. All 28 parts
+## The full v2 quote, with the "+"-leg table and both zaisu (November 2026, not ordered; superseded)
+Every file: millimetres, Engineered Wood > Baltic Birch, 15mm, CNC router, no extra processes. All 28 parts
 quoted instantly; nothing was flagged.
 
 | File | Size | Qty | Each | Line |
@@ -104,7 +104,7 @@ quoted instantly; nothing was flagged.
 | zaisu-back.dxf | 513 × 300 | 2 | $26.26 | $52.52 |
 | **Subtotal** | | **28** | | **$501.66** |
 
-The cart: one **91 × 91 × 20 cm** box, shipping **free**, tax (BC GST/PST) $60.20, **total $561.86**, lead time
+The cart: one 91 × 91 × 20 cm box, shipping free, tax (BC GST/PST) $60.20, total $561.86, lead time
 2 days. The cart shows 12.6 kg, which is each file's weight counted once, ignoring quantities (v1's first probe
 saw the same). The real parts weigh about 18.4 kg (about 18.0 kg on uMake's scale), still under free shipping.
 I stopped at the cart: its Confirm Order button wasn't pressed.
@@ -122,8 +122,8 @@ What it means for the design: **a cut-out or window saves weight, never money.**
 about half the raw cost. One more metre of cutting costs about as much as 0.09 m² more bounding box.
 
 ### Without the chairs
-Removing the four zaisu files from the same quote: **$328.53 for the 18 table parts**, one 91 × 91 × 14 cm box,
-shipping free, tax $39.42, **total $367.95** (not ordered). So the two zaisu added $173.13 to the order. The
+Removing the four zaisu files from the same quote: $328.53 for the 18 table parts, one 91 × 91 × 14 cm box,
+shipping free, tax $39.42, total $367.95 (not ordered). So the two zaisu added $173.13 to the order. The
 owner chose a bought, adjustable zaisu (about $70, free shipping) instead, and the plywood chairs were archived
 (tag `zaisu-archive`). With the bounding-box model I predict the table alone at $328.40.
 
@@ -137,17 +137,17 @@ owner chose a bought, adjustable zaisu (about $70, free shipping) instead, and t
 | wedge.dxf | $1.51 | 6 |
 
 ### Ready to order (2026-11-08)
-Rebuilt from fresh DXFs (`make dxf`) and **saved to the owner's uMake account** (the quote ID stays out of this
-public repo): the same 6 files, 15mm Baltic birch, CNC router, quantities 1 / 1 / 4 / 4 / 2 / 6, **$328.40** before
+Rebuilt from fresh DXFs (`make dxf`) and saved to the owner's uMake account (the quote ID stays out of this
+public repo): the same 6 files, 15mm Baltic birch, CNC router, quantities 1 / 1 / 4 / 4 / 2 / 6, $328.40 before
 tax, matching the 2026-11 quote. Not ordered: the owner will confirm it later.
 **Updated 2026-11-08** for the raised heater: the old `heater-cheek.dxf` is off the invoice (its file tab stays,
-unordered) and the new one is on it, quantity 2. Still **$328.40**; saved.
+unordered) and the new one is on it, quantity 2. Still $328.40; saved.
 **Updated again 2026-11-08** for the heater 10 mm higher (owner: a 10 mm gap under the cheek tops): the cheeks are now
-380 × 60 mm (were 70 tall). The previous cheek is off the invoice, the new one on it at 2: **$328.02** before tax
+380 × 60 mm (were 70 tall). The previous cheek is off the invoice, the new one on it at 2: $328.02 before tax
 (about $39.36 tax at 12 %), saved and checked after a reload.
 
 ### EZCNC, for comparison (2026-11-09)
-EZCNC (Canada) has no 5/8" sheet, so this quote is for a **19 mm variant** of the current design (the same 6 files
+EZCNC (Canada) has no 5/8" sheet, so this quote is for a 19 mm variant of the current design (the same 6 files
 regenerated for its 3/4" All-Birch at 17.5–19.3 mm, not committed or tested; 14.4 kg). Saved as a project in the
 owner's EZCNC account (created 2026-11-09, login in 1Password); not ordered.
 
