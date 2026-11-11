@@ -80,15 +80,15 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
     (below): 60 %.
 - **Wedges (6: 4 plus 2 spares, 60 × 18 mm, 1:8 taper), new from uMake** (owner 2026-11: v1's leftovers are the same shape but 17-18.9 mm thick, and would need 19.4 mm holes; leaving them off the order saved only $4.72. `yagura.wedge_stock` and `order_wedges` can switch to them). They lie on the deck across the arm and tap
   through each tenon, clamping the deck between the shoulders (and the crosspiece) and the wedge. This works at any sheet thickness from 14.1
-  to 15.7 mm. Gravity can't replace all of them: with the weight alone (about 20 N a plate) there's
+  to 15.7 mm. Gravity can't replace all of them. With the weight alone (about 20 N a plate) there's
   about 9 mm of sway at a 25 N push in the wobble model, because the tenon rocks in its mortise.
 - **Heater cradle: 2 cheeks (380 × 46 mm).** The heater screws between their inner faces, 294 mm apart (a
   290 mm heater gets 4 mm of play). The pair drops into the deck's well, and a 40 mm ear at each cheek end
-  rests on the deck top: gravity holds it up, and it lifts out for summer. The cheeks cover the heater's
+  rests on the deck top, so gravity holds it up, and it lifts out for summer. The cheeks cover the heater's
   screw line and 12.5 mm of wood below it, and rise 16 mm above the deck (the ears stay a sheet thick),
   under the futon: 46 mm tall (owner 2026-11: the screws sit 10-15 mm from the heater's top; the cheeks were 60). The
   heater hangs with its top 5 mm under the deck top, low enough that its control panel, on one end, clears the
-  deck's underside by 5 mm: the knob and the plug stick out under the deck's ring, and the cord runs out under it.
+  deck's underside by 5 mm. The knob and the plug stick out under the deck's ring, and the cord runs out under it.
   21 mm of air above the heater, under the cheek tops.
 - **Top (1, 860 × 860 mm), a squircle**: |x/a|⁸ + |y/a|⁸ = 1, a curve that fades into the edges instead of
   a radius that starts abruptly. The corner posts stay 20 mm inside its edge (v1: 40). The futon lies
@@ -104,7 +104,7 @@ the sheets itself and prices per part, so this only matters for my estimate.
 2. Drop a crosspiece into the head of each leg plate.
 3. Stand the four legs up on the diagonals and lower the deck over the 4 tenons. Sand the crosspieces' top
    edges until the deck sits on them and on the shoulders together (first fit-up only).
-4. Tap a wedge firmly through each tenon. Keep the wedges tapped in, and check them each season: with them
+4. Tap a wedge firmly through each tenon. Keep the wedges tapped in, and check them each season. With them
    slack, a hard press on a corner of the deck's ring uses nearly all of the wood's rough strength
    (`docs/fea.md`: 97 %, against 60 % with them tight).
 5. On the floor or a bench, screw the heater between the two cheeks (drill 2–2.5 mm pilot holes).
@@ -133,7 +133,7 @@ the sheets itself and prices per part, so this only matters for my estimate.
   2 kg futon. There's no pass/fail limit, only the report.
 - **Wobble** comes from a spring model of each leg-to-deck joint (`kotatsu/stiffness.py`), not FEA. It
   includes the shoulders pressing on the deck, a wedge tapped in to about 300 N, the tenon faces bearing in
-  the mortises, and each plate bending. One early discovery: when the tenon ran right to the leg's inner
+  the mortises, and each plate bending. I made one early discovery. When the tenon ran right to the leg's inner
   edge, every shoulder sat on one side of the wedge, so tapping the wedge in twisted the leg about 9 mm at
   the foot. I added the inner shoulder (12 mm in v2) to fix that. Re-tap the wedges after the first heating season.
   A push along x reaches each diagonal plate at 45°: all four take part in their own planes, and their
@@ -217,7 +217,7 @@ between two supported corners.
 Little: the design is at uMake's price floor (`docs/quote.md`, "What can still be saved"). About 40 % of the bill
 doesn't depend on the design, the remaining cut is all required, and wood inside a part's box is free. A solid
 deck would save about $4 but costs 3.8 kg and the knee room in the X's openings, so I'm keeping the X. The bigger
-unknown is uMake's finalization: v1's receipt was **$405.83 + tax = $454.53**, $52.50 more than the cart's
+unknown is uMake's finalization. v1's receipt was **$405.83 + tax = $454.53**, $52.50 more than the cart's
 $353.33 (TODO-verify what was added; if it repeats, v2's $306.91 becomes about $353 + tax, about $395).
 
 ## Still open
@@ -226,9 +226,9 @@ $353.33 (TODO-verify what was added; if it repeats, v2's $306.91 becomes about $
   check; a 12 mm top saves 1.5 kg but sags 14.8 mm and uses 58 %; a 12 mm deck fails at 94 % tight). Risks to
   watch: the twist figures assume each crosspiece gets the wedge's whole clamp (with half of it, the joints would
   open at about 100 N, under the 115 N check): twist the frame by hand at the fit-up and after it settles. With
-  slack wedges the deck is at 97-99 % of its rough strength: keep them tight. TODO-verify the heater's panel
+  slack wedges the deck is at 97-99 % of its rough strength, so keep them tight. TODO-verify the heater's panel
   height (35 mm, from a photo), its plug, cord and knob clearance in the well, and its cUL / cETL / CSA label.
-  The 860 mm top in a 91 cm box has little room for packing: check free shipping in the cart before ordering.
+  The 860 mm top in a 91 cm box has little room for packing, so check free shipping in the cart before ordering.
 1. **The 15 mm sheet.** Order uMake's "15mm" Baltic birch (its "16mm" is probably 5/8", too thick). Its
    real thickness range is assumed at 14.1–15.7 mm: TODO-verify. Windsor Plywood's 15 mm B/B measures 15.0 ± 0.1 mm
    (`docs/research.md`), well inside it. uMake requoted for the diagonal legs: $303.98, $306.84 with the slim kicked legs, and $306.91 with the taller crosspiece (`docs/quote.md`).
@@ -236,8 +236,8 @@ $353.33 (TODO-verify what was added; if it repeats, v2's $306.91 becomes about $
    real height (read off a photo: the knob and plug must clear the deck's underside, and stick out under the ring). With the futon now over the heater, check
    its top stays cool to the touch on high (owner, 2026-11: 40 °C on v1, the same heater: fine). Look for a cUL, cETL or CSA mark on the rating label.
 3. **The crosspieces.** At the first fit-up, sand each crosspiece's top edge until the deck sits on it and on the
-   plate's shoulders together, then twist the frame by hand: the joints should feel solid. The twist figure (1.5 mm
-   at 115 N) comes from a spring model, not the FEA, and is a best case: in it I take each joint as rigid until it
+   plate's shoulders together, then twist the frame by hand. The joints should feel solid. The twist figure (1.5 mm
+   at 115 N) comes from a spring model, not the FEA, and is a best case. In it I take each joint as rigid until it
    opens, and give each crosspiece the wedge's whole clamp. What holds the crosspiece down is the deck, lying on
    its top edge (sanded flush with the shoulders) and clamped onto the shoulders by the wedge beside the tenon.
 4. **A tipping limit.** If I want one: EN 12521's force table, or a bathroom-scale test on the finished table.
@@ -270,7 +270,7 @@ The pale birch look of v1 is the goal (owner, 2026-11). All by hand, at no cost 
   a little (normal linseed, tung or Danish oils turn it honey-coloured). Try it on the 2 spare wedges first;
   if it looks too warm, Osmo Polyx-Oil Raw (3044) keeps it paler. Two thin coats, wiping off the excess,
   overnight between them, on **both faces and the edges equally**, so the top can't cup over the heater.
-- No essential oils (hinoki scent): the cat sleeps in the warm kotatsu, and many are toxic to cats.
+- No essential oils (hinoki scent). The cat sleeps in the warm kotatsu, and many are toxic to cats.
 
 ### Veneer and edge banding on the top, considered and dropped (owner 2026-11: too pricey for what it adds; the plan is Osmo on the birch, with a palm sander)
 Glue in a finish is allowed (AGENTS.md); nothing structural changes. The heater's warmth doesn't reach the top
@@ -291,7 +291,7 @@ banding and unglued 24"-wide oak, RONA no real-wood veneer):
 
 - Cheapest: two iron-on sheets (maple or birch, about $185-190) and a 25 ft roll of banding, about $210 + tax.
   Seamless: the 48 × 96" maple sheet, glue and maple banding, about $365 + tax.
-- Avoid pre-finished (lacquered) banding: it won't take the Osmo like the veneer does.
+- Avoid pre-finished (lacquered) banding. It won't take the Osmo like the veneer does.
 - Banding is about 0.5 mm thick, so the edges can only be eased about 1 mm, not rounded 2-3 mm, and it rules out
   the undercut bevel. Without banding, the bevel cuts through the underside veneer and shows the plies, as planned.
 - Order of work: veneer the underside, then the top face; trim the overhang; band the edge if banding; sand
