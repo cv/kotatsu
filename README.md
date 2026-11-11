@@ -348,7 +348,7 @@ clearances differ from anything here, I follow the manual.
 ### Thinner plywood
 
 I dropped every part from 18 to 15 mm, and checked each joint again across the range the shop's 15 mm sheet
-might really measure (14.1 to 15.7 mm, TODO-verify). The top bends a little more: when an adult sits hard on
+might really measure (14.1 to 15.7 mm, TODO-verify). The top bends a little more. When an adult sits hard on
 its edge, it sags about 7 mm instead of 4 (8 on the thinnest sheet). From a test quote I learned that 15 mm
 costs about the same as 18 mm, so the saving is weight, not money.
 
@@ -424,7 +424,7 @@ down to cut-outs in the seat and the back shaped like the top.
 The back posts worked at only 15 % of their strength, so I asked for less wood. Looking into it, I found
 parts nobody was checking. Leaning back pushes the back panel and the seat board face-on, across their 15 mm, and
 those worked at about 40–46 %. So I left those as they were, and slimmed the posts from 60 to 50 mm. Then in the
-FEA I found a hot spot in the small inside corner behind each back post, where it meets the runner: a hard flop back
+FEA I found a hot spot in the small inside corner behind each back post, where it meets the runner. A hard flop back
 used 85 % of the wood's strength there. I gave that corner a bigger curve, and the runner 4 cm more length to
 make room for it, which brought it down to 68 % and made the chair harder to tip back. Each chair came to about 3.4 kg.
 
@@ -441,7 +441,7 @@ height and 2 mm less reach under the top's edge.
 The whole thing, table and both chairs, quoted at $501.66 for 28 parts, all instant and shipping free in one
 91 × 91 × 20 cm box. That was 6 % more than I'd predicted with my price model, and part by part I was further off. The
 open X deck and the chairs' side frames were a quarter dearer than predicted, and small solid parts cheaper. I could
-see why from the pattern: uMake charges the wood by each part's **bounding box**, the smallest rectangle round
+see why from the pattern. uMake charges the wood by each part's **bounding box**, the smallest rectangle round
 it, not by the wood actually in it. When I fitted the model that way, every line but the tiny wedge matched within 2 %. So
 v1's lesson needs a correction. A window never saves money, only weight, because it just adds cutting. (It still had
 to happen in v1, where weight was what stood between me and free shipping.)
@@ -463,7 +463,7 @@ rounder squircle corners, and the top softer ones.
 ### Diagonal legs
 
 With the design settled I kept poking at it, and asked what the legs could be if they didn't have to be two
-crossed plates. The idea I liked best was the simplest: one plate per corner, standing on the diagonal. Half
+crossed plates. The idea I liked best was the simplest, one plate per corner, standing on the diagonal. Half
 the leg plates, less cutting, and from every side you'd see a single thin edge. I saw the catch in the
 numbers straight away. Twist the frame, and a single plate has nothing to resist with but its own thin edge
 on the deck, and the joint rocks open at about 32 N.
@@ -495,11 +495,11 @@ both faces equally so the top can't cup over the heater.
 
 ### A kick
 
-With every line smooth, the legs still looked a bit plain: straight posts with a taper. I asked for a curve,
+With every line smooth, the legs still looked a bit plain, just straight posts with a taper. I asked for a curve,
 and I liked it best as a *kick*. Below the joints, the whole lower leg sweeps outwards, both edges together, so
 the foot lands 30 mm past the frame's corner. It reads as a splayed Japanese leg. The joints stay where they
 were, and in the FEA the legs still use 74 % of their strength under the hard shove, as before. The wider
-stance makes the table much harder to tip: pushing down right at an edge, it would take about 4.5 kN, though
+stance makes the table much harder to tip. It would take about 4.5 kN pushing down right at an edge, though
 the loose top would lift at its far side long before, at about 640 N.
 
 Then I asked whether, with the better stance, the legs could be thinner. Not just like that. At 56 mm the root
@@ -515,7 +515,7 @@ deal, so I put them back.
 
 ### Summer
 
-In summer I take the table apart into a flat stack the size of its top, as with v1: two layers, about 3 cm.
+In summer I take the table apart, as with v1, into a flat stack the size of its top, two layers and about 3 cm high.
 
 ![Summer storage: the top, then the deck with the leg plates, crosspieces, cheeks and wedges laid round it, all inside the top's footprint](docs/img/v2-storage.png)
 
@@ -531,7 +531,7 @@ deck sits on it and on the plate's shoulders together. After that, I keep the le
 season. With them slack, a hard press on the deck's ring comes close to the wood's rough strength. (The "+"
 legs are in the archive, tag `plus-legs-archive`.)
 
-So, against my four wishes: the heater rides 18 mm higher and lifts out, the box is about 5 kg lighter, the
+So, against my four wishes, the heater rides 18 mm higher and lifts out, the box is about 5 kg lighter, the
 wedges go from 14 to 6, and every corner is rounder.
 
 ![v1's cut parts above v2's, to the same scale: a squircle top instead of the square one, an X deck with the heater's hole in the middle instead of the H, four diagonal leg plates with a small crosspiece each instead of eight, cheeks without tabs, and 6 wedges instead of 14](docs/img/v2-parts.png)
