@@ -29,7 +29,8 @@ from .params import ROOT
 WEB = ROOT / "web"
 OUT = ROOT / "out" / "site"
 DOCS = ["PLAN.md", "docs/quote.md", "docs/heater.md", "docs/futon.md", "docs/research.md", "docs/fea.md", "AGENTS.md"]
-WATCH = ["params.toml", "kotatsu", "web", "docs", "PLAN.md", "AGENTS.md", "README.md"]
+# out/fea.json too: `make fea` rewrites it, and the site copies it at build time (a stale copy misplaces the heat maps)
+WATCH = ["params.toml", "kotatsu", "web", "docs", "PLAN.md", "AGENTS.md", "README.md", "out/fea.json"]
 
 
 def rings(poly: Polygon, nd: int = 2) -> dict:
