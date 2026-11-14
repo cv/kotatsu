@@ -45,3 +45,16 @@ with free shipping from Douglas. It works on a kotatsu, with a few things to kno
 Keep the futon away from the heater's grille and fan, which face down. In v1 the heater hangs under the solid
 deck, so they never touch; in v2 the futon lies just over the heater's top, the face away from the grille, which the
 heater's manual allows (owner 2026-11, `docs/heater.md`). Either way, don't tuck the futon *inside* the frame, under the heater.
+
+## A seating set: one long shikibuton and two square cushions (planned, owner 2026-11)
+I'd like a matching set of cotton floor pieces, all of them seats: a long, narrow shikibuton that runs under the
+table between the legs and out from under the quilt on two sides, and two square cushions on the other two sides.
+The shikibuton also makes a nap mattress, with my legs under the heater.
+- **Shikibuton: 25 × 75 in (635 × 1905 mm), about 3½ in (90 mm) thick.** The legs leave a clear gap of about
+  710 mm between them at its height (the kicked feet splay out), so it clears them by about 40 mm on each side
+  (`tests/test_room.py`). A twin shikibuton (38 in, 965 mm) won't fit.
+- **Cushions: 24 × 24 in (610 mm), the same thickness and fabric.**
+- I've asked a Canadian maker about custom sizes (TODO-verify sizes, thickness and price). The 3-D view and the room
+  plan draw this set (`room.seats = "set"` in params.toml; `"zabuton"` draws the four square pillows instead).
+- Lying down under the table, keep your chest out from under the heater: on a 90 mm mattress there's about 21 cm
+  between it and the heater's underside. Legs and hips under, short naps, heater on low.
