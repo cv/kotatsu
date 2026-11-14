@@ -152,7 +152,7 @@ def test_lumped_leg_stress_understates_the_fe_peak(p, leg_push):
     from kotatsu import stiffness
     z = leg_push["zones"]
     finger = max(z["haunch fillet"]["sx"], z["slot root"]["sx"])
-    assert finger > 5 * float(stiffness.stresses(p, p.fea.push_n)["leg_MPa"])
+    assert finger > 3 * float(stiffness.stresses(p, p.fea.push_n)["leg_MPa"])      # ~4x with the 170 mm heads
 
 
 def test_leg_plates_hold_the_push(p, leg_push):

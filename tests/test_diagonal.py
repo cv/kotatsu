@@ -135,11 +135,11 @@ def test_corners_are_the_same_rotated():
 
 def test_twist_and_legroom():
     """The crosspieces give each joint cross_w to rock on: a stiff twist, and joints that stay shut well past
-    the twist check's push; the legs, one thin plate a corner, leave more room than the "+" legs did (638 mm; the
-    slim kicked legs: 642, the 50 mm haunch reaching into the legs-forward zone) and at least comfort.legroom_min."""
+    the twist check's push; and the legs leave at least comfort.legroom_min between them (owner 2026-11: the 170 mm
+    heads and the 15 mm lower frame take it from 642 to about 577 mm, for about v1's stiffness)."""
     tw = stiffness.twist(P)
     assert tw["corner_mm"] < 2.5 and tw["opens_at_corner_N"] > 1.5 * P.stiffness.twist_n
-    assert comfort.legroom(P) > 638 and comfort.legroom(P) >= P.comfort.legroom_min
+    assert comfort.legroom(P) >= P.comfort.legroom_min
 
 
 def test_the_kick_leaves_the_joints_alone():

@@ -160,7 +160,9 @@ def test_does_not_tip_easily(C):
 def test_heater_leaves_shin_room(C):
     P, L = C.P, C.L
     (sx, sy, sz), (cx, cy, cz) = frame.heater_box(P)
-    assert cz - sz / 2 >= 300, f"shins under the heater (v2: it rides in the deck, {cz - sz / 2:.0f} mm up)"
+    # legs forward on a 4" seat (squashed to ~82 mm with the rug), the shins (~110 mm) leave ~10 cm of air at 285 mm
+    # (owner 2026-11: the frame 15 mm lower; was 300)
+    assert cz - sz / 2 >= 285, f"shins under the heater (v2: it rides in the deck, {cz - sz / 2:.0f} mm up)"
     assert frame.cheek_z(P)[0] >= cz - sz / 2 - 0.01, "cheeks must not hang below the heater"
 
 
