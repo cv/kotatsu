@@ -42,19 +42,37 @@ def futons(p) -> dict:
     return {"checked": d["checked"], "jpy_cad": rates["JPY"], "usd_cad": rates["USD"], "items": out}
 
 
-def seat_offset(p) -> float:
-    """Distance from the table's centre to each floor pillow's centre (one pillow per side).
+def seat_offset(p, size: tuple[float, float] | None = None) -> float:
+    """Distance from the table's centre to a floor pillow's centre (one pillow per side), for a pillow
+    `size` (w along the table's side, d outwards; default the zabuton).
 
     Each pillow tucks at least zabuton_tuck under the futon's floor edge, and further in if needed so that
     all of it, corners included, stays rug_margin inside the round rug."""
     R = p.room
-    w, d = R.zabuton
+    w, d = size or R.zabuton
     rho_out = footprint_d(p, spread_d(p)) / 2
     c = rho_out - R.zabuton_tuck + d / 2
     lim = (R.rug_d / 2 - R.rug_margin) ** 2 - (w / 2) ** 2
     if lim > 0:
         c = min(c, math.sqrt(lim) - d / 2)
     return c
+
+
+def seats(p) -> list[dict]:
+    """The floor seating, centred on the table, as boxes: [{kind, center [x, y, z], size [along x, along y, h]}].
+    room.seats = "zabuton": a square pillow on each side. "set": one long shikibuton through the legs along x, and
+    a square cushion on each of the other two sides (y)."""
+    R = p.room
+    if getattr(R, "seats", "zabuton") == "set":
+        (sw, sl), sh = R.shikibuton, R.shikibuton_h
+        (cw, cd), ch = R.cushion, R.cushion_h
+        c = seat_offset(p, (cw, cd))
+        return ([{"kind": "shikibuton", "center": [0.0, 0.0, sh / 2], "size": [sl, sw, sh]}] +
+                [{"kind": "cushion", "center": [0.0, s * c, ch / 2], "size": [cw, cd, ch]} for s in (1, -1)])
+    w, d = R.zabuton
+    h, c = R.zabuton_h, seat_offset(p)
+    return [{"kind": "zabuton", "center": [ux * c, uy * c, h / 2], "size": [w if uy else d, d if uy else w, h]}
+            for ux, uy in ((1, 0), (-1, 0), (0, 1), (0, -1))]
 
 
 def top_outline(p, tol: float = 0.5) -> list[list[float]]:
@@ -82,6 +100,7 @@ def room_data(p) -> dict:
             "frame": p.top.length - 2 * p.frame.overhang, "ear": p.frame.ear,
             "height": p.frame.height + p.material.t_nominal, "zabuton": list(p.room.zabuton),
             "seat_c": round(seat_offset(p), 1),
+            "seats_plan": [{"kind": s["kind"], "center": s["center"][:2], "size": s["size"][:2]} for s in seats(p)],
             "spread_d": spread_d(p), "footprint_d": round(footprint_d(p, spread_d(p))), "futons": futons(p),
             "plan_sizes": [[s, round(footprint_d(p, s))] for s in sizes],
             "knees": comfort.summary(p)}
@@ -146,17 +165,13 @@ def room3d(p, n: int = 81) -> dict:
     fd = spread_d(p)                                           # folded and tucked: how far it really spreads
     at, _, rho_out = drape_profile(p, fd)
     half = fd / 2
-    w, d = R.zabuton
-    h = R.zabuton_h
-    c = seat_offset(p)                                         # pillow centre distance from the table centre
-    seats = [{"center": [cx + ux * c, cy + uy * c, h / 2], "size": [w if uy else d, d if uy else w, h]}
-             for ux, uy in ((1, 0), (-1, 0), (0, 1), (0, -1))]
+    seats_ = [{**s, "center": [cx + s["center"][0], cy + s["center"][1], s["center"][2]]} for s in seats(p)]
     ramp = R.zabuton_ramp
 
     def over_seats(x: float, y: float) -> float:
         """Height the cloth must clear at (x, y): each pillow's top, easing down to the floor around it."""
         top = 0.0
-        for st in seats:
+        for st in seats_:
             (sx, sy, sz), (sw, sd, sh) = st["center"], st["size"]
             dx, dy = max(0.0, abs(x - sx) - sw / 2), max(0.0, abs(y - sy) - sd / 2)
             top = max(top, (sz + sh / 2) * _smooth(1 - math.hypot(dx, dy) / ramp))
@@ -174,4 +189,4 @@ def room3d(p, n: int = 81) -> dict:
             pts += [round(x, 1), round(y, 1), round(z, 1)]
     return {"rug": {"center": [cx, cy], "d": R.rug_d, "t": R.rug_t},
             "futon": {"n": n, "pts": pts, "size": fd},
-            "seats": seats}
+            "seats": seats_}

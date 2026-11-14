@@ -106,10 +106,9 @@ function renderFutonPlan(d, refit = false) {
   square(svg, fp, "futon-floor", 60);
   square(svg, fd, "futon-flat", 60);
   if ($("#chk-fzab").checked) {
-    const [zw, zd] = R.zabuton, rc = R.seat_c;   // pillow centre distance from the table centre (room.seat_offset)
-    for (const ang of [0, 90, 180, 270]) {
-      const g = el("g", { transform: `rotate(${ang}) translate(0 ${rc})` }, svg);
-      el("rect", { x: -zw / 2, y: -zd / 2, width: zw, height: zd, rx: 40, class: "zabuton" }, g);
+    for (const s of R.seats_plan) {             // the floor seating, placed in Python (room.seats)
+      const [x, y] = s.center, [w, d] = s.size;
+      el("rect", { x: x - w / 2, y: y - d / 2, width: w, height: d, rx: 40, class: "zabuton" }, svg);
     }
   }
   el("path", { d: "M" + R.top_outline.map((q) => q.join(" ")).join("L") + "Z", class: "top-disc" }, svg);

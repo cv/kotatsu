@@ -232,6 +232,13 @@ zabuton_tuck = 317.5  # each pillow's inner edge sits this far under the futon's
                       #   each pillow (owner 2026-11; was 150)
 rug_margin = 20.0     # ...and further in if needed, so every pillow (corners too) stays this far inside the rug
 zabuton_ramp = 80.0   # 3-D view: the futon eases from the floor onto a pillow over this distance
+seats = "set"         # floor seating in the 3-D view and the room plan: "set" (owner 2026-11: one long shikibuton through
+                      #   the legs and two square cushions, all seats; a planned custom order) or "zabuton" (four pillows)
+shikibuton = [635.0, 1905.0]  # the set's long mattress, 25 x 75 in (as asked of the maker, TODO-verify): it runs under the
+                      #   table between the legs, along x (the clear gap there is about 710 mm)
+shikibuton_h = 90.0   # ... about 3.5 in thick (TODO-verify)
+cushion = [610.0, 610.0]  # the set's two square cushions, 24 x 24 in, on the other two sides (TODO-verify)
+cushion_h = 90.0
 rug_t = 10.0          # rug thickness (3-D view)
 futon_gap = 12.0      # 3-D view: the top sits this far above the frame, on the futon
 

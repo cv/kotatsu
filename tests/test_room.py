@@ -30,11 +30,16 @@ def test_room3d_layers():
     zs = d["futon"]["pts"][2::3]
     assert min(zs) >= 4.0 - 1e-9 and max(zs) <= frame.layout(p).H + 10
     L = frame.layout(p)
-    for s in d["seats"]:                                     # pillows sit outside the frame, on the floor
+    R = p.room
+    for s in d["seats"]:                                     # on the floor; pillows and cushions outside the frame
         (x, y, z), (w, dd, h) = s["center"], s["size"]
         assert abs(z - h / 2) < 1e-6
+        if s["kind"] == "shikibuton":                        # runs under the table, along x
+            assert (dd, w, h) == (*R.shikibuton, R.shikibuton_h) and abs(y - L.cy) < 1e-6
+            continue
         assert max(abs(x - L.cx) - w / 2, abs(y - L.cy) - dd / 2) > L.Lf / 2
-        assert (w, dd) == tuple(p.room.zabuton)
+        want = tuple(R.cushion) if s["kind"] == "cushion" else tuple(R.zabuton)
+        assert sorted((w, dd)) == sorted(want)
 
 
 def test_pillows_fit_inside_the_rug_and_tuck_under_the_futon():
@@ -48,6 +53,8 @@ def test_pillows_fit_inside_the_rug_and_tuck_under_the_futon():
         for sx in (-1, 1):
             for sy in (-1, 1):
                 assert math.hypot(x + sx * w / 2 - L.cx, y + sy * dd / 2 - L.cy) <= rim + 1e-6
+        if s["kind"] == "shikibuton":
+            continue
         inner = max(abs(x - L.cx) - w / 2, abs(y - L.cy) - dd / 2)
         assert rho_out - inner >= p.room.zabuton_tuck - 1e-6     # at least the minimum tuck under the futon
 
@@ -67,5 +74,22 @@ def test_room_plan_draws_the_current_frame():
     L = frame.layout(p)
     legs = comfort.low_footprint(p, L.H + 1)
     for s in room.room3d(p)["seats"]:
+        if s["kind"] == "shikibuton":                        # under the table by design: see the test below
+            continue
         (x, y, _), (w, dd, _) = s["center"], s["size"]
         assert box(x - L.cx - w / 2, y - L.cy - dd / 2, x - L.cx + w / 2, y - L.cy + dd / 2).distance(legs) > 0
+
+
+def test_the_shikibuton_slides_between_the_legs():
+    """The set's long mattress (room.seats = "set") passes under the table between two legs on each side, with at
+    least 20 mm to spare at every height up to its top (the kicked feet splay out, so the tightest is at the top)."""
+    from shapely.geometry import box
+    from kotatsu import comfort
+    p = P()
+    if p.room.seats != "set":
+        pytest.skip("the four-pillow layout")
+    (s,) = [x for x in room.seats(p) if x["kind"] == "shikibuton"]
+    (_, _, z), (l, w, h) = s["center"], s["size"]
+    for zz in (20.0, h / 2, h):
+        legs = comfort.low_footprint(p, zz, 0.0)
+        assert box(-l / 2, -w / 2, l / 2, w / 2).distance(legs) >= 20.0, f"at {zz:.0f} mm"
