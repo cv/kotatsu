@@ -5,7 +5,25 @@ finalized invoice was higher: $405.83 + tax = $454.53 (TODO-verify what was adde
 quotes over two days, and I learned more about pricing from the cart than from the published
 rules.
 
-## The diagonal legs, the current design (2026-11, saved in my account, not ordered)
+## The current design: 170 mm heads, the frame 15 mm lower (2026-11, saved in my account, not ordered)
+Baltic birch, 15mm, CNC router, millimetres. The saved quote had collected 23 file tabs from every re-upload and its
+page crashed when I clicked through them, so I started a clean quote with just the six current files.
+
+| Part | Size | Qty | Each | Line |
+|---|---|---|---|---|
+| top | 860 × 860 mm | 1 | $87.55 | $87.55 |
+| deck | 769 × 769 mm | 1 | $102.16 | $102.16 |
+| leg plate (170 mm head, 15 mm shorter: owner 2026-11) | 199 × 370 mm | 4 | $19.12 | $76.48 |
+| leg crosspiece | 90 × 26.5 mm | 4 | $2.55 | $10.20 |
+| heater cheek | 380 × 46 mm | 2 | $10.89 | $21.78 |
+| wedge | 60 × 17 mm | 6 | $1.86 | $11.16 |
+| **Subtotal** | | **18** | | **$309.33** |
+
+(I read the leg plate's line by subtraction.) $2.42 more than the design before (the leg plate's box is 30 mm wider
+and 15 mm shorter); my price model said +$1.86. With 12 % tax about $346.45; if uMake's finalization adds what it
+did to v1 (+15 %), about $398 with tax. Shipping should stay free (the same 91 cm box, about 10.5 kg).
+
+## The diagonal legs before that (2026-11, superseded)
 Baltic birch, 15mm, CNC router, millimetres; the old deck and leg plates A and B removed from the saved quote,
 the new deck, leg plate and crosspiece uploaded (top, cheeks and wedges unchanged).
 
