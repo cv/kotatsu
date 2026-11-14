@@ -97,7 +97,7 @@ What this repo produces:
     every part's path are computed in `kotatsu/assembly.py` (tested in `tests/test_assembly.py`); JS only
     interpolates.
   - The 3-D view's textures (birch, plywood edges, fabric, rug, floor) are drawn on canvases at load
-    (`web/textures.js`); the "ambiance" props (tea things, laptop, book, the cat) are in `web/ambiance.js`.
+    (`web/textures.js`); the "ambiance" props (tea things, laptop, book) are in `web/ambiance.js`, and the person napping on the shikibuton is posed and sized in `kotatsu/sleeper.py` (`[sleeper]` in params.toml; tested in `tests/test_sleeper.py`).
   - `.github/workflows/pages.yml` builds the DXFs and the site (running the tests) on every push to `main`,
     and publishes them to GitHub Pages, with the DXFs under `/dxf/`.
   - The public site sits behind a CDN that keeps scripts for hours, so the build tags every local .js/.css

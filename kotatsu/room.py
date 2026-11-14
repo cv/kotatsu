@@ -166,12 +166,30 @@ def room3d(p, n: int = 81) -> dict:
     at, _, rho_out = drape_profile(p, fd)
     half = fd / 2
     seats_ = [{**s, "center": [cx + s["center"][0], cy + s["center"][1], s["center"][2]]} for s in seats(p)]
+    nap = None
+    if getattr(R, "seats", "zabuton") == "set" and hasattr(p, "sleeper"):
+        from . import sleeper
+        nap = sleeper.pose(p)
+    # the cloth clears the shikibuton where it lies for seats and where it slides for a nap (the ambiance layer)
+    clear_of = seats_ + ([{**s, "center": [s["center"][0] + nap["slide"], *s["center"][1:]]}
+                          for s in seats_ if s["kind"] == "shikibuton"] if nap else [])
+    if nap:                                                    # ... and over the napper (each part's box)
+        for q in nap["parts"]:
+            if q["kind"] == "capsule":
+                (ax, ay, az), (bx, by, bz), r = q["a"], q["b"], q["r"]
+                lo, hi = (min(ax, bx) - r, min(ay, by) - r, 0.0), (max(ax, bx) + r, max(ay, by) + r, max(az, bz) + r)
+            else:
+                (qx, qy, qz), (rx, ry, rz) = q["c"], q["r"]
+                rr = max(rx, ry)
+                lo, hi = (qx - rr, qy - rr, 0.0), (qx + rr, qy + rr, qz + rz)
+            clear_of.append({"center": [cx + (lo[0] + hi[0]) / 2, cy + (lo[1] + hi[1]) / 2, hi[2] / 2],
+                             "size": [hi[0] - lo[0], hi[1] - lo[1], hi[2]]})
     ramp = R.zabuton_ramp
 
     def over_seats(x: float, y: float) -> float:
         """Height the cloth must clear at (x, y): each pillow's top, easing down to the floor around it."""
         top = 0.0
-        for st in seats_:
+        for st in clear_of:
             (sx, sy, sz), (sw, sd, sh) = st["center"], st["size"]
             dx, dy = max(0.0, abs(x - sx) - sw / 2), max(0.0, abs(y - sy) - sd / 2)
             top = max(top, (sz + sh / 2) * _smooth(1 - math.hypot(dx, dy) / ramp))
@@ -189,4 +207,13 @@ def room3d(p, n: int = 81) -> dict:
             pts += [round(x, 1), round(y, 1), round(z, 1)]
     return {"rug": {"center": [cx, cy], "d": R.rug_d, "t": R.rug_t},
             "futon": {"n": n, "pts": pts, "size": fd},
-            "seats": seats_}
+            "seats": seats_,
+            **({"sleeper": {"slide": nap["slide"], "parts": [_shift(q, cx, cy) for q in nap["parts"]]}} if nap else {})}
+
+
+def _shift(q: dict, dx: float, dy: float) -> dict:
+    """A sleeper part moved from centred to world coordinates, rounded for the page."""
+    r = lambda v: [round(v[0] + dx, 1), round(v[1] + dy, 1), round(v[2], 1)]
+    if q["kind"] == "capsule":
+        return {**q, "a": r(q["a"]), "b": r(q["b"]), "r": round(q["r"], 1)}
+    return {**q, "c": r(q["c"]), "r": [round(v, 1) for v in q["r"]], "yaw": round(q["yaw"], 4)}

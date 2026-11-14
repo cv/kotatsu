@@ -239,8 +239,20 @@ shikibuton = [635.0, 1905.0]  # the set's long mattress, 25 x 75 in (as asked of
 shikibuton_h = 90.0   # ... about 3.5 in thick (TODO-verify)
 cushion = [610.0, 610.0]  # the set's two square cushions, 24 x 24 in, on the other two sides (TODO-verify)
 cushion_h = 90.0
+
 rug_t = 10.0          # rug thickness (3-D view)
 futon_gap = 12.0      # 3-D view: the top sits this far above the frame, on the futon
+
+[sleeper]             # the 3-D view's ambiance: a person napping on the shikibuton (kotatsu/sleeper.py), owner 2026-11
+height = 1800.0       # stature, mm
+mass = 80.0           # kg (sets the girths: volume = mass at 1010 kg/m3)
+sink = 20.0           # how far the body sinks into the shikibuton, mm
+clear = 15.0          # the hips (pelvis) stop this far outside the heater's footprint: as far in as they can go
+                      #   (under the heater they'd have only ~30 mm of air)
+margin = 40.0         # the shikibuton's head end lies this far past the top of the head
+knee_out = 75.0       # the bent leg's thigh, drawn up and out from the body's line (degrees): the "4"
+shin_back = -40.0     # ... and its shin's angle, back across towards the straight leg
+elbow_back = 70.0     # the right upper arm's angle from the feet direction (degrees): out to the side, a little back
 
 [layout]              # sheet nesting choices (kotatsu/cutlist.py, kotatsu/nest.py)
 frame_grain = "horizontal"  # frame parts keep their grain where it looks right (legs: up the leg); "free" = any rotation

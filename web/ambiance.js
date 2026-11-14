@@ -1,5 +1,5 @@
 // "Ambiance" layer for the 3-D view: a wooden floor, tea things, a laptop and a book on the table,
-// and a cat asleep underneath (where the warm air is). All built from primitives and canvas textures.
+// and someone napping on the shikibuton, legs under the table. All built from primitives and canvas textures.
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { rng, canvas, texture, wrapped } from "./textures.js";
@@ -197,60 +197,30 @@ function book() {
   return g;
 }
 
-function cat() { // a curled-up orange tabby (~7 kg) asleep in the warm: chin on paws, tail round the front
+function person(P) { // someone napping, posed and sized in Python (kotatsu/sleeper.py): the page only draws it
   const g = new THREE.Group();
-  const add = (geo, m, [x, y, z], [sx, sy, sz] = [1, 1, 1]) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.scale.set(sx, sy, sz); g.add(o); return o; };
-  const cream = mat({ color: 0xf7e6cc, roughness: 0.95 });
-  // body: a soft loaf, poles along the spine so the stripes ring it
-  const body = new THREE.SphereGeometry(1, 64, 40); body.rotateZ(-Math.PI / 2);
-  add(body, mat({ map: bodyFur(), roughness: 0.95 }), [0, 0, 86], [205, 160, 92]);
-  // head: big and round (that's most of the cute), resting low at the front right
-  const H = [140, -108, 66];
-  const headGeo = new THREE.SphereGeometry(1, 48, 32); headGeo.rotateX(Math.PI / 2);
-  add(headGeo, mat({ map: headFur(), roughness: 0.95 }), H, [84, 78, 70]);
-  const ear = mat({ color: 0xd8915a, roughness: 0.95 }), inner = mat({ color: 0xf0aaa4, roughness: 0.9 });
-  for (const s of [-1, 1]) {
-    const e = new THREE.Group(); e.position.set(H[0] + s * 44, H[1] + 6, H[2] + 52); e.rotation.set(-0.2, s * 0.5, 0);
-    const cone = (rad, h) => { const geo = new THREE.ConeGeometry(rad, h, 24); geo.rotateX(Math.PI / 2); return geo; }; // axis up (+z)
-    const outer = new THREE.Mesh(cone(25, 40), ear); outer.scale.set(1, 0.55, 1);      // flattened front to back
-    const pink = new THREE.Mesh(cone(15, 28), inner); pink.scale.set(1, 0.4, 1); pink.position.set(0, -7, -4);
-    e.add(outer, pink); g.add(e);
+  const M = { top: mat({ color: 0xd9cbb4, roughness: 0.95 }), pants: mat({ color: 0x4a4a52, roughness: 0.9 }),
+    skin: mat({ color: 0xd9a988, roughness: 0.7 }), hair: mat({ color: 0x2e241c, roughness: 0.8 }),
+    socks: mat({ color: 0xece6dc, roughness: 0.95 }) };
+  const up = new THREE.Vector3(0, 1, 0);
+  for (const q of P.parts) {
+    let o;
+    if (q.kind === "capsule") {
+      const a = new THREE.Vector3(...q.a), b = new THREE.Vector3(...q.b), d = b.clone().sub(a);
+      o = new THREE.Mesh(new THREE.CapsuleGeometry(q.r, Math.max(1, d.length()), 8, 20), M[q.mat]);
+      o.position.copy(a.clone().add(b).multiplyScalar(0.5));
+      o.quaternion.setFromUnitVectors(up, d.normalize());
+    } else {
+      o = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 20), M[q.mat]);
+      o.scale.set(...q.r); o.position.set(...q.c); o.rotation.z = q.yaw;
+    }
+    g.add(o);
   }
-  const fy = H[1] - 74;                                   // front of the face
-  for (const s of [-1, 1]) add(new THREE.SphereGeometry(1, 20, 14), cream, [H[0] + s * 13, fy - 6, H[2] - 12], [17, 12, 13]); // whisker pads
-  add(new THREE.SphereGeometry(1, 16, 10), mat({ color: 0xe48f93, roughness: 0.4 }), [H[0], fy - 14, H[2] - 1], [8, 5, 5]);    // nose
-  const lash = mat({ color: 0x3a2414, roughness: 0.6 });
-  for (const s of [-1, 1]) {                               // sleepy closed eyes: little smiles ◡
-    const eye = add(new THREE.TorusGeometry(11, 2.4, 8, 24, Math.PI), lash, [H[0] + s * 31, fy + 1.5, H[2] + 16]);
-    eye.rotation.set(-Math.PI / 2, 0, s * 0.42, "ZYX");    // bottom half of the ring, turned to follow the cheek
-  }
-  const blush = mat({ color: 0xf29b96, roughness: 0.9, transparent: true, opacity: 0.55 });
-  for (const s of [-1, 1]) add(new THREE.SphereGeometry(1, 16, 10), blush, [H[0] + s * 46, fy + 10, H[2] - 4], [13, 4, 8]);
-  const wpts = [];
-  for (const s of [-1, 1]) for (const k of [-1, 0, 1]) {
-    const x0 = H[0] + s * 20, z0 = H[2] - 10 + k * 5;
-    wpts.push(x0, fy - 10, z0, x0 + s * 75, fy - 4 - 6 * Math.abs(k), z0 + k * 14 + 4);
-  }
-  const wg = new THREE.BufferGeometry(); wg.setAttribute("position", new THREE.Float32BufferAttribute(wpts, 3));
-  g.add(new THREE.LineSegments(wg, new THREE.LineBasicMaterial({ color: 0xfff8ee, transparent: true, opacity: 0.8 })));
-  for (const s of [-1, 1]) add(new THREE.SphereGeometry(1, 24, 16), cream, [H[0] + s * 30, H[1] - 66, 16], [24, 36, 16]); // front paws
-  // tail: tapered tube from the rump round the front, tip by the paws
-  const path = new THREE.CatmullRomCurve3([[-195, 40, 36], [-222, -50, 28], [-170, -140, 22], [-60, -192, 19],
-    [40, -196, 18], [90, -184, 17]].map(([x, y, z]) => new THREE.Vector3(x, y, z)));
-  const T = 96, R = 16, tg = new THREE.TubeGeometry(path, T, 1, R), pos = tg.attributes.position, v = new THREE.Vector3();
-  for (let i = 0; i <= T; i++) {
-    const t = i / T, c = path.getPointAt(t), rad = 25 - 11 * t * t;
-    for (let j = 0; j <= R; j++) { const k = i * (R + 1) + j; v.fromBufferAttribute(pos, k).sub(c).multiplyScalar(rad).add(c); pos.setXYZ(k, v.x, v.y, v.z); }
-  }
-  tg.computeVertexNormals();
-  const tailTex = tailFur(); tailTex.repeat.set(1, 1);
-  g.add(new THREE.Mesh(tg, mat({ map: tailTex, roughness: 0.95 })));
-  add(new THREE.SphereGeometry(14, 16, 12), mat({ color: 0xe2a061, roughness: 0.95 }), path.getPointAt(1).toArray());
   return shadowed(g);
 }
 
 /** Everything in the ambiance layer, placed around a table centred at (cx, cy) with its top surface at topZ. */
-export function ambiance({ cx, cy, topZ, floorZ, half }) {
+export function ambiance({ cx, cy, topZ, floorZ, half, sleeper }) {
   const size = 5200, tile = 1800, ftex = floorTexture(tile);
   ftex.repeat.set(size / tile, size / tile);            // plane UVs run 0..1, so repeat = tiles across
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(size, size), mat({ map: ftex, roughness: 0.55 }));
@@ -263,6 +233,5 @@ export function ambiance({ cx, cy, topZ, floorZ, half }) {
   put(book(), 270 * k, -200 * k, -0.35);
   put(kyusu(), 235 * k, 200 * k, 2.6);
   put(yunomi(), 70 * k, 270 * k);
-  const kitty = cat(); kitty.position.set(cx + 10, cy + 30, floorZ + 12); kitty.rotation.z = 0.5;
-  return { floor, onTop, under: [kitty] };
+  return { floor, onTop, under: sleeper ? [person(sleeper)] : [] };
 }

@@ -192,10 +192,10 @@ export class Viewer3D {
     push(heater, "heater", A.heater, true);
     if (T.room3d) this.addRoom(T.room3d, push);
     const amb = ambiance({ cx: hz.center[0], cy: hz.center[1], topZ: ztop + t, half: T.top.length / 2,
-      floorZ: T.room3d ? -T.room3d.rug.t - 0.5 : -1 });   // table-local; push() adds the table offset
+      floorZ: T.room3d ? -T.room3d.rug.t - 0.5 : -1, sleeper: T.room3d?.sleeper });   // table-local; push() adds the table offset
     push(amb.floor, "ambFloor");
     for (const o of amb.onTop) push(o, "ambTop", A.tea, true);
-    for (const o of amb.under) push(o, "amb", (A.tea || []).map((m) => ({ ...m, from: [0, 0, 0] })), true); // the cat just turns up
+    for (const o of amb.under) push(o, "amb", (A.tea || []).map((m) => ({ ...m, from: [0, 0, 0] })), true); // the napper just turns up
   }
 
   applyLight() {
@@ -240,6 +240,7 @@ export class Viewer3D {
       const m = new THREE.Mesh(new RoundedBoxGeometry(w, d, h, 4, Math.min(35, h / 2.2)), seatMat);
       m.position.set(...st.center);
       m.castShadow = m.receiveShadow = true;
+      if (st.kind === "shikibuton" && R.sleeper) m.userData.nap = { x0: st.center[0], slide: R.sleeper.slide }; // slides for a nap
       push(m, "seat");
     }
   }
@@ -251,6 +252,8 @@ export class Viewer3D {
     const local = (m) => Math.min(1, Math.max(0, (s - m.step - m.a) / (m.b - m.a)));
     const ease = (x) => x * x * (3 - 2 * x);
     for (const it of this.items || []) {
+      const nap = it.obj.userData?.nap;
+      if (nap) it.obj.position.x = nap.x0 + (S.showAmbiance ? nap.slide : 0); // the shikibuton, pulled over for the napper
       const vis = { top: S.showTop, frame: S.showFrame, wedge: S.showFrame, heater: S.showHeater,
         futon: S.showFuton, rug: S.showRug, seat: S.showPillows,
         ambTop: S.showAmbiance && S.showTop, amb: S.showAmbiance, ambFloor: S.showAmbiance }[it.kind];
