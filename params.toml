@@ -212,7 +212,7 @@ leg_margin = 15.0     # air left above thighs and feet
 knee_margin = 5.0     # the deck's underside clears the knees (knee_h) by at least this at mid-side
 heater_keepout = 20.0 # ... and the knee zone stays this far (plan) from the heater's body, if it hangs below knee_h
 legroom_from = 20.0   # legroom (between two legs, legs forward) is measured from this high off the floor up
-chair_seat_h = 110.0  # the bought zaisu's seat, sat on (owner 2026-11: "about 4 inches to 120 mm"; 180 mm unloaded, its cushion squashes)
+chair_seat_h = 90.0   # the bought zaisu's seat, sat on (owner 2026-11: 4 in minus 12 mm, about 90 mm; 180 mm unloaded)
                       # sat on, padding included, above the floor (TODO-verify: measure it when it comes)
 legroom_min = 500.0   # room between two legs, up to the thighs' top on the zaisu (owner 2026-11: 500, was 560: hip width
                       #   ~370 mm plus margin; the 180 mm zaisu raises the thighs to where the 170 mm heads start)
