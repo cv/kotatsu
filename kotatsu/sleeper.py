@@ -69,7 +69,19 @@ def pose(p) -> dict:
         """A limb segment lying on whatever is under it: a2, b2 are plan points; each end rests on its support."""
         a = [a2[0], a2[1], sup(*a2) + lift * r]
         b = [b2[0], b2[1], sup(*b2) + lift * r]
-        parts.append({"kind": "capsule", "a": a, "b": b, "r": r, "mat": mat})
+        worst, at = 0.0, None                                  # over a mattress edge between the ends? bend there
+        for k in range(1, 20):
+            t = k / 20
+            m = (a2[0] + t * (b2[0] - a2[0]), a2[1] + t * (b2[1] - a2[1]))
+            need = sup(*m) + lift * r - (a[2] + t * (b[2] - a[2]))
+            if need > worst:
+                worst, at = need, m
+        if at is not None and worst > 2.0:
+            mz = [at[0], at[1], sup(*at) + lift * r]
+            parts.append({"kind": "capsule", "a": a, "b": mz, "r": r, "mat": mat})
+            parts.append({"kind": "capsule", "a": mz, "b": b, "r": r, "mat": mat})
+        else:
+            parts.append({"kind": "capsule", "a": a, "b": b, "r": r, "mat": mat})
         return b2
 
     def ellipsoid(c2, r, mat, yaw=0.0, z=None, lift=0.9):

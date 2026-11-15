@@ -273,7 +273,7 @@ function catReach(toPaws) { // the same ~7 kg tabby up on its hind legs, front p
     return c;
   };
   const body = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32), fur);  // the torso, hips to shoulders
-  body.scale.set(LT / 2 + 40, 92, 92);   // as long as the curled cat's loaf, as round body.position.copy(v3(hip.clone().add(sh).multiplyScalar(0.5)));
+  body.scale.set(LT / 2 + 40, 92, 92); body.position.copy(v3(hip.clone().add(sh).multiplyScalar(0.5)));   // as long as the curled cat's loaf, as round
   body.rotation.y = -Math.atan2(sh.y - hip.y, sh.x - hip.x); g.add(body);
   const hc = v3(sh).add(new THREE.Vector3(70, 0, 105));
   const head = catHead(); head.position.copy(hc); head.rotation.z = Math.PI / 2; g.add(head);   // the curled cat's head, facing forward (+x)
@@ -367,8 +367,12 @@ function bowl() {
 
 function laptopStand() { // an aluminium stand lifting the laptop's screen ~15 cm, the laptop on it
   const g = new THREE.Group(), al = mat({ color: 0xbfc3c8, roughness: 0.35, metalness: 0.6 });
-  for (const x of [-120, 120]) {
-    const s = new THREE.Mesh(new THREE.BoxGeometry(14, 230, 150), al); s.position.set(x, 0, 75); s.rotation.x = 0.25; g.add(s);
+  // two flat-footed side plates, sloped on top (118 mm at the front, -y, to 177 at the back), carrying the deck
+  const T = Math.tan(0.25), side = new THREE.Shape([[-115, 0], [115, 0], [115, 147 + 115 * T], [-115, 147 - 115 * T]].map(([y, z]) => new THREE.Vector2(y, z)));
+  for (const x of [-127, 113]) {
+    const geo = new THREE.ExtrudeGeometry(side, { depth: 14, bevelEnabled: false });   // the shape in (y, z), extruded along x
+    geo.applyMatrix4(new THREE.Matrix4().set(0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1));   // shape x -> y, shape y -> z, depth -> x
+    const m = new THREE.Mesh(geo, al); m.position.x = x; g.add(m);
   }
   const deck = new THREE.Mesh(new THREE.BoxGeometry(280, 250, 6), al); deck.position.set(0, 0, 150); deck.rotation.x = 0.25; g.add(deck);   // the back (+y, the hinge) higher
   const lap = laptop(); lap.position.set(0, -10, 156); lap.rotation.x = 0.25; g.add(lap);
@@ -405,7 +409,7 @@ function zaisu(seatH) { // a legless chair: a cushioned seat seatH high (sat on)
   const b = new THREE.Mesh(new RoundedBoxGeometry(440, 440, seatH - 60, 2, 10), base); b.position.z = (seatH - 60) / 2; g.add(b);
   const c = new THREE.Mesh(new RoundedBoxGeometry(430, 430, 90, 3, 30), fabric); c.position.z = seatH - 15; g.add(c);
   const back = new THREE.Mesh(new RoundedBoxGeometry(70, 430, 480, 3, 25), fabric);
-  back.position.set(-210, 0, seatH + 200); back.rotation.y = -0.28; g.add(back);
+  back.position.set(-210, 0, seatH + 200); back.rotation.y = -0.28; g.add(back);   // kotatsu/scenes.py ZAISU must match
   return shadowed(g);
 }
 

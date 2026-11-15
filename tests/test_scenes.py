@@ -63,7 +63,8 @@ def test_the_cat_fits_under_the_heater():
 def test_the_zaisu_sitter_stops_short_of_the_heater_ring():
     """Legs out on the zaisu: the knees stay out of the ring's reach (comfort.mid_side_opening from the edge)."""
     w = SC["working, legs out"]["people"][0]
-    knees = [q["b"] for q in w if q["kind"] == "capsule" and q["mat"] == "pants" and abs(q["a"][2] - q["b"][2]) < 120][:2]
+    legs = [q for q in w if q["kind"] == "capsule" and q["mat"] == "pants"]
+    knees = [legs[0]["b"], legs[2]["b"]]                     # hip -> knee, knee -> ankle, for each leg
     edge = P.top.length / 2
     for k in knees:
         assert abs(k[1]) >= edge - comfort.mid_side_opening(P), "the knees reach the heater ring"
@@ -108,12 +109,19 @@ def test_nothing_clips():
 
 
 def test_the_zaisu_sitter_leans_on_its_back():
-    """In the working scenes the backrest's front face touches the sitter's back, and the seat is under the hips."""
+    """In the working scenes the reclined backrest's face touches the sitter's back (within 4 mm, not into it), and
+    the seat is under the hips."""
+    import numpy as np
+    from kotatsu import clipping
     for name in [n for n in scenes.ORDER if n.startswith("working")]:
         sc = SC[name]
         (z,) = [q for q in sc["props"] if q["kind"] == "zaisu"]
         w = sc["people"][0]
-        back = min(q["c"][1] - q["r"][0] for q in w if q["kind"] == "ellipsoid" and q["mat"] in ("top", "pants"))
-        assert abs((z["pos"][1] - scenes.ZAISU_BACK) - back) < 1.0, name
+        pts = np.vstack([clipping.fill(q) for q in w if q["kind"] == "ellipsoid" and q["mat"] in ("top", "pants")])
+        xs, y, zs = clipping.zaisu_back_local(z, pts)
+        Z = scenes.ZAISU
+        band = (np.abs(y) < Z["back_w"] / 2) & (np.abs(zs) < Z["back_h"] / 2)
+        gap = float((xs[band] - Z["back_t"] / 2).min())
+        assert -4.0 <= gap <= 4.0, f"{name}: the back is {gap:.0f} mm from the backrest"
         (pelvis,) = [q for q in w if q["kind"] == "ellipsoid" and q["mat"] == "pants"]
         assert abs(pelvis["c"][1] - z["pos"][1]) < 220.0, f"{name}: the hips are off the seat"

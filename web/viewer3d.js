@@ -203,7 +203,7 @@ export class Viewer3D {
     const appear = (A.tea || []).map((m) => ({ ...m, from: [0, 0, 0] }));   // people and props just turn up
     if (T.room3d?.scenes) {                              // each scene's people and things, shown when it's chosen
       for (const [name, S] of Object.entries(T.room3d.scenes)) {
-        const L = sceneLayer(S, { topZ: ztop + t, edgeX: hz.center[0] + T.top.length / 2 });
+        const L = sceneLayer(S, { topZ: ztop + t, edgeX: T.top.length / 2 });   // the scene layer is centred on the table
         for (const o of L.top) push(o, "ambTop", A.tea, true).scene = name;
         for (const o of [...L.people, ...L.floor, ...L.held]) push(o, "amb", appear, true).scene = name;
       }

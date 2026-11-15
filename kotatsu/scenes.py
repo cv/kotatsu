@@ -66,7 +66,23 @@ class Body:
         self.parts.append({"kind": "ellipsoid", "c": [float(v) for v in c], "r": [float(v) for v in r], "yaw": float(yaw), "mat": mat})
 
 
-def seated(p, seat, seat_z: float, facing: float, legs: str, hands: tuple, lean: float = 0.0) -> list[dict]:
+def floor_at(p, x: float, y: float, hidden=(), slide: float = 0.0) -> float:
+    """What a foot rests on at (x, y): the top of a seat there, squashed (seat_squash), or the rug (z = 0)."""
+    R = p.room
+    squash = getattr(R, "seat_squash", 30.0)
+    z = 0.0
+    for i, st in enumerate(room.seats(p)):
+        if i in hidden:
+            continue
+        (cx, cy, _), (l, w, h) = st["center"], st["size"]
+        if st["kind"] == "shikibuton":
+            cx += slide
+        if abs(x - cx) <= l / 2 and abs(y - cy) <= w / 2:
+            z = max(z, h - squash)
+    return z
+
+
+def seated(p, seat, seat_z: float, facing: float, legs: str, hands: tuple, lean: float = 0.0, floor=None) -> list[dict]:
     """A person sitting at (seat x, y), seat_z up, facing `facing` (radians, towards the table), legs "cross"
     (cross-legged) or "forward" (out under the table, heels on the floor), hands = (left, right) wrist targets in the
     person's own frame, (forward, to their right, height above the floor), lean = how far the shoulders sit back of the
@@ -78,7 +94,7 @@ def seated(p, seat, seat_z: float, facing: float, legs: str, hands: tuple, lean:
     z = _v(0, 0, 1)
     s = _v(seat[0], seat[1], seat_z)
     yaw = facing
-    pelvis = s + z * 0.06 * H
+    pelvis = s + z * (0.085 * H - 15.0)                         # sunk 15 mm into the seat
     B.ell(pelvis, (0.061 * H * g, 0.097 * H * g, 0.085 * H), "pants", yaw)
     chest = s + z * 0.25 * H - f * lean * 0.6
     B.ell(chest, (0.069 * H * g, 0.105 * H * g, 0.13 * H), "top", yaw)
@@ -106,12 +122,18 @@ def seated(p, seat, seat_z: float, facing: float, legs: str, hands: tuple, lean:
             kn, ank = _reach(hip, ank_t, thigh, shank, r * side + f * 0.6 + z * 0.4)
             toe = -r * side
         elif legs == "diamond":                                  # knees wide and low, the soles together in front
-            ank_t = _v(*(s[:2] + f[:2] * DIAMOND[0] * H + r[:2] * side * 0.035 * H), 0.03 * H)   # on the floor, each on its own side
+            xy = s[:2] + f[:2] * DIAMOND[0] * H + r[:2] * side * 0.035 * H
+            ank_t = _v(*xy, (floor(*xy) if floor else 0.0) + 0.03 * H)   # on the floor (or the mattress), each on its own side
             kn, ank = _reach(hip, ank_t, thigh, shank, r * side + z * DIAMOND[1])
             toe = f * 0.5 - r * side * 0.6 + z * 0.2
             toe = toe / np.linalg.norm(toe)
         else:                                                   # out under the table, heels on the floor
-            ank_t = _v(*(hip[:2] + f[:2] * 0.47 * H), 0.03 * H)   # nearly straight, so the thighs stay low (the rug's top is z = 0)
+            reach = 0.985 * (thigh + shank)                     # nearly straight, so the knees stay low
+            xy = hip[:2] + f[:2] * 0.47 * H
+            for _ in range(3):                                  # heels on the rug or the mattress, wherever they land
+                zf = (floor(*xy) if floor else 0.0) + 0.03 * H
+                xy = hip[:2] + f[:2] * math.sqrt(max(reach ** 2 - (hip[2] - zf) ** 2, 0.0))
+            ank_t = _v(*xy, zf)
             kn, ank = _reach(hip, ank_t, thigh, shank, z + f * 0.2)
             toe = f * 0.4 + z
             toe = toe / np.linalg.norm(toe)
@@ -142,13 +164,25 @@ def held(kind: str, parts: list[dict], facing: float, up: float) -> dict:
     return {"kind": kind, "pos": [float(c[0]), float(c[1]), float(c[2] + up)], "yaw": float(facing)}
 
 
-ZAISU_BACK = 175.0   # web/ambiance.js's zaisu: the backrest's front face is this far behind the seat's centre
+ZAISU = {"back_x": -210.0, "back_t": 70.0, "back_w": 430.0, "back_h": 480.0, "back_zc": 200.0, "recline": 0.28}
+# web/ambiance.js's zaisu: the backrest's centre (behind the seat's centre, above the seat), its size, and how far
+# (radians) it leans back
 
 
 def zaisu_for(parts: list[dict], seat_h: float) -> dict:
-    """The zaisu under a person facing +y, slid so its backrest touches their back (the torso's rearmost point)."""
-    back = min(q["c"][1] - q["r"][0] for q in parts if q["kind"] == "ellipsoid" and q["mat"] in ("top", "pants"))
-    return {"kind": "zaisu", "pos": [0.0, back + ZAISU_BACK, 0.0], "yaw": math.pi / 2, "seat_h": seat_h}
+    """The zaisu under a person facing +y, slid so its reclined backrest's face touches their back: the torso's
+    rearmost point measured square to that face."""
+    Z = ZAISU
+    a = Z["recline"]
+    n = np.array([math.cos(a), math.sin(a)])                   # the face's normal in (forward, up): forward and up
+    face = np.array([Z["back_x"] + Z["back_t"] / 2 * math.cos(a), seat_h + Z["back_zc"] + Z["back_t"] / 2 * math.sin(a)])
+    reach = []                                                  # per torso ellipsoid: its rearmost extent along -n
+    for q in parts:
+        if q["kind"] == "ellipsoid" and q["mat"] in ("top", "pants"):
+            (_, cy, cz), (rx, _, rz) = q["c"], q["r"]
+            reach.append(cy * n[0] + cz * n[1] - math.hypot(rx * n[0], rz * n[1]))
+    y = (min(reach) - face @ n) / n[0]
+    return {"kind": "zaisu", "pos": [0.0, float(y), 0.0], "yaw": math.pi / 2, "seat_h": seat_h}
 
 
 def legs_of(parts: list[dict]) -> list[dict]:
@@ -180,7 +214,9 @@ def scenes(p) -> dict:
               "eat": ((to_edge - 0.01 * H, -0.08 * H, surf + 0.12 * H), (to_edge + 0.12 * H, 0.06 * H, surf + 0.06 * H)),  # the bowl lifted in the left hand
               "type": ((to_edge + 50.0, -0.07 * H, surf + 62.0), (to_edge + 50.0, 0.07 * H, surf + 62.0)),   # wrists just above the keys
               "read": ((0.16 * H, -0.07 * H, sz + 0.26 * H), (0.16 * H, 0.07 * H, sz + 0.26 * H))}[hands]
-        return seated(p, (0.0, sy * d), sz, math.atan2(-sy, 0.0), legs, hh, lean)
+        hidden = tuple(i for i, st in enumerate(room.seats(p)) if st["kind"] == "cushion" and st["center"][1] * sy > 0) if seat_z is not None else ()
+        return seated(p, (0.0, sy * d), sz, math.atan2(-sy, 0.0), legs, hh, lean,
+                      floor=lambda x, y: floor_at(p, x, y, hidden))     # (on the zaisu, its side's cushion is put away)
 
     def reader_end(sx: int):
         """Cross-legged on the shikibuton's end at +x (sx = 1) or -x, reading; returns the parts, the book's place, yaw."""
@@ -209,7 +245,8 @@ def scenes(p) -> dict:
                      "held": [held_in("bowl", ps, 0, 0.012 * H) for ps in (a, b)]}   # miso bowls lifted, Japanese style
     # napping: the napper (sleeper.py) and a reader on the far cushion
     rd = at_side(-1, hands="read")
-    out["napping"] = {"people": [nap["parts"], rd], "seat_slide": nap["slide"], "hide_seats": [],
+    out["napping"] = {"people": [nap["parts"], rd], "seat_slide": nap["slide"],
+                      "hide_seats": [i for i, st in enumerate(room.seats(p)) if st["kind"] == "cushion" and st["center"][1] > 0],  # pulled aside for the nap
                       "props": [], "top": [{"kind": "kyusu", "pos": [235.0, 200.0], "yaw": 2.6}, {"kind": "yunomi", "pos": [70.0, 270.0]}],
                       "held": [held("book_open", rd, math.atan2(1.0, 0.0), 70.0)]}
     # working: on the zaisu (where the -y cushion was), the laptop on a stand; a reader on the shikibuton's end
@@ -226,7 +263,8 @@ def scenes(p) -> dict:
     for name, legs in (("working", "cross"), ("working, legs out", "forward")):
         d = zy
         w = at_side(-1, legs=legs, hands="type", seat_z=zs, dist=d, lean=0.05 * H)
-        while not clears_top(w) and d < edge + 0.4 * H:         # cross-legged on the zaisu the knees ride ~400 mm up,
+        from . import clipping
+        while (not clears_top(w) or clipping.leg_problems(p, w)) and d < edge + 0.4 * H:   # cross-legged the knees ride ~400 mm up;
             d += 20.0                                            #   above the top: sit back until they clear its edge
             w = at_side(-1, legs=legs, hands="type", seat_z=zs, dist=d, lean=0.05 * H)
         rdr, book = reader_end(1)
@@ -247,7 +285,8 @@ def scenes(p) -> dict:
         w = at_side(-1, legs="diamond", hands="type", seat_z=zs, dist=float(d), lean=0.02 * H)
         zy0 = zaisu_for(w, zs)["pos"][1]
         zbox = box(-220.0, zy0 - 220.0, 220.0, zy0 + 220.0)
-        if not clipping.leg_problems(p, w) and comfort.low_footprint(p, zs, 0.0).distance(zbox) >= 5.0:
+        if not clipping.leg_problems(p, w) and comfort.low_footprint(p, zs, 0.0).distance(zbox) >= 5.0 \
+                and clipping.into_tabletop(p, w) == 0.0:
             best = (float(d), w)
             break
     if best:
