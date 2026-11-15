@@ -23,7 +23,7 @@ import tomllib
 
 from shapely.geometry import Polygon
 
-from . import assembly, build as cutbuild, comfort, cutlist, frame, nest, params, room, stiffness, top, compare
+from . import assembly, build as cutbuild, comfort, cutlist, frame, nest, params, room, stiffness, top, compare, heights
 from .params import ROOT
 
 WEB = ROOT / "web"
@@ -113,6 +113,7 @@ def tables_data(p) -> list[dict]:
         out.append({"name": tp.table_name, "label": tp.table_label,
                     "top": {"length": tp.top.length, "width": tp.top.width, "boards": [rings(b) for b in tb.boards]},
                     "frame": fd, "summary": table_summary(tp, fd, best), "room3d": room.room3d(tp),
+                    "clear": heights.clearances(tp), "clips": heights.clips(tp),
                     **({"compare": cmp} if not out and (cmp := compare.data(tp)) else {})})   # v1 next to it (the first table only)
     return out
 
@@ -228,6 +229,13 @@ def build(with_tests: bool = True) -> None:
         data["fea"] = {"built": fv["built"], "stale": fv["stale"], "cases": len(fv["cases"])}
     else:
         data["fea"] = None
+    from . import heights                                # the height slider's variants: cached, refreshed by `make heights`
+    hi = heights.load_index()
+    if hi is not None:
+        (OUT / "heights").mkdir(exist_ok=True)
+        for f in heights.OUT.glob("*.json"):
+            shutil.copy2(f, OUT / "heights" / f.name)
+    data["heights"] = hi
     (OUT / "img").mkdir(exist_ok=True)
     for f in (ROOT / "docs" / "img").glob("*.*"):
         if f.suffix not in (".png", ".jpg"):

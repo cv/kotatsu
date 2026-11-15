@@ -27,6 +27,8 @@ jobs:
         run: uv run python -m kotatsu.build
       - name: FEA heat maps for the 3-D view (about a minute)
         run: uv run python -m kotatsu.fea_view
+      - name: Height slider variants
+        run: uv run python -m kotatsu.heights
       - name: Site (runs the tests too; the results show on the page)
         run: uv run python -m kotatsu.site
       - name: Stop here if a test failed (never publish cut files from a red build, owner 2026-11)

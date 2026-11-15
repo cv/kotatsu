@@ -147,15 +147,57 @@ export class Viewer3D {
         this.state.compareV1 ??= false;
         this.gui.add(this.state, "compareV1").name("v1 ghost · room map").onChange(() => this.place());
       }
+      if (data.heights) {                                // the table at other heights (kotatsu/heights.py)
+        const H = data.heights;
+        this.state.dz ??= 0;
+        this.heightsInfo = H;
+        this.gui.add(this.state, "dz", -H.span, H.span, H.step).name("frame height ± mm")
+          .onChange((dz) => { clearTimeout(this.dzTimer); this.dzTimer = setTimeout(() => this.setHeight(dz), 250); });
+        this.readout = document.createElement("div");
+        Object.assign(this.readout.style, { position: "absolute", left: "12px", top: "12px", padding: "8px 10px", maxWidth: "360px",
+          background: "rgba(253,251,248,0.92)", border: "1px solid #d8cfc2", borderRadius: "6px", font: "12px/1.45 system-ui, sans-serif", color: "#3a2a1a" });
+        this.c.appendChild(this.readout);
+        this.baseClear = data.tables[0].clear; this.baseClips = data.tables[0].clips;
+        this.showReadout(this.baseClear, 0, this.baseClips);
+      }
       const R0 = data.tables[0].room3d;
       if (R0?.scenes) {                                  // the table in use (kotatsu/scenes.py)
         this.state.scene ??= R0.scene_default;
-        this.gui.add(this.state, "scene", R0.scene_order).name("scene").onChange(() => { this.state.showAmbiance = true; this.gui.controllersRecursive().forEach((c) => c.updateDisplay()); this.place(); });
+        this.gui.add(this.state, "scene", R0.scene_order).name("scene").onChange(() => { this.state.showAmbiance = true; this.gui.controllersRecursive().forEach((c) => c.updateDisplay()); this.place(); if (this.lastReadout) this.showReadout(...this.lastReadout); });
       }
       this.gui.add(this.state, "light", Object.keys(LIGHT)).name("light").onChange(() => this.applyLight());
       if (data.fea) this.feaGui(data.fea);
     }
     this.build();
+  }
+
+  async setHeight(dz) {
+    if (!dz) { this.dzTable = null; this.build(); this.showReadout(this.baseClear, 0, this.baseClips); return; }
+    this.variants ??= {};
+    let v = this.variants[dz];
+    if (!v) {
+      this.readout.innerHTML = `frame ${dz > 0 ? "+" : ""}${dz} mm: loading…`;
+      try { v = this.variants[dz] = await (await fetch(`heights/${dz}.json`)).json(); }
+      catch (e) { this.readout.innerHTML = `frame ${dz} mm: not built (run make heights)`; return; }
+    }
+    if (dz !== this.state.dz) return;                     // the slider moved on while it loaded
+    if (v.error) { this.readout.innerHTML = `<b>frame ${dz > 0 ? "+" : ""}${dz} mm</b>: the generator can't make this one<br><span style="color:#8a6d55">${v.error}</span>`; return; }
+    this.dzTable = v; this.build(); this.showReadout(v.clear, dz, v.clips);
+  }
+
+  showReadout(C, dz, clips) {
+    if (!this.readout || !C) return;
+    this.lastReadout = [C, dz, clips];
+    const sc = this.state.scene, cl = clips ? (clips["*"] || clips[sc] || []) : [];
+    const clipHtml = !clips ? "" : cl.length
+      ? `<div style="margin-top:6px;color:#b2452e"><b>clipping in "${sc}"</b><br>${cl.map(([d, a, b]) => `${a} into ${b}${d ? ` by ${Math.round(d)} mm` : ""}`).join("<br>")}</div>`
+      : `<div style="margin-top:6px;color:#2f7d3a">nothing clips in "${sc}"</div>`;
+    const stale = this.heightsInfo?.stale ? '<br><span style="color:#b2452e">stale: the design changed since these were built (make heights)</span>' : "";
+    const row = (k, v) => {
+      const bad = (k.startsWith("cross-legged") || k.startsWith("legs out")) && v < 0;
+      return `<tr><td style="padding-right:10px">${k}</td><td style="text-align:right;${bad ? "color:#b2452e;font-weight:600" : ""}">${v > 0 && /elbows|knees|thighs|feet/.test(k) ? "+" : ""}${v} mm</td></tr>`;
+    };
+    this.readout.innerHTML = `<b>frame ${dz > 0 ? "+" : ""}${dz} mm${dz ? "" : " (as designed)"}</b><table style="border-collapse:collapse;margin-top:4px">${Object.entries(C).map(([k, v]) => row(k, v)).join("")}</table>${clipHtml}${stale}`;
   }
 
   build() {
@@ -165,7 +207,10 @@ export class Viewer3D {
     const t = d.thickness;
     const which = this.state.table === "all" ? d.tables : d.tables.filter((x) => x.name === this.state.table);
     let dx = 0;
-    for (const T of which) {
+    for (let T of which) {
+      const V = this.dzTable;
+      if (V && T === d.tables[0]) T = { ...T, frame: V.frame, top: { ...T.top, boards: V.top.boards }, room3d: V.room3d,
+        compare: T.compare && V.compare ? { ...V.compare, v1: T.compare.v1 } : T.compare };
       this.addTable(T, dx, t);
       dx += T.top.length + 400;
     }

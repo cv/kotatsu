@@ -166,6 +166,22 @@ def into_tabletop(p, parts) -> float:
     return worst
 
 
+def part_name(q) -> str:
+    """A body part's plain name, from what scenes.py and sleeper.py make it of."""
+    m, k = q["mat"], q["kind"]
+    if m == "fur":
+        return "body"
+    if m == "socks":
+        return "foot"
+    if m == "pants":
+        return "hips" if k == "ellipsoid" else "leg"
+    if m == "top":
+        return "torso" if k == "ellipsoid" else "arm"
+    if m == "skin" and k == "ellipsoid":
+        return "hand" if q["r"][2] < q["r"][1] * 0.6 else "head"
+    return "head" if m == "hair" else m
+
+
 def cats(p, sc) -> tuple[list[list[dict]], object]:
     """The scene's cats as bodies (lists of parts), and the quilt's height function if a cat stands on it."""
     out, cloth = [], None
@@ -190,20 +206,21 @@ def overlaps(p) -> dict:
         sol = solids(p, sc)
         felines, cloth = cats(p, sc)
         people = sc["people"] + felines                      # the cats count as bodies too (labelled after the people)
+        who = [f"person {i + 1}" for i in range(len(sc["people"]))] + ["the cat"] * len(felines)
         for ci, cat in enumerate(felines):
             for i, part in enumerate(cat):
                 P = fill(part)
                 if cloth is not None and len(P):             # a cat on the quilt rides above it (a soft quilt gives 10 mm)
                     d = max(cloth(x, y) - z for x, y, z in P[:: max(1, len(P) // 300)])
                     if d > 10.0:
-                        k = (f"cat {ci} part #{i}", "the quilt")
+                        k = (f"the cat's {part_name(part)}", "the quilt")
                         best[k] = max(best.get(k, 0.0), round(d - 10.0, 1))
         for pi, person in enumerate(people):
             for i, part in enumerate(person):
                 P = fill(part)
                 if not len(P):
                     continue
-                what = f"person {pi} {part['mat']} {part['kind']} #{i}"
+                what = f"{who[pi]}'s {part_name(part)}"
                 for sname, kind, data in sol:
                     d = _depths(p, kind, data, P)
                     if d.max() > 0:
@@ -214,7 +231,7 @@ def overlaps(p) -> dict:
                     for q in people[pj]:
                         hit |= inside(q, P)
                     if hit.any():                          # depth ~ the size of the shared blob
-                        k = (what, f"person {pj}")
+                        k = (what, who[pj])
                         best[k] = max(best.get(k, 0.0), round(STEP * float(hit.sum()) ** (1 / 3), 1))
         res[name] = sorted(((d, a, b) for (a, b), d in best.items()), reverse=True)
     return res
