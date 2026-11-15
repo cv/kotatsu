@@ -532,9 +532,9 @@ them. uMake quoted it at $309.33.
 To see what all these changes did to the room under the table, I gave the 3-D view a comparison. Tick
 "v1 ghost · room map" and v1 appears as a pale blue outline over v2, rebuilt from its own code at the
 `v1-ordered` tag. On the floor, a map shows where v2 has more room overhead than v1, in green, and where it
-has less, in red. Most of the area under the top is light red, because v2 stands 15 mm lower, on thinner
-stock. The green patches are where v1's "+" legs stood and the X deck's openings, and the red specks are
-v2's diagonal legs.
+has less, in red. Most of the area under the top is light red: v2's top sits 15 mm lower. The green bands
+are where v1's H deck was overhead and v2's X deck is open, about 40 mm more. The deeper red runs along the
+X deck's diagonal arms, about 70 mm less where v1 had nothing but the top, and on v2's diagonal legs.
 
 ### Summer
 
