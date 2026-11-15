@@ -111,6 +111,20 @@ def seated(p, seat, seat_z: float, facing: float, legs: str, hands: tuple, lean:
     return B.parts
 
 
+def hands_of(parts: list[dict]) -> np.ndarray:
+    """The midpoint of a seated person's two hands (the flat skin ellipsoids seated() draws past the wrists)."""
+    hs = [q["c"] for q in parts if q["kind"] == "ellipsoid" and q["mat"] == "skin" and q["r"][2] < q["r"][1] * 0.6]
+    if len(hs) != 2:
+        raise ValueError(f"expected two hands, found {len(hs)}")
+    return (np.array(hs[0]) + np.array(hs[1])) / 2
+
+
+def held(kind: str, parts: list[dict], facing: float, up: float) -> dict:
+    """Something held in both hands (it faces the page's -x, so the yaw turns it back towards the holder)."""
+    c = hands_of(parts)
+    return {"kind": kind, "pos": [float(c[0]), float(c[1]), float(c[2] + up)], "yaw": float(facing)}
+
+
 def legs_of(parts: list[dict]) -> list[dict]:
     """The parts the quilt lies over: legs and feet (the torso comes up through the quilt, as at a real kotatsu)."""
     return [q for q in parts if q["mat"] in ("pants", "socks") and not (q["kind"] == "ellipsoid" and q["mat"] == "pants")]
@@ -147,22 +161,21 @@ def scenes(p) -> dict:
         x0 = sx * back
         fac = math.atan2(0.0, -sx)
         hh = ((0.16 * H, -0.07 * H, seat_on + 0.26 * H), (0.16 * H, 0.07 * H, seat_on + 0.26 * H))
-        return seated(p, (x0, 0.0), seat_on, fac, "cross", hh), (x0 - sx * 0.16 * H, 0.0, seat_on + 0.27 * H), fac
+        ps = seated(p, (x0, 0.0), seat_on, fac, "cross", hh)
+        return ps, held("book_open", ps, fac, 70.0)
 
     out = {}
     # cards: across each other on the two cushions; the cat curled under the heater, on the shikibuton
     a, b = at_side(1, hands="cards"), at_side(-1, hands="cards")
-    held_y = edge - 0.07 * H                                   # the fan between the hands, over the table's edge
     out["cards"] = {"people": [a, b], "seat_slide": 0.0, "hide_seats": [],
                     "props": [{"kind": "cat_curled", "pos": [0.0, 60.0, R.shikibuton_h - squash - 8.0], "yaw": 0.5}],
                     "top": [{"kind": "card_pile", "pos": [0.0, 0.0], "yaw": 0.2}, {"kind": "card_pile", "pos": [70.0, -15.0], "yaw": 1.1, "spread": True},
                             {"kind": "yunomi", "pos": [-300.0, 250.0]}, {"kind": "yunomi", "pos": [300.0, -250.0]}],
-                    "held": [{"kind": "card_fan", "pos": [0.0, sy * held_y, surf + 0.11 * H], "yaw": math.atan2(-sy, 0.0)}
-                             for sy in (1, -1)]}
+                    "held": [held("card_fan", ps, math.atan2(-sy, 0.0), 12.0) for ps, sy in ((a, 1), (b, -1))]}
     # eating: two at a meal; the cat on the shikibuton's end, reaching up for the sushi
     a, b = at_side(1, hands="eat"), at_side(-1, hands="eat")
     out["eating"] = {"people": [a, b], "seat_slide": 0.0, "hide_seats": [],
-                     "props": [{"kind": "cat_reach", "pos": [edge + 120.0, 40.0, R.shikibuton_h - squash], "yaw": math.pi, "on_cloth": True}],
+                     "props": [{"kind": "cat_reach", "pos": [edge + 300.0, 40.0, R.shikibuton_h - squash], "yaw": math.pi, "on_cloth": True}],   # hind feet; front paws on the edge
                      "top": [{"kind": "sushi", "pos": [60.0, 0.0], "yaw": 0.0},
                              {"kind": "plate", "pos": [-40.0, 230.0]}, {"kind": "plate", "pos": [-40.0, -230.0]},
                              {"kind": "chopsticks", "pos": [60.0, 260.0], "yaw": 0.0}, {"kind": "chopsticks", "pos": [60.0, -260.0], "yaw": 0.0},
@@ -173,7 +186,7 @@ def scenes(p) -> dict:
     rd = at_side(-1, hands="read")
     out["napping"] = {"people": [nap["parts"], rd], "seat_slide": nap["slide"], "hide_seats": [],
                       "props": [], "top": [{"kind": "kyusu", "pos": [235.0, 200.0], "yaw": 2.6}, {"kind": "yunomi", "pos": [70.0, 270.0]}],
-                      "held": [{"kind": "book_open", "pos": [0.0, -(back - 0.16 * H), seat_on + 0.27 * H], "yaw": math.atan2(1.0, 0.0)}]}
+                      "held": [held("book_open", rd, math.atan2(1.0, 0.0), 70.0)]}
     # working: on the zaisu (where the -y cushion was), the laptop on a stand; a reader on the shikibuton's end
     zs = p.comfort.chair_seat_h
     zy = edge + (0.245 * H - min(200.0, comfort.mid_side_opening(p) - 25.0))   # knees ~200 mm in, short of the heater ring
@@ -191,15 +204,15 @@ def scenes(p) -> dict:
         while not clears_top(w) and d < edge + 0.4 * H:         # cross-legged on the zaisu the knees ride ~400 mm up,
             d += 20.0                                            #   above the top: sit back until they clear its edge
             w = at_side(-1, legs=legs, hands="type", seat_z=zs, dist=d, lean=0.05 * H)
-        rdr, book_at, fac = reader_end(1)
+        rdr, book = reader_end(1)
         out[name] = {"people": [w, rdr], "seat_slide": 0.0, "hide_seats": [i for i, s in enumerate(room.seats(p)) if s["kind"] == "cushion" and s["center"][1] < 0],
                      "props": [{"kind": "zaisu", "pos": [0.0, -d, 0.0], "yaw": math.pi / 2, "seat_h": zs}],
                      "sit_back": round(d - zy),
-                     "top": [{"kind": "laptop_stand", "pos": [0.0, -edge + 330.0], "yaw": math.pi},   # the screen faces the sitter (-y)
+                     "top": [{"kind": "laptop_stand", "pos": [0.0, -edge + 330.0], "yaw": 0.0},       # the screen faces the sitter (-y)
                              {"kind": "keyboard", "pos": [0.0, -edge + 0.06 * H], "yaw": 0.0},
                              {"kind": "mouse", "pos": [260.0, -edge + 0.06 * H], "yaw": 0.0},
                              {"kind": "yunomi", "pos": [-300.0, -edge + 140.0]}],
-                     "held": [{"kind": "book_open", "pos": list(book_at), "yaw": fac}]}
+                     "held": [book]}
     for sc in out.values():                                     # what the quilt lies over: legs (and the napper whole)
         drape = []
         for ps in sc["people"]:

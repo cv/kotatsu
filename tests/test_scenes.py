@@ -67,3 +67,31 @@ def test_the_zaisu_sitter_stops_short_of_the_heater_ring():
     edge = P.top.length / 2
     for k in knees:
         assert abs(k[1]) >= edge - comfort.mid_side_opening(P), "the knees reach the heater ring"
+
+
+def test_held_things_sit_in_the_hands():
+    """Cards and books are where their holder's hands are, a little above them, and face back towards the holder."""
+    import math
+    import numpy as np
+    from kotatsu import scenes
+    S = scenes.scenes(P)
+    for name, sc in S.items():
+        for h in sc["held"]:
+            near = []
+            for ps in sc["people"]:
+                try:
+                    c = scenes.hands_of(ps)
+                except ValueError:
+                    continue                                 # the napper has no seated hands
+                near.append(float(np.linalg.norm(np.array(h["pos"][:2]) - c[:2])))
+            assert near and min(near) < 1.0, f"{name}: the {h['kind']} isn't in anyone's hands"
+
+
+def test_the_laptop_faces_the_zaisu():
+    """The laptop's screen faces -y in the page's model, where the zaisu sits."""
+    from kotatsu import scenes
+    for name in ("working", "working, legs out"):
+        sc = scenes.scenes(P)[name]
+        (st,) = [q for q in sc["top"] if q["kind"] == "laptop_stand"]
+        (z,) = [q for q in sc["props"] if q["kind"] == "zaisu"]
+        assert st["yaw"] == 0.0 and z["pos"][1] < 0

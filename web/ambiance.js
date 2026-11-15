@@ -249,26 +249,41 @@ function cat() { // a curled-up orange tabby (~7 kg) asleep in the warm: chin on
   return shadowed(g);
 }
 
-function catReach(toPaws) { // the same tabby, up on its hind legs, front paws on the table's edge (toPaws: [forward, up])
-  const g = new THREE.Group(), [fx, fz] = toPaws, ang = Math.atan2(fz, fx), len = Math.hypot(fx, fz);
+function catReach(toPaws) { // the same ~7 kg tabby up on its hind legs, front paws on the table's edge
+  // toPaws: [forward, up] from its hind feet to the paws (mm). Segments sized like a big house cat: a 330 mm
+  // torso, 170 mm forelegs, the hips 130 mm up; the shoulders go where torso and forelegs meet.
+  const g = new THREE.Group(), [fx, fz] = toPaws;
   const fur = mat({ map: bodyFur(), roughness: 0.95 }), cream = mat({ color: 0xf7e6cc, roughness: 0.95 });
-  const body = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32), fur);
-  const bl = Math.min(0.42 * len, 190);
-  body.scale.set(bl, 95, 92); body.position.set(Math.cos(ang) * len * 0.42, 0, 70 + Math.sin(ang) * len * 0.36); body.rotation.y = -ang; g.add(body);
+  const hip = new THREE.Vector2(0, 130), paw = new THREE.Vector2(fx, fz), LT = 330, LF = 170;
+  const d = paw.clone().sub(hip), dl = Math.min(d.length(), LT + LF - 1);
+  const a = (LT * LT - LF * LF + dl * dl) / (2 * dl), h = Math.sqrt(Math.max(0, LT * LT - a * a));
+  const u = d.clone().normalize(), sh = hip.clone().add(u.clone().multiplyScalar(a)).add(new THREE.Vector2(-u.y, u.x).multiplyScalar(h));
+  const v3 = (p, y = 0) => new THREE.Vector3(p.x, y, p.y);
+  const seg = (a3, b3, r, m) => {                    // a capsule between two points
+    const c = new THREE.Mesh(new THREE.CapsuleGeometry(r, Math.max(1, a3.distanceTo(b3)), 8, 16), m);
+    c.position.copy(a3.clone().add(b3).multiplyScalar(0.5)); c.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), b3.clone().sub(a3).normalize());
+    return c;
+  };
+  const body = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32), fur);  // the torso, hips to shoulders
+  body.scale.set(LT / 2 + 40, 82, 88); body.position.copy(v3(hip.clone().add(sh).multiplyScalar(0.5)));
+  body.rotation.y = -Math.atan2(sh.y - hip.y, sh.x - hip.x); g.add(body);
   const head = new THREE.Mesh(new THREE.SphereGeometry(1, 40, 28), mat({ map: headFur(), roughness: 0.95 }));
-  head.scale.set(72, 80, 70); head.position.set(fx - 10, 0, fz + 75); g.add(head);
+  const hc = v3(sh).add(new THREE.Vector3(55, 0, 95));
+  head.scale.set(58, 56, 52); head.position.copy(hc); g.add(head);
+  const muzzle = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), cream); muzzle.scale.set(26, 30, 20);
+  muzzle.position.copy(hc).add(new THREE.Vector3(46, 0, -14)); g.add(muzzle);
   for (const s of [-1, 1]) {
-    const ear = new THREE.Mesh(new THREE.ConeGeometry(24, 40, 20), mat({ color: 0xd8915a, roughness: 0.95 }));
-    ear.rotation.x = Math.PI / 2; ear.rotation.set(0, 0, 0); ear.position.set(fx - 20, s * 44, fz + 135); g.add(ear);
-    const paw = new THREE.Mesh(new THREE.CapsuleGeometry(20, Math.max(1, len * 0.45), 6, 12), fur);
-    const a0 = new THREE.Vector3(Math.cos(ang) * len * 0.55, s * 40, 60 + Math.sin(ang) * len * 0.55), a1 = new THREE.Vector3(fx, s * 40, fz + 10);
-    paw.position.copy(a0.clone().add(a1).multiplyScalar(0.5)); paw.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), a1.clone().sub(a0).normalize()); g.add(paw);
-    const toe = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), cream); toe.scale.set(26, 22, 14); toe.position.copy(a1); g.add(toe);
-    const hind = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), fur); hind.scale.set(70, 40, 60); hind.position.set(20, s * 55, 55); g.add(hind);
-    const foot = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), cream); foot.scale.set(45, 22, 16); foot.position.set(40, s * 55, 10); g.add(foot);
+    const ear = new THREE.Mesh(new THREE.ConeGeometry(17, 34, 16), mat({ color: 0xd8915a, roughness: 0.95 }));
+    ear.position.copy(hc).add(new THREE.Vector3(-6, s * 30, 54)); ear.rotation.x = Math.PI / 2; ear.rotation.set(-s * 0.25, 0, 0); g.add(ear);
+    const shY = s * 34;
+    g.add(seg(v3(sh, shY), v3(paw, shY), 19, fur));                                   // a foreleg
+    const toe = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), cream); toe.scale.set(26, 21, 13); toe.position.copy(v3(paw, shY)).add(new THREE.Vector3(10, 0, 4)); g.add(toe);
+    const haunch = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), fur); haunch.scale.set(70, 38, 72); haunch.position.set(-15, s * 48, 95); g.add(haunch);
+    g.add(seg(new THREE.Vector3(-20, s * 48, 70), new THREE.Vector3(10, s * 46, 18), 17, fur));   // a hind leg
+    const foot = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), cream); foot.scale.set(46, 20, 13); foot.position.set(32, s * 46, 12); g.add(foot);
   }
-  const path = new THREE.CatmullRomCurve3([[-20, 0, 60], [-120, 30, 40], [-200, 80, 70], [-230, 130, 150]].map(([x, y, z]) => new THREE.Vector3(x, y, z)));
-  g.add(new THREE.Mesh(new THREE.TubeGeometry(path, 40, 20, 12), mat({ map: tailFur(), roughness: 0.95 })));
+  const path = new THREE.CatmullRomCurve3([[-40, 0, 110], [-140, 30, 60], [-230, 70, 70], [-270, 110, 150]].map(([x, y, z]) => new THREE.Vector3(x, y, z)));
+  g.add(new THREE.Mesh(new THREE.TubeGeometry(path, 40, 19, 12), mat({ map: tailFur(), roughness: 0.95 })));
   return shadowed(g);
 }
 
@@ -290,16 +305,16 @@ function cardPile(spread = false) {
   return shadowed(g);
 }
 
-function cardFan() { // five cards fanned in two hands, faces towards the player (the group's -x)
+function cardFan() { // five cards fanned in two hands: faces towards the player (the group's -x), tops leaning away
   const g = new THREE.Group();
   for (let k = 0; k < 5; k++) {
     const c = card(true, k + 20), piv = new THREE.Group();
-    c.position.set(0, 30, 0); piv.add(c); piv.rotation.z = (k - 2) * 0.22; piv.position.x = k * 0.8;
+    c.geometry = c.geometry.clone().rotateX(Math.PI / 2).rotateZ(Math.PI / 2);   // stood up in the y-z plane, face along x
+    c.position.set(0, 0, 32); piv.add(c); piv.rotation.x = (k - 2) * 0.22; piv.position.x = k * 0.8;
     g.add(piv);
   }
-  const holder = new THREE.Group(); g.rotation.set(0, 0, 0);
-  holder.add(g); g.rotation.x = 0; g.rotation.y = 0;
-  g.rotation.set(Math.PI / 2 - 0.5, 0, 0);  // stood up, leaning back towards the player
+  g.rotation.y = 0.45;            // tops tilted away, so the faces look up at the player
+  const holder = new THREE.Group(); holder.add(g);
   return shadowed(holder);
 }
 
@@ -350,10 +365,10 @@ function bowl() {
 function laptopStand() { // an aluminium stand lifting the laptop's screen ~15 cm, the laptop on it
   const g = new THREE.Group(), al = mat({ color: 0xbfc3c8, roughness: 0.35, metalness: 0.6 });
   for (const x of [-120, 120]) {
-    const s = new THREE.Mesh(new THREE.BoxGeometry(14, 230, 150), al); s.position.set(x, 0, 75); s.rotation.x = -0.25; g.add(s);
+    const s = new THREE.Mesh(new THREE.BoxGeometry(14, 230, 150), al); s.position.set(x, 0, 75); s.rotation.x = 0.25; g.add(s);
   }
-  const deck = new THREE.Mesh(new THREE.BoxGeometry(280, 250, 6), al); deck.position.set(0, 0, 150); deck.rotation.x = -0.25; g.add(deck);
-  const lap = laptop(); lap.position.set(0, -10, 156); lap.rotation.x = -0.25; g.add(lap);
+  const deck = new THREE.Mesh(new THREE.BoxGeometry(280, 250, 6), al); deck.position.set(0, 0, 150); deck.rotation.x = 0.25; g.add(deck);   // the back (+y, the hinge) higher
+  const lap = laptop(); lap.position.set(0, -10, 156); lap.rotation.x = 0.25; g.add(lap);
   return shadowed(g);
 }
 
@@ -411,7 +426,7 @@ export function sceneLayer(S, { topZ, edgeX }) {
   }
   for (const q of S.held || []) {
     const o = PROPS[q.kind]?.(q); if (!o) continue;
-    o.position.set(...q.pos); o.rotation.z = (q.yaw || 0) + Math.PI; out.held.push(o);   // faces back towards the holder
+    o.position.set(...q.pos); o.rotation.z = q.yaw || 0; out.held.push(o);   // its -x face turned back towards the holder
   }
   return out;
 }
