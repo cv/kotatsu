@@ -244,7 +244,7 @@ cushion = [610.0, 610.0]  # the set's two square cushions, 24 x 24 in, on the ot
 cushion_h = 102.0
 
 rug_t = 10.0          # rug thickness (3-D view)
-futon_gap = 12.0      # 3-D view: the top sits this far above the frame, on the futon
+futon_gap = 4.0       # the top sits this far above the frame, on the quilt: the owner's folded quilt pinches to about 4 mm (owner 2026-11; was a 12 mm guess)
 
 [sleeper]             # the 3-D view's ambiance: a person napping on the shikibuton (kotatsu/sleeper.py), owner 2026-11
 height = 1800.0       # stature, mm

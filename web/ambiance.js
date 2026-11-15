@@ -451,7 +451,7 @@ function person(P) { // someone napping, posed and sized in Python (kotatsu/slee
       o.quaternion.setFromUnitVectors(up, d.normalize());
     } else {
       o = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 20), M[q.mat]);
-      o.scale.set(...q.r); o.position.set(...q.c); o.rotation.z = q.yaw;
+      o.scale.set(...q.r); o.position.set(...q.c); o.rotation.set(0, -(q.pitch || 0), q.yaw, "ZYX");   // yaw, then the long axis tilted up
     }
     g.add(o);
   }

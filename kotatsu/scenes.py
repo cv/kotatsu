@@ -62,8 +62,12 @@ class Body:
     def cap(self, a, b, r, mat):
         self.parts.append({"kind": "capsule", "a": [float(v) for v in a], "b": [float(v) for v in b], "r": float(r), "mat": mat})
 
-    def ell(self, c, r, mat, yaw=0.0):
-        self.parts.append({"kind": "ellipsoid", "c": [float(v) for v in c], "r": [float(v) for v in r], "yaw": float(yaw), "mat": mat})
+    def ell(self, c, r, mat, yaw=0.0, pitch=0.0):
+        """An ellipsoid turned yaw about z, its long (x) axis then tilted pitch above the horizontal."""
+        q = {"kind": "ellipsoid", "c": [float(v) for v in c], "r": [float(v) for v in r], "yaw": float(yaw), "mat": mat}
+        if abs(pitch) > 1e-6:
+            q["pitch"] = float(pitch)
+        self.parts.append(q)
 
 
 def floor_at(p, x: float, y: float, hidden=(), slide: float = 0.0) -> float:
@@ -135,12 +139,25 @@ def seated(p, seat, seat_z: float, facing: float, legs: str, hands: tuple, lean:
                 xy = hip[:2] + f[:2] * math.sqrt(max(reach ** 2 - (hip[2] - zf) ** 2, 0.0))
             ank_t = _v(*xy, zf)
             kn, ank = _reach(hip, ank_t, thigh, shank, z + f * 0.2)
-            toe = f * 0.4 + z
+            toe = f * 0.9 + z                                   # relaxed, about 48 deg up: the toes about 220 mm high
             toe = toe / np.linalg.norm(toe)
         B.cap(hip, kn, 0.040 * H * g, "pants")
         B.cap(kn, ank, 0.026 * H * g, "pants")
-        B.ell(ank + toe * 0.35 * foot, (0.5 * foot, 0.027 * H, 0.02 * H), "socks", math.atan2(toe[1], toe[0]))
+        _foot(B, ank, toe, foot, H)
     return B.parts
+
+
+def _foot(B, ank, toe, L: float, H: float) -> None:
+    """A foot below the ankle, along toe (a unit vector, tilted up when the legs are out): a tall, narrow heel
+    under the ankle and a flatter, wider forefoot, both standing on one sole 0.03 H below the ankle; the foot
+    L long from the back of the heel to the toes (the heel reaches 0.24 L behind the ankle)."""
+    t = np.array(toe, float) / np.linalg.norm(toe)
+    n = np.array([0.0, 0.0, 1.0]) - t[2] * t                    # the foot's up: square to it, in the vertical plane
+    n = n / np.linalg.norm(n)
+    yaw, pitch = math.atan2(t[1], t[0]), math.asin(max(-1.0, min(1.0, float(t[2]))))
+    for x, rx, ry, rz in ((0.05, 0.29, 0.022, 0.022), (0.44, 0.33, 0.028, 0.012)):
+        c = ank + t * x * L + n * (rz * H - 0.03 * H)         # each part's underside on the sole
+        B.ell(c, (rx * L, ry * H, rz * H), "socks", yaw, pitch)
 
 
 def hands_of(parts: list[dict]) -> np.ndarray:

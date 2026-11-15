@@ -41,11 +41,12 @@ def inside(part, P: np.ndarray) -> np.ndarray:
         ab = b - a
         t = np.clip(((P - a) @ ab) / max(ab @ ab, 1e-9), 0, 1)
         return np.linalg.norm(P - (a + t[:, None] * ab), axis=1) <= r
-    c, rr, yaw = np.array(part["c"]), np.array(part["r"]), part.get("yaw", 0.0)
+    c, rr, yaw, pitch = np.array(part["c"]), np.array(part["r"]), part.get("yaw", 0.0), part.get("pitch", 0.0)
     d = P - c
     x = d[:, 0] * math.cos(yaw) + d[:, 1] * math.sin(yaw)
     y = -d[:, 0] * math.sin(yaw) + d[:, 1] * math.cos(yaw)
-    return (x / rr[0]) ** 2 + (y / rr[1]) ** 2 + (d[:, 2] / rr[2]) ** 2 <= 1.0
+    x, z = x * math.cos(pitch) + d[:, 2] * math.sin(pitch), -x * math.sin(pitch) + d[:, 2] * math.cos(pitch)
+    return (x / rr[0]) ** 2 + (y / rr[1]) ** 2 + (z / rr[2]) ** 2 <= 1.0
 
 
 def fill(part) -> np.ndarray:
@@ -242,11 +243,12 @@ def _axis(part):
     if part["kind"] == "capsule":
         a, b = np.array(part["a"]), np.array(part["b"])
         return [(a + (b - a) * t, part["r"]) for t in np.linspace(0, 1, 11)]
-    c, (rx, ry, rz), yaw = np.array(part["c"]), part["r"], part.get("yaw", 0.0)
+    c, (rx, ry, rz), yaw, pitch = np.array(part["c"]), part["r"], part.get("yaw", 0.0), part.get("pitch", 0.0)
     pts = [(c, 0.0)]
     for t in np.linspace(0, 2 * math.pi, 25)[:-1]:
-        u, v = rx * math.cos(t), ry * math.sin(t)
-        pts.append((c + np.array([u * math.cos(yaw) - v * math.sin(yaw), u * math.sin(yaw) + v * math.cos(yaw), 0.0]), 0.0))
+        u, v = rx * math.cos(t), ry * math.sin(t)              # the rim through the long axis, tilted with it
+        h, w = u * math.cos(pitch), u * math.sin(pitch)
+        pts.append((c + np.array([h * math.cos(yaw) - v * math.sin(yaw), h * math.sin(yaw) + v * math.cos(yaw), w]), 0.0))
     return pts
 
 

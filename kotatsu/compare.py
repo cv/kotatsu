@@ -123,6 +123,7 @@ def data(p) -> dict | None:
     except subprocess.CalledProcessError:
         print(f"[compare] no {TAG} tag here: the 3-D view's v1 comparison is skipped")
         return None
+    v1["frame"] = {**v1["frame"], "futon_gap": p.room.futon_gap}   # the same quilt under both tops (owner: ~4 mm pinched)
     L = frame.layout(p)
     v2 = {"frame": site.frame_data(p), "top": {"boards": [site.rings(b) for b in top.build(p).boards]}}
     half = max(p.top.length, v1["top"]["length"]) / 2 + 80.0
