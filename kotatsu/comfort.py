@@ -145,12 +145,29 @@ def summary(p) -> dict:
 
 def legs_forward(p, seat: float) -> dict:
     """Sitting with the legs out under the table (on a zaisu: comfort.chair_seat_h), the sitting surface `seat` mm off the floor:
-    room (mm, after leg_margin) above the thighs, which pass under the deck at mid-side, and above the feet,
-    under the heater. Heels stay on the floor, so the seat raises the thighs but not the feet."""
+    room (mm, after leg_margin) above the thighs, which pass under the top at mid-side (where the X deck is open,
+    knee_in mm in from the top's edge, to the heater ring), and above the feet, under the heater. Heels stay on the
+    floor, so the seat raises the thighs but not the feet."""
     C = p.comfort
     (_, _, sz), (_, _, hz) = frame.heater_box(p)
-    return {"thigh_room": round(side_clear(p) - C.leg_margin - (seat + C.thigh_h), 1),
+    L = frame.layout(p)
+    knee_in = mid_side_opening(p)
+    over = L.H if knee_in > 0 else side_clear(p)          # the X deck is open at mid-side: the top is over the thighs
+    return {"thigh_room": round(over - C.leg_margin - (seat + C.thigh_h), 1),
+            "knee_in": round(knee_in, 1),
             "feet_room": round(hz - sz / 2 - C.leg_margin - C.foot_h, 1)}
+
+
+def mid_side_opening(p) -> float:
+    """How far (mm) in from the top's edge, at the middle of a side, before the deck starts overhead: the X deck's
+    opening between its arms reaches in to the heater ring. Thighs (sitting legs forward) can go this far under
+    the top with only the top above them; the knees stop before the ring."""
+    from shapely.geometry import LineString
+    from . import yagura
+    L = frame.layout(p)
+    hit = yagura.deck(p).intersection(LineString([(0.0, L.cy), (L.cx, L.cy)]))
+    xs = [x for g in getattr(hit, "geoms", [hit]) if not g.is_empty for x, _ in g.coords]
+    return min(xs) if xs else L.cx
 
 
 def side_clear(p) -> float:

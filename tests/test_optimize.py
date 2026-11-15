@@ -41,7 +41,9 @@ def test_cheap_rejects_a_foot_wider_than_the_leg():
 
 
 def test_legroom_narrows_with_wider_legs():
-    assert comfort.legroom(optimize.design({"yagura.leg_narrow": 85.0})) < comfort.legroom(P)
+    """Wider legs leave less room between them. Up to the zaisu's thighs (180 mm seat) the narrowest point is where
+    the heads start, so a wider head narrows it (the lower legs' width doesn't matter there)."""
+    assert comfort.legroom(optimize.design({"frame.leg_width": 200.0})) < comfort.legroom(P)
 
 
 def test_nondominated_and_fronts():

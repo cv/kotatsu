@@ -173,6 +173,7 @@ def test_legs_forward_on_a_zaisu():
     for P in TABLES:
         room = comfort.legs_forward(P, P.comfort.chair_seat_h)
         assert room["thigh_room"] >= 0 and room["feet_room"] >= 0
+        assert room["knee_in"] >= 150, "the thighs go well under the top's edge before the knees meet the heater ring"
 
 
 def test_cross_legged_knees_need_room_under_the_top():
