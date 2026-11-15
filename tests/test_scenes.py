@@ -1,0 +1,69 @@
+"""The 3-D view's scenes (kotatsu/scenes.py): the table in use. Every person's legs stay clear of the table's legs,
+under the heater and the deck with air to spare; the cat fits under the heater; the zaisu sitter's knees stop
+short of the heater ring."""
+import math
+
+import pytest
+from shapely.affinity import translate
+from shapely.geometry import Point, box
+
+from kotatsu import comfort, frame, params, room, scenes, yagura
+
+P = params.tables(params.load())[0]
+pytestmark = pytest.mark.skipif(P.room.seats != "set", reason="the scenes use the seating set")
+SC = scenes.scenes(P)
+L = frame.layout(P)
+(HX, HY, HZ), (HCX, HCY, HCZ) = frame.heater_box(P)
+HEATER = box(HCX - L.cx - HX / 2, HCY - L.cy - HY / 2, HCX - L.cx + HX / 2, HCY - L.cy + HY / 2)
+DECK = translate(yagura.deck(P), -L.cx, -L.cy)
+
+
+def samples(q, n=12):
+    if q["kind"] == "capsule":
+        (ax, ay, az), (bx, by, bz) = q["a"], q["b"]
+        for k in range(n + 1):
+            t = k / n
+            yield ax + t * (bx - ax), ay + t * (by - ay), az + t * (bz - az), q["r"], q["r"]
+    else:
+        (x, y, z), (rx, ry, rz), yaw = q["c"], q["r"], q.get("yaw", 0.0)
+        yield x, y, z, 0.0, rz
+        for k in range(24):
+            t = 2 * math.pi * k / 24
+            u, v = rx * math.cos(t), ry * math.sin(t)
+            yield x + u * math.cos(yaw) - v * math.sin(yaw), y + u * math.sin(yaw) + v * math.cos(yaw), z, 0.0, rz
+
+
+def test_every_scene_is_there():
+    assert set(scenes.ORDER) == set(SC) and scenes.DEFAULT in SC
+    assert len(SC["napping"]["people"]) == 2 and all(len(s["people"]) == 2 for s in SC.values())
+
+
+@pytest.mark.parametrize("name", scenes.ORDER)
+def test_legs_clear_the_table(name):
+    for ps in SC[name]["people"]:
+        for q in scenes.legs_of(ps):
+            for x, y, z, rp, rz in samples(q):
+                top, at = z + rz, Point(x, y)
+                # crossed feet point sideways, about 12 mm from a corner leg's kicked foot: they mustn't touch
+                assert comfort.low_footprint(P, top, 0.0).distance(at) - rp >= 5, f"{name}: a table leg"
+                if HEATER.distance(at) < rp:
+                    assert HCZ - HZ / 2 - top >= 40, f"{name}: under the heater"
+                if DECK.distance(at) < rp:
+                    assert L.z_deck_bot - top >= 10, f"{name}: under the deck"
+                if abs(x) < P.top.length / 2 and abs(y) < P.top.width / 2:
+                    assert L.H - top >= 10, f"{name}: under the top"
+
+
+def test_the_cat_fits_under_the_heater():
+    (cat,) = [q for q in SC["cards"]["props"] if q["kind"] == "cat_curled"]
+    assert HEATER.distance(Point(cat["pos"][:2])) == 0, "it's under the heater, where it's warm"
+    assert cat["pos"][2] + 185 <= HCZ - HZ / 2, "the curled cat (~185 mm high) fits under it"
+
+
+def test_the_zaisu_sitter_stops_short_of_the_heater_ring():
+    """Legs out on the zaisu: the knees stay out of the ring's reach (comfort.mid_side_opening from the edge)."""
+    w = SC["working, legs out"]["people"][0]
+    knees = [q["b"] for q in w if q["kind"] == "capsule" and q["mat"] == "pants" and abs(q["a"][2] - q["b"][2]) < 120][:2]
+    edge = P.top.length / 2
+    for k in knees:
+        assert abs(k[1]) >= edge - comfort.mid_side_opening(P), "the knees reach the heater ring"

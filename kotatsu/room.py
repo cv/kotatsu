@@ -152,42 +152,34 @@ def _smooth(t: float) -> float:
     return t * t * (3 - 2 * t)
 
 
-def room3d(p, n: int = 81) -> dict:
-    """World-space geometry for the 3-D view's room layers: the rug, the futon draped over the table
-    (a grid of n x n points, square or round), and one floor pillow per side.
+def _boxes(parts: list[dict], cx: float, cy: float) -> list[dict]:
+    """Each body part's box, in world coordinates, for the drape to clear."""
+    out = []
+    for q in parts:
+        if q["kind"] == "capsule":
+            (ax, ay, az), (bx, by, bz), r = q["a"], q["b"], q["r"]
+            lo, hi = (min(ax, bx) - r, min(ay, by) - r), (max(ax, bx) + r, max(ay, by) + r, max(az, bz) + r)
+        else:
+            (qx, qy, qz), (rx, ry, rz) = q["c"], q["r"]
+            rr = max(rx, ry)
+            lo, hi = (qx - rr, qy - rr), (qx + rr, qy + rr, qz + rz)
+        out.append({"center": [cx + (lo[0] + hi[0]) / 2, cy + (lo[1] + hi[1]) / 2, hi[2] / 2],
+                    "size": [hi[0] - lo[0], hi[1] - lo[1], hi[2]]})
+    return out
 
-    Where the futon's floor edge meets a pillow it rides up over it, easing onto the pillow's top over
-    zabuton_ramp mm (a picture, not a cloth simulation: the drape itself is drape_profile's)."""
+
+def drape(p, clear_of: list[dict], n: int = 61) -> dict:
+    """The futon draped over the table (a grid of n x n points, square cloth), riding up over every box in clear_of
+    (world coordinates) and easing back down over zabuton_ramp mm (a picture, not a cloth simulation: the drape
+    itself is drape_profile's)."""
     from . import frame
     L = frame.layout(p)
     cx, cy = L.cx, L.cy
-    R = p.room
     fd = spread_d(p)                                           # folded and tucked: how far it really spreads
     at, _, rho_out = drape_profile(p, fd)
-    half = fd / 2
-    seats_ = [{**s, "center": [cx + s["center"][0], cy + s["center"][1], s["center"][2]]} for s in seats(p)]
-    nap = None
-    if getattr(R, "seats", "zabuton") == "set" and hasattr(p, "sleeper"):
-        from . import sleeper
-        nap = sleeper.pose(p)
-    # the cloth clears the shikibuton where it lies for seats and where it slides for a nap (the ambiance layer)
-    clear_of = seats_ + ([{**s, "center": [s["center"][0] + nap["slide"], *s["center"][1:]]}
-                          for s in seats_ if s["kind"] == "shikibuton"] if nap else [])
-    if nap:                                                    # ... and over the napper (each part's box)
-        for q in nap["parts"]:
-            if q["kind"] == "capsule":
-                (ax, ay, az), (bx, by, bz), r = q["a"], q["b"], q["r"]
-                lo, hi = (min(ax, bx) - r, min(ay, by) - r, 0.0), (max(ax, bx) + r, max(ay, by) + r, max(az, bz) + r)
-            else:
-                (qx, qy, qz), (rx, ry, rz) = q["c"], q["r"]
-                rr = max(rx, ry)
-                lo, hi = (qx - rr, qy - rr, 0.0), (qx + rr, qy + rr, qz + rz)
-            clear_of.append({"center": [cx + (lo[0] + hi[0]) / 2, cy + (lo[1] + hi[1]) / 2, hi[2] / 2],
-                             "size": [hi[0] - lo[0], hi[1] - lo[1], hi[2]]})
-    ramp = R.zabuton_ramp
+    half, ramp = fd / 2, p.room.zabuton_ramp
 
-    def over_seats(x: float, y: float) -> float:
-        """Height the cloth must clear at (x, y): each pillow's top, easing down to the floor around it."""
+    def over(x: float, y: float) -> float:
         top = 0.0
         for st in clear_of:
             (sx, sy, sz), (sw, sd, sh) = st["center"], st["size"]
@@ -203,12 +195,52 @@ def room3d(p, n: int = 81) -> dict:
             rho, z = at(r)
             k = rho / r if r > 1e-9 else 1.0
             x, y = cx + a * k, cy + b * k
-            z = max(z, over_seats(x, y) + 4.0)                 # lies on the rug (and the pillows), not in them
+            z = max(z, over(x, y) + 4.0)                       # lies on the rug, the seats and the people, not in them
             pts += [round(x, 1), round(y, 1), round(z, 1)]
-    return {"rug": {"center": [cx, cy], "d": R.rug_d, "t": R.rug_t},
-            "futon": {"n": n, "pts": pts, "size": fd},
-            "seats": seats_,
-            **({"sleeper": {"slide": nap["slide"], "parts": [_shift(q, cx, cy) for q in nap["parts"]]}} if nap else {})}
+    return {"n": n, "pts": pts, "size": fd}
+
+
+def _cloth_z(f: dict, x: float, y: float, r: float = 80.0) -> float:
+    """The draped cloth's height near (x, y), world coordinates (the highest point within r)."""
+    pts = f["pts"]
+    zs = [pts[k + 2] for k in range(0, len(pts), 3) if math.hypot(pts[k] - x, pts[k + 1] - y) <= r]
+    return max(zs) if zs else 0.0
+
+
+def room3d(p, n: int = 61) -> dict:
+    """World-space geometry for the 3-D view's room layers: the rug, the seats, and for every scene (kotatsu/scenes.py)
+    its people, props and the futon draped over the table, the seats and the people's legs."""
+    from . import frame
+    L = frame.layout(p)
+    cx, cy = L.cx, L.cy
+    R = p.room
+    seats_ = [{**s, "center": [cx + s["center"][0], cy + s["center"][1], s["center"][2]]} for s in seats(p)]
+    out = {"rug": {"center": [cx, cy], "d": R.rug_d, "t": R.rug_t}, "seats": seats_}
+    if getattr(R, "seats", "zabuton") != "set" or not hasattr(p, "sleeper"):
+        out["futon"] = drape(p, seats_, n)
+        return out
+    from . import scenes as sc
+    W = lambda v: [round(v[0] + cx, 1), round(v[1] + cy, 1), *([round(v[2], 1)] if len(v) > 2 else [])]
+    out["scenes"], out["scene_order"], out["scene_default"] = {}, sc.ORDER, sc.DEFAULT
+    for name, S in sc.scenes(p).items():
+        clear_of = [st for k, st in enumerate(seats_) if k not in S["hide_seats"]]
+        clear_of = [{**st, "center": [st["center"][0] + (S["seat_slide"] if st["kind"] == "shikibuton" else 0.0), *st["center"][1:]]}
+                    for st in clear_of]
+        clear_of += _boxes(S["drape_over"], cx, cy)
+        f = drape(p, clear_of, n)
+        props = []
+        for q in S["props"]:
+            q = {**q, "pos": W(q["pos"])}
+            if q.pop("on_cloth", False):                       # stands on the quilt
+                q["pos"][2] = max(q["pos"][2], _cloth_z(f, q["pos"][0], q["pos"][1]) - 2.0)
+            props.append(q)
+        out["scenes"][name] = {"futon": f, "seat_slide": S["seat_slide"], "hide_seats": S["hide_seats"],
+                               "people": [[_shift(q, cx, cy) for q in ps] for ps in S["people"]],
+                               "props": props, "held": [{**q, "pos": W(q["pos"])} for q in S["held"]],
+                               "top": [{**q, "pos": W(q["pos"])} for q in S["top"]]}
+    out["futon"] = drape(p, seats_, n)                         # nobody there (the ambiance layer off): over the seats only
+    out["sleeper"] = {"slide": out["scenes"]["napping"]["seat_slide"], "parts": out["scenes"]["napping"]["people"][0]}
+    return out
 
 
 def _shift(q: dict, dx: float, dy: float) -> dict:

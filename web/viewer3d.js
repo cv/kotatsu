@@ -6,7 +6,7 @@ import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.j
 import GUI from "lil-gui";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { birchFace, plyEdge, cotton, braidedRug } from "./textures.js";
-import { ambiance } from "./ambiance.js";
+import { ambiance, sceneLayer } from "./ambiance.js";
 import { heatSlab, bend, loadMarks, sinkMarks, maxDisp, GRADIENT } from "./fea3d.js";
 
 // Lighting moods. Key = a window light from the front-left (casts the shadows); env = soft image-based
@@ -121,6 +121,11 @@ export class Viewer3D {
       this.gui.add(this.state, "showPillows").name("pillows").onChange(() => this.place());
       this.gui.add(this.state, "showRug").name("rug").onChange(() => this.place());
       this.gui.add(this.state, "showAmbiance").name("ambiance").onChange(() => this.place());
+      const R0 = data.tables[0].room3d;
+      if (R0?.scenes) {                                  // the table in use (kotatsu/scenes.py)
+        this.state.scene ??= R0.scene_default;
+        this.gui.add(this.state, "scene", R0.scene_order).name("scene").onChange(() => { this.state.showAmbiance = true; this.gui.controllersRecursive().forEach((c) => c.updateDisplay()); this.place(); });
+      }
       this.gui.add(this.state, "light", Object.keys(LIGHT)).name("light").onChange(() => this.applyLight());
       if (data.fea) this.feaGui(data.fea);
     }
@@ -159,6 +164,7 @@ export class Viewer3D {
     // hideBefore: things that only turn up at their step (the top, heater, futon, tea), instead of waiting in view
     const push = (obj, kind, moves = [], hideBefore = false) => {
       obj.position.add(off); this.items.push({ obj, kind, moves, hideBefore, base: obj.position.clone() });
+      return this.items.at(-1);
     };
     opt.boards.forEach((h) => {
       const m = slab(h, t, "top", "u"); m.position.z = ztop;
@@ -192,10 +198,19 @@ export class Viewer3D {
     push(heater, "heater", A.heater, true);
     if (T.room3d) this.addRoom(T.room3d, push);
     const amb = ambiance({ cx: hz.center[0], cy: hz.center[1], topZ: ztop + t, half: T.top.length / 2,
-      floorZ: T.room3d ? -T.room3d.rug.t - 0.5 : -1, sleeper: T.room3d?.sleeper });   // table-local; push() adds the table offset
+      floorZ: T.room3d ? -T.room3d.rug.t - 0.5 : -1, sleeper: T.room3d?.scenes ? null : T.room3d?.sleeper });   // table-local; push() adds the table offset
     push(amb.floor, "ambFloor");
-    for (const o of amb.onTop) push(o, "ambTop", A.tea, true);
-    for (const o of amb.under) push(o, "amb", (A.tea || []).map((m) => ({ ...m, from: [0, 0, 0] })), true); // the napper just turns up
+    const appear = (A.tea || []).map((m) => ({ ...m, from: [0, 0, 0] }));   // people and props just turn up
+    if (T.room3d?.scenes) {                              // each scene's people and things, shown when it's chosen
+      for (const [name, S] of Object.entries(T.room3d.scenes)) {
+        const L = sceneLayer(S, { topZ: ztop + t, edgeX: hz.center[0] + T.top.length / 2 });
+        for (const o of L.top) push(o, "ambTop", A.tea, true).scene = name;
+        for (const o of [...L.people, ...L.floor, ...L.held]) push(o, "amb", appear, true).scene = name;
+      }
+    } else {
+      for (const o of amb.onTop) push(o, "ambTop", A.tea, true);
+      for (const o of amb.under) push(o, "amb", appear, true);
+    }
   }
 
   applyLight() {
@@ -219,30 +234,36 @@ export class Viewer3D {
     rug.receiveShadow = true;
     rug.rotation.x = Math.PI / 2; rug.position.set(R.rug.center[0], R.rug.center[1], -R.rug.t / 2);
     push(rug, "rug");
-    const n = R.futon.n, geo = new THREE.BufferGeometry(), idx = [];
-    geo.setAttribute("position", new THREE.Float32BufferAttribute(R.futon.pts, 3));
+    this.sceneData = R.scenes || null;
+    const futonMat = () => new THREE.MeshStandardMaterial({ map: TEX.quilt, color: COL.futon, roughness: 0.95, side: THREE.DoubleSide });
+    const makeFuton = (Fu) => {
+    const n = Fu.n, geo = new THREE.BufferGeometry(), idx = [];
+    geo.setAttribute("position", new THREE.Float32BufferAttribute(Fu.pts, 3));
     for (let j = 0; j < n - 1; j++) for (let i = 0; i < n - 1; i++) {
       const a = j * n + i, b = a + 1, c = a + n, d = c + 1;
       idx.push(a, b, d, a, d, c);
     }
-    const uv = [], quilts = Math.max(2, Math.round(R.futon.size / 254)); // ~ 25 cm quilted squares
+    const uv = [], quilts = Math.max(2, Math.round(Fu.size / 254)); // ~ 25 cm quilted squares
     for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) uv.push((i / (n - 1)) * quilts, (j / (n - 1)) * quilts);
     geo.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
     geo.setIndex(idx); geo.computeVertexNormals();
-    const futon = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map: TEX.quilt, color: COL.futon, roughness: 0.95, side: THREE.DoubleSide }));
+    const futon = new THREE.Mesh(geo, futonMat());
     futon.castShadow = futon.receiveShadow = true;
     futon.renderOrder = 2; // drawn after the opaque parts, so it can fade over them
-    push(futon, "futon", this.asm?.futon, true);
+    return futon;
+    };
+    push(makeFuton(R.futon), "futon", this.asm?.futon, true).baseFuton = true;   // nobody there: over the seats only
+    for (const [name, S] of Object.entries(R.scenes || {})) push(makeFuton(S.futon), "futon", this.asm?.futon, true).scene = name;
     const seatTex = TEX.cotton.clone(); seatTex.repeat.set(2, 2); seatTex.needsUpdate = true;
     const seatMat = new THREE.MeshStandardMaterial({ map: seatTex, color: COL.seat, roughness: 0.9 });
-    for (const st of R.seats) {
+    R.seats.forEach((st, si) => {
       const [w, d, h] = st.size;
       const m = new THREE.Mesh(new RoundedBoxGeometry(w, d, h, 4, Math.min(35, h / 2.2)), seatMat);
       m.position.set(...st.center);
       m.castShadow = m.receiveShadow = true;
-      if (st.kind === "shikibuton" && R.sleeper) m.userData.nap = { x0: st.center[0], slide: R.sleeper.slide }; // slides for a nap
+      m.userData.seatIdx = si; m.userData.shiki = st.kind === "shikibuton";
       push(m, "seat");
-    }
+    });
   }
 
   place() {
@@ -252,11 +273,13 @@ export class Viewer3D {
     const local = (m) => Math.min(1, Math.max(0, (s - m.step - m.a) / (m.b - m.a)));
     const ease = (x) => x * x * (3 - 2 * x);
     for (const it of this.items || []) {
-      const nap = it.obj.userData?.nap;
-      if (nap) it.obj.position.x = nap.x0 + (S.showAmbiance ? nap.slide : 0); // the shikibuton, pulled over for the napper
-      const vis = { top: S.showTop, frame: S.showFrame, wedge: S.showFrame, heater: S.showHeater,
+      const sc = S.showAmbiance && this.sceneData ? this.sceneData[S.scene] : null;   // the scene shown, if any
+      let vis = { top: S.showTop, frame: S.showFrame, wedge: S.showFrame, heater: S.showHeater,
         futon: S.showFuton, rug: S.showRug, seat: S.showPillows,
         ambTop: S.showAmbiance && S.showTop, amb: S.showAmbiance, ambFloor: S.showAmbiance }[it.kind];
+      if (it.scene) vis = vis && !!sc && it.scene === S.scene;
+      if (it.baseFuton && sc) vis = false;
+      if (sc && it.kind === "seat" && sc.hide_seats.includes(it.obj.userData.seatIdx)) vis = false;   // the zaisu stands there
       const started = !it.moves?.length || s > it.moves[0].step + it.moves[0].a;
       it.obj.visible = vis && (started || !it.hideBefore);
       if (fc) { // a heat map: just the frame (and the top, if it's the top's case); the analysed part is painted
@@ -268,6 +291,7 @@ export class Viewer3D {
         const k = 1 - ease(local(m));
         it.obj.position.x += m.from[0] * k; it.obj.position.y += m.from[1] * k; it.obj.position.z += m.from[2] * k;
       }
+      if (sc && it.obj.userData?.shiki) it.obj.position.x += sc.seat_slide;   // the shikibuton, pulled over for a nap
       if (it.kind === "futon") { // fades in as it settles over the frame
         const mat = it.obj.material, o = it.moves?.length ? ease(local(it.moves[0])) : 1;
         const fade = o < 0.999;

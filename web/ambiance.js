@@ -197,6 +197,225 @@ function book() {
   return g;
 }
 
+function cat() { // a curled-up orange tabby (~7 kg) asleep in the warm: chin on paws, tail round the front
+  const g = new THREE.Group();
+  const add = (geo, m, [x, y, z], [sx, sy, sz] = [1, 1, 1]) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.scale.set(sx, sy, sz); g.add(o); return o; };
+  const cream = mat({ color: 0xf7e6cc, roughness: 0.95 });
+  // body: a soft loaf, poles along the spine so the stripes ring it
+  const body = new THREE.SphereGeometry(1, 64, 40); body.rotateZ(-Math.PI / 2);
+  add(body, mat({ map: bodyFur(), roughness: 0.95 }), [0, 0, 86], [205, 160, 92]);
+  // head: big and round (that's most of the cute), resting low at the front right
+  const H = [140, -108, 66];
+  const headGeo = new THREE.SphereGeometry(1, 48, 32); headGeo.rotateX(Math.PI / 2);
+  add(headGeo, mat({ map: headFur(), roughness: 0.95 }), H, [84, 78, 70]);
+  const ear = mat({ color: 0xd8915a, roughness: 0.95 }), inner = mat({ color: 0xf0aaa4, roughness: 0.9 });
+  for (const s of [-1, 1]) {
+    const e = new THREE.Group(); e.position.set(H[0] + s * 44, H[1] + 6, H[2] + 52); e.rotation.set(-0.2, s * 0.5, 0);
+    const cone = (rad, h) => { const geo = new THREE.ConeGeometry(rad, h, 24); geo.rotateX(Math.PI / 2); return geo; }; // axis up (+z)
+    const outer = new THREE.Mesh(cone(25, 40), ear); outer.scale.set(1, 0.55, 1);      // flattened front to back
+    const pink = new THREE.Mesh(cone(15, 28), inner); pink.scale.set(1, 0.4, 1); pink.position.set(0, -7, -4);
+    e.add(outer, pink); g.add(e);
+  }
+  const fy = H[1] - 74;                                   // front of the face
+  for (const s of [-1, 1]) add(new THREE.SphereGeometry(1, 20, 14), cream, [H[0] + s * 13, fy - 6, H[2] - 12], [17, 12, 13]); // whisker pads
+  add(new THREE.SphereGeometry(1, 16, 10), mat({ color: 0xe48f93, roughness: 0.4 }), [H[0], fy - 14, H[2] - 1], [8, 5, 5]);    // nose
+  const lash = mat({ color: 0x3a2414, roughness: 0.6 });
+  for (const s of [-1, 1]) {                               // sleepy closed eyes: little smiles ◡
+    const eye = add(new THREE.TorusGeometry(11, 2.4, 8, 24, Math.PI), lash, [H[0] + s * 31, fy + 1.5, H[2] + 16]);
+    eye.rotation.set(-Math.PI / 2, 0, s * 0.42, "ZYX");    // bottom half of the ring, turned to follow the cheek
+  }
+  const blush = mat({ color: 0xf29b96, roughness: 0.9, transparent: true, opacity: 0.55 });
+  for (const s of [-1, 1]) add(new THREE.SphereGeometry(1, 16, 10), blush, [H[0] + s * 46, fy + 10, H[2] - 4], [13, 4, 8]);
+  const wpts = [];
+  for (const s of [-1, 1]) for (const k of [-1, 0, 1]) {
+    const x0 = H[0] + s * 20, z0 = H[2] - 10 + k * 5;
+    wpts.push(x0, fy - 10, z0, x0 + s * 75, fy - 4 - 6 * Math.abs(k), z0 + k * 14 + 4);
+  }
+  const wg = new THREE.BufferGeometry(); wg.setAttribute("position", new THREE.Float32BufferAttribute(wpts, 3));
+  g.add(new THREE.LineSegments(wg, new THREE.LineBasicMaterial({ color: 0xfff8ee, transparent: true, opacity: 0.8 })));
+  for (const s of [-1, 1]) add(new THREE.SphereGeometry(1, 24, 16), cream, [H[0] + s * 30, H[1] - 66, 16], [24, 36, 16]); // front paws
+  // tail: tapered tube from the rump round the front, tip by the paws
+  const path = new THREE.CatmullRomCurve3([[-195, 40, 36], [-222, -50, 28], [-170, -140, 22], [-60, -192, 19],
+    [40, -196, 18], [90, -184, 17]].map(([x, y, z]) => new THREE.Vector3(x, y, z)));
+  const T = 96, R = 16, tg = new THREE.TubeGeometry(path, T, 1, R), pos = tg.attributes.position, v = new THREE.Vector3();
+  for (let i = 0; i <= T; i++) {
+    const t = i / T, c = path.getPointAt(t), rad = 25 - 11 * t * t;
+    for (let j = 0; j <= R; j++) { const k = i * (R + 1) + j; v.fromBufferAttribute(pos, k).sub(c).multiplyScalar(rad).add(c); pos.setXYZ(k, v.x, v.y, v.z); }
+  }
+  tg.computeVertexNormals();
+  const tailTex = tailFur(); tailTex.repeat.set(1, 1);
+  g.add(new THREE.Mesh(tg, mat({ map: tailTex, roughness: 0.95 })));
+  add(new THREE.SphereGeometry(14, 16, 12), mat({ color: 0xe2a061, roughness: 0.95 }), path.getPointAt(1).toArray());
+  return shadowed(g);
+}
+
+function catReach(toPaws) { // the same tabby, up on its hind legs, front paws on the table's edge (toPaws: [forward, up])
+  const g = new THREE.Group(), [fx, fz] = toPaws, ang = Math.atan2(fz, fx), len = Math.hypot(fx, fz);
+  const fur = mat({ map: bodyFur(), roughness: 0.95 }), cream = mat({ color: 0xf7e6cc, roughness: 0.95 });
+  const body = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32), fur);
+  const bl = Math.min(0.42 * len, 190);
+  body.scale.set(bl, 95, 92); body.position.set(Math.cos(ang) * len * 0.42, 0, 70 + Math.sin(ang) * len * 0.36); body.rotation.y = -ang; g.add(body);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(1, 40, 28), mat({ map: headFur(), roughness: 0.95 }));
+  head.scale.set(72, 80, 70); head.position.set(fx - 10, 0, fz + 75); g.add(head);
+  for (const s of [-1, 1]) {
+    const ear = new THREE.Mesh(new THREE.ConeGeometry(24, 40, 20), mat({ color: 0xd8915a, roughness: 0.95 }));
+    ear.rotation.x = Math.PI / 2; ear.rotation.set(0, 0, 0); ear.position.set(fx - 20, s * 44, fz + 135); g.add(ear);
+    const paw = new THREE.Mesh(new THREE.CapsuleGeometry(20, Math.max(1, len * 0.45), 6, 12), fur);
+    const a0 = new THREE.Vector3(Math.cos(ang) * len * 0.55, s * 40, 60 + Math.sin(ang) * len * 0.55), a1 = new THREE.Vector3(fx, s * 40, fz + 10);
+    paw.position.copy(a0.clone().add(a1).multiplyScalar(0.5)); paw.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), a1.clone().sub(a0).normalize()); g.add(paw);
+    const toe = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), cream); toe.scale.set(26, 22, 14); toe.position.copy(a1); g.add(toe);
+    const hind = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), fur); hind.scale.set(70, 40, 60); hind.position.set(20, s * 55, 55); g.add(hind);
+    const foot = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), cream); foot.scale.set(45, 22, 16); foot.position.set(40, s * 55, 10); g.add(foot);
+  }
+  const path = new THREE.CatmullRomCurve3([[-20, 0, 60], [-120, 30, 40], [-200, 80, 70], [-230, 130, 150]].map(([x, y, z]) => new THREE.Vector3(x, y, z)));
+  g.add(new THREE.Mesh(new THREE.TubeGeometry(path, 40, 20, 12), mat({ map: tailFur(), roughness: 0.95 })));
+  return shadowed(g);
+}
+
+function card(face = false, seed = 0) { // a playing card, 63 x 88 mm
+  const r = rng(seed + 7);
+  const m = new THREE.Mesh(new RoundedBoxGeometry(63, 88, 0.6, 2, 3),
+    mat({ color: face ? 0xfbfaf6 : (r() < 0.5 ? 0xa8323a : 0x2f4e8c), roughness: 0.6 }));
+  return m;
+}
+
+function cardPile(spread = false) {
+  const g = new THREE.Group(), r = rng(spread ? 11 : 5);
+  if (!spread) {
+    const deck = new THREE.Mesh(new RoundedBoxGeometry(63, 88, 14, 2, 3), mat({ color: 0xa8323a, roughness: 0.6 }));
+    deck.position.z = 7; g.add(deck);
+  } else {
+    for (let k = 0; k < 7; k++) { const c = card(true, k); c.position.set((r() - 0.5) * 90, (r() - 0.5) * 70, 0.7 * k + 0.3); c.rotation.z = (r() - 0.5) * 1.6; g.add(c); }
+  }
+  return shadowed(g);
+}
+
+function cardFan() { // five cards fanned in two hands, faces towards the player (the group's -x)
+  const g = new THREE.Group();
+  for (let k = 0; k < 5; k++) {
+    const c = card(true, k + 20), piv = new THREE.Group();
+    c.position.set(0, 30, 0); piv.add(c); piv.rotation.z = (k - 2) * 0.22; piv.position.x = k * 0.8;
+    g.add(piv);
+  }
+  const holder = new THREE.Group(); g.rotation.set(0, 0, 0);
+  holder.add(g); g.rotation.x = 0; g.rotation.y = 0;
+  g.rotation.set(Math.PI / 2 - 0.5, 0, 0);  // stood up, leaning back towards the player
+  return shadowed(holder);
+}
+
+function sushi() { // a geta board of nigiri and maki
+  const g = new THREE.Group();
+  const wood = mat({ color: 0xd8b98a, roughness: 0.7 });
+  const board = new THREE.Mesh(new RoundedBoxGeometry(380, 190, 18, 2, 4), wood); board.position.z = 30; g.add(board);
+  for (const x of [-140, 140]) { const f = new THREE.Mesh(new THREE.BoxGeometry(24, 170, 22), wood); f.position.set(x, 0, 11); g.add(f); }
+  const rice = mat({ color: 0xf6f2e8, roughness: 0.9 });
+  const tops = [0xf08a5d, 0xc0303a, 0xf3c94c, 0xf08a5d, 0xe9e2d0, 0xc0303a];
+  tops.forEach((c, k) => {
+    const x = -150 + k * 58, y = 40;
+    const ri = new THREE.Mesh(new RoundedBoxGeometry(44, 24, 20, 2, 8), rice); ri.position.set(x, y, 49); g.add(ri);
+    const fish = new THREE.Mesh(new RoundedBoxGeometry(52, 28, 7, 2, 3), mat({ color: c, roughness: 0.5 })); fish.position.set(x, y, 61); g.add(fish);
+  });
+  for (let k = 0; k < 6; k++) {
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(19, 19, 30, 24), [mat({ color: 0x1f2a1e, roughness: 0.8 }), rice, rice]);
+    m.rotation.x = Math.PI / 2; m.rotation.set(0, 0, 0); m.position.set(-150 + k * 58, -45, 54); g.add(m);
+    const fill = new THREE.Mesh(new THREE.CylinderGeometry(7, 7, 31, 12), mat({ color: 0xf08a5d })); fill.position.copy(m.position); g.add(fill);
+  }
+  const wasabi = new THREE.Mesh(new THREE.SphereGeometry(14, 12, 8), mat({ color: 0x8fbf5a })); wasabi.position.set(165, -60, 44); wasabi.scale.z = 0.6; g.add(wasabi);
+  return shadowed(g);
+}
+
+function plate() {
+  const g = new THREE.Group();
+  const p = new THREE.Mesh(new THREE.CylinderGeometry(85, 70, 14, 40), mat({ color: 0xf2efe8, roughness: 0.35 })); p.rotation.x = Math.PI / 2; p.position.z = 7; g.add(p);
+  const soy = new THREE.Mesh(new THREE.CylinderGeometry(38, 32, 12, 28), mat({ color: 0x2c3e5c, roughness: 0.3 })); soy.rotation.x = Math.PI / 2; soy.position.set(110, 40, 6); g.add(soy);
+  const s = new THREE.Mesh(new THREE.CylinderGeometry(30, 30, 1, 24), mat({ color: 0x3a1e10, roughness: 0.2 })); s.rotation.x = Math.PI / 2; s.position.set(110, 40, 12.5); g.add(s);
+  return shadowed(g);
+}
+
+function chopsticks() {
+  const g = new THREE.Group(), m = mat({ color: 0x5a3a24, roughness: 0.5 });
+  for (const y of [-9, 9]) { const c = new THREE.Mesh(new THREE.CylinderGeometry(3, 5, 230, 10), m); c.rotation.z = Math.PI / 2; c.position.set(0, y, 8); g.add(c); }
+  const rest = new THREE.Mesh(new RoundedBoxGeometry(18, 46, 12, 2, 5), mat({ color: 0xe9e4da })); rest.position.set(-90, 0, 6); g.add(rest);
+  return shadowed(g);
+}
+
+function bowl() {
+  const g = new THREE.Group();
+  const pts = [[0, 0], [38, 0], [52, 18], [58, 60], [54, 62], [48, 22], [0, 18]].map(([r, z]) => new THREE.Vector2(r, z));
+  const b = new THREE.Mesh(new THREE.LatheGeometry(pts, 40), mat({ color: 0x6b1f1f, roughness: 0.3, side: THREE.DoubleSide })); b.rotation.x = Math.PI / 2; g.add(b);
+  const soup = new THREE.Mesh(new THREE.CircleGeometry(51, 32), mat({ color: 0xa5763d, roughness: 0.4 })); soup.position.z = 48; g.add(soup);
+  return shadowed(g);
+}
+
+function laptopStand() { // an aluminium stand lifting the laptop's screen ~15 cm, the laptop on it
+  const g = new THREE.Group(), al = mat({ color: 0xbfc3c8, roughness: 0.35, metalness: 0.6 });
+  for (const x of [-120, 120]) {
+    const s = new THREE.Mesh(new THREE.BoxGeometry(14, 230, 150), al); s.position.set(x, 0, 75); s.rotation.x = -0.25; g.add(s);
+  }
+  const deck = new THREE.Mesh(new THREE.BoxGeometry(280, 250, 6), al); deck.position.set(0, 0, 150); deck.rotation.x = -0.25; g.add(deck);
+  const lap = laptop(); lap.position.set(0, -10, 156); lap.rotation.x = -0.25; g.add(lap);
+  return shadowed(g);
+}
+
+function keyboard() {
+  const g = new THREE.Group();
+  const k = new THREE.Mesh(new RoundedBoxGeometry(440, 130, 18, 2, 5), mat({ color: 0x3b3f45, roughness: 0.6 })); k.position.z = 9; g.add(k);
+  const keys = new THREE.Mesh(new THREE.BoxGeometry(410, 100, 4), mat({ color: 0xd7d9dc, roughness: 0.7 })); keys.position.z = 19; g.add(keys);
+  return shadowed(g);
+}
+
+function mouse() {
+  const m = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), mat({ color: 0xe8e8e8, roughness: 0.4 }));
+  m.scale.set(32, 56, 18); m.position.z = 14;
+  const g = new THREE.Group(); g.add(m); return shadowed(g);
+}
+
+function bookOpen() { // an open paperback held up to read: pages facing the reader (the group's -x)
+  const g = new THREE.Group(), paper = mat({ color: 0xf6f0e2, roughness: 0.9 }), cover = mat({ color: 0x7a2e2a, roughness: 0.7 });
+  for (const s of [-1, 1]) {
+    const leaf = new THREE.Group();
+    const pg = new THREE.Mesh(new THREE.BoxGeometry(6, 110, 175), paper); pg.position.set(0, s * 55, 0); leaf.add(pg);
+    const cv = new THREE.Mesh(new THREE.BoxGeometry(2, 112, 178), cover); cv.position.set(4, s * 56, 0); leaf.add(cv);
+    leaf.rotation.z = s * 0.35; g.add(leaf);
+  }
+  g.rotation.y = 0.6;   // tilted back towards the reader's eyes
+  const h = new THREE.Group(); h.add(g); return shadowed(h);
+}
+
+function zaisu(seatH) { // a legless chair: a cushioned seat seatH high (sat on) and a reclined back, facing +x
+  const g = new THREE.Group(), fabric = mat({ color: 0x3a3d42, roughness: 0.9 }), base = mat({ color: 0x23252a, roughness: 0.8 });
+  const b = new THREE.Mesh(new RoundedBoxGeometry(440, 440, seatH - 60, 2, 10), base); b.position.z = (seatH - 60) / 2; g.add(b);
+  const c = new THREE.Mesh(new RoundedBoxGeometry(430, 430, 90, 3, 30), fabric); c.position.z = seatH - 15; g.add(c);
+  const back = new THREE.Mesh(new RoundedBoxGeometry(70, 430, 480, 3, 25), fabric);
+  back.position.set(-210, 0, seatH + 200); back.rotation.y = -0.28; g.add(back);
+  return shadowed(g);
+}
+
+const PROPS = { cat_curled: () => cat(), card_pile: (q) => cardPile(!!q.spread), card_fan: () => cardFan(), sushi, plate, chopsticks, bowl,
+  kyusu: () => kyusu(), yunomi: () => yunomi(), laptop_stand: laptopStand, keyboard, mouse, book_open: bookOpen };
+
+/** One scene's things (kotatsu/scenes.py places them all): people, props on the floor and the top, things held. */
+export function sceneLayer(S, { topZ, edgeX }) {
+  const out = { people: (S.people || []).map((P) => person({ parts: P })), floor: [], top: [], held: [] };
+  for (const q of S.props || []) {
+    let o;
+    if (q.kind === "zaisu") o = zaisu(q.seat_h);
+    else if (q.kind === "cat_reach") o = catReach([q.pos[0] - edgeX + 20, topZ - q.pos[2] + 5]);
+    else o = PROPS[q.kind]?.(q);
+    if (!o) continue;
+    o.position.set(...q.pos); o.rotation.z = q.yaw || 0; out.floor.push(o);
+  }
+  for (const q of S.top || []) {
+    const o = PROPS[q.kind]?.(q); if (!o) continue;
+    o.position.set(q.pos[0], q.pos[1], topZ); o.rotation.z = q.yaw || 0; out.top.push(shadowed(o));
+  }
+  for (const q of S.held || []) {
+    const o = PROPS[q.kind]?.(q); if (!o) continue;
+    o.position.set(...q.pos); o.rotation.z = (q.yaw || 0) + Math.PI; out.held.push(o);   // faces back towards the holder
+  }
+  return out;
+}
+
 function person(P) { // someone napping, posed and sized in Python (kotatsu/sleeper.py): the page only draws it
   const g = new THREE.Group();
   const M = { top: mat({ color: 0xd9cbb4, roughness: 0.95 }), pants: mat({ color: 0x4a4a52, roughness: 0.9 }),
