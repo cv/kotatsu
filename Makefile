@@ -16,7 +16,7 @@ test:
 fea:             ## FEA heat maps for the 3-D view (out/fea.json; a minute or so; skipped when up to date)
 	$(UV) run python -m kotatsu.fea_view --if-stale
 
-heights:         ## the 3-D view's height slider: the table every 25 mm, -300 to +300 (out/heights; skipped when up to date)
+heights:         ## the 3-D view's height slider: the table every mm, -50 to +50 (out/heights; a few minutes; skipped when up to date)
 	$(UV) run python -m kotatsu.heights --if-stale
 
 optimize:        ## the design-space search (out/optimize/: results.json and map.png; a few minutes)

@@ -18,8 +18,8 @@ from types import SimpleNamespace as NS
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "out" / "heights"
 
-STEP = 25          # the slider's step (mm)
-SPAN = 300         # +- this much
+STEP = 1           # the slider's step (mm)
+SPAN = 50          # +- this much (owner 2026-11: was 300 in 25 mm steps)
 
 
 def variant(p, dz: float):
@@ -72,10 +72,42 @@ def export(p, dz: float) -> dict:
         cmp = compare.data(q)
         if cmp:
             data["compare"] = {k: v for k, v in cmp.items() if k != "v1"}
-        return data
+        return slim(p, data)
     except Exception as e:                                  # too short (or too tall) for the generator
         why = "too low: the heater, deck and leg joints no longer fit above the floor" if dz < 0 else "too tall for the generator"
         return {"dz": dz, "error": f"{why} ({type(e).__name__}: {e})"[:300]}
+
+
+def _ints(o):
+    """Every number rounded to the millimetre (the quilt's drape: 1 mm is far finer than the eye can see)."""
+    if isinstance(o, float):
+        return round(o)
+    if isinstance(o, list):
+        return [_ints(v) for v in o]
+    if isinstance(o, dict):
+        return {k: _ints(v) for k, v in o.items()}
+    return o
+
+
+_BASE_PARTS = None
+
+
+def slim(p, data: dict) -> dict:
+    """Make a height file small (101 of them get fetched as the slider moves): only the frame parts whose shape
+    differs from the design's (the page keeps the rest; parts_delta marks it), and the quilt's drapes in whole mm."""
+    from . import site
+    global _BASE_PARTS
+    if _BASE_PARTS is None:
+        _BASE_PARTS = {pt["name"]: json.dumps(pt, sort_keys=True) for pt in site.frame_data(p)["parts"]}
+    fr = dict(data["frame"])
+    fr["parts"] = [pt for pt in fr["parts"] if _BASE_PARTS.get(pt["name"]) != json.dumps(pt, sort_keys=True)]
+    fr["parts_delta"] = True
+    data["frame"] = fr
+    R = dict(data["room3d"])
+    R["futon"] = _ints(R["futon"])
+    R["scenes"] = {k: {**v, "futon": _ints(v["futon"])} if isinstance(v.get("futon"), dict) else v for k, v in R["scenes"].items()}
+    data["room3d"] = R
+    return data
 
 
 def offsets() -> list[int]:

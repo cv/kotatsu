@@ -232,6 +232,7 @@ def build(with_tests: bool = True) -> None:
     from . import heights                                # the height slider's variants: cached, refreshed by `make heights`
     hi = heights.load_index()
     if hi is not None:
+        shutil.rmtree(OUT / "heights", ignore_errors=True)   # no files left over from an older span or step
         (OUT / "heights").mkdir(exist_ok=True)
         for f in heights.OUT.glob("*.json"):
             shutil.copy2(f, OUT / "heights" / f.name)

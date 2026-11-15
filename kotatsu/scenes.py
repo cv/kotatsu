@@ -222,7 +222,8 @@ def cat_parts(pos, yaw: float, pose: dict) -> list[dict]:
 
 def place_cat(p, q: dict, cloth) -> dict:
     """A reaching cat on the quilt: as close to the table as it can stand with its body clear of the quilt
-    (cloth(x, y) is the quilt's height, centred coordinates) and its head clear of the tabletop."""
+    (cloth(x, y) is the quilt's height, centred coordinates) and its head clear of the tabletop. If no stance works
+    (a much taller table), a cat curled on the quilt instead."""
     from . import clipping
     L = frame.layout(p)
     edge = p.top.length / 2
@@ -247,8 +248,9 @@ def place_cat(p, q: dict, cloth) -> dict:
         if ok:
             best = {**{k: v for k, v in q.items() if k != "on_cloth"}, "pos": pos, "pose": pose, "parts": parts, "feet_d": float(dd)}
             break
-    if best is None:
-        raise ValueError("the cat can't reach the table without going into the quilt or the top")
+    if best is None:                                            # a table too tall to reach (the height slider):
+        x, y = -f[0] * (edge + 320.0), q["pos"][1]               # the cat gives up and curls on the quilt instead
+        return {"kind": "cat_curled", "pos": [float(x), float(y), float(cloth(x, y)) - 8.0], "yaw": float(yaw), "gave_up": True}
     return best
 
 

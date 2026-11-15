@@ -182,6 +182,10 @@ export class Viewer3D {
     }
     if (dz !== this.state.dz) return;                     // the slider moved on while it loaded
     if (v.error) { this.readout.innerHTML = `<b>frame ${dz > 0 ? "+" : ""}${dz} mm</b>: the generator can't make this one<br><span style="color:#8a6d55">${v.error}</span>`; return; }
+    if (v.frame?.parts_delta) {                          // the file only carries the parts that changed shape
+      const base = this.data.tables[0].frame.parts, mine = new Map(v.frame.parts.map((pt) => [pt.name, pt]));
+      v.frame = { ...v.frame, parts: base.map((pt) => mine.get(pt.name) || pt), parts_delta: false };
+    }
     this.dzTable = v; this.build(); this.showReadout(v.clear, dz, v.clips);
   }
 

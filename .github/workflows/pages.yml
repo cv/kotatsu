@@ -27,8 +27,13 @@ jobs:
         run: uv run python -m kotatsu.build
       - name: FEA heat maps for the 3-D view (about a minute)
         run: uv run python -m kotatsu.fea_view
-      - name: Height slider variants
-        run: uv run python -m kotatsu.heights
+      - name: Restore the height slider variants (rebuilt only when the design or code changed)
+        uses: actions/cache@v4
+        with:
+          path: out/heights
+          key: heights-${{ hashFiles('params.toml', 'kotatsu/**/*.py') }}
+      - name: Height slider variants (101 tables, about 10 minutes when not cached)
+        run: uv run python -m kotatsu.heights --if-stale
       - name: Site (runs the tests too; the results show on the page)
         run: uv run python -m kotatsu.site
       - name: Stop here if a test failed (never publish cut files from a red build, owner 2026-11)
