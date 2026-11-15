@@ -91,7 +91,9 @@ def seated(p, seat, seat_z: float, facing: float, legs: str, hands: tuple, lean:
         el, wr = _reach(sh, t3, upper, fore, -z + r * side * 0.8 - f * 0.4)
         B.cap(sh, el, 0.026 * H * g, "top")
         B.cap(el, wr, 0.020 * H * g, "top")
-        d = (wr - el) / np.linalg.norm(wr - el)
+        d = wr - el
+        d[2] = 0.0                                              # the hand lies flat, at the wrist's height
+        d = d / np.linalg.norm(d)
         B.ell(wr + d * 0.45 * hand, (0.5 * hand, 0.026 * H, 0.012 * H), "skin", math.atan2(d[1], d[0]))
     thigh, shank, foot = 0.245 * H, 0.246 * H, 0.152 * H
     for side in (-1, 1):
@@ -117,6 +119,13 @@ def hands_of(parts: list[dict]) -> np.ndarray:
     if len(hs) != 2:
         raise ValueError(f"expected two hands, found {len(hs)}")
     return (np.array(hs[0]) + np.array(hs[1])) / 2
+
+
+def held_in(kind: str, parts: list[dict], hand: int, up: float, yaw: float = 0.0) -> dict:
+    """Something resting on one hand (0 = left, 1 = right), its base `up` mm above the hand's centre."""
+    hs = [q for q in parts if q["kind"] == "ellipsoid" and q["mat"] == "skin" and q["r"][2] < q["r"][1] * 0.6]
+    c = hs[hand]["c"]
+    return {"kind": kind, "pos": [float(c[0]), float(c[1]), float(c[2] + up)], "yaw": float(yaw)}
 
 
 def held(kind: str, parts: list[dict], facing: float, up: float) -> dict:
@@ -151,8 +160,8 @@ def scenes(p) -> dict:
         sz = seat_on if seat_z is None else seat_z
         to_edge = d - edge                                      # from the hips to the table's edge
         hh = {"cards": ((to_edge + 0.07 * H, -0.05 * H, surf + 0.09 * H), (to_edge + 0.07 * H, 0.05 * H, surf + 0.09 * H)),
-              "eat": ((to_edge + 0.05 * H, -0.09 * H, surf + 0.03 * H), (to_edge + 0.12 * H, 0.06 * H, surf + 0.06 * H)),
-              "type": ((to_edge + 50.0, -0.07 * H, surf + 0.025 * H), (to_edge + 50.0, 0.07 * H, surf + 0.025 * H)),
+              "eat": ((to_edge - 0.01 * H, -0.08 * H, surf + 0.12 * H), (to_edge + 0.12 * H, 0.06 * H, surf + 0.06 * H)),  # the bowl lifted in the left hand
+              "type": ((to_edge + 50.0, -0.07 * H, surf + 62.0), (to_edge + 50.0, 0.07 * H, surf + 62.0)),   # wrists just above the keys
               "read": ((0.16 * H, -0.07 * H, sz + 0.26 * H), (0.16 * H, 0.07 * H, sz + 0.26 * H))}[hands]
         return seated(p, (0.0, sy * d), sz, math.atan2(-sy, 0.0), legs, hh, lean)
 
@@ -179,9 +188,8 @@ def scenes(p) -> dict:
                      "top": [{"kind": "sushi", "pos": [60.0, 0.0], "yaw": 0.0},
                              {"kind": "plate", "pos": [-40.0, 230.0]}, {"kind": "plate", "pos": [-40.0, -230.0]},
                              {"kind": "chopsticks", "pos": [60.0, 260.0], "yaw": 0.0}, {"kind": "chopsticks", "pos": [60.0, -260.0], "yaw": 0.0},
-                             {"kind": "bowl", "pos": [-200.0, 300.0]}, {"kind": "bowl", "pos": [-200.0, -300.0]},
-                             {"kind": "kyusu", "pos": [-280.0, 0.0], "yaw": 2.6}, {"kind": "yunomi", "pos": [200.0, 300.0]}, {"kind": "yunomi", "pos": [200.0, -300.0]}],
-                     "held": []}
+                             {"kind": "kyusu", "pos": [-280.0, 0.0], "yaw": 2.6}, {"kind": "yunomi", "pos": [-230.0, 290.0]}, {"kind": "yunomi", "pos": [230.0, -290.0]}],
+                     "held": [held_in("bowl", ps, 0, 0.012 * H) for ps in (a, b)]}   # miso bowls lifted, Japanese style
     # napping: the napper (sleeper.py) and a reader on the far cushion
     rd = at_side(-1, hands="read")
     out["napping"] = {"people": [nap["parts"], rd], "seat_slide": nap["slide"], "hide_seats": [],
@@ -208,7 +216,7 @@ def scenes(p) -> dict:
         out[name] = {"people": [w, rdr], "seat_slide": 0.0, "hide_seats": [i for i, s in enumerate(room.seats(p)) if s["kind"] == "cushion" and s["center"][1] < 0],
                      "props": [{"kind": "zaisu", "pos": [0.0, -d, 0.0], "yaw": math.pi / 2, "seat_h": zs}],
                      "sit_back": round(d - zy),
-                     "top": [{"kind": "laptop_stand", "pos": [0.0, -edge + 330.0], "yaw": 0.0},       # the screen faces the sitter (-y)
+                     "top": [{"kind": "laptop_stand", "pos": [0.0, -edge + 360.0], "yaw": 0.0},   # far enough back for the fingertips       # the screen faces the sitter (-y)
                              {"kind": "keyboard", "pos": [0.0, -edge + 0.06 * H], "yaw": 0.0},
                              {"kind": "mouse", "pos": [260.0, -edge + 0.06 * H], "yaw": 0.0},
                              {"kind": "yunomi", "pos": [-300.0, -edge + 140.0]}],

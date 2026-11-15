@@ -70,7 +70,7 @@ def test_the_zaisu_sitter_stops_short_of_the_heater_ring():
 
 
 def test_held_things_sit_in_the_hands():
-    """Cards and books are where their holder's hands are, a little above them, and face back towards the holder."""
+    """Cards and books are between their holder's hands, a miso bowl on one; each a little above the hands."""
     import math
     import numpy as np
     from kotatsu import scenes
@@ -83,7 +83,9 @@ def test_held_things_sit_in_the_hands():
                     c = scenes.hands_of(ps)
                 except ValueError:
                     continue                                 # the napper has no seated hands
-                near.append(float(np.linalg.norm(np.array(h["pos"][:2]) - c[:2])))
+                hs = [np.array(q["c"]) for q in ps if q["kind"] == "ellipsoid" and q["mat"] == "skin" and q["r"][2] < q["r"][1] * 0.6]
+                for at in (c, *hs):                          # between both hands, or resting on one
+                    near.append(float(np.linalg.norm(np.array(h["pos"][:2]) - at[:2])))
             assert near and min(near) < 1.0, f"{name}: the {h['kind']} isn't in anyone's hands"
 
 
@@ -95,3 +97,11 @@ def test_the_laptop_faces_the_zaisu():
         (st,) = [q for q in sc["top"] if q["kind"] == "laptop_stand"]
         (z,) = [q for q in sc["props"] if q["kind"] == "zaisu"]
         assert st["yaw"] == 0.0 and z["pos"][1] < 0
+
+
+def test_nothing_clips():
+    """No hand or arm passes into a thing on the table or into the tabletop, and nobody into anybody else, by more
+    than a touch (kotatsu/clipping.py samples every body part against props sized like the page draws them)."""
+    from kotatsu import clipping
+    bad = {k: [x for x in v if x[0] > 3.0] for k, v in clipping.overlaps(P).items()}
+    assert not any(bad.values()), bad
