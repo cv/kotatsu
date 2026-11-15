@@ -52,6 +52,28 @@ function slab(p, t, kind, grain = "u") {
   return g;
 }
 
+function ghostSlab(p, t) { // v1, for the comparison: pale glass with drawn edges
+  const geo = new THREE.ExtrudeGeometry(shapeFrom(p), { depth: t, bevelEnabled: false, curveSegments: 8 });
+  const mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0x8fb4ff, transparent: true, opacity: 0.16, depthWrite: false }));
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 25), new THREE.LineBasicMaterial({ color: 0x3f6fd8, transparent: true, opacity: 0.7 }));
+  const g = new THREE.Group(); g.add(mesh, edges); g.renderOrder = 5;
+  return g;
+}
+
+function roomMap(C) { // the clear-height difference (kotatsu/compare.py), v2 - v1: green more room, red less
+  const n = C.n, px = new Uint8Array(n * n * 4);
+  C.diff.forEach((d, i) => {
+    const a = Math.abs(d) <= 5 ? 0 : 0.35 + Math.min(1, Math.abs(d) / 80) * 0.55;   // 5 mm or less: the same
+    px.set(d > 0 ? [40, 180, 80, a * 255] : [220, 50, 40, a * 255], i * 4);
+  });
+  const tex = new THREE.DataTexture(px, n, n, THREE.RGBAFormat); tex.needsUpdate = true;
+  tex.magFilter = THREE.NearestFilter;
+  const size = n * C.cell, plane = new THREE.Mesh(new THREE.PlaneGeometry(size, size),
+    new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false }));
+  plane.position.set(C.x0 + (n - 1) * C.cell / 2, C.y0 + (n - 1) * C.cell / 2, 1.5); plane.renderOrder = 4;
+  return plane;
+}
+
 // local (u, v, w=extrude) -> world, per panel axis
 const BASIS = {
   x: new THREE.Matrix4().set(1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1),
@@ -121,6 +143,10 @@ export class Viewer3D {
       this.gui.add(this.state, "showPillows").name("pillows").onChange(() => this.place());
       this.gui.add(this.state, "showRug").name("rug").onChange(() => this.place());
       this.gui.add(this.state, "showAmbiance").name("ambiance").onChange(() => this.place());
+      if (data.tables.some((x) => x.compare)) {
+        this.state.compareV1 ??= false;
+        this.gui.add(this.state, "compareV1").name("v1 ghost · room map").onChange(() => this.place());
+      }
       const R0 = data.tables[0].room3d;
       if (R0?.scenes) {                                  // the table in use (kotatsu/scenes.py)
         this.state.scene ??= R0.scene_default;
@@ -188,6 +214,21 @@ export class Viewer3D {
         : (pl.axis !== "z" ? BASIS[pl.axis].clone() : new THREE.Matrix4()).premultiply(new THREE.Matrix4().makeTranslation(...pl.origin));
       (this.slots[pl.part] ??= []).push({ M: M.premultiply(new THREE.Matrix4().makeTranslation(off.x, off.y, off.z)), mirror: !!pl.mirror, it: this.items.at(-1) });
       this.itemPart.set(this.items.at(-1), pl.part);
+    }
+    if (T.compare) {                                     // v1 as a ghost, and where v2 has more or less room
+      const V = T.compare.v1, F1 = V.frame, t1 = F1.thickness, by1 = Object.fromEntries(F1.parts.map((p) => [p.name, p]));
+      for (const b of V.boards) { const m = ghostSlab(b, t1); m.position.z = F1.height + (F1.futon_gap || 0); push(m, "ghost"); }
+      for (const pl of F1.placed) {
+        let shape = by1[pl.part].shape;
+        if (pl.mirror) shape = { ext: shape.ext.map(([u, v]) => [-u, v]).reverse(), holes: shape.holes.map((h) => h.map(([u, v]) => [-u, v]).reverse()) };
+        const m = ghostSlab(shape, t1);
+        if (pl.matrix) m.applyMatrix4(new THREE.Matrix4().set(...pl.matrix));
+        else { if (pl.axis !== "z") m.applyMatrix4(BASIS[pl.axis]); m.position.set(...pl.origin); }
+        push(m, "ghost");
+      }
+      const hb = new THREE.Mesh(new THREE.BoxGeometry(...V.heater.size), new THREE.MeshBasicMaterial({ color: 0x8fb4ff, transparent: true, opacity: 0.2, depthWrite: false }));
+      hb.position.set(...V.heater.center); push(hb, "ghost");
+      push(roomMap(T.compare), "cmap");
     }
     const hz = F.heater;
     const heater = new THREE.Mesh(new THREE.BoxGeometry(...hz.size), new THREE.MeshStandardMaterial({ color: COL.heater, roughness: 0.5 }));
@@ -276,7 +317,8 @@ export class Viewer3D {
       const sc = S.showAmbiance && this.sceneData ? this.sceneData[S.scene] : null;   // the scene shown, if any
       let vis = { top: S.showTop, frame: S.showFrame, wedge: S.showFrame, heater: S.showHeater,
         futon: S.showFuton, rug: S.showRug, seat: S.showPillows,
-        ambTop: S.showAmbiance && S.showTop, amb: S.showAmbiance, ambFloor: S.showAmbiance }[it.kind];
+        ambTop: S.showAmbiance && S.showTop, amb: S.showAmbiance, ambFloor: S.showAmbiance,
+        ghost: S.compareV1, cmap: S.compareV1 }[it.kind];
       if (it.scene) vis = vis && !!sc && it.scene === S.scene;
       if (it.baseFuton && sc) vis = false;
       if (sc && it.kind === "seat" && sc.hide_seats.includes(it.obj.userData.seatIdx)) vis = false;   // the zaisu stands there

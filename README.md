@@ -527,6 +527,15 @@ Now a hard shove sways the table 3.3 mm instead of 6.2, an everyday lean moves i
 twists less than before. The legs use 72 % of their strength under that shove, and there's 577 mm left between
 them. uMake quoted it at $309.33.
 
+### Next to v1
+
+To see what all these changes did to the room under the table, I gave the 3-D view a comparison. Tick
+"v1 ghost · room map" and v1 appears as a pale blue outline over v2, rebuilt from its own code at the
+`v1-ordered` tag. On the floor, a map shows where v2 has more room overhead than v1, in green, and where it
+has less, in red. Most of the area under the top is light red, because v2 stands 15 mm lower, on thinner
+stock. The green patches are where v1's "+" legs stood and the X deck's openings, and the red specks are
+v2's diagonal legs.
+
 ### Summer
 
 In summer I take the table apart, as with v1, into a flat stack the size of its top, two layers and about 3 cm high.
