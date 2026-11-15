@@ -16,10 +16,13 @@ from __future__ import annotations
 import math
 
 import numpy as np
+from shapely.geometry import box
 
 from . import comfort, frame, room, sleeper
 
-ORDER = ["napping", "cards", "eating", "working", "working, legs out"]
+DIAMOND = [0.33, 0.25]     # the diamond's feet: how far forward (x stature), and how much the knees lift (pole);
+                           #   0.27 put a knee into the reader, higher knees pushed the sitter 40 cm back
+ORDER = ["napping", "cards", "eating", "working", "working, legs out", "working, sitting close"]
 DEFAULT = "napping"
 
 
@@ -102,6 +105,11 @@ def seated(p, seat, seat_z: float, facing: float, legs: str, hands: tuple, lean:
             ank_t = s + f * 0.10 * H - r * side * 0.06 * H + z * (0.025 * H + (0.02 * H if side > 0 else 0.0))
             kn, ank = _reach(hip, ank_t, thigh, shank, r * side + f * 0.6 + z * 0.4)
             toe = -r * side
+        elif legs == "diamond":                                  # knees wide and low, the soles together in front
+            ank_t = _v(*(s[:2] + f[:2] * DIAMOND[0] * H + r[:2] * side * 0.035 * H), 0.03 * H)   # on the floor, each on its own side
+            kn, ank = _reach(hip, ank_t, thigh, shank, r * side + z * DIAMOND[1])
+            toe = f * 0.5 - r * side * 0.6 + z * 0.2
+            toe = toe / np.linalg.norm(toe)
         else:                                                   # out under the table, heels on the floor
             ank_t = _v(*(hip[:2] + f[:2] * 0.47 * H), 0.03 * H)   # nearly straight, so the thighs stay low (the rug's top is z = 0)
             kn, ank = _reach(hip, ank_t, thigh, shank, z + f * 0.2)
@@ -132,6 +140,15 @@ def held(kind: str, parts: list[dict], facing: float, up: float) -> dict:
     """Something held in both hands (it faces the page's -x, so the yaw turns it back towards the holder)."""
     c = hands_of(parts)
     return {"kind": kind, "pos": [float(c[0]), float(c[1]), float(c[2] + up)], "yaw": float(facing)}
+
+
+ZAISU_BACK = 175.0   # web/ambiance.js's zaisu: the backrest's front face is this far behind the seat's centre
+
+
+def zaisu_for(parts: list[dict], seat_h: float) -> dict:
+    """The zaisu under a person facing +y, slid so its backrest touches their back (the torso's rearmost point)."""
+    back = min(q["c"][1] - q["r"][0] for q in parts if q["kind"] == "ellipsoid" and q["mat"] in ("top", "pants"))
+    return {"kind": "zaisu", "pos": [0.0, back + ZAISU_BACK, 0.0], "yaw": math.pi / 2, "seat_h": seat_h}
 
 
 def legs_of(parts: list[dict]) -> list[dict]:
@@ -214,13 +231,35 @@ def scenes(p) -> dict:
             w = at_side(-1, legs=legs, hands="type", seat_z=zs, dist=d, lean=0.05 * H)
         rdr, book = reader_end(1)
         out[name] = {"people": [w, rdr], "seat_slide": 0.0, "hide_seats": [i for i, s in enumerate(room.seats(p)) if s["kind"] == "cushion" and s["center"][1] < 0],
-                     "props": [{"kind": "zaisu", "pos": [0.0, -d, 0.0], "yaw": math.pi / 2, "seat_h": zs}],
+                     "props": [zaisu_for(w, zs)],
                      "sit_back": round(d - zy),
                      "top": [{"kind": "laptop_stand", "pos": [0.0, -edge + 360.0], "yaw": 0.0},   # far enough back for the fingertips       # the screen faces the sitter (-y)
                              {"kind": "keyboard", "pos": [0.0, -edge + 0.06 * H], "yaw": 0.0},
                              {"kind": "mouse", "pos": [260.0, -edge + 0.06 * H], "yaw": 0.0},
                              {"kind": "yunomi", "pos": [-300.0, -edge + 140.0]}],
                      "held": [book]}
+    # sitting close: forward on the zaisu, the knees wide and low in a diamond round the heater ring, the soles
+    # together under the heater; as close to the table as the legs allow (they clear the table's legs, the
+    # heater, the deck and the top, and the zaisu clears the table's legs)
+    from . import clipping
+    best = None
+    for d in np.arange(edge - 40.0, edge + 0.3 * H, 10.0):
+        w = at_side(-1, legs="diamond", hands="type", seat_z=zs, dist=float(d), lean=0.02 * H)
+        zy0 = zaisu_for(w, zs)["pos"][1]
+        zbox = box(-220.0, zy0 - 220.0, 220.0, zy0 + 220.0)
+        if not clipping.leg_problems(p, w) and comfort.low_footprint(p, zs, 0.0).distance(zbox) >= 5.0:
+            best = (float(d), w)
+            break
+    if best:
+        d, w = best
+        rdr, book = reader_end(1)
+        top = [{"kind": "laptop_stand", "pos": [0.0, -edge + 470.0], "yaw": 0.0},
+               {"kind": "keyboard", "pos": [0.0, -edge + 230.0], "yaw": 0.0},
+               {"kind": "mouse", "pos": [280.0, -edge + 230.0], "yaw": 0.0},
+               {"kind": "yunomi", "pos": [-300.0, -edge + 140.0]}]
+        out["working, sitting close"] = {**out["working"], "people": [w, rdr], "sit_back": round(d - zy), "top": top,
+                                         "props": [zaisu_for(w, zs)],
+                                         "held": [book]}
     for sc in out.values():                                     # what the quilt lies over: legs (and the napper whole)
         drape = []
         for ps in sc["people"]:

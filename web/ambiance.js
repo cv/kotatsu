@@ -197,6 +197,40 @@ function book() {
   return g;
 }
 
+function catHead() { // the tabby's head, facing -y: big and round (that's most of the cute), ears, sleepy smile
+  const g = new THREE.Group();
+  const add = (geo, m, [x, y, z], [sx, sy, sz] = [1, 1, 1]) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.scale.set(sx, sy, sz); g.add(o); return o; };
+  const cream = mat({ color: 0xf7e6cc, roughness: 0.95 });
+  const headGeo = new THREE.SphereGeometry(1, 48, 32); headGeo.rotateX(Math.PI / 2);
+  add(headGeo, mat({ map: headFur(), roughness: 0.95 }), [0, 0, 0], [84, 78, 70]);
+  const ear = mat({ color: 0xd8915a, roughness: 0.95 }), inner = mat({ color: 0xf0aaa4, roughness: 0.9 });
+  for (const s of [-1, 1]) {
+    const e = new THREE.Group(); e.position.set(s * 44, 6, 52); e.rotation.set(-0.2, s * 0.5, 0);
+    const cone = (rad, h) => { const geo = new THREE.ConeGeometry(rad, h, 24); geo.rotateX(Math.PI / 2); return geo; }; // axis up (+z)
+    const outer = new THREE.Mesh(cone(25, 40), ear); outer.scale.set(1, 0.55, 1);      // flattened front to back
+    const pink = new THREE.Mesh(cone(15, 28), inner); pink.scale.set(1, 0.4, 1); pink.position.set(0, -7, -4);
+    e.add(outer, pink); g.add(e);
+  }
+  const fy = 0 - 74;                                   // front of the face
+  for (const s of [-1, 1]) add(new THREE.SphereGeometry(1, 20, 14), cream, [0 + s * 13, fy - 6, 0 - 12], [17, 12, 13]); // whisker pads
+  add(new THREE.SphereGeometry(1, 16, 10), mat({ color: 0xe48f93, roughness: 0.4 }), [0, fy - 14, 0 - 1], [8, 5, 5]);    // nose
+  const lash = mat({ color: 0x3a2414, roughness: 0.6 });
+  for (const s of [-1, 1]) {                               // sleepy closed eyes: little smiles ◡
+    const eye = add(new THREE.TorusGeometry(11, 2.4, 8, 24, Math.PI), lash, [0 + s * 31, fy + 1.5, 0 + 16]);
+    eye.rotation.set(-Math.PI / 2, 0, s * 0.42, "ZYX");    // bottom half of the ring, turned to follow the cheek
+  }
+  const blush = mat({ color: 0xf29b96, roughness: 0.9, transparent: true, opacity: 0.55 });
+  for (const s of [-1, 1]) add(new THREE.SphereGeometry(1, 16, 10), blush, [0 + s * 46, fy + 10, 0 - 4], [13, 4, 8]);
+  const wpts = [];
+  for (const s of [-1, 1]) for (const k of [-1, 0, 1]) {
+    const x0 = 0 + s * 20, z0 = 0 - 10 + k * 5;
+    wpts.push(x0, fy - 10, z0, x0 + s * 75, fy - 4 - 6 * Math.abs(k), z0 + k * 14 + 4);
+  }
+  const wg = new THREE.BufferGeometry(); wg.setAttribute("position", new THREE.Float32BufferAttribute(wpts, 3));
+  g.add(new THREE.LineSegments(wg, new THREE.LineBasicMaterial({ color: 0xfff8ee, transparent: true, opacity: 0.8 })));
+  return g;
+}
+
 function cat() { // a curled-up orange tabby (~7 kg) asleep in the warm: chin on paws, tail round the front
   const g = new THREE.Group();
   const add = (geo, m, [x, y, z], [sx, sy, sz] = [1, 1, 1]) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.scale.set(sx, sy, sz); g.add(o); return o; };
@@ -204,35 +238,9 @@ function cat() { // a curled-up orange tabby (~7 kg) asleep in the warm: chin on
   // body: a soft loaf, poles along the spine so the stripes ring it
   const body = new THREE.SphereGeometry(1, 64, 40); body.rotateZ(-Math.PI / 2);
   add(body, mat({ map: bodyFur(), roughness: 0.95 }), [0, 0, 86], [205, 160, 92]);
-  // head: big and round (that's most of the cute), resting low at the front right
+  // head: big and round, resting low at the front right
   const H = [140, -108, 66];
-  const headGeo = new THREE.SphereGeometry(1, 48, 32); headGeo.rotateX(Math.PI / 2);
-  add(headGeo, mat({ map: headFur(), roughness: 0.95 }), H, [84, 78, 70]);
-  const ear = mat({ color: 0xd8915a, roughness: 0.95 }), inner = mat({ color: 0xf0aaa4, roughness: 0.9 });
-  for (const s of [-1, 1]) {
-    const e = new THREE.Group(); e.position.set(H[0] + s * 44, H[1] + 6, H[2] + 52); e.rotation.set(-0.2, s * 0.5, 0);
-    const cone = (rad, h) => { const geo = new THREE.ConeGeometry(rad, h, 24); geo.rotateX(Math.PI / 2); return geo; }; // axis up (+z)
-    const outer = new THREE.Mesh(cone(25, 40), ear); outer.scale.set(1, 0.55, 1);      // flattened front to back
-    const pink = new THREE.Mesh(cone(15, 28), inner); pink.scale.set(1, 0.4, 1); pink.position.set(0, -7, -4);
-    e.add(outer, pink); g.add(e);
-  }
-  const fy = H[1] - 74;                                   // front of the face
-  for (const s of [-1, 1]) add(new THREE.SphereGeometry(1, 20, 14), cream, [H[0] + s * 13, fy - 6, H[2] - 12], [17, 12, 13]); // whisker pads
-  add(new THREE.SphereGeometry(1, 16, 10), mat({ color: 0xe48f93, roughness: 0.4 }), [H[0], fy - 14, H[2] - 1], [8, 5, 5]);    // nose
-  const lash = mat({ color: 0x3a2414, roughness: 0.6 });
-  for (const s of [-1, 1]) {                               // sleepy closed eyes: little smiles ◡
-    const eye = add(new THREE.TorusGeometry(11, 2.4, 8, 24, Math.PI), lash, [H[0] + s * 31, fy + 1.5, H[2] + 16]);
-    eye.rotation.set(-Math.PI / 2, 0, s * 0.42, "ZYX");    // bottom half of the ring, turned to follow the cheek
-  }
-  const blush = mat({ color: 0xf29b96, roughness: 0.9, transparent: true, opacity: 0.55 });
-  for (const s of [-1, 1]) add(new THREE.SphereGeometry(1, 16, 10), blush, [H[0] + s * 46, fy + 10, H[2] - 4], [13, 4, 8]);
-  const wpts = [];
-  for (const s of [-1, 1]) for (const k of [-1, 0, 1]) {
-    const x0 = H[0] + s * 20, z0 = H[2] - 10 + k * 5;
-    wpts.push(x0, fy - 10, z0, x0 + s * 75, fy - 4 - 6 * Math.abs(k), z0 + k * 14 + 4);
-  }
-  const wg = new THREE.BufferGeometry(); wg.setAttribute("position", new THREE.Float32BufferAttribute(wpts, 3));
-  g.add(new THREE.LineSegments(wg, new THREE.LineBasicMaterial({ color: 0xfff8ee, transparent: true, opacity: 0.8 })));
+  const head = catHead(); head.position.set(...H); g.add(head);
   for (const s of [-1, 1]) add(new THREE.SphereGeometry(1, 24, 16), cream, [H[0] + s * 30, H[1] - 66, 16], [24, 36, 16]); // front paws
   // tail: tapered tube from the rump round the front, tip by the paws
   const path = new THREE.CatmullRomCurve3([[-195, 40, 36], [-222, -50, 28], [-170, -140, 22], [-60, -192, 19],
@@ -265,19 +273,14 @@ function catReach(toPaws) { // the same ~7 kg tabby up on its hind legs, front p
     return c;
   };
   const body = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32), fur);  // the torso, hips to shoulders
-  body.scale.set(LT / 2 + 40, 82, 88); body.position.copy(v3(hip.clone().add(sh).multiplyScalar(0.5)));
+  body.scale.set(LT / 2 + 40, 92, 92);   // as long as the curled cat's loaf, as round body.position.copy(v3(hip.clone().add(sh).multiplyScalar(0.5)));
   body.rotation.y = -Math.atan2(sh.y - hip.y, sh.x - hip.x); g.add(body);
-  const head = new THREE.Mesh(new THREE.SphereGeometry(1, 40, 28), mat({ map: headFur(), roughness: 0.95 }));
-  const hc = v3(sh).add(new THREE.Vector3(55, 0, 95));
-  head.scale.set(58, 56, 52); head.position.copy(hc); g.add(head);
-  const muzzle = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), cream); muzzle.scale.set(26, 30, 20);
-  muzzle.position.copy(hc).add(new THREE.Vector3(46, 0, -14)); g.add(muzzle);
+  const hc = v3(sh).add(new THREE.Vector3(70, 0, 105));
+  const head = catHead(); head.position.copy(hc); head.rotation.z = Math.PI / 2; g.add(head);   // the curled cat's head, facing forward (+x)
   for (const s of [-1, 1]) {
-    const ear = new THREE.Mesh(new THREE.ConeGeometry(17, 34, 16), mat({ color: 0xd8915a, roughness: 0.95 }));
-    ear.position.copy(hc).add(new THREE.Vector3(-6, s * 30, 54)); ear.rotation.x = Math.PI / 2; ear.rotation.set(-s * 0.25, 0, 0); g.add(ear);
     const shY = s * 34;
     g.add(seg(v3(sh, shY), v3(paw, shY), 19, fur));                                   // a foreleg
-    const toe = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), cream); toe.scale.set(26, 21, 13); toe.position.copy(v3(paw, shY)).add(new THREE.Vector3(10, 0, 4)); g.add(toe);
+    const toe = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), cream); toe.scale.set(36, 24, 16); toe.position.copy(v3(paw, shY)).add(new THREE.Vector3(10, 0, 4)); g.add(toe);
     const haunch = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), fur); haunch.scale.set(70, 38, 72); haunch.position.set(-15, s * 48, 95); g.add(haunch);
     g.add(seg(new THREE.Vector3(-20, s * 48, 70), new THREE.Vector3(10, s * 46, 18), 17, fur));   // a hind leg
     const foot = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), cream); foot.scale.set(46, 20, 13); foot.position.set(32, s * 46, 12); g.add(foot);

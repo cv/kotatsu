@@ -105,3 +105,15 @@ def test_nothing_clips():
     from kotatsu import clipping
     bad = {k: [x for x in v if x[0] > 3.0] for k, v in clipping.overlaps(P).items()}
     assert not any(bad.values()), bad
+
+
+def test_the_zaisu_sitter_leans_on_its_back():
+    """In the working scenes the backrest's front face touches the sitter's back, and the seat is under the hips."""
+    for name in [n for n in scenes.ORDER if n.startswith("working")]:
+        sc = SC[name]
+        (z,) = [q for q in sc["props"] if q["kind"] == "zaisu"]
+        w = sc["people"][0]
+        back = min(q["c"][1] - q["r"][0] for q in w if q["kind"] == "ellipsoid" and q["mat"] in ("top", "pants"))
+        assert abs((z["pos"][1] - scenes.ZAISU_BACK) - back) < 1.0, name
+        (pelvis,) = [q for q in w if q["kind"] == "ellipsoid" and q["mat"] == "pants"]
+        assert abs(pelvis["c"][1] - z["pos"][1]) < 220.0, f"{name}: the hips are off the seat"

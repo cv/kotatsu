@@ -70,7 +70,10 @@ def overlaps(p) -> dict:
             for pj in range(pi + 1, len(sc["people"])):
                 A = [s for q in sc["people"][pi] for s in samples(q)]
                 B = [s for q in sc["people"][pj] for s in samples(q)]
-                worst = max((ra + rb - float(np.linalg.norm(a - b)) for a, ra in A for b, rb in B), default=-1)
+                pa, ra = np.array([a for a, _ in A]), np.array([r for _, r in A])
+                pb, rb = np.array([b for b, _ in B]), np.array([r for _, r in B])
+                dist = np.linalg.norm(pa[:, None, :] - pb[None, :, :], axis=2)
+                worst = float((ra[:, None] + rb[None, :] - dist).max())
                 if worst > 0:
                     hits.append((round(worst, 1), f"person {pi}", f"person {pj}"))
         best = {}
@@ -79,3 +82,33 @@ def overlaps(p) -> dict:
             best[k] = max(best.get(k, 0), d)
         res[name] = sorted(((d, a, b) for (a, b), d in best.items()), reverse=True)
     return res
+
+
+def leg_problems(p, parts, leg_gap: float = 5.0) -> list[str]:
+    """Where a person's legs and feet don't fit under the table: into a table leg (by less than leg_gap mm), within
+    40 mm of the heater's underside, 10 mm of the deck's or 10 mm of the top's (the same limits as the scene tests)."""
+    from . import comfort, yagura
+    L = frame.layout(p)
+    (hx, hy, hz), (cx, cy, cz) = frame.heater_box(p)
+    heater = box(cx - L.cx - hx / 2, cy - L.cy - hy / 2, cx - L.cx + hx / 2, cy - L.cy + hy / 2)
+    deck = translate(yagura.deck(p), -L.cx, -L.cy)
+    out = []
+    cache = {}
+    def legs_at(z):                                   # the table legs' footprint at a height, 5 mm steps
+        k = round(z / 5.0)
+        if k not in cache:
+            cache[k] = comfort.low_footprint(p, k * 5.0, 0.0)
+        return cache[k]
+    for q in scenes.legs_of(parts):
+        for pt, r in samples(q):
+            rz = r if q["kind"] == "capsule" else (q["r"][2] if abs(pt[2] - q["c"][2]) < 1e-6 else 0.0)
+            topz, at = pt[2] + rz, Point(pt[0], pt[1])
+            if legs_at(topz + 2.5).distance(at) - r < leg_gap:
+                out.append("a table leg")
+            if heater.distance(at) < r and cz - hz / 2 - topz < 40:
+                out.append("the heater")
+            if deck.distance(at) < r and L.z_deck_bot - topz < 10:
+                out.append("the deck")
+            if abs(pt[0]) < p.top.length / 2 and abs(pt[1]) < p.top.width / 2 and L.H - topz < 10:
+                out.append("the top")
+    return sorted(set(out))
