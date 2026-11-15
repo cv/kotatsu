@@ -185,6 +185,73 @@ def zaisu_for(parts: list[dict], seat_h: float) -> dict:
     return {"kind": "zaisu", "pos": [0.0, float(y), 0.0], "yaw": math.pi / 2, "seat_h": seat_h}
 
 
+CAT = {"hip_h": 130.0, "torso": 330.0, "torso_r": 92.0, "foreleg": 170.0, "leg_r": 19.0, "paw_y": 34.0,
+       "head": (84.0, 78.0, 70.0), "head_at": (70.0, 105.0)}
+# the reaching tabby (web/ambiance.js catReach draws it from these): hips above the hind feet, torso and foreleg
+# lengths, the head (the curled cat's) ahead of and above the shoulders
+
+
+def cat_reach_pose(feet_d: float, feet_z: float, top_z: float) -> dict:
+    """The cat up on its hind legs, front paws 20 mm onto the table's edge: in its own (forward, up) frame from its
+    hind feet, feet_d mm back from the edge. The shoulders sit where the torso and the forelegs meet."""
+    C = CAT
+    hip = np.array([0.0, C["hip_h"]])
+    paw = np.array([feet_d + 20.0, top_z + C["leg_r"] + 1.0 - feet_z])   # resting on the tabletop
+    d = paw - hip
+    L = min(float(np.linalg.norm(d)), C["torso"] + C["foreleg"] - 1.0)
+    u = d / np.linalg.norm(d)
+    a = (C["torso"] ** 2 - C["foreleg"] ** 2 + L ** 2) / (2 * L)
+    h = math.sqrt(max(0.0, C["torso"] ** 2 - a ** 2))
+    sh = hip + u * a + np.array([-u[1], u[0]]) * h
+    head = sh + np.array(C["head_at"])
+    return {"hip": hip.tolist(), "sh": sh.tolist(), "paw": paw.tolist(), "head": head.tolist()}
+
+
+def cat_parts(pos, yaw: float, pose: dict) -> list[dict]:
+    """The reaching cat as capsules and ellipsoids (centred coordinates), for the clipping checks."""
+    C = CAT
+    f = np.array([math.cos(yaw), math.sin(yaw)])
+    side = np.array([-f[1], f[0]])
+    W = lambda xz, y=0.0: [pos[0] + f[0] * xz[0] + side[0] * y, pos[1] + f[1] * xz[0] + side[1] * y, pos[2] + xz[1]]
+    out = [{"kind": "capsule", "a": W(pose["hip"]), "b": W(pose["sh"]), "r": C["torso_r"], "mat": "fur"},
+           {"kind": "ellipsoid", "c": W(pose["head"]), "r": list(C["head"]), "yaw": yaw, "mat": "fur"}]
+    for s in (-1, 1):
+        out.append({"kind": "capsule", "a": W(pose["sh"], s * C["paw_y"]), "b": W(pose["paw"], s * C["paw_y"]), "r": C["leg_r"], "mat": "fur"})
+    return out
+
+
+def place_cat(p, q: dict, cloth) -> dict:
+    """A reaching cat on the quilt: as close to the table as it can stand with its body clear of the quilt
+    (cloth(x, y) is the quilt's height, centred coordinates) and its head clear of the tabletop."""
+    from . import clipping
+    L = frame.layout(p)
+    edge = p.top.length / 2
+    top_z = L.H + p.material.t_nominal
+    yaw = q["yaw"]
+    f = np.array([math.cos(yaw), math.sin(yaw)])
+    assert abs(abs(f[0]) - 1.0) < 1e-6, "the cat faces along x"
+    best = None
+    for dd in np.arange(180.0, 520.0, 10.0):
+        feet = np.array([-f[0] * (edge + dd), q["pos"][1]])    # facing along x, towards the table's edge
+        fz = cloth(*feet)
+        pose = cat_reach_pose(float(dd), fz, top_z)
+        pos = [float(feet[0]), float(feet[1]), float(fz)]
+        parts = cat_parts(pos, yaw, pose)
+        ok = clipping.into_tabletop(p, parts) == 0.0
+        if ok:
+            for part in parts[:2]:                              # the torso and head ride above the quilt
+                P = clipping.fill(part)
+                if len(P) and any(z < cloth(x, y) - 10.0 for x, y, z in P[:: max(1, len(P) // 400)]):   # a soft quilt gives 10 mm
+                    ok = False
+                    break
+        if ok:
+            best = {**{k: v for k, v in q.items() if k != "on_cloth"}, "pos": pos, "pose": pose, "parts": parts, "feet_d": float(dd)}
+            break
+    if best is None:
+        raise ValueError("the cat can't reach the table without going into the quilt or the top")
+    return best
+
+
 def legs_of(parts: list[dict]) -> list[dict]:
     """The parts the quilt lies over: legs and feet (the torso comes up through the quilt, as at a real kotatsu)."""
     return [q for q in parts if q["mat"] in ("pants", "socks") and not (q["kind"] == "ellipsoid" and q["mat"] == "pants")]

@@ -257,15 +257,13 @@ function cat() { // a curled-up orange tabby (~7 kg) asleep in the warm: chin on
   return shadowed(g);
 }
 
-function catReach(toPaws) { // the same ~7 kg tabby up on its hind legs, front paws on the table's edge
-  // toPaws: [forward, up] from its hind feet to the paws (mm). Segments sized like a big house cat: a 330 mm
-  // torso, 170 mm forelegs, the hips 130 mm up; the shoulders go where torso and forelegs meet.
-  const g = new THREE.Group(), [fx, fz] = toPaws;
+function catReach(pose) { // the same ~7 kg tabby up on its hind legs, front paws on the table's edge
+  // pose (kotatsu/scenes.py cat_reach_pose): hips, shoulders, paws and head in its own (forward, up) frame from
+  // its hind feet; Python places it clear of the quilt and the tabletop, and this only draws it.
+  const g = new THREE.Group();
   const fur = mat({ map: bodyFur(), roughness: 0.95 }), cream = mat({ color: 0xf7e6cc, roughness: 0.95 });
-  const hip = new THREE.Vector2(0, 130), paw = new THREE.Vector2(fx, fz), LT = 330, LF = 170;
-  const d = paw.clone().sub(hip), dl = Math.min(d.length(), LT + LF - 1);
-  const a = (LT * LT - LF * LF + dl * dl) / (2 * dl), h = Math.sqrt(Math.max(0, LT * LT - a * a));
-  const u = d.clone().normalize(), sh = hip.clone().add(u.clone().multiplyScalar(a)).add(new THREE.Vector2(-u.y, u.x).multiplyScalar(h));
+  const V2 = ([x, z]) => new THREE.Vector2(x, z), LT = 330;
+  const hip = V2(pose.hip), sh = V2(pose.sh), paw = V2(pose.paw);
   const v3 = (p, y = 0) => new THREE.Vector3(p.x, y, p.y);
   const seg = (a3, b3, r, m) => {                    // a capsule between two points
     const c = new THREE.Mesh(new THREE.CapsuleGeometry(r, Math.max(1, a3.distanceTo(b3)), 8, 16), m);
@@ -275,7 +273,7 @@ function catReach(toPaws) { // the same ~7 kg tabby up on its hind legs, front p
   const body = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32), fur);  // the torso, hips to shoulders
   body.scale.set(LT / 2 + 40, 92, 92); body.position.copy(v3(hip.clone().add(sh).multiplyScalar(0.5)));   // as long as the curled cat's loaf, as round
   body.rotation.y = -Math.atan2(sh.y - hip.y, sh.x - hip.x); g.add(body);
-  const hc = v3(sh).add(new THREE.Vector3(70, 0, 105));
+  const hc = v3(V2(pose.head));
   const head = catHead(); head.position.copy(hc); head.rotation.z = Math.PI / 2; g.add(head);   // the curled cat's head, facing forward (+x)
   for (const s of [-1, 1]) {
     const shY = s * 34;
@@ -422,7 +420,7 @@ export function sceneLayer(S, { topZ, edgeX }) {
   for (const q of S.props || []) {
     let o;
     if (q.kind === "zaisu") o = zaisu(q.seat_h);
-    else if (q.kind === "cat_reach") o = catReach([q.pos[0] - edgeX + 20, topZ - q.pos[2] + 5]);
+    else if (q.kind === "cat_reach") o = catReach(q.pose);
     else o = PROPS[q.kind]?.(q);
     if (!o) continue;
     o.position.set(...q.pos); o.rotation.z = q.yaw || 0; out.floor.push(o);

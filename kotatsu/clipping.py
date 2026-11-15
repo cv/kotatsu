@@ -166,12 +166,38 @@ def into_tabletop(p, parts) -> float:
     return worst
 
 
+def cats(p, sc) -> tuple[list[list[dict]], object]:
+    """The scene's cats as bodies (lists of parts), and the quilt's height function if a cat stands on it."""
+    out, cloth = [], None
+    for q in sc["props"]:
+        if q["kind"] == "cat_reach":
+            from . import room
+            _, cloth = room.scene_cloth(p, sc)
+            out.append(scenes.place_cat(p, q, cloth)["parts"])
+        elif q["kind"] == "cat_curled":                      # web/ambiance.js cat(): the loaf and the head
+            x, y, z = q["pos"]
+            yaw = q.get("yaw", 0.0)
+            R = lambda u, v: (x + u * math.cos(yaw) - v * math.sin(yaw), y + u * math.sin(yaw) + v * math.cos(yaw))
+            out.append([{"kind": "ellipsoid", "c": [x, y, z + 86.0], "r": [205.0, 160.0, 92.0], "yaw": yaw, "mat": "fur"},
+                        {"kind": "ellipsoid", "c": [*R(140.0, -108.0), z + 66.0], "r": [84.0, 78.0, 70.0], "yaw": yaw, "mat": "fur"}])
+    return out, cloth
+
+
 def overlaps(p) -> dict:
     res = {}
     for name, sc in scenes.scenes(p).items():
         best = {}
         sol = solids(p, sc)
-        people = sc["people"]
+        felines, cloth = cats(p, sc)
+        people = sc["people"] + felines                      # the cats count as bodies too (labelled after the people)
+        for ci, cat in enumerate(felines):
+            for i, part in enumerate(cat):
+                P = fill(part)
+                if cloth is not None and len(P):             # a cat on the quilt rides above it (a soft quilt gives 10 mm)
+                    d = max(cloth(x, y) - z for x, y, z in P[:: max(1, len(P) // 300)])
+                    if d > 10.0:
+                        k = (f"cat {ci} part #{i}", "the quilt")
+                        best[k] = max(best.get(k, 0.0), round(d - 10.0, 1))
         for pi, person in enumerate(people):
             for i, part in enumerate(person):
                 P = fill(part)

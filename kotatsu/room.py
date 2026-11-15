@@ -207,6 +207,28 @@ def _cloth_z(f: dict, x: float, y: float, r: float = 80.0) -> float:
     return max(zs) if zs else 0.0
 
 
+def scene_cloth(p, S: dict, n: int = 61):
+    """One scene's quilt (room.drape over its seats and the people's legs) and its height as a function of centred
+    (x, y): the highest cloth point within 60 mm."""
+    import numpy as np
+    from . import frame
+    L = frame.layout(p)
+    cx, cy = L.cx, L.cy
+    seats_ = [{**s, "center": [cx + s["center"][0], cy + s["center"][1], s["center"][2]]} for s in seats(p)]
+    clear_of = [st for k, st in enumerate(seats_) if k not in S["hide_seats"]]
+    clear_of = [{**st, "center": [st["center"][0] + (S["seat_slide"] if st["kind"] == "shikibuton" else 0.0), *st["center"][1:]]}
+                for st in clear_of]
+    clear_of += _boxes(S["drape_over"], cx, cy)
+    f = drape(p, clear_of, n)
+    P = np.array(f["pts"]).reshape(-1, 3)
+
+    def cloth(x: float, y: float, r: float = 60.0) -> float:
+        d = np.hypot(P[:, 0] - (x + cx), P[:, 1] - (y + cy))
+        m = d <= r
+        return float(P[m, 2].max()) if m.any() else 0.0
+    return f, cloth
+
+
 def room3d(p, n: int = 61) -> dict:
     """World-space geometry for the 3-D view's room layers: the rug, the seats, and for every scene (kotatsu/scenes.py)
     its people, props and the futon draped over the table, the seats and the people's legs."""
@@ -223,13 +245,12 @@ def room3d(p, n: int = 61) -> dict:
     W = lambda v: [round(v[0] + cx, 1), round(v[1] + cy, 1), *([round(v[2], 1)] if len(v) > 2 else [])]
     out["scenes"], out["scene_order"], out["scene_default"] = {}, sc.ORDER, sc.DEFAULT
     for name, S in sc.scenes(p).items():
-        clear_of = [st for k, st in enumerate(seats_) if k not in S["hide_seats"]]
-        clear_of = [{**st, "center": [st["center"][0] + (S["seat_slide"] if st["kind"] == "shikibuton" else 0.0), *st["center"][1:]]}
-                    for st in clear_of]
-        clear_of += _boxes(S["drape_over"], cx, cy)
-        f = drape(p, clear_of, n)
+        f, cloth = scene_cloth(p, S, n)
         props = []
         for q in S["props"]:
+            if q["kind"] == "cat_reach":                       # stands on the quilt, clear of it and of the top
+                q = sc.place_cat(p, q, cloth)
+                q = {k: v for k, v in q.items() if k != "parts"}
             q = {**q, "pos": W(q["pos"])}
             if q.pop("on_cloth", False):                       # stands on the quilt
                 q["pos"][2] = max(q["pos"][2], _cloth_z(f, q["pos"][0], q["pos"][1]) - 2.0)
