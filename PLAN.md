@@ -213,6 +213,15 @@ against today's deck, with the same loads turned with it (deck FEA at h = 10, we
 Today's orientation is the natural one for an X deck: each arm lands on a ring corner, so every ring side spans
 between two supported corners.
 
+## A bracket-shaped haunch, tried and not taken (2026-11, prototype)
+A concave sweep from the narrow leg up to a wing under the deck, in place of the S-curve haunch (FEA at 14.1 mm,
+the 388 mm frame; today: 77 %, 3.6 mm sway, $305.56 by my model, 530 mm between the legs at knee height):
+- the owner's sketch, the wing to 226 mm: 97 %, 4.3 mm, $310.94 (the plate's box 56 mm wider);
+- the sweep kept inside the 170 mm head: 63 %, 3.3 mm, about the same price, but 21 mm less room low down;
+- longer haunches that start higher (wings 200-250 mm, from 255-270 mm up): 2-26 mm more room low down, but 44-115 mm
+  less at knee height, 93-116 % at the head slot's root, $3-8 dearer.
+The slot root needs the wood under it, and a long wing is far from it. The owner kept today's legs.
+
 ## What's left to save on the price
 Little: the design is at uMake's price floor (`docs/quote.md`, "What can still be saved"). About 40 % of the bill
 doesn't depend on the design, the remaining cut is all required, and wood inside a part's box is free. A solid
