@@ -596,7 +596,7 @@ def leg_report(p, h: float | None = None) -> dict:
     """The leg plate under fea.push_n (alone, and with the top's worst corner load on it), with that load alone,
     and on nominal stock with the crosspiece on the crush ribs; next to stiffness.stresses / frame_sway. Use of
     strength is Tsai-Hill."""
-    from . import stiffness, yagura
+    from . import stiffness
     H = p.fea.push_n
     top = top_on_legs(p)
     lump = stiffness.stresses(p, H)

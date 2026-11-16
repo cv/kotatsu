@@ -212,7 +212,7 @@ def overlaps(p) -> dict:
         felines, cloth = cats(p, sc)
         people = sc["people"] + felines                      # the cats count as bodies too (labelled after the people)
         who = [f"person {i + 1}" for i in range(len(sc["people"]))] + ["the cat"] * len(felines)
-        for ci, cat in enumerate(felines):
+        for cat in felines:
             for i, part in enumerate(cat):
                 P = fill(part)
                 if cloth is not None and len(P):             # a cat on the quilt rides above it (a soft quilt gives 10 mm)
@@ -247,7 +247,7 @@ def _axis(part):
     if part["kind"] == "capsule":
         a, b = np.array(part["a"]), np.array(part["b"])
         return [(a + (b - a) * t, part["r"]) for t in np.linspace(0, 1, 11)]
-    c, (rx, ry, rz), yaw, pitch = np.array(part["c"]), part["r"], part.get("yaw", 0.0), part.get("pitch", 0.0)
+    c, (rx, ry, _), yaw, pitch = np.array(part["c"]), part["r"], part.get("yaw", 0.0), part.get("pitch", 0.0)
     pts = [(c, 0.0)]
     for t in np.linspace(0, 2 * math.pi, 25)[:-1]:
         u, v = rx * math.cos(t), ry * math.sin(t)              # the rim through the long axis, tilted with it

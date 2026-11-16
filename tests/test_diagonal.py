@@ -1,5 +1,4 @@
 """The legs (kotatsu/yagura.py): one plate per corner on its diagonal, a crosspiece in its head. Every joint must fit across the stock-thickness range; the deck bears on what it should."""
-import math
 from types import SimpleNamespace
 
 import numpy as np

@@ -50,7 +50,6 @@ def pose(p) -> dict:
     the table's centred coordinates (z up from the floor). Capsules: a, b, r; ellipsoids: c, r (along x, y, z
     before the yaw), yaw (radians about z). Every part has a material: top, pants, skin, head (skin with the hair painted on) or socks."""
     S, H = p.sleeper, p.sleeper.height
-    L = frame.layout(p)
     (hx, _, _), _ = frame.heater_box(p)
     pelvis_half = 0.085 * H                                    # pelvis, along the body
     x_hip = -(hx / 2 + S.clear + pelvis_half)                  # as far in as the hips can go: just clear of the heater

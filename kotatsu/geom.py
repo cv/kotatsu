@@ -6,7 +6,7 @@ r shows what the bit would leave behind, which is how router_cuttable checks eve
 from __future__ import annotations
 
 import numpy as np
-from shapely.geometry import Polygon, box
+from shapely.geometry import Polygon
 from shapely.geometry.base import BaseGeometry
 
 Q = 16  # quad segments for arcs

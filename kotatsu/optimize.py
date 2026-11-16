@@ -131,16 +131,6 @@ def nondominated(rows: list[dict], keys=OBJECTIVES) -> list[int]:
     return keep
 
 
-def fronts(rows: list[dict], keys) -> list[list[int]]:
-    """Non-dominated sorting: front 0, then the front of what's left, and so on."""
-    left, out = list(range(len(rows))), []
-    while left:
-        f = [left[i] for i in nondominated([rows[i] for i in left], keys)]
-        out.append(f)
-        left = [i for i in left if i not in f]
-    return out
-
-
 def sample(p, n: int, seed: int) -> list[dict[str, float]]:
     from scipy.stats import qmc
     rng = knob_ranges(p)

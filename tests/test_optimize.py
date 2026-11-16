@@ -46,10 +46,9 @@ def test_legroom_narrows_with_wider_legs():
     assert comfort.legroom(optimize.design({"frame.leg_width": 200.0})) < comfort.legroom(P)
 
 
-def test_nondominated_and_fronts():
+def test_nondominated():
     rows = [{"a": 1, "b": 3}, {"a": 2, "b": 2}, {"a": 3, "b": 1}, {"a": 3, "b": 3}, {"a": 2, "b": 2}]
     assert optimize.nondominated(rows, ("a", "b")) == [0, 1, 2, 4]      # ties both stay
-    assert optimize.fronts(rows, ("a", "b")) == [[0, 1, 2, 4], [3]]
 
 
 def test_leg_width_tracks_the_legs():

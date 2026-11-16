@@ -62,7 +62,7 @@ def _fits(P, shape):
 @pytest.mark.parametrize("t", T_RANGE)
 def test_cradle_drops_into_the_well(C, t):
     """Both cheek bodies pass the deck's well at any stock thickness, with the heater between them."""
-    P, L, dk = C.P, C.L, C.PARTS["deck"].shape
+    P, dk = C.P, C.PARTS["deck"].shape
     (_, w0, _, w1) = frame.well(P)
     for xi, s in zip(frame.cheek_xs(P), (-1, 1)):
         xa, xb = sorted((xi, xi + s * t))
@@ -158,7 +158,7 @@ def test_does_not_tip_easily(C):
 
 
 def test_heater_leaves_shin_room(C):
-    P, L = C.P, C.L
+    P = C.P
     (sx, sy, sz), (cx, cy, cz) = frame.heater_box(P)
     # legs forward on a 4" seat (squashed to ~82 mm with the rug), the shins (~110 mm) leave ~10 cm of air at 285 mm
     # (owner 2026-11: the frame 15 mm lower; was 300)

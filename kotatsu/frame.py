@@ -65,14 +65,6 @@ def hole(x0, y0, x1, y1, r) -> Polygon:
     return unary_union([rect, *bones])
 
 
-def notch(u0, u1, v_edge, v_in, r) -> Polygon:
-    """Slot open at the edge v = v_edge, running to v = v_in, with dogbones at its two inner corners."""
-    s = 1 if v_in > v_edge else -1
-    rect = box(u0, min(v_edge - s * 5, v_in), u1, max(v_edge - s * 5, v_in))
-    bones = [dogbone((u0, v_in), (1, -s), r), dogbone((u1, v_in), (-1, -s), r)]
-    return unary_union([rect, *bones])
-
-
 def _round_outer(poly: Polygon, r: float) -> Polygon:
     """Round convex corners only (the router does that anyway; looks intentional)."""
     return poly.buffer(-r, quad_segs=16, join_style="round").buffer(r, quad_segs=16, join_style="round")

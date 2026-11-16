@@ -117,7 +117,7 @@ def offsets() -> list[int]:
 # modules the variants never use (the page, the cut files, the FEA, prices, the search): editing them doesn't make
 # the 101 tables stale. From site.py only frame_data and rings are used, so their source is hashed instead.
 SKIP = {"site.py", "build.py", "cutlist.py", "nest.py", "export.py", "price.py", "optimize.py", "looks.py",
-        "storage.py", "fea.py", "fea_view.py", "fea_chair.py", "loads.py", "stiffness.py", "quote_pack.py"}
+        "storage.py", "fea.py", "fea_view.py", "loads.py", "stiffness.py"}
 
 
 def key() -> str:

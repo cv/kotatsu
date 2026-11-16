@@ -12,13 +12,6 @@ export function el(tag, attrs = {}, parent) {
 export const ringD = (ring, W) => "M" + ring.map(([x, y]) => `${x},${(W - y).toFixed(2)}`).join("L") + "Z";
 export const polyD = (p, W) => [p.ext, ...p.holes].map((r) => ringD(r, W)).join("");
 
-export function drawGrid(g, top, step = 100) {
-  const grid = el("g", { class: "grid" }, g);
-  for (let x = 0; x <= top.length; x += step) el("line", { x1: x, y1: -20, x2: x, y2: top.width + 20 }, grid);
-  for (let y = 0; y <= top.width; y += step) el("line", { x1: -20, y1: y, x2: top.length + 20, y2: y }, grid);
-  return grid;
-}
-
 export class PanZoom {
   constructor(svg, home, onChange) {
     this.svg = svg; this.home = home; this.onChange = onChange || (() => {});

@@ -89,7 +89,7 @@ def test_the_shikibuton_slides_between_the_legs():
     if p.room.seats != "set":
         pytest.skip("the four-pillow layout")
     (s,) = [x for x in room.seats(p) if x["kind"] == "shikibuton"]
-    (_, _, z), (l, w, h) = s["center"], s["size"]
+    _, (l, w, h) = s["center"], s["size"]
     for zz in (20.0, h / 2, h):
         legs = comfort.low_footprint(p, zz, 0.0)
         assert box(-l / 2, -w / 2, l / 2, w / 2).distance(legs) >= 20.0, f"at {zz:.0f} mm"

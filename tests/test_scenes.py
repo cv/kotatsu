@@ -7,7 +7,7 @@ import pytest
 from shapely.affinity import translate
 from shapely.geometry import Point, box
 
-from kotatsu import comfort, frame, params, room, scenes, yagura
+from kotatsu import comfort, frame, params, scenes, yagura
 
 P = params.tables(params.load())[0]
 pytestmark = pytest.mark.skipif(P.room.seats != "set", reason="the scenes use the seating set")
@@ -72,7 +72,6 @@ def test_the_zaisu_sitter_stops_short_of_the_heater_ring():
 
 def test_held_things_sit_in_the_hands():
     """Cards and books are between their holder's hands, a miso bowl on one; each a little above the hands."""
-    import math
     import numpy as np
     from kotatsu import scenes
     S = scenes.scenes(P)

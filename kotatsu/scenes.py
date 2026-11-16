@@ -285,7 +285,6 @@ def scenes(p) -> dict:
     edge = p.top.length / 2
     squash = getattr(R, "seat_squash", 30.0)
     seat_on = R.cushion_h - squash                             # sitting on a cushion or the shikibuton (the rug's top is z = 0)
-    cush = [s for s in room.seats(p) if s["kind"] == "cushion"]
     back = edge + 0.22 * H                                     # hips this far from the centre: crossed knees just under the
                                                                #   top's edge, clear of the corner legs
     nap = sleeper.pose(p)
