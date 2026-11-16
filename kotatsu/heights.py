@@ -114,11 +114,23 @@ def offsets() -> list[int]:
     return list(range(-SPAN, SPAN + 1, STEP))
 
 
+# modules the variants never use (the page, the cut files, the FEA, prices, the search): editing them doesn't make
+# the 101 tables stale. From site.py only frame_data and rings are used, so their source is hashed instead.
+SKIP = {"site.py", "build.py", "cutlist.py", "nest.py", "export.py", "price.py", "optimize.py", "looks.py",
+        "storage.py", "fea.py", "fea_view.py", "fea_chair.py", "loads.py", "stiffness.py", "quote_pack.py"}
+
+
 def key() -> str:
-    """Hash of everything the variants depend on: params.toml and the generator's code."""
+    """Hash of everything the variants depend on: params.toml, the generator's code (less SKIP) and the two
+    functions taken from site.py."""
+    import inspect
+    from . import site
     h = hashlib.sha1((ROOT / "params.toml").read_bytes())
     for f in sorted((ROOT / "kotatsu").glob("*.py")):
-        h.update(f.read_bytes())
+        if f.name not in SKIP:
+            h.update(f.read_bytes())
+    for fn in (site.frame_data, site.rings):
+        h.update(inspect.getsource(fn).encode())
     return h.hexdigest()[:12]
 
 
