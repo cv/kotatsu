@@ -48,7 +48,7 @@ def _elbow(sh, wr, upper: float, fore: float, pick=min) -> tuple[float, float]:
 def pose(p) -> dict:
     """{"slide": mm the shikibuton moves along x, "parts": [capsule or ellipsoid dicts], "volume_l": litres}, in
     the table's centred coordinates (z up from the floor). Capsules: a, b, r; ellipsoids: c, r (along x, y, z
-    before the yaw), yaw (radians about z). Every part has a material: top, pants, skin, hair or socks."""
+    before the yaw), yaw (radians about z). Every part has a material: top, pants, skin, head (skin with the hair painted on) or socks."""
     S, H = p.sleeper, p.sleeper.height
     L = frame.layout(p)
     (hx, _, _), _ = frame.heater_box(p)
@@ -126,12 +126,12 @@ def pose(p) -> dict:
             k = 0.5 * hand / math.hypot(dx, dy)
             ellipsoid((wrist[0] + dx * k, wrist[1] + dy * k), (0.5 * hand, 0.026 * H, 0.012 * H), "skin",
                       yaw=math.atan2(dy, dx))
-        # head on the hands, a neck to the chest, hair on the crown
+        # head on the hands, a neck to the chest; the hair is painted on the head (owner 2026-11)
         zh = sup(*head_c) + 0.018 * H + 0.05 * H
         parts.append({"kind": "capsule", "a": [x_sh - 0.01 * H, 0.0, sup(x_sh, 0) + 0.06 * H],
                       "b": [head_c[0] + 0.03 * H, 0.0, zh], "r": 0.03 * H * g, "mat": "skin"})
-        ellipsoid(head_c, (0.064 * H, 0.044 * H, 0.051 * H), "skin", z=zh)
-        ellipsoid((head_c[0] - 0.016 * H, -0.012 * H), (0.05 * H, 0.044 * H, 0.05 * H), "hair", z=zh + 0.006 * H)  # face turned to +y
+        parts.append({"kind": "ellipsoid", "c": [head_c[0], head_c[1], zh], "r": [0.044 * H, 0.051 * H, 0.064 * H],   # the head: face +y,
+                      "yaw": math.pi / 2, "roll": -math.pi / 2, "mat": "head"})                               #   crown -x (hair painted on)
         return parts
 
     def volume(ps):

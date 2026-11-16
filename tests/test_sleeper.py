@@ -57,5 +57,5 @@ def test_the_hips_stay_out_from_under_the_heater_and_the_head_lies_on_the_mattre
     assert pelvis["c"][0] + pelvis["r"][0] < -hx / 2                    # the hips are outside the heater
     (sh,) = [s for s in room.seats(P) if s["kind"] == "shikibuton"]
     end = sh["center"][0] + R["slide"] - sh["size"][0] / 2
-    heads = [q for q in R["parts"] if q["mat"] in ("skin", "hair") and q["kind"] == "ellipsoid"]
-    assert all(q["c"][0] - q["r"][0] > end for q in heads), "the head and hands lie on the slid mattress"
+    heads = [q for q in R["parts"] if q["mat"] in ("skin", "head") and q["kind"] == "ellipsoid"]
+    assert all(q["c"][0] - max(q["r"]) > end for q in heads), "the head and hands lie on the slid mattress"

@@ -42,10 +42,12 @@ def inside(part, P: np.ndarray) -> np.ndarray:
         t = np.clip(((P - a) @ ab) / max(ab @ ab, 1e-9), 0, 1)
         return np.linalg.norm(P - (a + t[:, None] * ab), axis=1) <= r
     c, rr, yaw, pitch = np.array(part["c"]), np.array(part["r"]), part.get("yaw", 0.0), part.get("pitch", 0.0)
+    roll = part.get("roll", 0.0)                                # about the long axis, last (the napper's head)
     d = P - c
     x = d[:, 0] * math.cos(yaw) + d[:, 1] * math.sin(yaw)
     y = -d[:, 0] * math.sin(yaw) + d[:, 1] * math.cos(yaw)
     x, z = x * math.cos(pitch) + d[:, 2] * math.sin(pitch), -x * math.sin(pitch) + d[:, 2] * math.cos(pitch)
+    y, z = y * math.cos(roll) + z * math.sin(roll), -y * math.sin(roll) + z * math.cos(roll)
     return (x / rr[0]) ** 2 + (y / rr[1]) ** 2 + (z / rr[2]) ** 2 <= 1.0
 
 
@@ -178,6 +180,8 @@ def part_name(q) -> str:
         return "hips" if k == "ellipsoid" else "leg"
     if m == "top":
         return "torso" if k == "ellipsoid" else "arm"
+    if m == "head":
+        return "head"
     if m == "skin" and k == "ellipsoid":
         return "hand" if q["r"][2] < q["r"][1] * 0.6 else "head"
     return "head" if m == "hair" else m

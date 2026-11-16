@@ -104,8 +104,7 @@ def seated(p, seat, seat_z: float, facing: float, legs: str, hands: tuple, lean:
     B.ell(chest, (0.069 * H * g, 0.105 * H * g, 0.13 * H), "top", yaw)
     head = s + z * 0.46 * H - f * lean + f * 0.015 * H
     B.cap(s + z * 0.36 * H - f * lean * 0.8, head - z * 0.03 * H, 0.03 * H * g, "skin")
-    B.ell(head, (0.055 * H, 0.044 * H, 0.064 * H), "skin", yaw)
-    B.ell(head - f * 0.012 * H + z * 0.01 * H, (0.05 * H, 0.046 * H, 0.056 * H), "hair", yaw)
+    B.ell(head, (0.055 * H, 0.044 * H, 0.064 * H), "head", yaw)       # "head": skin, with the hair painted on (web/ambiance.js)
     upper, fore, hand = 0.186 * H, 0.146 * H, 0.108 * H
     for side, tgt in ((-1, hands[0]), (1, hands[1])):          # left (-r), right (+r)
         sh = s + z * 0.33 * H - f * lean + r * side * 0.11 * H

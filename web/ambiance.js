@@ -205,10 +205,10 @@ function catHead() { // the tabby's head, facing -y: big and round (that's most 
   add(headGeo, mat({ map: headFur(), roughness: 0.95 }), [0, 0, 0], [84, 78, 70]);
   const ear = mat({ color: 0xd8915a, roughness: 0.95 }), inner = mat({ color: 0xf0aaa4, roughness: 0.9 });
   for (const s of [-1, 1]) {
-    const e = new THREE.Group(); e.position.set(s * 44, 6, 52); e.rotation.set(-0.2, s * 0.5, 0);
+    const e = new THREE.Group(); e.position.set(s * 46, 4, 54); e.rotation.set(-0.2, s * 0.5, 0);   // (owner 2026-11: bigger ears)
     const cone = (rad, h) => { const geo = new THREE.ConeGeometry(rad, h, 24); geo.rotateX(Math.PI / 2); return geo; }; // axis up (+z)
-    const outer = new THREE.Mesh(cone(25, 40), ear); outer.scale.set(1, 0.55, 1);      // flattened front to back
-    const pink = new THREE.Mesh(cone(15, 28), inner); pink.scale.set(1, 0.4, 1); pink.position.set(0, -7, -4);
+    const outer = new THREE.Mesh(cone(36, 62), ear); outer.scale.set(1, 0.55, 1);      // flattened front to back
+    const pink = new THREE.Mesh(cone(23, 44), inner); pink.scale.set(1, 0.4, 1); pink.position.set(0, -10, -6);
     e.add(outer, pink); g.add(e);
   }
   const fy = 0 - 74;                                   // front of the face
@@ -436,11 +436,40 @@ export function sceneLayer(S, { topZ, edgeX }) {
   return out;
 }
 
+let HEAD_MAT = null;
+function headMaterial() { // skin with dark brown, almost black hair painted on (owner 2026-11): drawn once, on a canvas
+  if (HEAD_MAT) return HEAD_MAT;
+  const W = 512, Hc = 256, cv = document.createElement("canvas"); cv.width = W; cv.height = Hc;
+  const c = cv.getContext("2d");
+  c.fillStyle = "#d9a988"; c.fillRect(0, 0, W, Hc);
+  // the hairline: elevation (deg) against the angle from the middle of the face (the sphere's u = 0.5 faces +x)
+  const pts = [[0, 30], [0.6, 25], [1.2, 13], [1.6, 4], [2.3, -18], [Math.PI, -30]];
+  const line = (d) => { for (let i = 1; i < pts.length; i++) if (d <= pts[i][0]) { const [a0, e0] = pts[i - 1], [a1, e1] = pts[i]; return e0 + (e1 - e0) * (d - a0) / (a1 - a0); } return pts.at(-1)[1]; };
+  for (let x = 0; x < W; x++) {
+    const d = Math.abs((x + 0.5) / W * 2 * Math.PI - Math.PI);       // 0 at the face, pi at the back of the head
+    const y = (90 - line(d)) / 180 * Hc;                              // canvas y runs from the crown (0) down
+    const g = c.createLinearGradient(0, y - 4, 0, y + 3);             // a soft hairline
+    g.addColorStop(0, "#1f1813"); g.addColorStop(1, "rgba(31,24,19,0)");
+    c.fillStyle = "#1f1813"; c.fillRect(x, 0, 1, y - 4);
+    c.fillStyle = g; c.fillRect(x, y - 4, 1, 7);
+  }
+  let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  c.lineWidth = 1;
+  for (let i = 0; i < 1400; i++) {                                    // a little texture: short strands, slightly lighter
+    const x = rnd() * W, d = Math.abs(x / W * 2 * Math.PI - Math.PI), y = rnd() * ((90 - line(d)) / 180 * Hc - 6);
+    c.strokeStyle = rnd() < 0.5 ? "rgba(70,52,40,0.55)" : "rgba(10,8,6,0.5)";
+    c.beginPath(); c.moveTo(x, y); c.lineTo(x + (rnd() - 0.5) * 4, y + 4 + rnd() * 6); c.stroke();
+  }
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  HEAD_MAT = mat({ color: 0xffffff, map: t, roughness: 0.72 });
+  return HEAD_MAT;
+}
+
 function person(P) { // someone napping, posed and sized in Python (kotatsu/sleeper.py): the page only draws it
   const g = new THREE.Group();
   const M = { top: mat({ color: 0xd9cbb4, roughness: 0.95 }), pants: mat({ color: 0x4a4a52, roughness: 0.9 }),
     skin: mat({ color: 0xd9a988, roughness: 0.7 }), hair: mat({ color: 0x2e241c, roughness: 0.8 }),
-    socks: mat({ color: 0xece6dc, roughness: 0.95 }) };
+    socks: mat({ color: 0xece6dc, roughness: 0.95 }), head: headMaterial() };
   const up = new THREE.Vector3(0, 1, 0);
   for (const q of P.parts) {
     let o;
@@ -450,8 +479,10 @@ function person(P) { // someone napping, posed and sized in Python (kotatsu/slee
       o.position.copy(a.clone().add(b).multiplyScalar(0.5));
       o.quaternion.setFromUnitVectors(up, d.normalize());
     } else {
-      o = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 20), M[q.mat]);
-      o.scale.set(...q.r); o.position.set(...q.c); o.rotation.set(0, -(q.pitch || 0), q.yaw, "ZYX");   // yaw, then the long axis tilted up
+      const geo = new THREE.SphereGeometry(1, 32, 20);
+      if (q.mat === "head") geo.rotateX(Math.PI / 2);                 // the texture's poles on the head's crown-chin axis (local z)
+      o = new THREE.Mesh(geo, M[q.mat]);
+      o.scale.set(...q.r); o.position.set(...q.c); o.rotation.set(q.roll || 0, -(q.pitch || 0), q.yaw, "ZYX");   // yaw, the long axis tilted up, rolled
     }
     g.add(o);
   }

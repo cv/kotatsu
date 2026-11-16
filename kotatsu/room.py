@@ -161,6 +161,9 @@ def _boxes(parts: list[dict], cx: float, cy: float) -> list[dict]:
             lo, hi = (min(ax, bx) - r, min(ay, by) - r), (max(ax, bx) + r, max(ay, by) + r, max(az, bz) + r)
         else:
             (qx, qy, qz), (rx, ry, rz) = q["c"], q["r"]
+            if q.get("roll"):                                  # rolled about its long axis (the napper's head)
+                s, c = abs(math.sin(q["roll"])), abs(math.cos(q["roll"]))
+                ry, rz = ry * c + rz * s, ry * s + rz * c
             rr = max(rx, ry)
             lo, hi = (qx - rr, qy - rr), (qx + rr, qy + rr, qz + rz)
         out.append({"center": [cx + (lo[0] + hi[0]) / 2, cy + (lo[1] + hi[1]) / 2, hi[2] / 2],
