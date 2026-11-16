@@ -79,10 +79,16 @@ What this repo produces:
 - **Python 3.12 or newer via `uv`.** Don't use the system Python.
 - `ezdxf` writes the DXFs. `shapely` does the 2-D geometry (booleans, dogbones, clearances, areas).
   `matplotlib` draws previews. `numpy` runs the sheet layout and the load models. `pytest` runs the checks.
-- Analysis modules: `comfort.py` (knee room, tipping), `stiffness.py` (wobble), `loads.py` (the top under
-  everyday loads), `price.py` (uMake's price), `optimize.py` (a small search over the deck and leg knobs),
-  `storage.py` (flat packing for summer).
-- `make` targets: `all`, `test`, `dxf`, `site`, `dev`, `clean`.
+- Analysis modules: `comfort.py` (knee room, tipping), `stiffness.py` (wobble and twist, spring models),
+  `loads.py` (the top under everyday loads), `fea.py` (finite elements: top, deck, legs; `fea_view.py` writes the
+  3-D view's heat maps), `price.py` (uMake's price, by bounding box), `optimize.py` (a search over the deck and
+  leg knobs), `storage.py` (flat packing for summer), `looks.py` (the legs' visual weight).
+- The 3-D view's people and room: `room.py` (rug, seats, the quilt's drape), `sleeper.py` (the napper),
+  `scenes.py` (the scene switcher's people and props), `clipping.py` (nothing may pass through anything),
+  `compare.py` (v1's ghost and the room map, built from the `v1-ordered` tag), `heights.py` (the height slider's
+  101 variants, cached in `out/heights`).
+- `make` targets: `all`, `test`, `dxf`, `fea`, `heights`, `site`, `dev`, `optimize`, `sync`, `clean`.
+- `tools/guard.py`: `snapshot` before a change, `check` after it, to see exactly which parts and numbers moved.
 - **The website.** `make dev` serves it at http://127.0.0.1:8765, rebuilds on every change, and the page
   reloads by itself.
   - `kotatsu/site.py` writes `out/site/data.json`: geometry, stats, parameters, test results, docs, and the
@@ -112,7 +118,7 @@ kotatsu/             the generator: parts, joints, layout, export, checks, site
 tests/               pytest checks
 web/                 the website's static files
 docs/                shop, heater, futon and quote research; docs/img has the README's pictures
-tools/               one-off scripts (the README's before/after strips)
+tools/               the geometry guard and the scripts that draw the README's figures
 out/                 generated DXFs, previews and site (not in git)
 PLAN.md              the design as ordered: decisions, numbers, open questions
 ```
