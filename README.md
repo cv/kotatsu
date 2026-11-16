@@ -521,11 +521,14 @@ What helped was a wider head, the full-width part under the deck that each joint
 roughly halved the sway in the FEA, and it hardly shows, under the deck and the quilt.
 
 I also looked at how I'd really sit there for a meal or at the laptop. From the floor on a cushion, my elbows sit
-well below a 40 cm table, so I chose 4 in cushions and a shikibuton, and took the table down 15 mm. At a meal my
-elbows end up about 5 cm below the surface, and for typing I'll use my zaisu. The shorter legs are stiffer still.
-Now a hard shove sways the table 3.3 mm instead of 6.2, an everyday lean moves it about as little as v1, and it
-twists less than before. The legs use 72 % of their strength under that shove, and there's 577 mm left between
-them. uMake quoted it at $309.33.
+well below a 40 cm table, so I chose 4 in cushions and a shikibuton, and took the table down 15 mm. For typing I'll
+use my zaisu.
+
+Then I built a height slider into the 3-D view, with the people, the quilt and v1's ghost redrawn at every
+millimetre. At +18 mm the top sits exactly at v1's height, 407 mm, and v2 has as much room underneath as v1 almost
+everywhere, so I raised the frame to 388 mm. A meal sits a little higher than ideal, about 7 cm above my elbows on a
+cushion; a thicker cushion would fix that. A hard shove sways the table 3.6 mm instead of 6.2, an everyday lean
+moves it about as much as v1, and the legs use 77 % of their strength under that shove, with 664 mm between them.
 
 ### Next to v1
 
@@ -564,8 +567,8 @@ wedges go from 14 to 6, and every corner is rounder.
 | Parts | 26 | 18 |
 | Weight | 15.9 kg | 10.5 kg |
 | Wedges | 14 | 6 (4 + 2 spares) |
-| Clear height under the heater | 286 mm | 289 mm |
-| A hard 200 N shove, finite elements | not checked | 72 % of the legs' strength, 3.3 mm of sway |
+| Clear height under the heater | 286 mm | 307 mm |
+| A hard 200 N shove, finite elements | not checked | 77 % of the legs' strength, 3.6 mm of sway |
 | uMake | $353.33 in the cart ($405.83 once uMake finalized it) | $309.33 (a quote, not an order; about $346 with tax; the "+" legs quoted $328.02) |
 
 Before I order it, I want to measure how I really sit (no tape to hand yet), and I'd like to know how thick

@@ -7,8 +7,8 @@ outlines (`top.build`, `yagura.deck`, `frame.parts`), so it follows `params.toml
 ## In short
 
 **Where it stands: the diagonal legs (owner 2026-11), on the thinnest 14.1 mm stock.**
-- **Legs:** a hard 200 N shove uses 72 % of a plate's strength, at the root of its head slot, and sways the
-  frame 3.3 mm (170 mm heads and the frame 15 mm lower, owner 2026-11; 63 % and 6.2 mm with 140 mm heads).
+- **Legs:** a hard 200 N shove uses 77 % of a plate's strength, at the root of its head slot, and sways the
+  frame 3.6 mm (170 mm heads and the 388 mm frame, owner 2026-11; 72 % and 3.3 mm at 370 mm; 63 % and 6.2 mm with 140 mm heads).
 - **Deck:** a 300 N hand on the ring uses 60 % of its strength with the wedges tight, 81 % with them slack.
 - **Top:** everyday loads use at most 15 %, an adult sitting hard on an edge 37 %. The simple grillage model,
   on the same squircle, is 9–15 % on the safe side.
@@ -178,8 +178,8 @@ senses together takes 0.71 × the push); the top's load goes on its post and ten
 
 | Case | Worst (Tsai-Hill) | Sway along x |
 |---|---|---|
-| 200 N sideways push | **72 %** at the head slot's root (170 mm heads, the frame 15 mm lower; 63 % with 140 mm heads, 74-75 % at 70 / 56 mm with a 30 mm haunch; mesh h = 3 mm, ribs at 0.95 mm) | 3.3 mm (140 mm heads: 6.2; "+" legs: 7.1) |
-| 200 N push + the top's worst corner load | 50 %, at the slot root (140 mm heads: 54 %) | |
+| 200 N sideways push | **77 %** at the head slot's root (170 mm heads, the 388 mm frame; 72 % at 370 mm; 63 % with 140 mm heads, 74-75 % at 70 / 56 mm with a 30 mm haunch; mesh h = 3 mm, ribs at 0.95 mm) | 3.6 mm (370 mm frame: 3.3; 140 mm heads: 6.2; "+" legs: 7.1) |
+| 200 N push + the top's worst corner load | 56 %, at the slot root (370 mm frame: 50 %; 140 mm heads: 54 %) | |
 | The top's worst corner load only (an adult on an edge) | 40 %, at the slot root (140 mm heads: 42 %, at the haunch fillet) | |
 | 200 N push, nominal 15 mm stock, the crosspiece on the crush ribs (sanded at the fit-up until it slides in: just touching) | 65-68 % (h = 5-3 mm) | |
 | Deck (300 N hand), wedges tight / slack | 60 / 81 % (170 mm heads; 60 / 97 with 140 mm; R150 ring fillets, convex pads flaring out of the arms on R300, R10 far corners; R90/R40 and wiggly pads: 65 / 127; "+" legs: 68 / 155) | |
@@ -195,9 +195,10 @@ How I stiffened it (owner 2026-11, "how much wobblier than v1?"): by the spring 
 v1. Wider lower legs barely helped (110 / 90 mm: FE sway 6.2 -> 4.4 mm); a wider head, the full-width part under
 the deck that the joint rocks on, did: 140 -> 170 mm took it to 3.6 mm, and the frame 15 mm lower (with 4 in seats,
 so the sitter's arms stay put) to 3.3 mm, and the spring model's 50 N sway to v1's 0.5 mm. A taller frame went the
-other way (+100 mm: 8.6 mm, twist 2.7 mm). Twisting, which bends the plates flat-wise, barely changes with the head.
+other way (+100 mm: 8.6 mm, twist 2.7 mm). In the end I took it back up 18 mm, to v1's height, for the room under the
+table: 3.6 mm, 0.54 mm at 50 N. Twisting, which bends the plates flat-wise, barely changes with the head.
 Twisting (a push along an edge at a top corner) is checked by `stiffness.twist`, a spring model, not FE:
-1.2 mm at 115 N, the crosspiece joints opening at about 212 N (170 mm heads, the frame 15 mm lower; 1.5 mm and 203 N before; with the feet where the kick puts them, 3.9 mm outside the frame corner; 1.7 mm and 193 N before I counted the kick). **Both are best cases.** The joint is taken as rigid
+1.5 mm at 115 N, the crosspiece joints opening at about 201 N (170 mm heads, the 388 mm frame; 1.2 mm and 212 N at 370 mm; 1.5 mm and 203 N with 140 mm heads; with the feet where the kick puts them, 3.9 mm outside the frame corner; 1.7 mm and 193 N before I counted the kick). **Both are best cases.** The joint is taken as rigid
 until it opens, and what holds the crosspiece down is the deck. It lies on the crosspiece's top edge (sanded flush
 with the plate's shoulders at the fit-up), and the wedge clamps it onto the shoulders beside the tenon. In the model I
 give the crosspiece that whole 300 N clamp; the share it really gets depends on the fit, so the joints may open

@@ -9,7 +9,7 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
 |---|---|---|
 | Plywood | 18 mm (uMake's "19mm") | **15 mm throughout** |
 | Heater | hangs under the deck from 2 cheeks, 4 cheek wedges | **sits in a well in the deck**, in a cradle that hangs by gravity |
-| Clear height under the heater | 286 mm | **289 mm** |
+| Clear height under the heater | 286 mm | **307 mm** |
 | Deck | H-shaped (four notches) | **X-shaped**: corner pads, a ring round the heater, 45° arms |
 | Legs | 8 plates in four "+" legs, 8 tenons, a wedge in each | **four diagonal legs**: one plate a corner on its diagonal, a crosspiece in its head, one tenon and wedge each |
 | Wedges | 12 + 2 spares | **4 + 2 spares** |
@@ -26,13 +26,13 @@ and anything I haven't confirmed yet is marked **TODO-verify**.
 | Frame | A **yagura**: four diagonal legs (one plate a corner, on the diagonal, owner 2026-11; the "+" legs are tag `plus-legs-archive`) under an X-shaped deck. No aprons, so knees get the room |
 | Material | **15 mm Baltic birch for everything**, wedges included (v1: 18 mm). Joints accept 14.1–15.7 mm (TODO-verify the real tolerance, and which uMake menu entry, "15mm" or "16mm", it is) |
 | Heater | **PaletteLife 120 V 400 W**, 29 × 29 × 5 cm, the same unit as v1, screwed in at the sides (`docs/heater.md`). I drill its screw holes during assembly, so the files have none. Its control panel (power inlet, switch, knob) is on one end, near the grille: the heater sits low enough that the panel clears the deck's underside by 5 mm, so the knob and the plug stick out under the deck's ring (owner 2026-11; the panel's height read off a photo, TODO-verify). Its screws are 10-15 mm from its top, so the cheeks are short |
-| Height | About 39.5 cm: 370 mm frame + 15 mm top + the futon (owner 2026-11: 15 mm lower, was 385, for 4" seats) |
+| Height | 40.7 cm, v1's height: 388 mm frame + the quilt (about 4 mm pinched, owner) + 15 mm top (owner 2026-11: +18 mm, was 370, found with the 3-D view's height slider; 385 before that) |
 | Futon & seats | An oversized king quilt, 120 × 120 in (305 cm), over the frame (owner 2026-11: it works really well; I'd planned an 80 × 80 in futon). I fold and tuck it in so it doesn't spread so much: it covers about half of each floor pillow (the 3-D view draws it so). On an 8 ft round rug (`docs/futon.md`), four 25 × 25 in floor pillows, and a bought, adjustable zaisu (about $70). On a zaisu I sit **legs forward**: cross-legged on a chair, my knees wouldn't fit under the top with any cushion worth having. The 3-D view shows the futon, rug and pillows |
 | Budget | Under CAD $1200 all in |
 
 ## The parts
 
-- **Leg plates (4, 199 × 370 mm), one on each corner's diagonal**, its outer end at the frame corner (owner 2026-11).
+- **Leg plates (4, 199 × 388 mm), one on each corner's diagonal**, its outer end at the frame corner (owner 2026-11).
   - Under the deck each plate is 170 mm wide along the diagonal (owner 2026-11, was 140): the post, the 16 mm head
     slot centred 60 mm in from the corner, a 10 mm shoulder, the 50 mm tenon and a 42 mm inner shoulder. The wider
     head is the joint's base against rocking: it roughly halves the sway, to about v1's. Below the haunch (full width
@@ -116,15 +116,15 @@ the sheets itself and prices per part, so this only matters for my estimate.
 
 | Measure | Value |
 |---|---|
-| Clear height at the middle of each side (deck underside) | 344 mm |
-| Clear height under the heater | 289 mm (v1: 286) |
+| Clear height at the middle of each side (deck underside) | 347 mm |
+| Clear height under the heater | 307 mm (v1: 286) |
 | My 76 × 32 cm cross-legged knee zone (on the bare floor): how far it reaches under the top's edge | 38 mm |
-| On a zaisu, legs forward: room above my thighs under the deck / my feet under the heater (seat 100 mm high when sat on, TODO-verify) | 69 mm / 69 mm (a typical 160 mm thigh, TODO-verify) |
-| My knee room on the floor pillows, against v1 (where it's fine, owner 2026-11) | frame top 370 / 385 mm, deck underside 329 / 341, heater 289 / 286, reach 38 / 40, between the legs 529 / 568 (the 15 mm lower frame goes with 4" seats, so the seat rises about as much as the table drops) |
+| On a zaisu, legs forward: room above my thighs under the top / my feet under the heater (seat 90 mm high when sat on, owner) | 123 mm / 72 mm (a typical 160 mm thigh, TODO-verify) |
+| My knee room on the floor pillows, against v1 (where it's fine, owner 2026-11) | frame top 388 / 385 mm, deck underside 347 / 341, heater 307 / 286, reach 38 / 40, between the legs 530 / 568 (owner 2026-11: back to v1's height) |
 | Cross-legged on a zaisu: knee room under the top's edge (385 mm, the futon squeezed over the knees) | none to spare once the seat's height is added, so I sit legs forward |
-| Room between the legs at knee height / legs forward (to 275 mm) | 529 / 577 mm (owner 2026-11: the 170 mm heads; "+" legs: 570 / 637) |
-| Sway under a sideways push (spring model; FEA at 200 N: 3.3 mm, was 6.2 with 140 mm heads) | 0.5 mm at 50 N, 0.8 at 100 N, 1.4 at 200 N (v1: 0.53 / 0.93 / 2.21 along x) |
-| Twist: 115 N pushed along an edge at a top corner (best case: the joints rigid until they open, each crosspiece held down by the whole wedge clamp through the deck; the feet where the kick puts them) | 1.2 mm at the corner; the crosspiece joints open at about 212 N at most |
+| Room between the legs at knee height / legs forward (to 275 mm) | 530 / 664 mm (owner 2026-11: the 170 mm heads, the 388 mm frame; "+" legs: 570 / 637) |
+| Sway under a sideways push (spring model; FEA at 200 N: 3.6 mm, was 6.2 with 140 mm heads) | 0.54 mm at 50 N, 0.87 at 100 N, 1.58 at 200 N (v1: 0.53 / 0.93 / 2.21 along x) |
+| Twist: 115 N pushed along an edge at a top corner (best case: the joints rigid until they open, each crosspiece held down by the whole wedge clamp through the deck; the feet where the kick puts them) | 1.5 mm at the corner; the crosspiece joints open at about 201 N at most |
 | Play in each tenon, and extra wobble per 0.1 mm a wedge works loose | 0.4 mm, about 1 mm |
 | Push 50 mm in from the edge that tips the table / lifts the loose top's far side | never, in the model (the feet and corner posts sit almost under the edge) |
 | Push right at the edge that tips the table / lifts the loose top's far side | about 4500 N / 640 N (v1: 1700 / 770): the loose top lifts long before the table tips |
@@ -166,8 +166,8 @@ corner, and the wedges and deck don't carry any of the weight from above.
   wedges tight, not the cantilever estimate's 27 % (the 45° arms are softer and weaker than assumed). With
   slack wedges 81 % (97 % with 140 mm heads, 127 % before the bigger fillets, 155 % under the "+" legs). Keep them tight.
 - **Legs.** A 200 N sideways shove at table height, 14.1 mm stock: the worst spot is the head slot's root at
-  72 % (170 mm heads, the frame 15 mm lower; 63 % with 140 mm heads), and the sway is 3.3 mm along x (was 6.2). With the
-  top's worst corner load as well (an adult on an edge) 50 %, at the slot root; that load alone uses 40 %. (The "+" legs' plate A: 80 %, sway 7.1 mm, after it
+  77 % (170 mm heads, the 388 mm frame; 72 % at 370 mm, 63 % with 140 mm heads), and the sway is 3.6 mm along x (was 6.2). With the
+  top's worst corner load as well (an adult on an edge) 56 %, at the slot root; that load alone uses 41 %. (The "+" legs' plate A: 80 %, sway 7.1 mm, after it
   first failed at a 60 mm leg width; tag `plus-legs-archive`.) TODO-verify the strengths.
 
 ## Budget (CAD)
@@ -236,7 +236,7 @@ $353.33 (TODO-verify what was added; if it repeats, v2's $309.33 becomes about $
    real height (read off a photo: the knob and plug must clear the deck's underside, and stick out under the ring). With the futon now over the heater, check
    its top stays cool to the touch on high (owner, 2026-11: 40 °C on v1, the same heater: fine). Look for a cUL, cETL or CSA mark on the rating label.
 3. **The crosspieces.** At the first fit-up, sand each crosspiece's top edge until the deck sits on it and on the
-   plate's shoulders together, then twist the frame by hand. The joints should feel solid. The twist figure (1.2 mm
+   plate's shoulders together, then twist the frame by hand. The joints should feel solid. The twist figure (1.5 mm
    at 115 N) comes from a spring model, not the FEA, and is a best case. In it I take each joint as rigid until it
    opens, and give each crosspiece the wedge's whole clamp. What holds the crosspiece down is the deck, lying on
    its top edge (sanded flush with the shoulders) and clamped onto the shoulders by the wedge beside the tenon.
