@@ -5,7 +5,24 @@ finalized invoice was higher: $405.83 + tax = $454.53 (TODO-verify what was adde
 quotes over two days, and I learned more about pricing from the cart than from the published
 rules.
 
-## The current design: 170 mm heads, the frame 15 mm lower (2026-11, saved in my account, not ordered)
+## The current design: the frame at v1's height, 388 mm (2026-11, saved in my account, not ordered)
+Baltic birch, 15mm, CNC router, millimetres. A new quote with the six current files (the leg plate 18 mm taller).
+
+| Part | Size | Qty | Each | Line |
+|---|---|---|---|---|
+| top | 860 × 860 mm | 1 | $87.29 | $87.29 |
+| deck | 769 × 769 mm | 1 | $101.79 | $101.79 |
+| leg plate (170 mm head, the 388 mm frame: owner 2026-11) | 199 × 388 mm | 4 | $19.70 | $78.80 |
+| leg crosspiece | 90 × 26.5 mm | 4 | $2.53 | $10.12 |
+| heater cheek | 380 × 46 mm | 2 | $10.85 | $21.70 |
+| wedge | 60 × 17 mm | 6 | $1.85 | $11.10 |
+| **Subtotal** | | **18** | | **$310.80** |
+
+$1.47 more than at 370 mm; my price model said +$1.17 and $305.56 in all (1.7 % low). With 12 % tax about $348.10;
+if uMake's finalization adds what it did to v1 (+15 %), about $400 with tax. Shipping should stay free (the same 91 cm
+box, about 10.5 kg).
+
+## The frame 15 mm lower, 370 mm (2026-11, superseded)
 Baltic birch, 15mm, CNC router, millimetres. The saved quote had collected 23 file tabs from every re-upload and its
 page crashed when I clicked through them, so I started a clean quote with just the six current files.
 
